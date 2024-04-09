@@ -1,0 +1,30 @@
+.tap-effect-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tap-effect {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(255, 0, 0, 0.5);
+  animation: tap-effect 0.5s ease-out;
+  transform: scale(0);
+}
+
+@keyframes tap-effect {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    transform: scale(1.5);
+    background-color: rgba(255, 255, 255, 0);
+  }
+}
