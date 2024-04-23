@@ -1,0 +1,20 @@
+.navigation{
+  position: fixed;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.navigation_button{
+  background-color: #fff000;
+
+  width: 33.333%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px #000;
+}

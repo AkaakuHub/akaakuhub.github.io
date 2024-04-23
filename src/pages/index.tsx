@@ -1,21 +1,27 @@
 import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 
+import "./global.css"
+
 import TapEffect from "../components/(parts)/tapeffect"
+import Navigation from "../components/(parts)/navigation"
 
 const IndexPage: React.FC<PageProps> = () => {
   return (
     <main>
-      <TapEffect />
-      <h1>Home Page</h1>
-      <p>
-        ここが本文の予定です
-        <br /><br /><br /><br />
-        <br /><br /><br /><br />
-        <br /><br /><br /><br />
-        <br /><br /><br /><br />
-        あああ
-      </p>
+      <TapEffect>
+        <div>
+          ここが本文の予定です
+          ここが本文の予定です
+          ここが本文の予定です
+          ここが本文の予定です
+          ここが本文の予定です
+          ここが本文の予定です
+          ここが本文の予定です
+          ここが本文の予定です
+        </div>
+        <Navigation />
+      </TapEffect>
     </main>
   )
 }
