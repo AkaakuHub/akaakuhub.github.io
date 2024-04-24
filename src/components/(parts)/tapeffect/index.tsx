@@ -35,11 +35,15 @@ const TapEffect: React.FC<TapEffectProps> = ({ children }) => {
 
     const handleMouseUp = () => {
       isMouseDownRef.current = false;
+      // インターバルを解除
+      lastEffectTimeRef.current = 0;
       // console.log("mouseup");
     };
 
     const handleTouchEnd = () => {
       isMouseDownRef.current = false;
+      // インターバルを解除
+      lastEffectTimeRef.current = 0;
     };
 
     const handleMouseMove = (e: MouseEvent) => {
