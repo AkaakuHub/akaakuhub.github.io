@@ -17,33 +17,51 @@ const TapEffect: React.FC<TapEffectProps> = ({ children }) => {
 
   const nextIdRef = useRef(0);
   const intervalRef = useRef<number | null>(null);
-  const lastEffectTimeRef = useRef<number>(0);
   const lastMousePosRef = useRef<{ x: number; y: number } | null>(null);
   const isMouseDownRef = useRef<boolean>(false);
+  const nextEffectAvailableTimeRef = useRef<number>(0);
+
+  const intervalTime: number = 200;
+
+  const generateTapEffect = () => {
+    const now: number = Date.now();
+    if (isMouseDownRef.current && now > nextEffectAvailableTimeRef.current) {
+      const newTapEffect: TapEffect = {
+        id: nextIdRef.current,
+        x: lastMousePosRef.current?.x || 0,
+        y: lastMousePosRef.current?.y || 0,
+        expirationTime: now + 500, // アニメーションが500msなので固定
+      };
+      setTapEffects((prevTapEffects) => [...prevTapEffects, newTapEffect]);
+      nextIdRef.current += 1;
+      nextEffectAvailableTimeRef.current = now + intervalTime;
+    }
+    setTapEffects((prevTapEffects) =>
+      prevTapEffects.filter((effect) => effect.expirationTime > now)
+    );
+  };
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       lastMousePosRef.current = { x: e.clientX, y: e.clientY };
       isMouseDownRef.current = true;
-      // console.log("mousedown");
+      generateTapEffect();
     };
 
     const handleTouchStart = (e: TouchEvent) => {
       lastMousePosRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       isMouseDownRef.current = true;
+      generateTapEffect();
     };
 
     const handleMouseUp = () => {
       isMouseDownRef.current = false;
-      // インターバルを解除
-      lastEffectTimeRef.current = 0;
-      // console.log("mouseup");
+      nextEffectAvailableTimeRef.current = Date.now();
     };
 
     const handleTouchEnd = () => {
       isMouseDownRef.current = false;
-      // インターバルを解除
-      lastEffectTimeRef.current = 0;
+      nextEffectAvailableTimeRef.current = Date.now();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -67,29 +85,15 @@ const TapEffect: React.FC<TapEffectProps> = ({ children }) => {
     window.addEventListener("touchend", handleTouchEnd);
     window.addEventListener("touchmove", handleTouchMove);
 
-    const intervalTime: number = 100;
 
-    intervalRef.current = window.setInterval(() => {
-      const now = Date.now();
-      if (isMouseDownRef.current && now - lastEffectTimeRef.current > intervalTime) {
-        const newTapEffect: TapEffect = {
-          id: nextIdRef.current,
-          x: lastMousePosRef.current?.x || 0,
-          y: lastMousePosRef.current?.y || 0,
-          expirationTime: now + 500,
-        };
-        setTapEffects((prevTapEffects) => [...prevTapEffects, newTapEffect]);
-        nextIdRef.current += 1;
-        lastEffectTimeRef.current = now;
-      }
-      setTapEffects((prevTapEffects) =>
-        prevTapEffects.filter((effect) => effect.expirationTime > now)
-      );
-    }, intervalTime);
+    // intervalRef.current = window.setInterval(() => {
+    //   generateTapEffect();
+    // }, 0);
 
     return () => {
       window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("dragend", handleMouseUp);
       window.removeEventListener("mousemove", handleMouseMove);
 
       window.removeEventListener("touchstart", handleTouchStart);
@@ -100,6 +104,14 @@ const TapEffect: React.FC<TapEffectProps> = ({ children }) => {
         clearInterval(intervalRef.current);
       }
     };
+  }, []);
+
+  useEffect(() => {
+    const animate = () => {
+      generateTapEffect();
+      requestAnimationFrame(animate);
+    };
+    animate();
   }, []);
 
   return (
