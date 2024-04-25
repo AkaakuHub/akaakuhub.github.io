@@ -20,6 +20,11 @@
   padding: 10px;
 }
 
+.lv-container{
+  padding-right: 10px;
+  border-right: 1px solid #ccc;
+}
+
 .profile-container{
   gap: 10px;
   border-radius: 10px;

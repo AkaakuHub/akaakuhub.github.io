@@ -64,7 +64,7 @@ const Header: React.FC = () => {
       <div className="header">
         <div className="info-container">
           <div className="time-container">
-            {date.getHours()}:{date.getMinutes()}
+            {date.getHours()}:{String(date.getMinutes()).padStart(2, '0')}
           </div>
           <div className="battery-container">
             <ChooseBattery />
