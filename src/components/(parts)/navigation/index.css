@@ -6,15 +6,17 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 20px 20px 0 0;
+  padding: 10px 0 10px 0;
 }
 
 .navigation_item{
-  background-color: #fff000;
-
   width: 33.333%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: solid 1px #000;
+  border-left: #ccc 1px solid;
 }

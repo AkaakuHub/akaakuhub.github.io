@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import "./index.css";
+
+import { Battery1, Battery2, Battery3, Battery_charging, Battery_null } from "../../../lib/SVGlibrary";
 
 declare global {
   interface BatteryManager {
@@ -22,28 +25,63 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const timerID = setInterval(() => setDate(new Date()), 1000);
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (!isIOS) {
+    try {
       navigator.getBattery().then((bat) => {
         setBattery({ level: bat.level, charging: bat.charging });
         bat.onlevelchange = () => setBattery({ level: bat.level, charging: bat.charging });
         bat.onchargingchange = () => setBattery({ level: bat.level, charging: bat.charging });
       });
+    } catch (e) { // iOSなどではnavigator.getBattery()が使えない
+      // console.log(e);
     }
     return function cleanup() {
       clearInterval(timerID);
     };
   }, []);
 
+  const ChooseBattery: React.FC = () => {
+    const level: number = battery.level;
+    const isCharging: boolean = battery.charging;
+
+    const iconSize = 60;
+    const iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
+
+    if (isCharging) {
+      return <Battery_charging style={iconStyle} />;
+    } else if (level > 0.5) {
+      return <Battery3 style={iconStyle} />;
+    } else if (level > 0.2) {
+      return <Battery2 style={iconStyle} />;
+    } else if (level > 0) {
+      return <Battery1 style={iconStyle} />;
+    } else { // level === 0
+      return <Battery_null style={iconStyle} />;
+    }
+  };
+
   return (
     <div>
       <div className="header">
-        <p>現在時刻(時): {date.getHours()}</p>
-        <p>現在時刻(分): {date.getMinutes()}</p>
-        <p>バッテリー残量: {(battery.level * 100).toFixed(0)}%</p>
-        <p>充電状態: {battery.charging ? "充電中" : "充電していない"}</p>
+        <div className="info-container">
+          <div className="time-container">
+            {date.getHours()}:{date.getMinutes()}
+          </div>
+          <div className="battery-container">
+            <ChooseBattery />
+          </div>
+        </div>
+        <div className="profile-container">
+          <div className="lv-container">
+            000
+          </div>
+          <div className="name-container">
+            name_temp
+          </div>
+        </div>
+        <div className="currency-container">
+          <p>C 0</p>
+        </div>
       </div>
-      l9
     </div>
   );
 };

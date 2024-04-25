@@ -38,4 +38,73 @@ const HomeIcon = (props: PropsType) => {
   );
 };
 
-export { ArrowBackIcon, CloseIcon, HamburgerMenuIcon, HomeIcon };
+const Battery3 = (props: PropsType) => {
+  return (
+    <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={props.style ? props.style : undefined} >
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M3 0C1.34315 0 0 1.34315 0 3V14C0 15.6569 1.34315 17 3 17H26C27.6569 17 29 15.6569 29 14V12.9999C29.0043 13 29.0085 13 29.0128 13C30.1103 13 31 10.9853 31 8.5C31 6.01472 30.1103 4 29.0128 4C29.0085 4 29.0043 4.00003 29 4.00009V3C29 1.34315 27.6569 0 26 0H3Z"
+        fill="black" />
+      <rect x="1" y="1" width="27" height="15" rx="2" fill="white" />
+      <rect x="2" y="2" width="7" height="13" rx="2" fill="#00FF75" />
+      <rect x="11" y="2" width="7" height="13" rx="2" fill="#00FF75" />
+      <rect x="20" y="2" width="7" height="13" rx="2" fill="#00FF75" />
+    </svg>
+  );
+};
+
+const Battery2 = (props: PropsType) => {
+  return (
+    <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={props.style ? props.style : undefined} >
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M3 0C1.34315 0 0 1.34315 0 3V14C0 15.6569 1.34315 17 3 17H26C27.6569 17 29 15.6569 29 14V12.9999C29.0043 13 29.0085 13 29.0128 13C30.1103 13 31 10.9853 31 8.5C31 6.01472 30.1103 4 29.0128 4C29.0085 4 29.0043 4.00003 29 4.00009V3C29 1.34315 27.6569 0 26 0H3Z"
+        fill="black" />
+      <rect x="1" y="1" width="27" height="15" rx="2" fill="white" />
+      <rect x="2" y="2" width="7" height="13" rx="2" fill="#FFE500" />
+      <rect x="11" y="2" width="7" height="13" rx="2" fill="#FFE500" />
+    </svg>
+  );
+};
+
+const Battery1 = (props: PropsType) => {
+  return (
+    <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={props.style ? props.style : undefined} >
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M3 0C1.34315 0 0 1.34315 0 3V14C0 15.6569 1.34315 17 3 17H26C27.6569 17 29 15.6569 29 14V12.9999C29.0043 13 29.0085 13 29.0128 13C30.1103 13 31 10.9853 31 8.5C31 6.01472 30.1103 4 29.0128 4C29.0085 4 29.0043 4.00003 29 4.00009V3C29 1.34315 27.6569 0 26 0H3Z"
+        fill="black" />
+      <rect x="1" y="1" width="27" height="15" rx="2" fill="white" />
+      <rect x="2" y="2" width="7" height="13" rx="2" fill="#FF0F00" />
+    </svg>
+  );
+};
+
+const Battery_charging = (props: PropsType) => {
+  return (
+    <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={props.style ? props.style : undefined} >
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M3 0C1.34315 0 0 1.34315 0 3V14C0 15.6569 1.34315 17 3 17H26C27.6569 17 29 15.6569 29 14V12.9999C29.0043 13 29.0085 13 29.0128 13C30.1103 13 31 10.9853 31 8.5C31 6.01472 30.1103 4 29.0128 4C29.0085 4 29.0043 4.00003 29 4.00009V3C29 1.34315 27.6569 0 26 0H3Z"
+        fill="black" />
+      <rect x="1" y="1" width="27" height="15" rx="2" fill="white" />
+      <rect x="2" y="2" width="25" height="13" rx="2" fill="#00FF75" />
+      <path fill-rule="evenodd" clip-rule="evenodd" transform="translate(9.5,3)"
+        d="M7.7327 6.48215L9.259 4.89999H4.84259L4.84426 4.8971L4.83344 4.89955L6.58302 0.00388336L6.57927 0L2.2209 4.51786H2.21664L0.699997 6.09H5.10754L5.10587 6.09289L5.11669 6.09044L3.3643 10.994L3.37006 11L7.72843 6.48215H7.7327Z"
+        fill="white" />
+    </svg>
+  );
+};
+
+const Battery_null = (props: PropsType) => {
+  return (
+    <svg width="31" height="17" viewBox="0 0 31 17" fill="none" xmlns="http://www.w3.org/2000/svg" style={props.style ? props.style : undefined} >
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M3 0C1.34315 0 0 1.34315 0 3V14C0 15.6569 1.34315 17 3 17H26C27.6569 17 29 15.6569 29 14V12.9999C29.0043 13 29.0085 13 29.0128 13C30.1103 13 31 10.9853 31 8.5C31 6.01472 30.1103 4 29.0128 4C29.0085 4 29.0043 4.00003 29 4.00009V3C29 1.34315 27.6569 0 26 0H3Z"
+        fill="black" />
+      <rect x="1" y="1" width="27" height="15" rx="2" fill="white" />
+      <path transform="translate(10,3)"
+        d="M3.594 7.396C3.41667 7.396 3.26733 7.34467 3.146 7.242C3.034 7.13 2.978 6.99933 2.978 6.85C2.978 6.43 3.05267 6.06133 3.202 5.744C3.35133 5.42667 3.524 5.16533 3.72 4.96C3.92533 4.74533 4.196 4.50267 4.532 4.232C4.88667 3.952 5.148 3.70933 5.316 3.504C5.484 3.29867 5.568 3.06533 5.568 2.804C5.568 1.78667 4.90067 1.278 3.566 1.278C3.23933 1.278 2.91733 1.32 2.6 1.404C2.292 1.47867 2.01667 1.59067 1.774 1.74C1.662 1.81467 1.54533 1.852 1.424 1.852C1.27467 1.852 1.144 1.796 1.032 1.684C0.92 1.572 0.864 1.44133 0.864 1.292C0.864 1.07733 0.980667 0.899999 1.214 0.76C1.59667 0.517333 1.984 0.344666 2.376 0.242C2.768 0.139333 3.202 0.0879999 3.678 0.0879999C4.63 0.0879999 5.39067 0.326 5.96 0.802C6.53867 1.278 6.828 1.922 6.828 2.734C6.828 3.098 6.76267 3.42 6.632 3.7C6.50133 3.97067 6.34267 4.204 6.156 4.4C5.96933 4.58667 5.722 4.80133 5.414 5.044C5.01267 5.36133 4.70933 5.65067 4.504 5.912C4.308 6.164 4.21 6.47667 4.21 6.85C4.21 6.99933 4.14933 7.13 4.028 7.242C3.90667 7.34467 3.762 7.396 3.594 7.396ZM3.566 10.056C3.342 10.056 3.146 9.97667 2.978 9.818C2.81933 9.65 2.74 9.44933 2.74 9.216C2.74 8.992 2.81933 8.80067 2.978 8.642C3.146 8.474 3.342 8.39 3.566 8.39C3.79933 8.39 3.99533 8.474 4.154 8.642C4.322 8.80067 4.406 8.992 4.406 9.216C4.406 9.44933 4.322 9.65 4.154 9.818C3.99533 9.97667 3.79933 10.056 3.566 10.056Z"
+        fill="black" />
+    </svg>
+  );
+};
+
+export { ArrowBackIcon, CloseIcon, HamburgerMenuIcon, HomeIcon, Battery3, Battery2, Battery1, Battery_charging, Battery_null };
+// 必ずsvgタグにstyleとcolorを指定すること

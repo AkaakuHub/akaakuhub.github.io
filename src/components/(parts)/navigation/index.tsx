@@ -6,7 +6,7 @@ import { ArrowBackIcon, CloseIcon, HamburgerMenuIcon, HomeIcon } from "../../../
 // androidのナビゲーションのように、戻る、メニュー、ホームのアイコンボタンを表示する
 
 const Navigation: React.FC = () => {
-  const iconSize = 60;
+  const iconSize = 55;
   const iconColor = "#000";
   const iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
   return (

@@ -1,20 +1,35 @@
 .header{
-  position: fixed;
-  top: 0;
   height: 100px;
   width: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  font-size: 1.4em;
+  font-family: 'Noto Sans JP', sans-serif;
 }
 
-.navigation_button{
-  background-color: #fff000;
-
-  width: 33.333%;
-  height: 100%;
+.info-container,
+.profile-container{
   display: flex;
   justify-content: center;
   align-items: center;
-  border: solid 1px #000;
+  /* 横に並べる　*/
+  flex-direction: row;
+  padding: 10px;
+}
+
+.profile-container{
+  gap: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.battery-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100%;
 }
