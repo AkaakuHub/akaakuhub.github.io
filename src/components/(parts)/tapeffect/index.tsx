@@ -21,7 +21,7 @@ const TapEffect: React.FC<TapEffectProps> = ({ children }) => {
   const isMouseDownRef = useRef<boolean>(false);
   const nextEffectAvailableTimeRef = useRef<number>(0);
 
-  const intervalTime: number = 200;
+  const intervalTime: number = 80;
 
   const generateTapEffect = () => {
     const now: number = Date.now();

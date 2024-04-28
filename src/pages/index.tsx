@@ -1,37 +1,31 @@
 import * as React from "react"
 import type { HeadFC, PageProps } from "gatsby"
 
+import { useState } from "react";
+
 import "./global.css"
+import "./index.css"
 
 import TapEffect from "../components/(parts)/tapeffect"
 
 import Header from "../components/(parts)/header"
 import Navigation from "../components/(parts)/navigation"
 
+import Modal from "../components/(parts)/modal";
+
 const IndexPage: React.FC<PageProps> = () => {
+  // ここでモーダルを管理する
+  const [modalArray, setModalArray] = useState<string[]>([])
+
   return (
-    <main>
+    <main className="main-root">
       <TapEffect>
         <Header />
+        <Modal {... { modalArray, setModalArray }} />
         <div>
-          start
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
-          <br />
-          <br />
-          <br />
-          <br />
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
-          ここが本文の予定です
+          ここに一応本文です
         </div>
-        <Navigation />
+        <Navigation {... { modalArray, setModalArray }} />
       </TapEffect>
     </main>
   )

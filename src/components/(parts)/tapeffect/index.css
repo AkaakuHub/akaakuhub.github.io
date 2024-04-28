@@ -13,7 +13,7 @@
   background-color: transparent;
   animation: tap-effect 0.5s ease-out forwards;
   transform: scale(0);
-  z-index: 9999;
+  z-index: calc(infinity - 1);
   pointer-events: none;
 }
 
