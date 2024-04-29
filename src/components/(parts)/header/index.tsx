@@ -62,7 +62,7 @@ const Header: React.FC = () => {
     const level: number = battery.level;
     const isCharging: boolean = battery.charging;
 
-    const iconSize = 60;
+    const iconSize = 40;
     const iconStyle = { width: `${iconSize}px`, height: `${iconSize}px` };
 
     if (isCharging) {
@@ -78,30 +78,61 @@ const Header: React.FC = () => {
     }
   };
 
+  const [userLevel, setUserLevel] = useState<number>(1);
+  const [username, setUsername] = useState<string>("ゲスト");
+  const [currency, setCurrency] = useState<number>(0);
+
+  const changeUserLevel = (level: number) => {
+    setUserLevel(level);
+  }
+
+  const changeUsername = (name: string) => {
+    setUsername(name);
+  }
+
+  const gainCurrency = (amount: number) => {
+    setCurrency(currency + amount);
+  };
+
   return (
-    <div>
-      <div className="header">
-        <div className="info-container">
-          <div className="time-container">
-            {date.getHours()}:{String(date.getMinutes()).padStart(2, '0')}
-          </div>
-          <div className="battery-container">
-            <ChooseBattery />
-          </div>
+    <div className="header">
+      <div className="info-container">
+        <div className="time-container">
+          {date.getHours()}:{String(date.getMinutes()).padStart(2, '0')}
         </div>
-        <div className="profile-container">
-          <div className="lv-container">
-            <p>Lv.</p>
-            <p>0</p>
-          </div>
-          <div className="name-container">
-            <p>name</p>
-            <p>名前</p>
-          </div>
+        <div className="battery-container">
+          <ChooseBattery />
         </div>
-        <div className="currency-container">
-          <PlusIcon style={{ width: '30px', height: '30px' }} />
+      </div>
+      <div className="profile-container">
+        <div className="lv-container">
+          <p className="mini-title">Lv.</p>
+          {/* <p className="profile-lv">0</p> */}
+          <input className="profile-lv input-form"
+            type="number"
+            value={userLevel}
+            onChange={(e) => changeUserLevel(Number(e.target.value))}
+          />
         </div>
+        <div className="name-container">
+          <p className="mini-title">name</p>
+          <input className="profile-name input-form"
+            type="text"
+            value={username}
+            onChange={(e) => changeUsername(e.target.value)}
+          />
+          {/* <p className="profile-name">{username}</p> */}
+        </div>
+      </div>
+      <div className="currency-container">
+        <p>{currency}</p>
+        <span onClick={() =>
+          gainCurrency(1)
+        }
+          className="currency-plus"
+        >
+          <PlusIcon style={{ width: '35px', height: '35px' }} />
+        </span>
       </div>
     </div>
   );

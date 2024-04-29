@@ -20,8 +20,8 @@ const IndexPage: React.FC<PageProps> = () => {
   return (
     <main className="main-root">
       <TapEffect>
-        <Header />
         <Modal {... { modalArray, setModalArray }} />
+        <Header />
         <div>
           ここに一応本文です
         </div>

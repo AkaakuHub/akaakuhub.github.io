@@ -1,8 +1,12 @@
-.header{
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100px;
   width: 100%;
+  z-index: 10000;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   background-color: #fff;
   border-bottom: 1px solid #ccc;
@@ -11,30 +15,120 @@
 }
 
 .info-container,
-.profile-container{
+.profile-container,
+.currency-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  /* 横に並べる　*/
   flex-direction: row;
-  padding: 10px;
 }
 
-.lv-container{
+.time-container{
+  padding-left: 10px;
+  font-size: 1em;
+
+  @media (max-width: 768px) {
+    font-size: 0.7em;
+  }
+}
+
+.lv-container {
   padding-right: 10px;
   border-right: 1px solid #ccc;
+  text-align: center;
+  width: 2em;
 }
 
-.profile-container{
+.name-container {
+  width: 8em;
+  @media (max-width: 768px) {
+    width: 6em;
+  }
+}
+
+.profile-container {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   gap: 10px;
   border-radius: 10px;
   border: 1px solid #ccc;
+
+  p{
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    left: 55%;
+  }
 }
 
-.battery-container{
+.profile-name,
+.profile-lv
+{
+  @media (max-width: 768px) {
+    font-size: 0.8em;
+  }
+}
+
+.info-container{
+  gap: 10px;
+}
+
+.battery-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px;
   height: 100%;
+}
+
+.mini-title{
+  font-size: 0.8em;
+  @media (max-width: 768px) {
+    font-size: 0.6em;
+  }
+
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.input-form{
+  font-family: inherit;
+  border-radius: 10px;
+  border: none;
+  padding: 0;
+  text-decoration: none;
+  font-size: 1em;
+}
+
+.profile-lv{
+  text-align: center;
+  width: 2em;
+  @media (max-width: 768px) {
+    font-size: 0.8em;
+  }
+}
+
+.profile-name{
+  width: 8em;
+
+  @media (max-width: 768px) {
+    font-size: 0.8em;
+    width: 6em;
+  }
+}
+
+.currency-container{
+  padding: 10px;
+  gap: 10px;
+
+  p{
+    margin: 0;
+  }
+}
+
+.currency-plus{
+  cursor: pointer;
 }
