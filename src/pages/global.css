@@ -11,3 +11,20 @@ img{
   overflow-clip-margin: initial;
   pointer-events: none;
 }
+
+/* svg{
+  width: auto;
+  height: auto;
+} */
+
+/* 
+svg:not(:root) {
+    overflow-clip-margin: content-box;
+    overflow: hidden;
+}
+*/
+
+svg{
+  overflow: visible;
+  overflow-clip-margin: initial;
+}

@@ -2,44 +2,41 @@ import React, { useState, useEffect } from "react";
 import "./index.css";
 import clsx from "clsx";
 
-import { modalArrayPropsType } from "../../../type"
+import { modalArrayPropsType } from "../../../type";
 
-const Menu: React.FC = () => {
-  // const BASE_URL = process.env.GATSBY_BASE_URL;
-
-  const menuData = [
-    { name: "GitHub", image: "https://raw.githubusercontent.com/AkaakuHub/github-grass/main/github-glass.svg", href: "https://github.com/AkaakuHub/" },
-    { name: "Twitter", image: "/twitter-card.svg", href: "https://twitter.com/AkaakuHub" },
-    { name: "Coming soon...", image: "/coming-soon-card.svg", href: "" },
-  ];
-
-  const preventDefault = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
-    if (href === "") {
-      e.preventDefault();
-    } else {
-      return;
-    }
-  };
-
-  return (
-    <div className="menu-root">
-      {menuData.map((value, index) => {
-        return (
-          <div key={index} className="menu-item-big">
-            <a href={value.href} target="_blank" rel="noopener noreferrer"
-              onClick={(e) => preventDefault(e, value.href)}
-            >
-              <img src={value.image} alt={value.name} className="menu-item-image" />
-            </a>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+import { TwitterCardSVG, ComingSoonCardSVG } from "../../../lib/SVGlibrary";
 
 const Modal: React.FC<modalArrayPropsType> = ({ modalArray, setModalArray }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const Menu: React.FC = () => {
+
+    return (
+      <div className="menu-root">
+        <div className="menu-item-big">
+          <a href="https://github.com/AkaakuHub/" target="_blank" rel="noopener noreferrer">
+            <img src="https://raw.githubusercontent.com/AkaakuHub/github-grass/main/github-glass.svg" alt="GitHub" className="menu-item-image" />
+          </a>
+        </div>
+        <div className="menu-item-big">
+          <a href="https://twitter.com/AkaakuHub" target="_blank" rel="noopener noreferrer">
+            {/* <img src={Twitter_card} alt="Twitter" className="menu-item-image" /> */}
+            <div className="menu-item-image">
+              <TwitterCardSVG style={{ width: "100%", height: "auto" }} />
+            </div>
+          </a>
+        </div>
+        <div className="menu-item-big">
+          <a>
+            <div className="menu-item-image">
+              <ComingSoonCardSVG />
+            </div>
+          </a>
+          {/* <img src={Coming_soon_card} alt="Coming soon..." className="menu-item-image" /> */}
+        </div>
+      </div>
+    );
+  };
 
   useEffect(() => {
     setIsModalOpen(modalArray.length > 0);

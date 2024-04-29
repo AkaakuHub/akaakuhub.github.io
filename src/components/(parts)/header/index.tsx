@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 
-import { Battery1, Battery2, Battery3, Battery_null } from "../../../lib/SVGlibrary";
+import { Battery1, Battery2, Battery3, Battery_null, PlusIcon } from "../../../lib/SVGlibrary";
 import { SVGPropsType } from "../../../type";
 
 const Battery_charging = (props: SVGPropsType & { level: number }) => {
@@ -91,14 +91,16 @@ const Header: React.FC = () => {
         </div>
         <div className="profile-container">
           <div className="lv-container">
-            000
+            <p>Lv.</p>
+            <p>0</p>
           </div>
           <div className="name-container">
-            name_temp
+            <p>name</p>
+            <p>名前</p>
           </div>
         </div>
         <div className="currency-container">
-          <p>C 0</p>
+          <PlusIcon style={{ width: '30px', height: '30px' }} />
         </div>
       </div>
     </div>
