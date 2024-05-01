@@ -1,11 +1,11 @@
 .modal-bg {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  /* z-index: 1000; */
   display: flex;
   justify-content: center;
   opacity: 0;
@@ -13,21 +13,16 @@
 }
 
 .modal-root {
-  z-index: 1001;
-  background-color: white;
-  margin-top: 150px;
-  width: 70%;
-  max-width: 600px;
+  width: 100%;
+  /* z-index: 1001; */
   text-align: center;
-  border-radius: 20px 20px 0 0;
   align-items: center;
   display: flex;
   flex-direction: column;
-  padding: 20px;
   gap: 20px;
   transform: translateY(-20px);
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  /* opacity: 0; */
+  /* transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; */
 }
 
 .modal-bg-open,
@@ -48,18 +43,21 @@
   transform: translateY(200px);
 }
 
-
-
-
-
 .menu-root{
-  width: 100%;
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  max-width: 600px;
+  width: 80%;
   height: 100%;
   text-align: center;
   align-items: center;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-top: 150px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .menu-item-image{
@@ -74,8 +72,62 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .menu-item-big a {
   display: block;
+}
+
+.message-dialog-root{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: white;
+  border-radius: 20px;
+  max-width: 500px;
+  width: 80%;
+  height: 50%;
+  text-align: center;
+  align-items: center;
+  /* display: flex; */
+  flex-direction: column;
+}
+
+.message-dialog-title{
+  color: #fff;
+  width: 100%;
+  background-color: rgb(0, 60, 129);
+  border-radius: 20px 20px 0 0;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  height: 3em;
+}
+
+.message-dialog-text{
+  padding-top: 1em;
+}
+
+.message-dialog-button{
+  color: #fff;
+  width: 6em;
+  padding: 10px;
+  border: solid 1px #000;
+  background-color: rgb(0, 60, 129);
+  border-radius: 10px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+
+  &:hover{
+    filter: brightness(1.2);
+  }
 }

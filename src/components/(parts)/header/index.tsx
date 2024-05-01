@@ -127,7 +127,7 @@ const Header: React.FC = () => {
       <div className="currency-container">
         <p>{currency}</p>
         <span onClick={() =>
-          gainCurrency(1)
+          gainCurrency(500)
         }
           className="currency-plus"
         >

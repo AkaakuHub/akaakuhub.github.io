@@ -35,7 +35,7 @@
   padding-right: 10px;
   border-right: 1px solid #ccc;
   text-align: center;
-  width: 2em;
+  width: 3em;
 }
 
 .name-container {
@@ -123,6 +123,10 @@
 .currency-container{
   padding: 10px;
   gap: 10px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 
   p{
     margin: 0;

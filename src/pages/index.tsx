@@ -13,18 +13,20 @@ import Navigation from "../components/(parts)/navigation"
 
 import Modal from "../components/(parts)/modal";
 
+import { modalArrayType } from "../type"
+
 const IndexPage: React.FC<PageProps> = () => {
   // ここでモーダルを管理する
-  const [modalArray, setModalArray] = useState<string[]>([])
+  const [modalArray, setModalArray] = useState<modalArrayType[]>([])
 
   return (
     <main className="main-root">
       <TapEffect>
         <Modal {... { modalArray, setModalArray }} />
         <Header />
-        <div>
+        {/* <div>
           ここに一応本文です
-        </div>
+        </div> */}
         <Navigation {... { modalArray, setModalArray }} />
       </TapEffect>
     </main>
@@ -33,4 +35,12 @@ const IndexPage: React.FC<PageProps> = () => {
 
 export default IndexPage
 
-export const Head: HeadFC = () => <title>Home Page</title>
+export const Head: HeadFC = () => {
+  return (
+    <head>
+      <title>Home</title>
+      <meta name="description" content="Home" />
+      <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
+    </head>
+  )
+}

@@ -24,7 +24,7 @@ const Navigation: React.FC<modalArrayPropsType> = (
     if (modalArray.length > 0) {
       setModalArray([]);
     } else {
-      setModalArray(["menu"]);
+      setModalArray(current => [...current, { name: "menu" }]);
     }
   };
 
