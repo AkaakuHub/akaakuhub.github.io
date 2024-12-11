@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import "./index.css";
 import clsx from "clsx";
 
-import { modalArrayPropsType } from "../../../type";
+import type { modalArrayPropsType } from "../../../type";
 
 import { TwitterCardSVG, ComingSoonCardSVG } from "../../../lib/SVGlibrary";
 
-import { modalMessageType } from "../../../type";
+import type { modalMessageType } from "../../../type";
 
 const Modal: React.FC<modalArrayPropsType> = ({ modalArray, setModalArray }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,8 +25,13 @@ const Modal: React.FC<modalArrayPropsType> = ({ modalArray, setModalArray }) => 
   const Menu: React.FC<{ zIndexCurrent: number }> =
     ({ zIndexCurrent }) => {
       return (
-        <div className={clsx("modal-bg", isModalOpen ? "modal-bg-open" : "modal-bg-close")} onClick={handleBgClick}>
+        <div className={clsx("modal-bg", isModalOpen ? "modal-bg-open" : "modal-bg-close")} tabIndex={0}>
           <div className={clsx("menu-root", isModalOpen ? "modal-bg-open" : "modal-bg-close")} style={{ zIndex: zIndexCurrent }}>
+            <div className="menu-item-big">
+              <a href="https://tarouka.vercel.app/" target="_blank" rel="noopener noreferrer" className="menu-item-image">
+                本当に素晴らしいアニメ
+              </a>
+            </div>
             <div className="menu-item-big">
               <a href="https://github.com/AkaakuHub/" target="_blank" rel="noopener noreferrer">
                 <img src="https://raw.githubusercontent.com/AkaakuHub/github-grass/main/github-glass.svg" alt="GitHub" className="menu-item-image" />
@@ -55,6 +61,12 @@ const Modal: React.FC<modalArrayPropsType> = ({ modalArray, setModalArray }) => 
                 </div>
               </a>
               {/* <img src={Coming_soon_card} alt="Coming soon..." className="menu-item-image" /> */}
+            </div>
+            <div className="menu-item-big"          >
+              そのうち作る
+            </div>
+            <div className="menu-item-big"          >
+              そのうち作る
             </div>
           </div>
         </div>
@@ -99,9 +111,9 @@ const Modal: React.FC<modalArrayPropsType> = ({ modalArray, setModalArray }) => 
           const zIndexCurrent: number = zIndexBase + index;
           switch (value.name) {
             case "menu":
-              return <Menu {...{ zIndexCurrent }} />;
+              return <Menu {...{ zIndexCurrent }} key={index} />;
             case "message1":
-              return value.message ? <MessageDialog1 {...{ zIndexCurrent }} message={value.message} /> : null;
+              return value.message ? <MessageDialog1 {...{ zIndexCurrent }} message={value.message} key={index} /> : null;
             default:
               return null;
           }
