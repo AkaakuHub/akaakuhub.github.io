@@ -28,10 +28,10 @@ declare global {
     level: number;
     chargingTime: number;
     dischargingTime: number;
-    onchargingchange: ((this: BatteryManager, ev: Event) => any) | null;
-    onchargingtimechange: ((this: BatteryManager, ev: Event) => any) | null;
-    ondischargingtimechange: ((this: BatteryManager, ev: Event) => any) | null;
-    onlevelchange: ((this: BatteryManager, ev: Event) => any) | null;
+    onchargingchange: ((this: BatteryManager, ev: Event) => void) | null;
+    onchargingtimechange: ((this: BatteryManager, ev: Event) => void) | null;
+    ondischargingtimechange: ((this: BatteryManager, ev: Event) => void) | null;
+    onlevelchange: ((this: BatteryManager, ev: Event) => void) | null;
   }
   interface Navigator {
     getBattery(): Promise<BatteryManager>;
@@ -51,7 +51,7 @@ const Header: React.FC = () => {
         bat.onchargingchange = () => setBattery({ level: bat.level, charging: bat.charging });
       });
     } catch (e) { // iOSなどではnavigator.getBattery()が使えない
-      // console.log(e);
+      console.log(e);
     }
     return function cleanup() {
       clearInterval(timerID);

@@ -1,4 +1,3 @@
-import { CSSProperties } from "react";
 import React from "react";
 
 import { SVGPropsType } from "@/type";
