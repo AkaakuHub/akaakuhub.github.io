@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import React from "react";
 
-import { SVGPropsType } from "../type";
+import { SVGPropsType } from "@/type";
 
 const ArrowBackIcon = (props: SVGPropsType) => {
   return (
