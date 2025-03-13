@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React,  { useState } from "react";
 
 import "./index.css"
 
@@ -13,7 +13,7 @@ import Modal from "@/components/(parts)/modal";
 
 import { modalArrayType } from "@/type"
 
-export default function IndexPage () {
+export default function IndexPage() {
   // ここでモーダルを管理する
   const [modalArray, setModalArray] = useState<modalArrayType[]>([])
 
