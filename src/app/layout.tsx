@@ -30,7 +30,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* {children} */}
+        <div>
+          現在メンテナンスのため、しばらくお待ちください！
+        </div>
       </body>
     </html>
   );
