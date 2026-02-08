@@ -1,0 +1,15 @@
+{
+  "ignore": [
+    "**/*.d.ts",
+    "**/node_modules/**",
+    "**/.next/**",
+    "out/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    "knip.json"
+  ],
+  "entry": ["src/app/globals.css"],
+  "project": ["src/**/*.{ts,tsx,js,jsx}"],
+  "includeEntryExports": true
+}

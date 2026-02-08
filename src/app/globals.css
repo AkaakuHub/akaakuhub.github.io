@@ -1,39 +1,386 @@
-html,
-body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  overflow-y: hidden;
+@import "tailwindcss";
+
+/* Tailwind v4 dark variant (reference: portfolio global.css) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Maine palette (2 inks) */
+  --color-primary: #d81c2f;
+  --color-secondary: #e2abf9;
+
+  /* Font families */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+
+  /* Semantic tokens used across the site */
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-fg: #0f172a;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+
+  --radius-card: 18px;
+
+  /* Animation tokens (reference file defines some; keep compatible names) */
+  --animation-gradient-x: gradient-x 15s ease infinite;
+  --animation-float: float 6s ease-in-out infinite;
+  --animation-spin-slow: spin 15s linear infinite;
 }
 
-img {
-  overflow: hidden;
-  overflow-clip-margin: initial;
-  pointer-events: none;
+/* Dark theme overrides */
+.dark {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-fg: #f8fafc;
+  /* brighter than before: fixes low contrast on dark + image backdrops */
+  --color-muted: #c8c8c8;
+  --color-border: #475569;
+
+  --color-primary: #e2abf9;
+  --color-secondary: #d81c2f;
 }
 
-a {
-  text-decoration: none;
+@keyframes gradient-x {
+  0%,
+  100% {
+    background-size: 200% 200%;
+    background-position: left center;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: right center;
+  }
 }
 
-* {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
-/* svg{
-  width: auto;
-  height: auto;
-} */
-
-/* 
-svg:not(:root) {
-    overflow-clip-margin: content-box;
-    overflow: hidden;
+@keyframes paper-shift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-1.2%, 1.2%, 0);
+  }
 }
-*/
 
-svg {
-  overflow: visible;
-  overflow-clip-margin: initial;
+@layer base {
+  html {
+    color-scheme: light;
+    overflow-x: hidden;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+
+  .ui-grid {
+    background-image:
+      radial-gradient(
+        circle,
+        color-mix(in oklab, var(--color-border) 70%, transparent) 1px,
+        transparent 1.6px
+      );
+    background-size: 16px 16px;
+    mask-image: radial-gradient(circle at 30% 12%, black 0, transparent 60%);
+    opacity: 0.55;
+  }
+
+  .scanlines {
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--color-fg) 5%, transparent) 0,
+        color-mix(in oklab, var(--color-fg) 5%, transparent) 1px,
+        transparent 1px,
+        transparent 5px
+      );
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+  }
+
+  .cut-corners {
+    /* Ticket-like notch */
+    clip-path: polygon(
+      0 0,
+      calc(100% - 16px) 0,
+      100% 16px,
+      100% calc(100% - 16px),
+      calc(100% - 16px) 100%,
+      0 100%
+    );
+  }
+
+  .cut-corners-sm {
+    clip-path: polygon(
+      0 0,
+      calc(100% - 10px) 0,
+      100% 10px,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%
+    );
+  }
+
+  .cut-corners-xs {
+    clip-path: polygon(
+      0 0,
+      calc(100% - 8px) 0,
+      100% 8px,
+      100% calc(100% - 8px),
+      calc(100% - 8px) 100%,
+      0 100%
+    );
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid color-mix(in oklab, var(--color-border) 85%, transparent);
+    background: color-mix(in oklab, var(--color-surface) 68%, transparent);
+    padding: 6px 10px;
+    font-size: 11px;
+    color: var(--color-muted);
+    backdrop-filter: blur(10px);
+  }
+
+  .chip-xs {
+    gap: 0;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .chip-mark {
+    width: 10px;
+    height: 10px;
+    background: var(--color-primary);
+    transform: rotate(45deg);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--color-border) 70%, transparent),
+      0 0 18px color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+
+  .chip-title {
+    font-family: var(--font-display);
+    letter-spacing: 0.22em;
+    color: var(--color-fg);
+  }
+
+  .chip-meta {
+    opacity: 0.78;
+  }
+
+  .text-chroma {
+    text-shadow:
+      1px 0 0 color-mix(in oklab, var(--color-secondary) 60%, transparent),
+      -1px 0 0 color-mix(in oklab, var(--color-primary) 55%, transparent);
+  }
+
+  .grain {
+    position: relative;
+  }
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.16;
+    mix-blend-mode: multiply;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(0, 0, 0, 0.22) 0 1px, transparent 2px),
+      radial-gradient(circle at 70% 28%, rgba(0, 0, 0, 0.18) 0 1px, transparent 2px),
+      radial-gradient(circle at 42% 82%, rgba(0, 0, 0, 0.17) 0 1px, transparent 2px),
+      radial-gradient(circle at 86% 64%, rgba(0, 0, 0, 0.12) 0 1px, transparent 2px);
+    background-size: 220px 220px, 260px 260px, 240px 240px, 280px 280px;
+    filter: contrast(115%) saturate(90%);
+  }
+
+  .shadow-glow {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--color-border) 80%, transparent),
+      0 24px 90px color-mix(in oklab, var(--color-fg) 12%, transparent),
+      0 18px 44px color-mix(in oklab, var(--color-secondary) 14%, transparent);
+  }
+
+  .paper-frame {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--color-border) 90%, transparent),
+      6px 8px 0 color-mix(in oklab, var(--color-fg) 12%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    .paper-frame {
+      box-shadow:
+        0 0 0 1px color-mix(in oklab, var(--color-border) 90%, transparent),
+        4px 6px 0 color-mix(in oklab, var(--color-fg) 12%, transparent);
+    }
+  }
+
+  .mdx {
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .mdx :where(h1, h2, h3) {
+    font-family: var(--font-display);
+    letter-spacing: 0.06em;
+  }
+
+  .mdx :where(h1) {
+    margin-top: 1.6rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.7rem;
+    line-height: 1.1;
+  }
+
+  .mdx :where(h2) {
+    margin-top: 1.4rem;
+    margin-bottom: 0.7rem;
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+
+  .mdx :where(h3) {
+    margin-top: 1.2rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+
+  .mdx :where(p) {
+    margin: 0.7rem 0;
+    color: var(--color-fg);
+  }
+
+  .mdx :where(a) {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: color-mix(in oklab, var(--color-primary) 55%, transparent);
+    text-underline-offset: 3px;
+  }
+
+  .mdx :where(a:hover) {
+    text-decoration-color: color-mix(in oklab, var(--color-secondary) 55%, transparent);
+  }
+
+  .mdx :where(ul, ol) {
+    margin: 0.75rem 0;
+    padding-left: 1.2rem;
+  }
+
+  .mdx :where(li) {
+    margin: 0.35rem 0;
+  }
+
+  .mdx :where(code) {
+    border: 1px solid color-mix(in oklab, var(--color-border) 80%, transparent);
+    background: color-mix(in oklab, var(--color-bg) 75%, transparent);
+    padding: 0.12rem 0.35rem;
+    border-radius: 10px;
+    font-size: 0.9em;
+  }
+
+  .mdx :where(pre) {
+    overflow: auto;
+    border: 1px solid color-mix(in oklab, var(--color-border) 80%, transparent);
+    background: color-mix(in oklab, var(--color-bg) 82%, transparent);
+    padding: 0.9rem;
+    border-radius: 16px;
+  }
+
+  .mdx :where(pre code) {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.9rem;
+  }
+
+  .mdx :where(blockquote) {
+    border-left: 3px solid color-mix(in oklab, var(--color-primary) 45%, transparent);
+    padding-left: 0.9rem;
+    margin: 0.9rem 0;
+    color: var(--color-muted);
+  }
+
+  .mdx :where(hr) {
+    border: 0;
+    height: 1px;
+    background: color-mix(in oklab, var(--color-border) 80%, transparent);
+    margin: 1.2rem 0;
+  }
+
+  .mdx :where(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.9rem 0;
+    font-size: 0.9rem;
+  }
+
+  .mdx :where(th, td) {
+    border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+    padding: 0.5rem 0.6rem;
+    vertical-align: top;
+  }
+
+  .mdx :where(th) {
+    background: color-mix(in oklab, var(--color-surface) 70%, transparent);
+    text-align: left;
+  }
+
+  .ink-wash {
+    opacity: 0.9;
+    background-image:
+      radial-gradient(
+        circle at 25% 10%,
+        color-mix(in oklab, var(--color-primary) 20%, transparent) 0,
+        transparent 55%
+      ),
+      radial-gradient(
+        circle at 85% 25%,
+        color-mix(in oklab, var(--color-secondary) 20%, transparent) 0,
+        transparent 58%
+      );
+  }
+
+  .dark .ink-wash {
+    opacity: 0.55;
+  }
+
+  .paper-shift {
+    will-change: transform;
+    animation: paper-shift 18s ease-in-out infinite;
+  }
 }

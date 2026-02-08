@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Chakra_Petch, M_PLUS_1 } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
+import { ThemeProvider } from "@/context/theme-context";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fontSans = M_PLUS_1({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fontDisplay = Chakra_Petch({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -17,21 +21,42 @@ export const metadata: Metadata = {
   description: "自作のアプリをまとめたサイト",
 };
 
+const themeInitScript = `
+(function () {
+  try {
+    var stored = localStorage.getItem("theme_v1");
+    var mode = "system";
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      mode = stored;
+    }
+    var resolved = "light";
+    if (mode === "dark" || mode === "light") {
+      resolved = mode;
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      resolved = "dark";
+    }
+    var root = document.documentElement;
+    if (resolved === "dark") root.classList.add("dark");
+    else root.classList.remove("dark");
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({
+  children,
 }: Readonly<{
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
-      <head>
-        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0" />
-      </head>
+    <html lang="ja" suppressHydrationWarning>
+      <head />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${fontSans.variable} ${fontDisplay.variable} antialiased`}
       >
-        {/* {children} */}
-        <div>
-          現在メンテナンスのため、しばらくお待ちください！
-        </div>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

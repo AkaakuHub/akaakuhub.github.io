@@ -1,0 +1,28 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome-fix:
+      glob: "**/*.{ts,tsx,js,jsx,mjs,cjs,json,md}"
+      run: pnpm -s fix
+      stage_fixed: true
+      skip:
+        - merge
+        - rebase
+    tailwind-colors-check:
+      glob: "src/**/*.{tsx,ts,jsx,js}"
+      run: python scripts/check-tailwind-colors.py src
+      skip:
+        - merge
+        - rebase
+    typecheck:
+      glob: "**/*.{ts,tsx}"
+      run: pnpm -s typecheck
+      skip:
+        - merge
+        - rebase
+    knip:
+      glob: "**/*.{ts,tsx,js,jsx,json}"
+      run: pnpm -s knip
+      skip:
+        - merge
+        - rebase
