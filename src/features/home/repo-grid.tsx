@@ -45,6 +45,11 @@ export function RepoGrid({ repos }: { repos: Repo[] }) {
                         {r.description}
                       </p>
                     ) : null}
+                    {r.readmePreview ? (
+                      <p className="mt-2 line-clamp-1 whitespace-pre-line text-xs text-muted opacity-75">
+                        {r.readmePreview}
+                      </p>
+                    ) : null}
                   </div>
                   {updated ? (
                     <span className="chip chip-xs cut-corners-xs shrink-0">

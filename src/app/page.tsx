@@ -1,7 +1,7 @@
 import HomeClient from "@/features/home/home-client";
-import { getRepos } from "@/lib/github";
+import { getReposForHome } from "@/lib/github";
 
 export default async function Page() {
-  const repos = await getRepos();
+  const repos = await getReposForHome({ limit: 60 });
   return <HomeClient repos={repos} />;
 }

@@ -31,6 +31,7 @@ export type Repo = {
   homepage: string | null;
   ogImageUrl: string;
   defaultBranch: string;
+  readmePreview?: string | null;
 };
 
 const OWNER = "AkaakuHub";
@@ -146,4 +147,60 @@ export async function getRepoReadme(args: {
 
 export function getOwner() {
   return OWNER;
+}
+
+async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  const queue = items.map((item, index) => ({ item, index }));
+  let nextIndex = 0;
+
+  async function worker() {
+    for (;;) {
+      const current = nextIndex;
+      if (current >= queue.length) return;
+      nextIndex += 1;
+      const entry = queue[current];
+      if (!entry) return;
+      const { item, index } = entry;
+      out[index] = await fn(item, index);
+    }
+  }
+
+  const count = Math.max(1, Math.min(concurrency, items.length));
+  const workers: Promise<void>[] = [];
+  for (let i = 0; i < count; i++) {
+    workers.push(
+      worker().then(() => {
+        // keep void
+      }),
+    );
+  }
+  await Promise.all(workers);
+  return out;
+}
+
+export async function getReposForHome(args: {
+  limit: number;
+}): Promise<Repo[]> {
+  const { limit } = args;
+  const repos = await getRepos();
+  const target = repos.slice(0, Math.max(0, limit));
+
+  const { readmeToPreviewText } = await import("./readme-preview");
+
+  const enriched = await mapWithConcurrency(target, 6, async (r) => {
+    const readme = await getRepoReadme({
+      repo: r.name,
+      defaultBranch: r.defaultBranch,
+    });
+    const preview = readme ? readmeToPreviewText(readme, 420) : null;
+    return { ...r, readmePreview: preview };
+  });
+
+  // Keep a stable return shape; don't return repos without previews.
+  return enriched;
 }

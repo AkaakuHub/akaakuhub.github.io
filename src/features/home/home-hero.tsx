@@ -42,7 +42,7 @@ export function HomeHero({
             >
               GitHub上のパブリックリポジトリを一覧で表示しています。
             </p>
-
+            {/* 
             <div data-reveal className="mt-7 grid gap-3 sm:max-w-lg">
               <label className="text-xs text-muted" htmlFor="repo-search">
                 Search (name, description, topics, language)
@@ -62,7 +62,7 @@ export function HomeHero({
                   Total {totalCount}
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {active ? (
               <div
@@ -109,6 +109,16 @@ export function HomeHero({
                         <p className="mt-2 text-sm text-muted">
                           {active.description}
                         </p>
+                      ) : null}
+                      {active.readmePreview ? (
+                        <div className="relative mt-3">
+                          <p className="font-display text-[10px] tracking-[0.22em] text-muted">
+                            README
+                          </p>
+                          <p className="mt-2 line-clamp-3 whitespace-pre-line text-sm text-muted opacity-90">
+                            {active.readmePreview}
+                          </p>
+                        </div>
                       ) : null}
                     </div>
                   </div>
