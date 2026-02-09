@@ -38,14 +38,13 @@ export function HomeHero({
 
             <p
               data-reveal
-              className="mt-5 max-w-2xl text-pretty leading-relaxed text-chroma md:text-base"
+              className="mt-5 max-w-2xl text-pretty leading-relaxed md:text-base"
             >
               GitHub上のパブリックリポジトリを一覧で表示しています。
             </p>
-            {/* 
             <div data-reveal className="mt-7 grid gap-3 sm:max-w-lg">
               <label className="text-xs text-muted" htmlFor="repo-search">
-                Search (name, description, topics, language)
+                検索
               </label>
               <input
                 id="repo-search"
@@ -62,7 +61,7 @@ export function HomeHero({
                   Total {totalCount}
                 </span>
               </div>
-            </div> */}
+            </div>
 
             {active ? (
               <div
@@ -105,21 +104,14 @@ export function HomeHero({
                       <h2 className="font-display truncate text-3xl tracking-[0.08em]">
                         {active.name}
                       </h2>
-                      {active.description ? (
-                        <p className="mt-2 text-sm text-muted">
-                          {active.description}
+                      <p className="mt-2 text-sm text-muted">
+                        {active.description ?? "No description"}
+                      </p>
+                      <div className="relative mt-3">
+                        <p className="h-[4.5em] mt-2 line-clamp-3 whitespace-pre-line text-sm text-muted opacity-90">
+                          {active.readmePreview ?? "No README"}
                         </p>
-                      ) : null}
-                      {active.readmePreview ? (
-                        <div className="relative mt-3">
-                          <p className="font-display text-[10px] tracking-[0.22em] text-muted">
-                            README
-                          </p>
-                          <p className="mt-2 line-clamp-3 whitespace-pre-line text-sm text-muted opacity-90">
-                            {active.readmePreview}
-                          </p>
-                        </div>
-                      ) : null}
+                      </div>
                     </div>
                   </div>
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectClient from "@/features/project/project-client";
-import { getOwner, getRepoReadme, getRepos } from "@/lib/github";
+import { getRepoReadme, getRepos } from "@/lib/github";
 
 export async function generateStaticParams() {
   const repos = await getRepos();
@@ -26,21 +26,13 @@ export default async function ProjectPage({
   return (
     <div className="min-h-dvh">
       <div className="mx-auto max-w-6xl px-6 py-8 md:px-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <Link
             href="/"
             className="cut-corners border border-border/80 bg-surface/60 px-4 py-2 text-sm text-muted backdrop-blur transition hover:bg-surface/80 hover:text-fg"
           >
             BACK
           </Link>
-          <a
-            href={`https://github.com/${getOwner()}/${encodeURIComponent(found.name)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="cut-corners border border-border/80 bg-surface/60 px-4 py-2 text-sm text-muted backdrop-blur transition hover:bg-surface/80 hover:text-fg"
-          >
-            OPEN ON GITHUB
-          </a>
         </div>
 
         <ProjectClient repo={found} readme={readme} />

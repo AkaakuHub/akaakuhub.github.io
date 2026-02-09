@@ -11,7 +11,7 @@ function indicatorClass(mode: Mode) {
   if (mode === "system") return "translate-y-[-1.1rem] bg-fg/90";
   if (mode === "light")
     return "translate-x-[1.5rem] translate-y-[-0.7rem] bg-primary";
-  return "translate-x-[-3.5rem] translate-y-[-0.7rem] bg-secondary";
+  return "translate-x-[-3.5rem] translate-y-[-0.7rem] bg-primary";
 }
 
 function iconClass(

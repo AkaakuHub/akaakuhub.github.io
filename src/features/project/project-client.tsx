@@ -49,14 +49,9 @@ export default function ProjectClient({
       </div>
 
       <section className="pt-10">
-        <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-12 lg:items-end p-4">
           <div className="lg:col-span-7">
             <p data-pop className="chip cut-corners-sm">
-              <span
-                className="chip-mark"
-                style={{ background: "var(--color-secondary)" }}
-                aria-hidden="true"
-              />
               <span className="chip-title">PROJECT FILE</span>
               {updated ? (
                 <span className="chip-meta">Updated {updated}</span>

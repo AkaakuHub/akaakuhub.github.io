@@ -145,10 +145,6 @@ export async function getRepoReadme(args: {
   return await getReadmeViaRaw(repo, defaultBranch);
 }
 
-export function getOwner() {
-  return OWNER;
-}
-
 async function mapWithConcurrency<T, R>(
   items: readonly T[],
   concurrency: number,
