@@ -1,5 +1,6 @@
 import { CylinderGeometry, Mesh, SphereGeometry, Vector3 } from "three";
 import type { Material, Object3D } from "three";
+import { metricBoxUv } from "../materials/uv";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 export function roundBox(
@@ -9,7 +10,9 @@ export function roundBox(
   material: Material,
   radius = 0.012,
 ): Mesh {
-  const mesh = new Mesh(new RoundedBoxGeometry(...size, 2, radius), material);
+  const geometry = new RoundedBoxGeometry(...size, 2, radius);
+  metricBoxUv(geometry);
+  const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
   mesh.castShadow = mesh.receiveShadow = true;
   parent.add(mesh);
@@ -24,7 +27,25 @@ export function cylinder(
   material: Material,
   topRadius = radius,
 ): Mesh {
-  const mesh = new Mesh(new CylinderGeometry(topRadius, radius, height, 24), material);
+  const geometry = new CylinderGeometry(topRadius, radius, height, 24);
+  const uv = geometry.getAttribute("uv");
+  const positions = geometry.getAttribute("position");
+  const originalUv = uv.clone();
+  for (const group of geometry.groups) {
+    for (let offset = group.start; offset < group.start + group.count; offset++) {
+      const index = geometry.index!.getX(offset);
+      if (group.materialIndex === 0) {
+        uv.setXY(
+          index,
+          originalUv.getX(index) * Math.PI * 2 * Math.max(radius, topRadius),
+          positions.getY(index),
+        );
+      } else {
+        uv.setXY(index, positions.getX(index), positions.getZ(index));
+      }
+    }
+  }
+  const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
   mesh.castShadow = mesh.receiveShadow = true;
   parent.add(mesh);

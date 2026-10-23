@@ -1,15 +1,17 @@
 import { Group } from "three";
+import type { MaterialLibrary } from "../materials/library";
 import { box, surface } from "../primitives";
 import { createCeiling } from "./ceiling";
 import { createDoor } from "./door";
-import { parquet, paintedWood, plaster, wainscot } from "./materials/architecture";
+import { createArchitectureMaterials } from "./materials/architecture";
 import { createWindow } from "./window";
 
-export function createRoom(): Group {
+export function createRoom(maps: MaterialLibrary): Group {
+  const materials = createArchitectureMaterials(maps);
   const room = new Group();
   room.name = "clubroom-architecture";
-  box(room, [5.4, 0.12, 5.4], [0, -0.06, 0], parquet());
-  const wall = plaster();
+  box(room, [5.4, 0.12, 5.4], [0, -0.06, 0], materials.floor);
+  const wall = materials.wall;
   for (const z of [-2.67, 2.67]) {
     box(room, [5.4, 2.9, 0.14], [0, 1.45, z], wall);
   }
@@ -22,8 +24,8 @@ export function createRoom(): Group {
   for (const z of [-2.3, 2.3]) {
     box(room, [0.14, 1.57, 0.74], [-2.67, 1.765, z], wall);
   }
-  const boards = wainscot();
-  const trim = paintedWood([96, 87, 70]);
+  const boards = materials.boards;
+  const trim = materials.trim;
   const contact = surface("#5f594b", 0.99);
   for (const z of [-2.586, 2.586]) {
     box(room, [5.2, 0.84, 0.025], [0, 0.42, z], boards);
@@ -46,6 +48,6 @@ export function createRoom(): Group {
       box(room, [0.155, 0.06, 0.155], [x, 0.87, z], trim);
     }
   }
-  room.add(createCeiling(), createWindow(), createDoor());
+  room.add(createCeiling(materials), createWindow(materials, maps.fabric), createDoor(materials));
   return room;
 }

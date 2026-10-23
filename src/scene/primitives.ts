@@ -1,5 +1,6 @@
 import { BoxGeometry, Mesh, MeshStandardMaterial } from "three";
 import type { Material, Object3D } from "three";
+import { metricBoxUv } from "./materials/uv";
 
 export function box(
   parent: Object3D,
@@ -7,7 +8,9 @@ export function box(
   position: readonly [number, number, number],
   material: Material,
 ): Mesh<BoxGeometry, Material> {
-  const mesh = new Mesh(new BoxGeometry(...size), material);
+  const geometry = new BoxGeometry(...size);
+  metricBoxUv(geometry);
+  const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
   mesh.castShadow = true;
   mesh.receiveShadow = true;

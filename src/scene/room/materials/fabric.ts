@@ -7,39 +7,26 @@ import {
   RepeatWrapping,
   RGBADepthPacking,
   RGBAFormat,
+  Vector2,
 } from "three";
-import { grain, texturedSurface } from "./texture";
+import type { PbrMaps } from "../../materials/library";
 
-export function curtainMaterials() {
-  const cloth = texturedSurface(
-    128,
-    (u, v) => {
-      const warp = Math.sin(u * Math.PI * 128) * 0.8;
-      const weft = Math.sin(v * Math.PI * 128) * 0.5;
-      const fiber = grain(Math.floor(u * 128), Math.floor(v * 128));
-      return [
-        205 + warp + fiber,
-        196 + weft + fiber,
-        169 + fiber,
-        0.5 + (warp + weft) * 0.025,
-        0.95,
-      ];
-    },
-    [3, 8],
-  );
+export function curtainMaterials(maps: PbrMaps) {
   const material = new MeshPhysicalMaterial({
-    map: cloth.map,
-    normalMap: cloth.normalMap,
-    normalScale: cloth.normalScale,
-    roughnessMap: cloth.roughnessMap,
+    map: maps.map,
+    normalMap: maps.normalMap,
+    normalScale: new Vector2(0.3, 0.3),
+    roughnessMap: maps.arm,
+    aoMap: maps.arm,
     roughness: 1,
+    color: "#eee5c9",
+    sheen: 0.85,
+    sheenRoughness: 0.85,
+    sheenColor: "#ebe2c5",
     side: DoubleSide,
-    transparent: true,
-    opacity: 0.9,
-    transmission: 0.12,
-    thickness: 0.002,
+    transmission: 0.08,
+    thickness: 0.0008,
     ior: 1.45,
-    depthWrite: false,
   });
   const holes = new Uint8Array(32 * 32 * 4);
   for (let y = 0; y < 32; y++) {
@@ -52,7 +39,7 @@ export function curtainMaterials() {
   const alphaMap = new DataTexture(holes, 32, 32, RGBAFormat);
   alphaMap.wrapS = RepeatWrapping;
   alphaMap.wrapT = RepeatWrapping;
-  alphaMap.repeat.set(28, 84);
+  alphaMap.repeat.set(42, 42);
   alphaMap.magFilter = LinearFilter;
   alphaMap.needsUpdate = true;
   const depth = new MeshDepthMaterial({
@@ -61,6 +48,5 @@ export function curtainMaterials() {
     alphaTest: 0.5,
     side: DoubleSide,
   });
-  cloth.dispose();
   return { material, depth };
 }

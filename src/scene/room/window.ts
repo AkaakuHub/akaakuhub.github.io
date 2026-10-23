@@ -1,13 +1,14 @@
+import type { PbrMaps } from "../materials/library";
 import { Group, MeshBasicMaterial, MeshPhysicalMaterial } from "three";
 import { box, surface } from "../primitives";
 import { createCurtains } from "./curtains";
-import { paintedWood } from "./materials/architecture";
+import type { ArchitectureMaterials } from "./materials/architecture";
 
-export function createWindow(): Group {
+export function createWindow(materials: ArchitectureMaterials, fabric: PbrMaps): Group {
   const window = new Group();
-  const frame = paintedWood([181, 181, 166]);
+  const frame = materials.frame;
   const gasket = surface("#696e66", 0.84);
-  const sill = paintedWood([128, 112, 87]);
+  const sill = materials.sill;
   const skyBackdrop = box(
     window,
     [0.04, 10, 14],
@@ -17,7 +18,7 @@ export function createWindow(): Group {
   skyBackdrop.name = "world-sky";
   skyBackdrop.castShadow = false;
   skyBackdrop.receiveShadow = false;
-  const masonry = paintedWood([179, 179, 165]);
+  const masonry = materials.wall;
   const exterior = box(window, [0.55, 1.25, 7.4], [-7.6, 0.15, 0.3], masonry);
   exterior.castShadow = false;
   for (let z = -2.9; z < 3.3; z += 0.75) {
@@ -56,6 +57,6 @@ export function createWindow(): Group {
   box(window, [0.055, 0.115, 4.1], [-2.31, 0.9, 0], sill);
   const dust = surface("#8a8170", 0.99);
   box(window, [0.018, 0.004, 3.82], [-2.53, 0.996, 0], dust);
-  window.add(createCurtains());
+  window.add(createCurtains(fabric));
   return window;
 }

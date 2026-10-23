@@ -1,8 +1,9 @@
 import { CylinderGeometry, Group, Mesh, PlaneGeometry, TorusGeometry } from "three";
 import { box, surface } from "../primitives";
+import type { PbrMaps } from "../materials/library";
 import { curtainMaterials } from "./materials/fabric";
 
-export function createCurtains(): Group {
+export function createCurtains(maps: PbrMaps): Group {
   const curtains = new Group();
   const steel = surface("#aaa99a", 0.36, 0.7);
   const rail = new Mesh(new CylinderGeometry(0.014, 0.014, 4.34, 12), steel);
@@ -13,7 +14,7 @@ export function createCurtains(): Group {
   for (const z of [-2.12, 2.12]) {
     box(curtains, [0.19, 0.035, 0.04], [-2.46, 2.7, z], steel);
   }
-  const { material, depth } = curtainMaterials();
+  const { material, depth } = curtainMaterials(maps);
   for (const start of [-2.11, 1.51]) {
     const geometry = new PlaneGeometry(1, 1, 72, 12);
     const positions = geometry.getAttribute("position");
@@ -28,6 +29,20 @@ export function createCurtains(): Group {
         0.86 + v * 1.79 - drape,
         start + u * 0.6,
       );
+    }
+    const uv = geometry.getAttribute("uv");
+    for (let row = 0; row <= 12; row++) {
+      let length = 0;
+      for (let column = 0; column <= 72; column++) {
+        const index = row * 73 + column;
+        if (column > 0) {
+          length += Math.hypot(
+            positions.getX(index) - positions.getX(index - 1),
+            positions.getZ(index) - positions.getZ(index - 1),
+          );
+        }
+        uv.setXY(index, length, positions.getY(index) - 0.86);
+      }
     }
     geometry.computeVertexNormals();
     const panel = new Mesh(geometry, material);

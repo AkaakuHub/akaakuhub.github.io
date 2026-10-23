@@ -1,12 +1,12 @@
 import { CylinderGeometry, Group, Mesh, MeshPhysicalMaterial } from "three";
 import { box, surface } from "../primitives";
-import { paintedWood } from "./materials/architecture";
+import type { ArchitectureMaterials } from "./materials/architecture";
 
-export function createDoor(): Group {
+export function createDoor(materials: ArchitectureMaterials): Group {
   const door = new Group();
   door.position.set(2.51, 0, 0.95);
-  const wood = paintedWood([134, 119, 94]);
-  const trim = paintedWood([105, 94, 76]);
+  const wood = materials.door;
+  const trim = materials.trim;
   const gasket = surface("#554f44", 0.95);
   const steel = surface("#a9afa7", 0.28, 0.82);
   for (const z of [-0.54, 0.54]) {

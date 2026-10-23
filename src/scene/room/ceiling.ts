@@ -1,11 +1,11 @@
 import { CylinderGeometry, Group, Mesh, MeshStandardMaterial } from "three";
 import { box, surface } from "../primitives";
-import { acousticTile, paintedWood } from "./materials/architecture";
+import type { ArchitectureMaterials } from "./materials/architecture";
 
-export function createCeiling(): Group {
+export function createCeiling(materials: ArchitectureMaterials): Group {
   const ceiling = new Group();
-  box(ceiling, [5.4, 0.1, 5.4], [0, 2.95, 0], acousticTile());
-  const beams = paintedWood([197, 197, 182]);
+  box(ceiling, [5.4, 0.1, 5.4], [0, 2.95, 0], materials.ceiling);
+  const beams = materials.frame;
   for (const x of [-1.3, 1.3]) {
     box(ceiling, [0.105, 0.12, 5.2], [x, 2.85, 0], beams);
   }
