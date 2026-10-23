@@ -12,12 +12,13 @@ function pull(parent: Group, x: number, y: number, z: number, materials: Furnitu
 
 function lowCabinet(materials: FurnitureMaterials): Group {
   const cabinet = new Group();
+  cabinet.name = "low-cabinet";
   roundBox(cabinet, [1.66, 0.78, 0.51], [0, 0.54, 0], materials.ivory, 0.018);
   box(cabinet, [1.57, 0.68, 0.008], [0, 0.54, -0.26], materials.graphite);
   for (const x of [-0.71, 0.71]) {
     for (const z of [-0.18, 0.18]) {
       cylinder(cabinet, 0.023, 0.18, [x, 0.105, z], materials.deepGreen);
-      cylinder(cabinet, 0.028, 0.018, [x, 0.025, z], materials.rubber);
+      cylinder(cabinet, 0.028, 0.018, [x, 0.009, z], materials.rubber);
     }
   }
   for (const height of [0.307, 0.54, 0.773]) {
@@ -36,6 +37,7 @@ function lowCabinet(materials: FurnitureMaterials): Group {
 
 function tallCabinet(materials: FurnitureMaterials): Group {
   const cabinet = new Group();
+  cabinet.name = "tall-cabinet";
   const width = 1.02;
   roundBox(cabinet, [width, 1.98, 0.035], [0, 1.06, 0.225], materials.enamel, 0.012);
   box(cabinet, [0.91, 1.86, 0.012], [0, 1.06, 0.2], materials.ivory);
@@ -69,7 +71,7 @@ function tallCabinet(materials: FurnitureMaterials): Group {
   }
   for (const x of [-0.42, 0.42])
     for (const z of [-0.16, 0.16])
-      cylinder(cabinet, 0.024, 0.09, [x, 0.06, z], materials.deepGreen);
+      cylinder(cabinet, 0.024, 0.09, [x, 0.045, z], materials.deepGreen);
   cabinet.position.set(1.4, 0, 2.27);
   return cabinet;
 }

@@ -1,14 +1,7 @@
-import {
-  CatmullRomCurve3,
-  Group,
-  LatheGeometry,
-  Mesh,
-  TorusGeometry,
-  TubeGeometry,
-  Vector2,
-  Vector3,
-} from "three";
+import { CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
 import { box } from "../primitives";
+import { closedNotebook, standingBook } from "./bindings";
+import { ceramicMug } from "./ceramic";
 import { cylinder, rod, roundBox } from "./geometry";
 import type { FurnitureMaterials } from "./materials";
 
@@ -32,13 +25,11 @@ function readingCart(materials: FurnitureMaterials): Group {
     const cover = covers[index % covers.length];
     if (!cover) throw new Error("本の材質が見つかりません。");
     const height = 0.25 + (index % 3) * 0.017;
-    const book = new Group();
-    box(book, [0.047, height, 0.22], [0, height / 2, 0], cover);
-    box(book, [0.037, height - 0.012, 0.205], [0, height / 2, -0.004], materials.paper);
-    box(book, [0.047, height, 0.009], [0, height / 2, 0.109], cover);
-    box(book, [0.024, 0.045, 0.001], [0, height * 0.7, 0.115], materials.paper);
-    book.position.set(-0.2 + index * 0.058, 0.193, 0.035);
+    const book = standingBook(height, 0.047, 0.22, cover, materials);
+    book.rotation.y = Math.PI;
+    book.position.set(-0.2 + index * 0.058, 0.1925, 0.035);
     if (index === 6) book.rotation.z = -0.1;
+    if (index === 6) book.position.y += 0.0235 * Math.sin(0.1);
     cart.add(book);
   }
   for (let index = 0; index < 3; index++) {
@@ -51,26 +42,14 @@ function readingCart(materials: FurnitureMaterials): Group {
     );
     stack.rotation.y = (index - 1) * 0.04;
   }
-  const profile = [
-    [0, 0],
-    [0.031, 0],
-    [0.04, 0.012],
-    [0.043, 0.072],
-    [0.038, 0.075],
-    [0.035, 0.016],
-    [0, 0.012],
-  ].map(([x, y]) => new Vector2(x, y));
-  const cup = new Mesh(new LatheGeometry(profile, 32), materials.ivory);
+  const cup = ceramicMug(materials.ivory, 0.075, 0.043);
   cup.position.set(-0.12, 0.9205, 0.02);
-  cup.castShadow = cup.receiveShadow = true;
-  const handle = new Mesh(new TorusGeometry(0.022, 0.005, 8, 20), materials.ivory);
-  handle.position.set(0.045, 0.042, 0);
-  handle.castShadow = true;
-  cup.add(handle);
   cart.add(cup);
   cylinder(cart, 0.062, 0.008, [-0.12, 0.9165, 0.02], materials.ivory);
-  const notebook = roundBox(cart, [0.2, 0.025, 0.27], [0.14, 0.925, 0.015], materials.rust, 0.005);
+  const notebook = closedNotebook(0.2, 0.025, 0.27, materials.rust, materials);
+  notebook.position.set(0.14, 0.9125, 0.015);
   notebook.rotation.y = -0.1;
+  cart.add(notebook);
   cart.position.set(-2.02, 0, -2.12);
   return cart;
 }

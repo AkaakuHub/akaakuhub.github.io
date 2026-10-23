@@ -1,5 +1,7 @@
-import { CatmullRomCurve3, Curve, Group, Mesh, TorusGeometry, TubeGeometry, Vector3 } from "three";
+import { CatmullRomCurve3, Curve, Group, Mesh, TubeGeometry, Vector3 } from "three";
 import { box } from "../primitives";
+import { closedNotebook } from "./bindings";
+import { ceramicMug } from "./ceramic";
 import { cylinder, rod, roundBox } from "./geometry";
 import type { FurnitureMaterials } from "./materials";
 
@@ -73,15 +75,10 @@ export function createWorktopObjects(
     box(mat, [0.001, 0.0003, 0.48], [line * 0.08, 0.00415, 0], materials.enamel);
   }
   solderStation(parent, materials, surfaceY + 0.008);
-  const notebook = roundBox(
-    parent,
-    [0.32, 0.025, 0.24],
-    [0.02, surfaceY + 0.0125, 0.57],
-    materials.rust,
-    0.005,
-  );
-  box(notebook, [0.3, 0.016, 0.225], [0.005, 0, 0], materials.paper);
+  const notebook = closedNotebook(0.32, 0.025, 0.24, materials.rust, materials);
+  notebook.position.set(0.02, surfaceY, 0.57);
   notebook.rotation.y = -0.1;
+  parent.add(notebook);
   rod(
     parent,
     [-0.1, surfaceY + 0.029, 0.55],
@@ -89,9 +86,8 @@ export function createWorktopObjects(
     0.004,
     materials.graphite,
   );
-  cylinder(parent, 0.042, 0.09, [-0.22, surfaceY + 0.045, 0.63], materials.terracotta);
-  cylinder(parent, 0.034, 0.002, [-0.22, surfaceY + 0.09, 0.63], materials.graphite);
-  const handle = new Mesh(new TorusGeometry(0.03, 0.008, 8, 24), materials.terracotta);
-  handle.position.set(-0.168, surfaceY + 0.052, 0.63);
-  parent.add(handle);
+  const cup = ceramicMug(materials.terracotta, 0.09, 0.042);
+  cup.position.set(-0.22, surfaceY, 0.63);
+  cup.rotation.y = Math.PI / 2;
+  parent.add(cup);
 }

@@ -1,7 +1,9 @@
 import { CircleGeometry, Group, LatheGeometry, Mesh, Vector2 } from "three";
 import { Reflector } from "three/addons/objects/Reflector.js";
 import { box } from "../primitives";
-import { cylinder, leaf, rod, roundBox } from "./geometry";
+import { standingBook } from "./bindings";
+import { vaseFoliage } from "./foliage";
+import { cylinder, rod, roundBox } from "./geometry";
 import type { FurnitureMaterials } from "./materials";
 
 function books(parent: Group, x: number, y: number, materials: FurnitureMaterials): void {
@@ -15,23 +17,19 @@ function books(parent: Group, x: number, y: number, materials: FurnitureMaterial
   for (let index = 0; index < 7; index++) {
     const color = colors[index % colors.length];
     if (!color) throw new Error("本の材質が見つかりませんでした。");
-    const book = new Group();
     const height = 0.24 + (index % 3) * 0.026;
     const thickness = 0.033 + (index % 2) * 0.014;
-    box(book, [thickness, height, 0.2], [0, height / 2, 0], color);
-    box(book, [thickness * 0.78, height - 0.01, 0.192], [0, height / 2, 0.006], materials.paper);
-    box(book, [thickness, height, 0.007], [0, height / 2, -0.103], color);
-    box(book, [thickness * 0.6, 0.067, 0.001], [0, height * 0.7, -0.107], materials.paper);
+    const book = standingBook(height, thickness, 0.2, color, materials);
     book.position.set(x + index * 0.055, y, -0.014);
     parent.add(book);
   }
 }
 
 export function cabinetContents(parent: Group, materials: FurnitureMaterials): void {
-  books(parent, -0.37, 0.645, materials);
-  books(parent, -0.36, 1.465, materials);
+  books(parent, -0.37, 0.641, materials);
+  books(parent, -0.36, 1.461, materials);
   for (const x of [-0.23, 0.23]) {
-    roundBox(parent, [0.33, 0.2, 0.32], [x, 1.145, 0.015], materials.graphite, 0.012);
+    roundBox(parent, [0.33, 0.2, 0.32], [x, 1.141, 0.015], materials.graphite, 0.012);
     box(parent, [0.105, 0.044, 0.002], [x, 1.16, -0.15], materials.paper);
     box(parent, [0.046, 0.006, 0.004], [x, 1.12, -0.154], materials.brass);
   }
@@ -39,7 +37,7 @@ export function cabinetContents(parent: Group, materials: FurnitureMaterials): v
     const paper = roundBox(
       parent,
       [0.24, 0.016, 0.3],
-      [0.26, 1.485 + index * 0.018, 0.015],
+      [0.26, 1.469 + index * 0.016, 0.015],
       materials.paper,
       0.002,
     );
@@ -49,40 +47,31 @@ export function cabinetContents(parent: Group, materials: FurnitureMaterials): v
 
 function vase(materials: FurnitureMaterials): Group {
   const group = new Group();
+  group.name = "hollow-terracotta-vase";
   const profile = [
-    [0, 0],
+    [0, 0.005],
+    [0.055, 0.005],
+    [0.055, 0],
     [0.065, 0],
     [0.073, 0.025],
     [0.078, 0.1],
     [0.065, 0.18],
     [0.035, 0.24],
     [0.037, 0.27],
+    [0.036, 0.273],
+    [0.031, 0.273],
+    [0.03, 0.269],
+    [0.029, 0.24],
+    [0.059, 0.178],
+    [0.072, 0.1],
+    [0.066, 0.027],
+    [0.057, 0.009],
+    [0, 0.009],
   ].map(([x, y]) => new Vector2(x, y));
-  const vessel = new Mesh(new LatheGeometry(profile, 32), materials.terracotta);
+  const vessel = new Mesh(new LatheGeometry(profile, 48), materials.terracotta);
+  vessel.name = "vase-inner-and-outer-wall";
   vessel.castShadow = vessel.receiveShadow = true;
-  group.add(vessel);
-  cylinder(group, 0.033, 0.005, [0, 0.266, 0], materials.graphite);
-  for (const direction of [-1, 0, 1]) {
-    rod(
-      group,
-      [0, 0.25, 0],
-      [direction * 0.065, 0.53 + Math.abs(direction) * 0.035, direction * 0.02],
-      0.0025,
-      materials.foliage,
-    );
-    leaf(
-      group,
-      [direction * 0.06 - 0.02, 0.44, direction * 0.02],
-      direction * 0.5 - 0.4,
-      materials.foliage,
-    );
-    leaf(
-      group,
-      [direction * 0.06 + 0.01, 0.5, direction * 0.02],
-      direction * 0.5 + 0.5,
-      materials.foliage,
-    );
-  }
+  group.add(vessel, vaseFoliage(materials.foliage));
   return group;
 }
 
