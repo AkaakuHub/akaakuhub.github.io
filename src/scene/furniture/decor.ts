@@ -20,7 +20,7 @@ function books(parent: Group, x: number, y: number, materials: FurnitureMaterial
     if (!color) throw new Error("本の材質が見つかりませんでした。");
     const height = 0.24 + (index % 3) * 0.026;
     const thickness = 0.033 + (index % 2) * 0.014;
-    const book = standingBook(height, thickness, 0.2, color, materials);
+    const book = standingBook(height, thickness, 0.2, color, materials, index);
     book.position.set(x + index * 0.055, y, -0.014);
     parent.add(book);
   }

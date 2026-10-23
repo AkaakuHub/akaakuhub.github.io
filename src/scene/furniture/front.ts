@@ -26,7 +26,7 @@ function readingCart(materials: FurnitureMaterials): Group {
     const cover = covers[index % covers.length];
     if (!cover) throw new Error("本の材質が見つかりません。");
     const height = 0.25 + (index % 3) * 0.017;
-    const book = standingBook(height, 0.047, 0.22, cover, materials);
+    const book = standingBook(height, 0.047, 0.22, cover, materials, index + 7);
     book.rotation.y = Math.PI;
     book.position.set(-0.2 + index * 0.058, 0.1925, 0.035);
     if (index === 6) book.rotation.z = -0.1;
@@ -47,7 +47,7 @@ function readingCart(materials: FurnitureMaterials): Group {
   cup.position.set(-0.12, 0.9205, 0.02);
   cart.add(cup);
   cylinder(cart, 0.062, 0.008, [-0.12, 0.9165, 0.02], materials.porcelain);
-  const notebook = closedNotebook(0.2, 0.025, 0.27, materials.rust, materials);
+  const notebook = closedNotebook(0.2, 0.025, 0.27, materials.rust, materials, 9);
   notebook.position.set(0.14, 0.9125, 0.015);
   notebook.rotation.y = -0.1;
   cart.add(notebook);

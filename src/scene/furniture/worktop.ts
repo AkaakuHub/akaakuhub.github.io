@@ -83,7 +83,7 @@ export function createWorktopObjects(
     box(mat, [0.001, 0.0003, 0.48], [line * 0.08, 0.00415, 0], materials.enamel);
   }
   solderStation(parent, materials, surfaceY + 0.008);
-  const notebook = closedNotebook(0.32, 0.025, 0.24, materials.rust, materials);
+  const notebook = closedNotebook(0.32, 0.025, 0.24, materials.rust, materials, 15);
   notebook.position.set(0.02, surfaceY, 0.57);
   notebook.rotation.y = -0.1;
   parent.add(notebook);

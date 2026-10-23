@@ -1,6 +1,7 @@
 import { DoubleSide, Vector2 } from "three";
 import type { MaterialLibrary } from "../../materials/library";
 import { physicalSurface, scannedSurface } from "../../materials/surface";
+import { bookLabelMaterial, pageEdgeMaterial } from "./book-labels";
 
 export function createPropMaterials(maps: MaterialLibrary) {
   const cloth = (color: string) =>
@@ -20,6 +21,8 @@ export function createPropMaterials(maps: MaterialLibrary) {
       clearcoatRoughness: 0.5,
     });
   return {
+    bookLabels: bookLabelMaterial(maps.paper),
+    pageEdges: pageEdgeMaterial(maps.paper),
     paper: scannedSurface(maps.paper, {
       color: "#f2ebda",
       normalScale: new Vector2(0.12, 0.12),
