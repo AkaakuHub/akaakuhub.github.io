@@ -1,9 +1,10 @@
-import { Group, Mesh, MeshPhysicalMaterial } from "three";
+import { Group, Mesh } from "three";
 import type { Material } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { box, surface } from "../primitives";
+import { box } from "../primitives";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { metricBoxUv } from "../materials/uv";
+import type { MetalMaterials } from "../materials/metal";
 
 function roundBox(
   parent: Group,
@@ -47,19 +48,19 @@ function caster(
   hub.dispose();
 }
 
-export function createFrame(): Group {
+export function createFrame(metals: MetalMaterials): Group {
   const frame = new Group();
   const hardware = new HardwareBatch();
-  const aluminum = surface("#adb5b0", 0.39, 0.82);
-  const coating = surface("#657a70", 0.53, 0.12);
-  const rubber = surface("#333b38", 0.94);
-  const backing = surface("#b2b9ae", 0.87);
-  const ceramic = new MeshPhysicalMaterial({
-    color: "#f0f2e9",
-    roughness: 0.3,
-    clearcoat: 0.58,
-    clearcoatRoughness: 0.3,
-  });
+  const aluminum = metals.aluminum;
+  const coating = metals.enamel;
+  const rubber = metals.rubber;
+  const backing = metals.ivory;
+  const ceramic = metals.ivory.clone();
+  ceramic.color.set("#f0f2e9");
+  ceramic.roughness = 0.34;
+  ceramic.normalScale.set(0.08, 0.08);
+  ceramic.clearcoat = 0.58;
+  ceramic.clearcoatRoughness = 0.3;
   roundBox(frame, [2.64, 1.36, 0.075], [0, 1.72, 0], aluminum, 0.026);
   roundBox(frame, [2.56, 1.28, 0.012], [0, 1.72, 0.039], ceramic, 0.014);
   box(frame, [2.5, 1.22, 0.015], [0, 1.72, -0.045], backing);
@@ -100,17 +101,14 @@ export function createFrame(): Group {
   const eraser = roundBox(frame, [0.145, 0.035, 0.067], [0.76, 1.055, 0.075], coating, 0.01);
   eraser.rotation.y = -0.12;
   for (const [index, color] of ["#6c4036", "#314c55"].entries()) {
-    const marker = new Mesh(metricCylinderGeometry(0.009, 0.145, 12), surface("#dedfd4", 0.65));
+    const marker = new Mesh(metricCylinderGeometry(0.009, 0.145, 12), metals.ivory);
     marker.rotation.z = Math.PI / 2;
     marker.position.set(0.41 - index * 0.22, 1.048, 0.08);
     marker.castShadow = true;
     frame.add(marker);
-    box(
-      frame,
-      [0.035, 0.019, 0.019],
-      [marker.position.x + 0.058, 1.048, 0.08],
-      surface(color, 0.5),
-    );
+    const cap = metals.ivory.clone();
+    cap.color.set(color);
+    box(frame, [0.035, 0.019, 0.019], [marker.position.x + 0.058, 1.048, 0.08], cap);
   }
   hardware.finish(frame);
   return frame;
