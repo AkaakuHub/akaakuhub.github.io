@@ -20,7 +20,7 @@ export function createView(camera: PerspectiveCamera, onTurn: (index: number) =>
       current = motion.matches ? target : MathUtils.damp(current, target, 7, delta);
       const moving = Math.abs(current - target) > 0.0001;
       if (!moving) current = target;
-      camera.rotation.set(0, current, 0);
+      camera.rotation.set(MathUtils.degToRad(-8), current, 0, "YXZ");
       return moving;
     },
   };

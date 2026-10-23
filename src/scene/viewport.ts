@@ -35,7 +35,7 @@ export function observeViewport(
     const fittingFov = MathUtils.radToDeg(
       2 * Math.atan(Math.tan(MathUtils.degToRad(34)) / camera.aspect),
     );
-    camera.fov = MathUtils.clamp(fittingFov, 58, 82);
+    camera.fov = MathUtils.clamp(fittingFov, 62, 82);
     camera.updateProjectionMatrix();
     renderer.setDrawingBufferSize(width, height, pixelRatio);
     composer.setPixelRatio(pixelRatio);

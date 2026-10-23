@@ -21,7 +21,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = PCFShadowMap;
 renderer.shadowMap.autoUpdate = false;
 const scene = new Scene();
-const camera = new PerspectiveCamera(58, 1, 0.05, 40);
+const camera = new PerspectiveCamera(62, 1, 0.05, 40);
 camera.position.set(0, 1.55, 0.45);
 const board = createBoard();
 scene.add(createRoom(), createFurniture(), board.group);
