@@ -1,6 +1,7 @@
 import { CylinderGeometry, Group, Mesh } from "three";
 import type { Object3D } from "three";
 import { surface } from "../primitives";
+import type { MetalMaterials } from "../materials/metal";
 import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
 import type { Notice } from "./notices";
@@ -8,8 +9,11 @@ import { createPaper } from "./paper";
 
 export type { Notice } from "./notices";
 
-export function createBoard(): { group: Group; notices: Map<Object3D, Notice> } {
-  const group = createFrame();
+export function createBoard(metals: MetalMaterials): {
+  group: Group;
+  notices: Map<Object3D, Notice>;
+} {
+  const group = createFrame(metals);
   group.name = "notice-board";
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
