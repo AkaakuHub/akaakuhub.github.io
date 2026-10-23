@@ -7,7 +7,7 @@ uniform vec3 eye;
 uniform vec3 sunDirection;
 uniform vec3 sunRadiance;
 uniform float sunShadowBias;
-const float extinction = 0.055;
+const float extinction = 0.0008;
 
 vec3 surfaceAt(vec2 screenUv) {
   float depth = texture2D(sceneDepth, screenUv).r;
