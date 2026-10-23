@@ -1,27 +1,17 @@
 import {
   Color,
   DirectionalLight,
-  HemisphereLight,
   Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
-  PMREMGenerator,
   RectAreaLight,
 } from "three";
 import type { Scene, WebGLRenderer } from "three";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { tokyoSunlight } from "./daylight/solar";
+import { createRoomReflection } from "./lighting/room-reflection";
 
 export function illuminate(scene: Scene, renderer: WebGLRenderer) {
-  const generator = new PMREMGenerator(renderer);
-  const environment = new RoomEnvironment();
-  const reflection = generator.fromScene(environment, 0.04);
-  scene.environment = reflection.texture;
-  environment.dispose();
-  generator.dispose();
-
-  const hemisphere = new HemisphereLight("#dce9fa", "#a39172");
   const sun = new DirectionalLight();
   sun.target.position.set(0, 1.2, 0);
   sun.castShadow = true;
@@ -35,16 +25,20 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   sun.shadow.normalBias = 0.004;
   sun.shadow.bias = -0.0001;
   sun.shadow.radius = 2;
-  scene.add(hemisphere, sun, sun.target);
+  scene.add(sun, sun.target);
 
   RectAreaLightUniformsLib.init();
   const ceilingLights = [-1.05, 1.35].map((z) => {
-    const light = new RectAreaLight("#f4fff2", 12, 0.36, 1.03);
+    const light = new RectAreaLight("#f4fff2", 80, 0.36, 1.03);
     light.position.set(0, 2.765, z);
     light.rotation.x = -Math.PI / 2;
     scene.add(light);
     return light;
   });
+  const skylight = new RectAreaLight(0xffffff, 0, 3.8, 1.48);
+  skylight.position.set(-2.58, 1.78, 0);
+  skylight.lookAt(0, 1.78, 0);
+  scene.add(skylight);
   const skyMaterials = new Set<MeshBasicMaterial>();
   const tubeMaterials = new Set<MeshStandardMaterial>();
   scene.traverse((object) => {
@@ -58,8 +52,8 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     }
   });
   const background = new Color();
-  const ceilingBounce = new Color("#dce2cb");
   scene.background = background;
+  const updateReflection = createRoomReflection(scene, renderer);
 
   function update(date: Date): void {
     const state = tokyoSunlight(date);
@@ -67,14 +61,17 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     sun.color.copy(state.color);
     sun.intensity = state.intensity;
     sun.shadow.needsUpdate = true;
-    hemisphere.color.copy(state.sky).lerp(ceilingBounce, 1 - state.daylight);
-    hemisphere.groundColor.set("#6e6654");
-    hemisphere.intensity = 0.26 + state.daylight * 0.45;
-    scene.environmentIntensity = 0.08 + state.daylight * 0.2;
+    skylight.color.copy(state.sky);
+    skylight.intensity = state.daylight * 1.4;
     background.copy(state.sky);
     for (const material of skyMaterials) material.color.copy(state.sky);
-    for (const light of ceilingLights) light.intensity = 80 - state.daylight * 45;
-    for (const material of tubeMaterials) material.emissiveIntensity = 2.5 - state.daylight;
+    const lampRadiance = 80 - state.daylight * 45;
+    for (const light of ceilingLights) light.intensity = lampRadiance;
+    for (const material of tubeMaterials) {
+      material.emissive.set("#f4fff2");
+      material.emissiveIntensity = lampRadiance;
+    }
+    updateReflection(date);
   }
 
   update(new Date());
