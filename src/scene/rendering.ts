@@ -4,6 +4,7 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { AntialiasPass } from "./antialias";
 import { VolumetricPass } from "./volumetrics";
 
 export function createRendering(
@@ -34,5 +35,6 @@ export function createRendering(
     new VolumetricPass(camera, sun, ambientOcclusion.depthTexture, compact ? 48 : 96),
   );
   composer.addPass(new OutputPass());
+  if (compact) composer.addPass(new AntialiasPass());
   return composer;
 }
