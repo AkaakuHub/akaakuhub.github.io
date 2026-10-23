@@ -12,15 +12,18 @@ interface PaperPrint {
   lines: readonly string[];
   ink: string;
   stock: string;
+  link: { label: string; href: string };
 }
 
-function printedPaper(print: PaperPrint, landscape: boolean): CanvasTexture {
+function printedPaper(print: PaperPrint): CanvasTexture {
   const canvas = document.createElement("canvas");
-  canvas.width = landscape ? 960 : 640;
-  canvas.height = landscape ? 640 : 880;
+  canvas.width = 960;
+  canvas.height = 1344;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("掲示用紙を描画できませんでした。");
-  const { width, height } = canvas;
+  context.scale(1.5, 1.5);
+  const width = 640;
+  const height = 896;
   context.fillStyle = print.stock;
   context.fillRect(0, 0, width, height);
   let randomState = 71357;
@@ -39,10 +42,10 @@ function printedPaper(print: PaperPrint, landscape: boolean): CanvasTexture {
     context.stroke();
   }
   const margin = 60;
-  const headingY = landscape ? 195 : 245;
+  const headingY = 220;
   context.fillStyle = print.ink;
   context.fillRect(margin, 78, 17, 17);
-  context.font = landscape ? "600 61px sans-serif" : "600 58px sans-serif";
+  context.font = "600 56px sans-serif";
   context.fillText(print.title, margin, headingY);
   context.strokeStyle = print.ink;
   context.lineWidth = 1.2;
@@ -50,15 +53,19 @@ function printedPaper(print: PaperPrint, landscape: boolean): CanvasTexture {
   context.moveTo(margin, headingY + 42);
   context.lineTo(width - margin, headingY + 42);
   context.stroke();
-  context.font = landscape ? "35px sans-serif" : "32px sans-serif";
-  context.fillStyle = "#444e47";
-  const firstLine = headingY + (landscape ? 128 : 168);
-  const secondLine = height - 104;
+  context.fillStyle = "#111b15";
+  const firstLine = headingY + 155;
   for (const [index, line] of print.lines.entries()) {
-    context.font =
-      index === 0 ? `${landscape ? 35 : 32}px sans-serif` : `${landscape ? 29 : 25}px monospace`;
-    context.fillText(line, margin, index === 0 ? firstLine : secondLine);
+    context.font = index === 0 ? "32px sans-serif" : "25px monospace";
+    context.fillText(line, margin, firstLine + index * 65);
   }
+  context.fillStyle = print.ink;
+  context.font = "600 29px sans-serif";
+  context.fillText(`${print.link.label} →`, margin, height - 142);
+  context.fillRect(margin, height - 128, width - margin * 2, 1);
+  context.fillStyle = "#28382f";
+  context.font = "20px monospace";
+  context.fillText(print.link.href.replace("https://", ""), margin, height - 86);
   const fold = context.createLinearGradient(width - 45, height - 80, width, height);
   fold.addColorStop(0, "rgba(102,91,66,0)");
   fold.addColorStop(1, "rgba(102,91,66,0.06)");
@@ -84,7 +91,7 @@ export function createPaper(width: number, height: number, print: PaperPrint): M
   const paper = new Mesh(
     geometry,
     new MeshStandardMaterial({
-      map: printedPaper(print, width > height),
+      map: printedPaper(print),
       roughness: 0.96,
       side: DoubleSide,
     }),

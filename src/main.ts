@@ -26,10 +26,21 @@ const board = createBoard();
 scene.add(createRoom(), createFurniture(), board.group);
 const lighting = illuminate(scene, renderer);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
-const view = createView(camera, (index) => {
-  ui.setDirection(index);
-  invalidate();
-});
+const noticeList = [...board.notices.values()];
+const inspections = [...board.notices].map(([object, notice]) => ({
+  object,
+  width: notice.size[0],
+  height: notice.size[1],
+}));
+const view = createView(
+  camera,
+  inspections,
+  (state) => {
+    ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
+    ui.setMoving(true);
+  },
+  invalidate,
+);
 let frame = 0;
 let previous = performance.now();
 let lastRendered = 0;
@@ -37,7 +48,10 @@ let ready = false;
 const compact = window.matchMedia("(pointer: coarse)");
 
 bindRoomControls(root, ui, view, camera, scene, board.notices);
-observeViewport(ui.canvas, camera, renderer, rendering, invalidate);
+observeViewport(ui.canvas, camera, renderer, rendering, () => {
+  view.resize();
+  invalidate();
+});
 
 function updateTime() {
   if (document.hidden) return;
@@ -63,6 +77,7 @@ function render(time: number) {
     return;
   }
   const moving = view.update(Math.min((time - previous) / 1000, 0.05));
+  ui.setMoving(moving);
   previous = time;
   lastRendered = time;
   rendering.render();

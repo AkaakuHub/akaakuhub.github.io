@@ -1,4 +1,3 @@
-import { MathUtils } from "three";
 import type { PerspectiveCamera, WebGLRenderer } from "three";
 import type { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 
@@ -7,7 +6,7 @@ export function observeViewport(
   camera: PerspectiveCamera,
   renderer: WebGLRenderer,
   composer: EffectComposer,
-  invalidate: () => void,
+  onResize: () => void,
 ): void {
   const container = canvas.parentElement;
   if (!container) throw new Error("部屋の表示領域が見つかりません。");
@@ -32,15 +31,10 @@ export function observeViewport(
     previousHeight = height;
     previousRatio = pixelRatio;
     camera.aspect = width / height;
-    const fittingFov = MathUtils.radToDeg(
-      2 * Math.atan(Math.tan(MathUtils.degToRad(34)) / camera.aspect),
-    );
-    camera.fov = MathUtils.clamp(fittingFov, 62, 82);
-    camera.updateProjectionMatrix();
     renderer.setDrawingBufferSize(width, height, pixelRatio);
     composer.setPixelRatio(pixelRatio);
     composer.setSize(width, height);
-    invalidate();
+    onResize();
   };
   function scheduleResize() {
     if (!pending) pending = requestAnimationFrame(resize);

@@ -32,7 +32,7 @@ export function createBoard(): { group: Group; notices: Map<Object3D, Notice> } 
       sheet.add(magnet);
     }
     group.add(sheet);
-    notices.set(paper, { title: notice.title, body: notice.body, link: notice.link });
+    notices.set(paper, { title: notice.title, size: notice.size, link: notice.link });
   }
   return { group, notices };
 }
