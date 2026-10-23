@@ -1,6 +1,6 @@
 import { CylinderGeometry, Mesh, Vector3 } from "three";
 import type { Material, Object3D } from "three";
-import { metricBoxUv } from "../materials/uv";
+import { metricBoxUv, metricCylinderUv } from "../materials/uv";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 export function roundBox(
@@ -28,23 +28,7 @@ export function cylinder(
   topRadius = radius,
 ): Mesh {
   const geometry = new CylinderGeometry(topRadius, radius, height, 24);
-  const uv = geometry.getAttribute("uv");
-  const positions = geometry.getAttribute("position");
-  const originalUv = uv.clone();
-  for (const group of geometry.groups) {
-    for (let offset = group.start; offset < group.start + group.count; offset++) {
-      const index = geometry.index!.getX(offset);
-      if (group.materialIndex === 0) {
-        uv.setXY(
-          index,
-          originalUv.getX(index) * Math.PI * 2 * Math.max(radius, topRadius),
-          positions.getY(index),
-        );
-      } else {
-        uv.setXY(index, positions.getX(index), positions.getZ(index));
-      }
-    }
-  }
+  metricCylinderUv(geometry);
   const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
   mesh.castShadow = mesh.receiveShadow = true;

@@ -1,6 +1,4 @@
 {
-  "provider": "Poly Haven",
-  "providerUrl": "https://polyhaven.com",
   "assets": [
     {
       "id": "herringbone_parquet",
@@ -29,7 +27,8 @@
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_arm_1k.jpg",
           "md5": "0c5a18f599282509ae37e2f0bcc4e492"
         }
-      }
+      },
+      "provider": "Poly Haven"
     },
     {
       "id": "painted_plaster_wall",
@@ -57,7 +56,8 @@
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_arm_1k.jpg",
           "md5": "a4c1ff7470669daec9e274d915471246"
         }
-      }
+      },
+      "provider": "Poly Haven"
     },
     {
       "id": "ash_veneer",
@@ -85,7 +85,8 @@
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_arm_1k.jpg",
           "md5": "ee110cc4704b23e84f8f7d75a954d5ff"
         }
-      }
+      },
+      "provider": "Poly Haven"
     },
     {
       "id": "walnut_veneer",
@@ -113,7 +114,8 @@
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_arm_1k.jpg",
           "md5": "7db3474a1d0d1ed15e0cc349541ac1e3"
         }
-      }
+      },
+      "provider": "Poly Haven"
     },
     {
       "id": "terlenka",
@@ -142,33 +144,198 @@
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_arm_1k.jpg",
           "md5": "94613807db9da499643913b0d40eb16c"
         }
+      },
+      "provider": "Poly Haven"
+    },
+    {
+      "id": "Metal050B",
+      "name": "Metal050B",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/Metal050B",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRProcedural",
+      "appliedSizeMeters": [0.25, 0.25],
+      "scaleNote": "配布元に実寸指定がないため、アルミの細かな擦り傷を表す大きさとして設定。",
+      "maps": {
+        "color": {
+          "file": "Metal050B/color.jpg",
+          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
+          "archiveMember": "Metal050B_1K-JPG_Color.jpg",
+          "sha256": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d"
+        },
+        "normal": {
+          "file": "Metal050B/normal.jpg",
+          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
+          "archiveMember": "Metal050B_1K-JPG_NormalGL.jpg",
+          "sha256": "4ca515f9c254ae4012592bb8335ee304d66e0b7df4837a19d70d061960241ba5"
+        },
+        "roughness": {
+          "file": "Metal050B/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
+          "archiveMember": "Metal050B_1K-JPG_Roughness.jpg",
+          "sha256": "99145f1f9c1a36fe2a2de7a3c6688962a8c103df2fd0694f840158a80730bfff"
+        },
+        "metalness": {
+          "file": "Metal050B/metalness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
+          "archiveMember": "Metal050B_1K-JPG_Metalness.jpg",
+          "sha256": "be3f57a50cf2cf7f43a603b0f1c7a03b8e71d5a65bd6d67cb7e3c95d06dac290"
+        }
       }
     },
     {
-      "id": "blue_metal_plate",
-      "name": "Blue Metal Plate",
+      "id": "Metal049B",
+      "name": "Metal049B",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/Metal049B",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRProcedural",
+      "appliedSizeMeters": [0.25, 0.25],
+      "scaleNote": "配布元に実寸指定がないため、鋼の研磨跡と汚れを表す大きさとして設定。",
+      "maps": {
+        "color": {
+          "file": "Metal049B/color.jpg",
+          "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
+          "archiveMember": "Metal049B_1K-JPG_Color.jpg",
+          "sha256": "93a2dceba159ae4509d8563e232ca00a470774fe57bd0c664abcd888824ea14a"
+        },
+        "normal": {
+          "file": "Metal049B/normal.jpg",
+          "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
+          "archiveMember": "Metal049B_1K-JPG_NormalGL.jpg",
+          "sha256": "17741f9c8ceaba73ebdb8943df889945f7e2df80de10f85dc352a06256753bfb"
+        },
+        "roughness": {
+          "file": "Metal049B/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
+          "archiveMember": "Metal049B_1K-JPG_Roughness.jpg",
+          "sha256": "0ab93f5def97f1b1fce5b7aeda5c85b539e0068edc5c0d97ac689e8e36883c54"
+        },
+        "metalness": {
+          "file": "Metal049B/metalness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
+          "archiveMember": "Metal049B_1K-JPG_Metalness.jpg",
+          "sha256": "d075a1a722d2dd1e9fb1d0bec1d82de1d107f31a1612e857609e832003f17930"
+        }
+      }
+    },
+    {
+      "id": "Metal048B",
+      "name": "Metal048B",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/Metal048B",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRProcedural",
+      "appliedSizeMeters": [0.2, 0.2],
+      "scaleNote": "配布元に実寸指定がないため、真鍮の擦り傷と指跡を表す大きさとして設定。",
+      "maps": {
+        "color": {
+          "file": "Metal048B/color.jpg",
+          "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
+          "archiveMember": "Metal048B_1K-JPG_Color.jpg",
+          "sha256": "0614a52181c7cb1f1fa4e75cf3a1914091b9736d96ee6a193e6867ad09a8d034"
+        },
+        "normal": {
+          "file": "Metal048B/normal.jpg",
+          "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
+          "archiveMember": "Metal048B_1K-JPG_NormalGL.jpg",
+          "sha256": "697f5f87f7c87eb732e1cbe65630f166fa6f4e4a91eda944b5fce4257ec4e15a"
+        },
+        "roughness": {
+          "file": "Metal048B/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
+          "archiveMember": "Metal048B_1K-JPG_Roughness.jpg",
+          "sha256": "288e01b1a8caab31b895b7616b4ee007b0efec8f3773b3fb9c37c06f6482cbc4"
+        },
+        "metalness": {
+          "file": "Metal048B/metalness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
+          "archiveMember": "Metal048B_1K-JPG_Metalness.jpg",
+          "sha256": "33220998ae3792f801251f52e9eec82e02b0dcd209843eec456c6b55fb66d706"
+        }
+      }
+    },
+    {
+      "id": "Metal027",
+      "name": "Metal027",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/Metal027",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRProcedural",
+      "appliedSizeMeters": [0.1, 0.1],
+      "scaleNote": "配布元に実寸指定がないため、粉体塗装の細かな凹凸を表す大きさとして設定。",
+      "maps": {
+        "color": {
+          "file": "Metal027/color.jpg",
+          "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
+          "archiveMember": "Metal027_1K-JPG_Color.jpg",
+          "sha256": "8e2e69e767b2692da211723ccb7def5f27b9c7712c6952bc45c526e2a5183ae0"
+        },
+        "normal": {
+          "file": "Metal027/normal.jpg",
+          "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
+          "archiveMember": "Metal027_1K-JPG_NormalGL.jpg",
+          "sha256": "afbf8ca3df45111ac5543174582b6b98cb1bf154f7c7ee8f198720042b92d7c8"
+        },
+        "roughness": {
+          "file": "Metal027/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
+          "archiveMember": "Metal027_1K-JPG_Roughness.jpg",
+          "sha256": "8f01484981a8bf83199d4f4cb435a344294cd80cb4ee623cf8567a7726fb289e"
+        },
+        "metalness": {
+          "file": "Metal027/metalness.jpg",
+          "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
+          "archiveMember": "Metal027_1K-JPG_Metalness.jpg",
+          "sha256": "843102638fa0a5bf897888868877efab8ccdc4cb84a48e57bdb52bfb30f5e714"
+        }
+      }
+    },
+    {
+      "id": "green_metal_rust",
+      "name": "Green Metal Rust",
+      "provider": "Poly Haven",
       "authors": {
         "Rob Tuytel": "All"
       },
-      "source": "https://polyhaven.com/a/blue_metal_plate",
+      "source": "https://polyhaven.com/a/green_metal_rust",
       "license": "CC0-1.0",
       "licenseUrl": "https://polyhaven.com/license",
-      "sizeMeters": [2.5, 2.5],
+      "sizeMeters": [1.0, 1.0],
       "maps": {
         "color": {
-          "file": "blue_metal_plate/color.jpg",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_diff_1k.jpg",
-          "md5": "a906d0e554596fb76c6969f2f644c5e6"
+          "file": "green_metal_rust/color.jpg",
+          "size": 212088,
+          "md5": "f69d8c507961f0629019652162090917",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_diff_1k.jpg"
         },
         "normal": {
-          "file": "blue_metal_plate/normal.jpg",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_nor_gl_1k.jpg",
-          "md5": "f14c0f01832f8b18c39f07e4b5d6f749"
+          "file": "green_metal_rust/normal.jpg",
+          "size": 121379,
+          "md5": "a6cefc436aa41f73f15347dcf7a791d0",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_nor_gl_1k.jpg"
         },
         "arm": {
-          "file": "blue_metal_plate/arm.jpg",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_arm_1k.jpg",
-          "md5": "7314bc335cd9bcc8a18841ad15e10985"
+          "file": "green_metal_rust/arm.jpg",
+          "size": 108674,
+          "md5": "f7474f11a76b3747265873c325ecbb88",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_arm_1k.jpg"
         }
       }
     }

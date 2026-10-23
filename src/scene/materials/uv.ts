@@ -1,4 +1,4 @@
-import type { BufferGeometry } from "three";
+import type { BufferGeometry, CylinderGeometry } from "three";
 
 export function metricBoxUv(geometry: BufferGeometry): void {
   const positions = geometry.getAttribute("position");
@@ -30,6 +30,29 @@ export function metricBoxUv(geometry: BufferGeometry): void {
           break;
         default:
           throw new Error("直方体の面を特定できませんでした。");
+      }
+    }
+  }
+}
+
+export function metricCylinderUv(geometry: CylinderGeometry): void {
+  const uv = geometry.getAttribute("uv");
+  const positions = geometry.getAttribute("position");
+  const originalUv = uv.clone();
+  for (const group of geometry.groups) {
+    for (let offset = group.start; offset < group.start + group.count; offset++) {
+      const index = geometry.index!.getX(offset);
+      if (group.materialIndex === 0) {
+        uv.setXY(
+          index,
+          originalUv.getX(index) *
+            Math.PI *
+            2 *
+            Math.max(geometry.parameters.radiusBottom, geometry.parameters.radiusTop),
+          positions.getY(index),
+        );
+      } else {
+        uv.setXY(index, positions.getX(index), positions.getZ(index));
       }
     }
   }
