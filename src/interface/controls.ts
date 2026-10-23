@@ -13,6 +13,7 @@ export function bindRoomControls(
   notices: Map<Object3D, Notice>,
 ): void {
   const entries = [...notices];
+  const papers = entries.map(([object]) => object);
   const raycaster = new Raycaster();
   const pointer = new Vector2();
   root.querySelectorAll<HTMLButtonElement>(".direction").forEach((button) => {
@@ -62,6 +63,7 @@ export function bindRoomControls(
     );
     camera.updateMatrixWorld();
     raycaster.setFromCamera(pointer, camera);
+    if (raycaster.intersectObjects(papers, false).length === 0) return undefined;
     const hit = raycaster
       .intersectObjects(scene.children, true)
       .find(({ object }) => object instanceof Mesh);
