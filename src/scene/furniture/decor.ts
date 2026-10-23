@@ -1,4 +1,5 @@
-import { CircleGeometry, Group, LatheGeometry, Mesh, Vector2 } from "three";
+import { latheGeometry } from "../geometry/curves";
+import { CircleGeometry, Group, Mesh, Vector2 } from "three";
 import { Reflector } from "three/addons/objects/Reflector.js";
 import { box } from "../primitives";
 import { standingBook } from "./bindings";
@@ -11,8 +12,8 @@ function books(parent: Group, x: number, y: number, materials: FurnitureMaterial
     materials.navy,
     materials.rust,
     materials.mustard,
-    materials.deepGreen,
-    materials.ivory,
+    materials.bookGreen,
+    materials.bookCream,
   ];
   for (let index = 0; index < 7; index++) {
     const color = colors[index % colors.length];
@@ -68,10 +69,10 @@ function vase(materials: FurnitureMaterials): Group {
     [0.057, 0.009],
     [0, 0.009],
   ].map(([x, y]) => new Vector2(x, y));
-  const vessel = new Mesh(new LatheGeometry(profile, 48), materials.terracotta);
+  const vessel = new Mesh(latheGeometry(profile, 48), materials.terracotta);
   vessel.name = "vase-inner-and-outer-wall";
   vessel.castShadow = vessel.receiveShadow = true;
-  group.add(vessel, vaseFoliage(materials.foliage));
+  group.add(vessel, vaseFoliage(materials.foliage, materials.stem));
   return group;
 }
 

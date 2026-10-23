@@ -1,3 +1,4 @@
+import { tubeGeometry } from "../geometry/curves";
 import {
   CatmullRomCurve3,
   ExtrudeGeometry,
@@ -6,7 +7,6 @@ import {
   Path,
   Shape,
   TorusGeometry,
-  TubeGeometry,
   Vector2,
   Vector3,
 } from "three";
@@ -70,7 +70,7 @@ export function guitarBody(materials: FurnitureMaterials): Group {
       true,
       "centripetal",
     );
-    const binding = new Mesh(new TubeGeometry(edge, 160, 0.0015, 6, true), materials.ivory);
+    const binding = new Mesh(tubeGeometry(edge, 160, 0.0015, 6, true), materials.ivory);
     binding.castShadow = binding.receiveShadow = true;
     body.add(binding);
   }

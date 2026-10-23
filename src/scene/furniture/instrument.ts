@@ -1,12 +1,5 @@
-import {
-  CatmullRomCurve3,
-  ExtrudeGeometry,
-  Group,
-  Mesh,
-  Shape,
-  TubeGeometry,
-  Vector3,
-} from "three";
+import { tubeGeometry } from "../geometry/curves";
+import { CatmullRomCurve3, ExtrudeGeometry, Group, Mesh, Shape, Vector3 } from "three";
 import { box } from "../primitives";
 import { cylinder, rod, roundBox } from "./geometry";
 import { guitarBody } from "./instrument-body";
@@ -17,11 +10,11 @@ function guitar(materials: FurnitureMaterials): Group {
   instrument.name = "acoustic-guitar";
   instrument.add(guitarBody(materials));
   roundBox(instrument, [0.11, 0.027, 0.012], [0, 0.177, -0.01], materials.walnut, 0.004);
-  box(instrument, [0.08, 0.006, 0.006], [0, 0.183, -0.019], materials.ivory);
+  box(instrument, [0.08, 0.006, 0.006], [0, 0.183, -0.019], materials.plasticIvory);
   roundBox(instrument, [0.054, 0.51, 0.042], [0, 0.775, 0.012], materials.walnut, 0.006);
-  box(instrument, [0.05, 0.51, 0.008], [0, 0.775, -0.014], materials.graphite);
+  box(instrument, [0.05, 0.51, 0.008], [0, 0.775, -0.014], materials.fingerboard);
   roundBox(instrument, [0.077, 0.16, 0.025], [0, 1.091, 0], materials.walnut, 0.012);
-  box(instrument, [0.05, 0.008, 0.012], [0, 1.026, -0.017], materials.ivory);
+  box(instrument, [0.05, 0.008, 0.012], [0, 1.026, -0.017], materials.plasticIvory);
   for (let fret = 0; fret < 17; fret++) {
     const y = 1.022 - 0.475 * (1 - 2 ** (-fret / 12));
     rod(instrument, [-0.026, y, -0.021], [0.026, y, -0.021], 0.0011, materials.metal);
@@ -43,7 +36,7 @@ function guitar(materials: FurnitureMaterials): Group {
         instrument,
         [0.017, 0.022, 0.011],
         [x, 1.05 + tuner * 0.041, 0.008],
-        materials.ivory,
+        materials.plasticIvory,
         0.004,
       );
     }
@@ -71,7 +64,7 @@ function hardCase(materials: FurnitureMaterials): Group {
       bevelThickness: 0.01,
       curveSegments: 20,
     }),
-    materials.graphite,
+    materials.leather,
   );
   shell.castShadow = shell.receiveShadow = true;
   caseGroup.add(shell);
@@ -82,7 +75,7 @@ function hardCase(materials: FurnitureMaterials): Group {
     true,
     "centripetal",
   );
-  const piping = new Mesh(new TubeGeometry(seam, 160, 0.0035, 6, true), materials.rubber);
+  const piping = new Mesh(tubeGeometry(seam, 160, 0.0035, 6, true), materials.rubber);
   piping.castShadow = true;
   caseGroup.add(piping);
   const gripCurve = new CatmullRomCurve3([
@@ -92,7 +85,7 @@ function hardCase(materials: FurnitureMaterials): Group {
     new Vector3(0.285, 0.45, 0.06),
     new Vector3(0.24, 0.46, 0.06),
   ]);
-  const grip = new Mesh(new TubeGeometry(gripCurve, 24, 0.009, 8, false), materials.graphite);
+  const grip = new Mesh(tubeGeometry(gripCurve, 24, 0.009, 8, false), materials.leather);
   grip.castShadow = grip.receiveShadow = true;
   caseGroup.add(grip);
   for (const height of [0.15, 0.54, 0.88])

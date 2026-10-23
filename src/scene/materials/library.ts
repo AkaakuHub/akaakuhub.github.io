@@ -13,8 +13,9 @@ export interface PbrMaps {
   map: Texture<ImageBitmap>;
   normalMap: Texture<ImageBitmap>;
   roughnessMap: Texture<ImageBitmap>;
-  metalnessMap: Texture<ImageBitmap>;
+  metalnessMap: Texture<ImageBitmap> | null;
   aoMap: Texture<ImageBitmap> | null;
+  alphaMap: Texture<ImageBitmap> | null;
 }
 
 export interface MaterialLibrary {
@@ -28,6 +29,10 @@ export interface MaterialLibrary {
   brass: PbrMaps;
   powder: PbrMaps;
   paintGreen: PbrMaps;
+  paper: PbrMaps;
+  plastic: PbrMaps;
+  leather: PbrMaps;
+  leaves: PbrMaps;
 }
 
 export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLibrary> {
@@ -36,7 +41,7 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     id: string,
     meters: number,
     resolution: number,
-    packed: boolean,
+    format: "arm" | "metal" | "dielectric" | "leaf",
   ): Promise<PbrMaps> {
     const textures = new Map<string, Promise<Texture<ImageBitmap>>>();
     async function loadMap(file: string, color: boolean, size: number) {
@@ -45,7 +50,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
         premultiplyAlpha: "none",
         colorSpaceConversion: "none",
         resizeWidth: size,
-        resizeHeight: size,
         resizeQuality: "high",
       });
       const bitmap = await loader.loadAsync(
@@ -70,27 +74,66 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
       }
       return pending;
     }
-    const [map, normalMap, roughnessMap, metalnessMap, aoMap] = await Promise.all([
+    const packed = format === "arm";
+    const [map, normalMap, roughnessMap, metalnessMap, aoMap, alphaMap] = await Promise.all([
       texture("color", true, resolution),
       texture("normal", false, resolution),
       texture(packed ? "arm" : "roughness", false, 512),
-      texture(packed ? "arm" : "metalness", false, 512),
+      packed
+        ? texture("arm", false, 512)
+        : format === "metal"
+          ? texture("metalness", false, 512)
+          : Promise.resolve(null),
       packed ? texture("arm", false, 512) : Promise.resolve(null),
+      format === "leaf" ? texture("opacity", false, resolution) : Promise.resolve(null),
     ]);
-    return { map, normalMap, roughnessMap, metalnessMap, aoMap };
+    return { map, normalMap, roughnessMap, metalnessMap, aoMap, alphaMap };
   }
-  const [floor, plaster, ash, walnut, fabric, aluminum, steel, brass, powder, paintGreen] =
-    await Promise.all([
-      loadSet("herringbone_parquet", 3.4, 1024, true),
-      loadSet("painted_plaster_wall", 2, 512, true),
-      loadSet("ash_veneer", 1, 1024, true),
-      loadSet("walnut_veneer", 1.8, 1024, true),
-      loadSet("terlenka", 0.266, 512, true),
-      loadSet("Metal050B", 0.25, 1024, false),
-      loadSet("Metal049B", 0.25, 1024, false),
-      loadSet("Metal048B", 0.2, 512, false),
-      loadSet("Metal027", 0.1, 512, false),
-      loadSet("green_metal_rust", 1, 1024, true),
-    ]);
-  return { floor, plaster, ash, walnut, fabric, aluminum, steel, brass, powder, paintGreen };
+  const [
+    floor,
+    plaster,
+    ash,
+    walnut,
+    fabric,
+    aluminum,
+    steel,
+    brass,
+    powder,
+    paintGreen,
+    paper,
+    plastic,
+    leather,
+    leaves,
+  ] = await Promise.all([
+    loadSet("herringbone_parquet", 3.4, 1024, "arm"),
+    loadSet("painted_plaster_wall", 2, 512, "arm"),
+    loadSet("ash_veneer", 1, 1024, "arm"),
+    loadSet("walnut_veneer", 1.8, 1024, "arm"),
+    loadSet("terlenka", 0.266, 512, "arm"),
+    loadSet("Metal050B", 0.25, 1024, "metal"),
+    loadSet("Metal049B", 0.25, 1024, "metal"),
+    loadSet("Metal048B", 0.2, 512, "metal"),
+    loadSet("Metal027", 0.1, 512, "metal"),
+    loadSet("green_metal_rust", 1, 1024, "arm"),
+    loadSet("Paper001", 0.3, 512, "dielectric"),
+    loadSet("Plastic010", 0.2, 512, "dielectric"),
+    loadSet("brown_leather", 0.4, 1024, "arm"),
+    loadSet("LeafSet024", 1, 1024, "leaf"),
+  ]);
+  return {
+    floor,
+    plaster,
+    ash,
+    walnut,
+    fabric,
+    aluminum,
+    steel,
+    brass,
+    powder,
+    paintGreen,
+    paper,
+    plastic,
+    leather,
+    leaves,
+  };
 }

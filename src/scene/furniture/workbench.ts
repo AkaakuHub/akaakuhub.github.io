@@ -1,13 +1,5 @@
-import {
-  CatmullRomCurve3,
-  Group,
-  LatheGeometry,
-  Mesh,
-  SphereGeometry,
-  TubeGeometry,
-  Vector2,
-  Vector3,
-} from "three";
+import { latheGeometry, tubeGeometry } from "../geometry/curves";
+import { CatmullRomCurve3, Group, Mesh, SphereGeometry, Vector2, Vector3 } from "three";
 import { box } from "../primitives";
 import { cylinder, rod, roundBox } from "./geometry";
 import { createWorktopObjects } from "./worktop";
@@ -53,7 +45,7 @@ function createDeskLamp(materials: FurnitureMaterials, surfaceY: number): Group 
     new Vector3(0.06, 0.34, 0),
     new Vector3(0.18, 0.31, 0),
   ]);
-  const arm = new Mesh(new TubeGeometry(curve, 24, 0.008, 8, false), materials.metal);
+  const arm = new Mesh(tubeGeometry(curve, 24, 0.008, 8, false), materials.metal);
   arm.castShadow = true;
   lamp.add(arm);
   const shade = new Group();
@@ -70,13 +62,13 @@ function createDeskLamp(materials: FurnitureMaterials, surfaceY: number): Group 
     new Vector2(0.071, -0.034),
     new Vector2(0.075, -0.0375),
   ];
-  const shell = new Mesh(new LatheGeometry(outerProfile, 48), materials.enamel);
-  const reflector = new Mesh(new LatheGeometry(innerProfile, 48), materials.ivory);
+  const shell = new Mesh(latheGeometry(outerProfile, 48), materials.enamel);
+  const reflector = new Mesh(latheGeometry(innerProfile, 48), materials.ivory);
   shell.castShadow = shell.receiveShadow = true;
   reflector.castShadow = reflector.receiveShadow = true;
   shade.add(shell, reflector);
   cylinder(shade, 0.013, 0.022, [0, 0.024, 0], materials.graphite);
-  const bulb = new Mesh(new SphereGeometry(0.015, 20, 12), materials.ivory);
+  const bulb = new Mesh(new SphereGeometry(0.015, 20, 12), materials.porcelain);
   bulb.position.y = 0.003;
   bulb.scale.y = 1.3;
   shade.add(bulb);

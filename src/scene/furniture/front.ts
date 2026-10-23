@@ -1,4 +1,5 @@
-import { CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
+import { tubeGeometry } from "../geometry/curves";
+import { CatmullRomCurve3, Group, Mesh, Vector3 } from "three";
 import { box } from "../primitives";
 import { closedNotebook, standingBook } from "./bindings";
 import { ceramicMug } from "./ceramic";
@@ -20,7 +21,7 @@ function readingCart(materials: FurnitureMaterials): Group {
     roundBox(cart, [0.62, 0.025, 0.4], [0, y, 0], materials.enamel, 0.007);
     box(cart, [0.62, 0.045, 0.015], [0, y + 0.025, -0.2], materials.enamel);
   }
-  const covers = [materials.navy, materials.rust, materials.mustard, materials.ivory];
+  const covers = [materials.navy, materials.rust, materials.mustard, materials.bookCream];
   for (let index = 0; index < 7; index++) {
     const cover = covers[index % covers.length];
     if (!cover) throw new Error("本の材質が見つかりません。");
@@ -42,10 +43,10 @@ function readingCart(materials: FurnitureMaterials): Group {
     );
     stack.rotation.y = (index - 1) * 0.04;
   }
-  const cup = ceramicMug(materials.ivory, 0.075, 0.043);
+  const cup = ceramicMug(materials.porcelain, 0.075, 0.043);
   cup.position.set(-0.12, 0.9205, 0.02);
   cart.add(cup);
-  cylinder(cart, 0.062, 0.008, [-0.12, 0.9165, 0.02], materials.ivory);
+  cylinder(cart, 0.062, 0.008, [-0.12, 0.9165, 0.02], materials.porcelain);
   const notebook = closedNotebook(0.2, 0.025, 0.27, materials.rust, materials);
   notebook.position.set(0.14, 0.9125, 0.015);
   notebook.rotation.y = -0.1;
@@ -70,7 +71,7 @@ function coatStand(materials: FurnitureMaterials): Group {
       point(0.2, 1.87),
       point(0.205, 1.82),
     ]);
-    const hook = new Mesh(new TubeGeometry(curve, 20, 0.009, 8, false), materials.deepGreen);
+    const hook = new Mesh(tubeGeometry(curve, 20, 0.009, 8, false), materials.deepGreen);
     hook.castShadow = hook.receiveShadow = true;
     stand.add(hook);
     cylinder(
