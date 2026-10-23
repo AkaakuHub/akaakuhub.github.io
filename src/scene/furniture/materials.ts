@@ -1,6 +1,6 @@
 import { MeshPhysicalMaterial, Vector2 } from "three";
 import type { MaterialLibrary } from "../materials/library";
-import { scannedSurface } from "../materials/surface";
+import { physicalSurface, scannedSurface } from "../materials/surface";
 import type { MetalMaterials } from "../materials/metal";
 import { createPropMaterials } from "./materials/props";
 
@@ -8,7 +8,12 @@ export function createFurnitureMaterials(maps: MaterialLibrary, metals: MetalMat
   return {
     ash: scannedSurface(maps.ash),
     walnut: scannedSurface(maps.walnut),
-    amber: scannedSurface(maps.ash, { color: "#d7b07a", roughness: 0.65 }),
+    amber: physicalSurface(maps.ash, {
+      color: "#d7b07a",
+      roughness: 0.75,
+      clearcoat: 0.7,
+      clearcoatRoughness: 0.22,
+    }),
     ivory: metals.ivory,
     enamel: metals.enamel,
     deepGreen: metals.deepGreen,

@@ -1,4 +1,4 @@
-import { tubeGeometry } from "../geometry/curves";
+import { tubeGeometry } from "../../geometry/curves";
 import {
   CatmullRomCurve3,
   ExtrudeGeometry,
@@ -11,7 +11,7 @@ import {
   Vector3,
 } from "three";
 import type { Material } from "three";
-import type { FurnitureMaterials } from "./materials";
+import type { FurnitureMaterials } from "../materials";
 
 function bodyOutline(): Shape {
   const shape = new Shape();
@@ -52,6 +52,9 @@ export function guitarBody(materials: FurnitureMaterials): Group {
   soundboard.holes.push(soundhole);
   const top = panel(soundboard, 0.004, -0.004, materials.amber);
   top.name = "guitar-soundboard-with-open-soundhole";
+  const woodUv = top.geometry.getAttribute("uv");
+  for (let index = 0; index < woodUv.count; index++)
+    woodUv.setXY(index, woodUv.getY(index), -woodUv.getX(index));
   const rim = bodyOutline();
   const innerOutline = bodyOutline()
     .getPoints(48)
