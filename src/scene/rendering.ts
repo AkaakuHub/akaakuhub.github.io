@@ -15,7 +15,6 @@ export function createRendering(
 ) {
   const compact = window.matchMedia("(pointer: coarse)").matches;
   renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.95;
   const target = new WebGLRenderTarget(1, 1, {
     type: HalfFloatType,
     samples: compact ? 0 : Math.min(2, renderer.capabilities.maxSamples),
