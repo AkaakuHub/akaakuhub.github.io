@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600&display=swap");
+@import "./interface/navigation.css";
+@import "./interface/notice.css";
 
 :root {
   font-family: "DM Sans", "Noto Sans JP", sans-serif;
@@ -6,13 +8,20 @@
   background: #e7e4db;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+  --edge-space: clamp(12px, 3vw, 30px);
+  --bottom-space: max(var(--edge-space), env(safe-area-inset-bottom));
 }
 
 * {
   box-sizing: border-box;
 }
-body {
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
   margin: 0;
+  overflow: hidden;
 }
 button,
 a {
@@ -22,19 +31,19 @@ button {
   font: inherit;
   color: inherit;
   cursor: pointer;
+  touch-action: manipulation;
 }
 button:focus-visible,
 a:focus-visible {
   outline: 2px solid #567565;
-  outline-offset: 5px;
-}
-button:disabled {
-  cursor: default;
+  outline-offset: 3px;
 }
 button svg {
   width: 18px;
   height: 18px;
   stroke-width: 1.5;
+  flex: 0 0 auto;
+  pointer-events: none;
 }
 [hidden] {
   display: none !important;
@@ -42,7 +51,7 @@ button svg {
 .room {
   position: relative;
   width: 100%;
-  height: 100svh;
+  height: 100dvh;
   overflow: hidden;
 }
 .room__canvas {
@@ -53,9 +62,9 @@ button svg {
 }
 .header {
   position: absolute;
-  top: 30px;
-  left: 36px;
-  right: 36px;
+  top: max(var(--edge-space), env(safe-area-inset-top));
+  left: max(var(--edge-space), env(safe-area-inset-left));
+  right: max(var(--edge-space), env(safe-area-inset-right));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -65,9 +74,10 @@ button svg {
   display: flex;
   align-items: center;
   gap: 11px;
+  min-height: 44px;
   color: #293c32;
   text-decoration: none;
-  font-size: 19px;
+  font-size: clamp(17px, 2vw, 19px);
   font-weight: 600;
   letter-spacing: -0.7px;
   pointer-events: auto;
@@ -82,6 +92,7 @@ button svg {
 .icon-button {
   width: 44px;
   height: 44px;
+  flex: 0 0 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -89,87 +100,11 @@ button svg {
   border-radius: 50%;
   background: transparent;
 }
-.icon-button:hover {
-  background: #3544370d;
-}
 .fullscreen {
   background: #f6f4eac9;
   backdrop-filter: blur(16px);
   pointer-events: auto;
   border: 1px solid #ffffff80;
-}
-.navigation {
-  position: absolute;
-  bottom: max(30px, env(safe-area-inset-bottom));
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 7px 9px;
-  background: #f8f6eeeb;
-  border: 1px solid #ffffffb3;
-  border-radius: 50px;
-  box-shadow: 0 5px 30px #252e271c;
-  backdrop-filter: blur(20px);
-}
-.directions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.direction {
-  border: none;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 11px 5px;
-  background: transparent;
-  border-radius: 20px;
-}
-.direction-dot {
-  width: 5px;
-  height: 5px;
-  border: 1px solid #7a837a;
-  border-radius: 50%;
-}
-.direction[aria-pressed="true"] .direction-dot {
-  background: #567565;
-  border-color: #567565;
-}
-.direction-name {
-  display: none;
-}
-.direction[aria-pressed="true"] .direction-name {
-  display: inline;
-  min-width: 100px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-}
-.board-action {
-  position: absolute;
-  bottom: 117px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border: 1px solid #ffffff95;
-  border-radius: 6px;
-  padding: 11px 18px;
-  background: #faf7ecde;
-  font-size: 12px;
-  box-shadow: 0 2px 15px #343a3310;
-  backdrop-filter: blur(12px);
-}
-.board-action:hover {
-  background: #fffdf7;
-}
-.board-action svg {
-  width: 14px;
-  height: 14px;
 }
 .loading {
   position: absolute;
@@ -188,54 +123,6 @@ button svg {
   border-radius: 50%;
   animation: breathe 1s ease-in-out infinite alternate;
 }
-.notice-dialog {
-  width: min(460px, calc(100% - 40px));
-  border: 1px solid #fffaf0;
-  border-radius: 4px;
-  padding: 56px 40px 44px;
-  background: #f7f3e8;
-  color: #394039;
-  box-shadow: 0 30px 100px #121c2340;
-}
-.notice-dialog::backdrop {
-  background: #18251f55;
-  backdrop-filter: blur(5px);
-}
-.close-dialog {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
-.notice-content h1 {
-  font-size: 25px;
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  margin: 0 0 24px;
-}
-.notice-content p {
-  font-size: 14px;
-  line-height: 2.1;
-  margin: 0 0 30px;
-}
-.notice-content a {
-  display: inline-block;
-  font-size: 14px;
-  color: #3c6250;
-  text-underline-offset: 6px;
-}
-.notice-choice {
-  display: block;
-  width: 100%;
-  padding: 20px 0;
-  text-align: left;
-  border: none;
-  border-bottom: 1px solid #d9d4c5;
-  background: none;
-  font-size: 14px;
-}
-.notice-choice:hover {
-  color: #6b856f;
-}
 .sr-only {
   position: absolute;
   width: 1px;
@@ -249,33 +136,13 @@ button svg {
     opacity: 0.2;
   }
 }
-@media (max-width: 600px) {
-  .header {
-    top: 20px;
-    left: 22px;
-    right: 20px;
-  }
-  .wordmark {
-    font-size: 17px;
-  }
-  .navigation {
-    gap: 6px;
-    bottom: max(22px, env(safe-area-inset-bottom));
-  }
-  .directions {
-    gap: 4px;
-  }
-  .direction[aria-pressed="true"] .direction-name {
-    min-width: 94px;
-  }
-  .board-action {
-    bottom: 108px;
+@media (hover: hover) {
+  .icon-button:hover {
+    background: #3544370d;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
+  .loading span {
+    animation: none;
   }
 }
