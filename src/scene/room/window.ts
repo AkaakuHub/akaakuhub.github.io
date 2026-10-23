@@ -1,42 +1,61 @@
 import { Group, MeshBasicMaterial, MeshPhysicalMaterial } from "three";
 import { box, surface } from "../primitives";
+import { createCurtains } from "./curtains";
+import { paintedWood } from "./materials/architecture";
 
 export function createWindow(): Group {
   const window = new Group();
-  const aluminum = surface("#c6c8bf", 0.32, 0.7);
-  const edge = surface("#777e76", 0.6, 0.45);
-  const sky = new MeshBasicMaterial({ color: "#c6dded" });
-  const skyBackdrop = box(window, [0.04, 5.5, 8.5], [-5.5, 2.4, 0], sky);
-  skyBackdrop.castShadow = false;
+  const frame = paintedWood([181, 181, 166]);
+  const gasket = surface("#696e66", 0.84);
+  const sill = paintedWood([128, 112, 87]);
+  const skyBackdrop = box(
+    window,
+    [0.04, 10, 14],
+    [-9, 3, 0],
+    new MeshBasicMaterial({ color: "#c6dded" }),
+  );
   skyBackdrop.name = "world-sky";
-  const exterior = surface("#c9c8b8", 0.95);
-  const outside = box(window, [0.9, 1.4, 6], [-5.2, 0.5, -0.7], exterior);
-  outside.castShadow = false;
-  for (let z = -3.2; z < 2; z += 0.8) {
-    box(window, [0.04, 0.65, 0.48], [-4.72, 0.65, z], surface("#788d91", 0.3)).castShadow = false;
+  skyBackdrop.castShadow = false;
+  skyBackdrop.receiveShadow = false;
+  const masonry = paintedWood([179, 179, 165]);
+  const exterior = box(window, [0.55, 1.25, 7.4], [-7.6, 0.15, 0.3], masonry);
+  exterior.castShadow = false;
+  for (let z = -2.9; z < 3.3; z += 0.75) {
+    const pane = box(window, [0.03, 0.56, 0.44], [-7.3, 0.32, z], surface("#637d82", 0.33));
+    pane.castShadow = false;
   }
   const glass = new MeshPhysicalMaterial({
-    color: "#d2e3e4",
-    roughness: 0.05,
+    color: "#e8f0eb",
+    roughness: 0.04,
     metalness: 0,
     transparent: true,
-    opacity: 0.13,
+    opacity: 0.08,
     depthWrite: false,
-    side: 2,
   });
-  const pane = box(window, [0.012, 1.5, 3.75], [-2.635, 1.78, 0], glass);
-  pane.castShadow = false;
-  for (const height of [1.01, 2.55]) {
-    box(window, [0.13, 0.065, 3.92], [-2.58, height, 0], aluminum);
-    box(window, [0.15, 0.022, 3.92], [-2.52, height + 0.025, 0], edge);
+  for (const [center, width] of [
+    [-1.28, 1.3],
+    [0, 1.26],
+    [1.28, 1.3],
+  ] as const) {
+    const pane = box(window, [0.008, 1.48, width - 0.02], [-2.626, 1.785, center], glass);
+    pane.castShadow = false;
+    pane.receiveShadow = false;
+    for (const edge of [-width / 2 + 0.018, width / 2 - 0.018]) {
+      box(window, [0.075, 1.46, 0.018], [-2.572, 1.785, center + edge], gasket);
+    }
+    box(window, [0.07, 0.028, width - 0.04], [-2.568, 2.19, center], frame);
+    box(window, [0.04, 0.13, 0.024], [-2.5, 1.65, center + width / 2 - 0.1], gasket);
   }
-  for (const z of [-1.93, -0.64, 0.64, 1.93]) {
-    box(window, [0.12, 1.57, 0.055], [-2.58, 1.78, z], aluminum);
+  for (const y of [1.02, 2.55]) {
+    box(window, [0.16, 0.075, 3.93], [-2.57, y, 0], frame);
   }
-  box(window, [0.12, 0.045, 3.85], [-2.56, 1.6, 0], aluminum);
-  box(window, [0.28, 0.055, 4.03], [-2.48, 0.96, 0], surface("#dad5c3", 0.65));
-  for (const z of [-0.68, 0.68]) {
-    box(window, [0.045, 0.14, 0.035], [-2.49, 1.72, z], edge);
+  for (const z of [-1.93, -0.63, 0.63, 1.93]) {
+    box(window, [0.14, 1.6, 0.055], [-2.57, 1.785, z], frame);
   }
+  box(window, [0.32, 0.055, 4.13], [-2.43, 0.965, 0], sill);
+  box(window, [0.055, 0.115, 4.1], [-2.31, 0.9, 0], sill);
+  const dust = surface("#8a8170", 0.99);
+  box(window, [0.018, 0.004, 3.82], [-2.53, 0.996, 0], dust);
+  window.add(createCurtains());
   return window;
 }
