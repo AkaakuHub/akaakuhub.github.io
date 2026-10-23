@@ -1,14 +1,20 @@
-import { CylinderGeometry, Group, Mesh, MeshPhysicalMaterial } from "three";
-import { box, surface } from "../primitives";
+import type { MetalMaterials } from "../materials/metal";
+import { CatmullRomCurve3, Group, MeshPhysicalMaterial, TubeGeometry, Vector3 } from "three";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
+import { hinge } from "../details/hinge";
+import { metricBoxUv } from "../materials/uv";
+import { box } from "../primitives";
 import type { ArchitectureMaterials } from "./materials/architecture";
 
-export function createDoor(materials: ArchitectureMaterials): Group {
+export function createDoor(materials: ArchitectureMaterials, metals: MetalMaterials): Group {
   const door = new Group();
   door.position.set(2.51, 0, 0.95);
   const wood = materials.door;
   const trim = materials.trim;
-  const gasket = surface("#554f44", 0.95);
-  const steel = surface("#a9afa7", 0.28, 0.82);
+  const gasket = metals.rubber;
+  const steel = metals.steel;
+  const hardware = new HardwareBatch();
   for (const z of [-0.54, 0.54]) {
     box(door, [0.14, 2.24, 0.075], [0, 1.12, z], trim);
   }
@@ -31,24 +37,47 @@ export function createDoor(materials: ArchitectureMaterials): Group {
   for (const y of [1.2, 2.04]) {
     box(door, [0.028, 0.027, 0.57], [-0.027, y, 0.03], trim);
   }
-  box(door, [0.012, 0.22, 0.075], [-0.013, 0.985, -0.35], steel);
-  const spindle = new Mesh(new CylinderGeometry(0.019, 0.019, 0.075, 12), steel);
-  spindle.rotation.z = Math.PI / 2;
-  spindle.position.set(-0.055, 1.025, -0.35);
-  door.add(spindle);
-  const handle = box(door, [0.024, 0.027, 0.15], [-0.1, 1.025, -0.29], steel);
-  handle.rotation.x = -0.05;
-  box(door, [0.015, 0.16, 0.81], [-0.013, 0.15, 0], steel);
+  const plate = new RoundedBoxGeometry(0.002, 0.22, 0.075, 2, 0.0007);
+  metricBoxUv(plate);
+  hardware.add(plate, steel, [-0.004, 0.985, -0.35]);
+  for (const y of [0.9, 1.07]) hardware.screw(steel, [-0.0051, y, -0.35], [0, -Math.PI / 2, 0]);
+  const collar = metricCylinderGeometry(0.0205, 0.009);
+  hardware.add(collar, steel, [-0.0095, 1.025, -0.35], [0, 0, Math.PI / 2]);
+  const curve = new CatmullRomCurve3([
+    new Vector3(-0.015, 1.025, -0.35),
+    new Vector3(-0.081, 1.025, -0.35),
+    new Vector3(-0.102, 1.025, -0.332),
+    new Vector3(-0.104, 1.025, -0.23),
+  ]);
+  const lever = new TubeGeometry(curve, 24, 0.0105, 12, false);
+  const uv = lever.getAttribute("uv");
+  for (let index = 0; index < uv.count; index++)
+    uv.setXY(index, uv.getX(index) * curve.getLength(), uv.getY(index) * Math.PI * 0.021);
+  hardware.add(lever, steel, [0, 0, 0]);
+  const end = metricCylinderGeometry(0.0105, 0.002);
+  hardware.add(end, steel, [-0.104, 1.025, -0.229], [Math.PI / 2, 0, 0]);
+  plate.dispose();
+  collar.dispose();
+  lever.dispose();
+  end.dispose();
+  const kickPlate = new RoundedBoxGeometry(0.0015, 0.16, 0.81, 1, 0.0005);
+  metricBoxUv(kickPlate);
+  hardware.add(kickPlate, steel, [-0.00375, 0.15, 0]);
+  kickPlate.dispose();
   box(door, [0.025, 0.025, 1.01], [-0.015, 0.017, 0], gasket);
   for (const y of [0.45, 1.1, 1.95]) {
-    box(door, [0.038, 0.095, 0.03], [-0.027, y, 0.48], steel);
+    const joint = hinge(steel);
+    joint.position.set(-0.007, y, 0.5);
+    joint.rotation.y = -Math.PI / 2;
+    door.add(joint);
   }
-  const switchPlate = box(
-    door,
-    [0.025, 0.115, 0.07],
-    [-0.011, 1.16, -0.8],
-    surface("#dad6c5", 0.61),
-  );
-  box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], surface("#c8c6b7", 0.66));
+  for (const y of [0.1, 0.2])
+    for (const z of [-0.34, 0.34]) hardware.screw(steel, [-0.0046, y, z], [0, -Math.PI / 2, 0]);
+  for (const y of [0.3, 2.1])
+    for (const z of [-0.54, 0.54]) hardware.screw(steel, [-0.0702, y, z], [0, -Math.PI / 2, 0]);
+  const switchPlate = box(door, [0.025, 0.115, 0.07], [-0.011, 1.16, -0.8], metals.ivory);
+  box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], metals.ivory);
+  for (const y of [1.116, 1.204]) hardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
+  hardware.finish(door);
   return door;
 }

@@ -1,8 +1,9 @@
+import type { MetalMaterials } from "../materials/metal";
 import { CylinderGeometry, Group, Mesh, MeshStandardMaterial } from "three";
 import { box, surface } from "../primitives";
 import type { ArchitectureMaterials } from "./materials/architecture";
 
-export function createCeiling(materials: ArchitectureMaterials): Group {
+export function createCeiling(materials: ArchitectureMaterials, metals: MetalMaterials): Group {
   const ceiling = new Group();
   box(ceiling, [5.4, 0.1, 5.4], [0, 2.95, 0], materials.ceiling);
   const beams = materials.frame;
@@ -13,8 +14,8 @@ export function createCeiling(materials: ArchitectureMaterials): Group {
   for (let z = -1.95; z < 2.6; z += 0.65) {
     box(ceiling, [5.2, 0.012, 0.012], [0, 2.893, z], seam);
   }
-  const frame = surface("#bec2b4", 0.4, 0.58);
-  const socket = surface("#e1e0cf", 0.62);
+  const frame = metals.ivory;
+  const socket = metals.ivory;
   const tubeMaterial = new MeshStandardMaterial({
     color: "#edf3df",
     emissive: "#efffdf",

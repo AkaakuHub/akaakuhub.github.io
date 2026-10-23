@@ -1,12 +1,16 @@
+import type { MetalMaterials } from "../materials/metal";
 import { CylinderGeometry, Group, Mesh, PlaneGeometry, TorusGeometry } from "three";
-import { box, surface } from "../primitives";
+import { box } from "../primitives";
 import type { PbrMaps } from "../materials/library";
+import { metricCylinderUv, metricTorusUv } from "../materials/uv";
 import { curtainMaterials } from "./materials/fabric";
 
-export function createCurtains(maps: PbrMaps): Group {
+export function createCurtains(maps: PbrMaps, metals: MetalMaterials): Group {
   const curtains = new Group();
-  const steel = surface("#aaa99a", 0.36, 0.7);
-  const rail = new Mesh(new CylinderGeometry(0.014, 0.014, 4.34, 12), steel);
+  const steel = metals.steel;
+  const railGeometry = new CylinderGeometry(0.014, 0.014, 4.34, 12);
+  metricCylinderUv(railGeometry);
+  const rail = new Mesh(railGeometry, steel);
   rail.rotation.x = Math.PI / 2;
   rail.position.set(-2.37, 2.7, 0);
   rail.castShadow = true;
@@ -52,7 +56,9 @@ export function createCurtains(maps: PbrMaps): Group {
     panel.receiveShadow = true;
     curtains.add(panel);
     for (let ringIndex = 0; ringIndex < 7; ringIndex++) {
-      const ring = new Mesh(new TorusGeometry(0.025, 0.004, 6, 12), steel);
+      const ringGeometry = new TorusGeometry(0.025, 0.004, 6, 12);
+      metricTorusUv(ringGeometry);
+      const ring = new Mesh(ringGeometry, steel);
       ring.position.set(-2.37, 2.676, start + ringIndex * 0.1);
       ring.castShadow = true;
       curtains.add(ring);

@@ -1,12 +1,13 @@
 import { Group } from "three";
 import type { MaterialLibrary } from "../materials/library";
+import type { MetalMaterials } from "../materials/metal";
 import { box, surface } from "../primitives";
 import { createCeiling } from "./ceiling";
 import { createDoor } from "./door";
 import { createArchitectureMaterials } from "./materials/architecture";
 import { createWindow } from "./window";
 
-export function createRoom(maps: MaterialLibrary): Group {
+export function createRoom(maps: MaterialLibrary, metals: MetalMaterials): Group {
   const materials = createArchitectureMaterials(maps);
   const room = new Group();
   room.name = "clubroom-architecture";
@@ -48,6 +49,10 @@ export function createRoom(maps: MaterialLibrary): Group {
       box(room, [0.155, 0.06, 0.155], [x, 0.87, z], trim);
     }
   }
-  room.add(createCeiling(materials), createWindow(materials, maps.fabric), createDoor(materials));
+  room.add(
+    createCeiling(materials, metals),
+    createWindow(materials, maps.fabric, metals),
+    createDoor(materials, metals),
+  );
   return room;
 }
