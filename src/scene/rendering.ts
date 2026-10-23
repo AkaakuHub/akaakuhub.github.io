@@ -6,6 +6,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { AntialiasPass } from "./antialias";
 import { VolumetricPass } from "./volumetrics";
+import { SurfaceDepthPass } from "./occlusion";
 
 export function createRendering(
   renderer: WebGLRenderer,
@@ -21,7 +22,13 @@ export function createRendering(
   });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
+  const surfaces = new SurfaceDepthPass(scene, camera);
+  composer.addPass(surfaces);
   const ambientOcclusion = new GTAOPass(scene, camera, 1, 1);
+  ambientOcclusion.setGBuffer(surfaces.depthTexture, surfaces.normalTexture);
+  const depthUniform = ambientOcclusion.depthRenderMaterial.uniforms.tDepth;
+  if (!depthUniform) throw new Error("接触影の深度を設定できませんでした。");
+  depthUniform.value = surfaces.depthTexture;
   ambientOcclusion.updateGtaoMaterial({
     radius: 0.25,
     thickness: 0.18,
