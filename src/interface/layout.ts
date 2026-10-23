@@ -1,4 +1,11 @@
-import { bottomClass, controlClass, leftClass, rightClass, topClass } from "./styles";
+import {
+  bottomClass,
+  controlClass,
+  directionClass,
+  leftClass,
+  rightClass,
+  topClass,
+} from "./styles";
 
 export const directions = [
   { name: "ホワイトボード", label: "掲示板", icon: "presentation" },
@@ -18,7 +25,7 @@ export function roomMarkup(): string {
         <button class="fullscreen ${controlClass} pointer-events-auto size-11" aria-label="全画面表示" title="全画面表示"><i data-lucide="maximize"></i></button>
       </header>
       <nav class="navigation absolute ${bottomClass} ${leftClass} grid grid-cols-3 gap-1 [@media(min-width:520px)]:flex [&[hidden]]:hidden" aria-label="部屋の向き">
-        ${directions.map(({ name, label, icon }, index) => `<button class="direction ${controlClass} size-13 flex-col gap-1 text-[10px] leading-none aria-pressed:border-[#f5f3e9]/75 aria-pressed:bg-[#f5f3e9]/20 aria-pressed:text-white" data-direction="${index}" aria-label="${name}を向く" title="${name}" aria-pressed="${index === 0}"><i data-lucide="${icon}"></i>${label}</button>`).join("")}
+        ${directions.map(({ name, label, icon }, index) => `<button class="direction ${directionClass}" data-direction="${index}" aria-label="${name}を向く" title="${name}" aria-pressed="${index === 0}"><i data-lucide="${icon}"></i>${label}</button>`).join("")}
       </nav>
       <button class="board-action ${controlClass} absolute ${bottomClass} ${rightClass} h-11 gap-2.5 px-3.5 text-xs font-medium whitespace-nowrap [&[hidden]]:hidden">掲示を見る<i data-lucide="scan-search"></i></button>
       <nav class="inspection-navigation pointer-events-none absolute inset-0 [&[hidden]]:hidden" aria-label="掲示用紙の操作" hidden>
