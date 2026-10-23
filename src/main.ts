@@ -13,6 +13,9 @@ import "./style.css";
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
 const ui = createInterface(root);
+await new Promise<void>((resolve) => {
+  requestAnimationFrame(() => setTimeout(resolve, 0));
+});
 const renderer = new WebGLRenderer({ canvas: ui.canvas, antialias: false });
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = PCFShadowMap;
