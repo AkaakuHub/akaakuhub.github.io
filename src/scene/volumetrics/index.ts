@@ -31,6 +31,7 @@ export class VolumetricPass extends Pass {
     eye: new Uniform(new Vector3()),
     sunDirection: new Uniform(new Vector3()),
     sunRadiance: new Uniform(new Vector3()),
+    sunShadowBias: new Uniform(0),
     sceneColor: new Uniform<Texture | null>(null),
     scattering: new Uniform(this.target.texture),
     scatteringSize: new Uniform(new Vector2(1, 1)),
@@ -86,6 +87,7 @@ export class VolumetricPass extends Pass {
     this.uniforms.inverseProjection.value.copy(this.camera.projectionMatrixInverse);
     this.uniforms.cameraWorld.value.copy(this.camera.matrixWorld);
     this.uniforms.sunMatrix.value.copy(this.sun.shadow.matrix);
+    this.uniforms.sunShadowBias.value = this.sun.shadow.bias;
     this.camera.getWorldPosition(this.uniforms.eye.value);
     this.sun.target.getWorldPosition(this.targetPosition);
     this.sun

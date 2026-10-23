@@ -25,7 +25,7 @@ export function createRendering(
   const ambientOcclusion = new GTAOPass(scene, camera, 1, 1);
   ambientOcclusion.updateGtaoMaterial({
     radius: 0.25,
-    thickness: 0.5,
+    thickness: 0.18,
     samples: 12,
     distanceFallOff: 1,
   });

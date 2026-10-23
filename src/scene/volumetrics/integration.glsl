@@ -6,6 +6,7 @@ uniform mat4 sunMatrix;
 uniform vec3 eye;
 uniform vec3 sunDirection;
 uniform vec3 sunRadiance;
+uniform float sunShadowBias;
 const float extinction = 0.055;
 
 vec3 surfaceAt(vec2 screenUv) {
@@ -36,7 +37,7 @@ float sunlightAt(vec3 world) {
   vec4 projected = sunMatrix * vec4(world, 1.0);
   vec3 shadow = projected.xyz / projected.w;
   if (any(lessThan(shadow, vec3(0.0))) || any(greaterThan(shadow, vec3(1.0)))) return 0.0;
-  return texture(sunDepth, vec3(shadow.xy, shadow.z - 0.00015));
+  return texture(sunDepth, vec3(shadow.xy, shadow.z + sunShadowBias));
 }
 
 float phaseFunction(float cosine) {

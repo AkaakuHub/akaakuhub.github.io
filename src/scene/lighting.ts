@@ -26,14 +26,14 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   sun.target.position.set(0, 1.2, 0);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
-  sun.shadow.camera.left = -5;
-  sun.shadow.camera.right = 5;
-  sun.shadow.camera.top = 5;
-  sun.shadow.camera.bottom = -5;
-  sun.shadow.camera.near = 0.5;
-  sun.shadow.camera.far = 36;
-  sun.shadow.normalBias = 0.015;
-  sun.shadow.bias = -0.00015;
+  sun.shadow.camera.left = -4.4;
+  sun.shadow.camera.right = 4.4;
+  sun.shadow.camera.top = 4.4;
+  sun.shadow.camera.bottom = -4.4;
+  sun.shadow.camera.near = 10;
+  sun.shadow.camera.far = 22;
+  sun.shadow.normalBias = 0.004;
+  sun.shadow.bias = -0.0001;
   sun.shadow.radius = 2;
   scene.add(hemisphere, sun, sun.target);
 
