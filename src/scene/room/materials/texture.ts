@@ -4,6 +4,7 @@ import {
   LinearMipmapLinearFilter,
   MeshStandardMaterial,
   RepeatWrapping,
+  RGFormat,
   RGBAFormat,
   SRGBColorSpace,
   UnsignedByteType,
@@ -13,7 +14,13 @@ import {
 type Texel = readonly [number, number, number, number, number];
 
 export function grain(x: number, y: number): number {
-  return (Math.sin(x * 127.1 + y * 311.7) * 43758.5453) % 1;
+  const value = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+  return (value - Math.floor(value)) * 2 - 1;
+}
+
+export function smoothstep(minimum: number, maximum: number, value: number): number {
+  const t = Math.max(0, Math.min(1, (value - minimum) / (maximum - minimum)));
+  return t * t * (3 - 2 * t);
 }
 
 export function mottling(x: number, y: number): number {
@@ -35,8 +42,9 @@ function texture(
   size: number,
   repeat: readonly [number, number],
   color = false,
+  format: typeof RGFormat | typeof RGBAFormat = RGBAFormat,
 ): DataTexture {
-  const map = new DataTexture(bytes, size, size, RGBAFormat, UnsignedByteType);
+  const map = new DataTexture(bytes, size, size, format, UnsignedByteType);
   map.wrapS = RepeatWrapping;
   map.wrapT = RepeatWrapping;
   map.repeat.set(...repeat);
@@ -55,15 +63,15 @@ export function texturedSurface(
   repeat: readonly [number, number] = [1, 1],
 ): MeshStandardMaterial {
   const albedo = new Uint8Array(size * size * 4);
-  const roughness = new Uint8Array(albedo.length);
+  const roughness = new Uint8Array(size * size * 2);
   const normals = new Uint8Array(albedo.length);
   const heights = new Float32Array(size * size);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const [r, g, b, elevation, finish] = sample(x / size, y / size);
+      const [r, g, b, elevation, finish] = sample((x + 0.5) / size, (y + 0.5) / size);
       const index = (y * size + x) * 4;
       albedo.set([r, g, b, 255], index);
-      roughness.set([finish * 255, finish * 255, finish * 255, 255], index);
+      roughness.set([finish * 255, finish * 255], (y * size + x) * 2);
       heights[y * size + x] = elevation;
     }
   }
@@ -92,7 +100,7 @@ export function texturedSurface(
     map: texture(albedo, size, repeat, true),
     normalMap: texture(normals, size, repeat),
     normalScale: new Vector2(0.55, 0.55),
-    roughnessMap: texture(roughness, size, repeat),
+    roughnessMap: texture(roughness, size, repeat, false, RGFormat),
     roughness: 1,
   });
 }

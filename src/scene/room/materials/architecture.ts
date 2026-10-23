@@ -1,8 +1,10 @@
-import { grain, mottling, texturedSurface } from "./texture";
+import { grain, mottling, smoothstep, texturedSurface } from "./texture";
 
 export function parquet() {
+  const blockSize = 5.4 / 16;
+  const slatWidth = blockSize / 4;
   return texturedSurface(
-    512,
+    1024,
     (u, v) => {
       const tileX = Math.floor(u * 4);
       const tileY = Math.floor(v * 4);
@@ -10,21 +12,27 @@ export function parquet() {
       const along = (tileX + tileY) % 2 === 0 ? (v * 4) % 1 : (u * 4) % 1;
       const slat = Math.floor(across * 4);
       const joint = (across * 4) % 1;
-      const seam = joint < 0.028 || joint > 0.972 || along < 0.008 || along > 0.992;
-      const tone = grain(tileX * 4 + slat, tileY + 42) * 12;
-      const fibers = Math.sin(across * 430 + mottling(across * 20, along * 4) * 8) * 2.4;
-      const age = mottling(u * 20, v * 20) * 4;
-      const polish = Math.max(0, 1 - Math.hypot(u - 0.52, v - 0.5) * 2);
-      const shade = seam ? -32 : tone + fibers + age;
+      const edgeDistance = Math.min(
+        joint * slatWidth,
+        (1 - joint) * slatWidth,
+        along * blockSize,
+        (1 - along) * blockSize,
+      );
+      const seam = 1 - smoothstep(0.00025, 0.0012, edgeDistance);
+      const seed = grain(tileX * 4 + slat, tileY + 42);
+      const fineGrain = Math.sin(across * 480 + mottling(across * 19 + seed, along * 3) * 3) * 0.65;
+      const fibers = fineGrain + mottling(across * 90 + seed * 4, along * 4) * 1.4;
+      const color = seed * 7 + fibers - seam * 14 + mottling(u * 15, v * 15) * 1.2;
+      const wear = mottling(u * 3 + 14, v * 3 + 42) * 0.025;
       return [
-        169 + shade,
-        145 + shade,
-        105 + shade,
-        seam ? 0.1 : 0.55 + fibers * 0.002,
-        0.59 - polish * 0.09 + Math.abs(age) * 0.013,
+        166 + color,
+        142 + color,
+        106 + color,
+        0.5 + fibers * 0.0008 - seam * 0.014,
+        0.47 + seed * 0.025 + wear + seam * 0.16,
       ];
     },
-    [2, 2],
+    [4, 4],
   );
 }
 
@@ -34,9 +42,15 @@ export function plaster() {
     (u, v) => {
       const cloud = mottling(u * 7, v * 5);
       const pores = grain(Math.floor(u * 256), Math.floor(v * 256));
-      const dirt = Math.exp(-v * 18) * (5 + mottling(u * 16, 4) * 4);
-      const color = cloud * 3 + pores * 1.2 - dirt;
-      return [220 + color, 216 + color, 199 + color, 0.5 + cloud * 0.04 + pores * 0.014, 0.93];
+      const dirt = Math.exp(-v * 18) * (2.2 + mottling(u * 16, 4));
+      const color = cloud * 1.4 + pores * 0.3 - dirt;
+      return [
+        220 + color,
+        216 + color,
+        199 + color,
+        0.5 + pores * 0.0008,
+        0.9 + pores * 0.012 + cloud * 0.012,
+      ];
     },
     [2, 1],
   );
@@ -45,42 +59,50 @@ export function plaster() {
 export function paintedWood(color: readonly [number, number, number]) {
   return texturedSurface(256, (u, v) => {
     const fibers = Math.sin(u * 180 + mottling(u * 10, v * 2) * 4);
-    const scuffs = mottling(u * 22, v * 20) * 2;
+    const scuffs = mottling(u * 22, v * 20) * 1.2;
     return [
-      color[0] + fibers * 1.4 + scuffs,
-      color[1] + fibers * 1.4 + scuffs,
-      color[2] + fibers * 1.2 + scuffs,
-      0.5 + fibers * 0.008,
-      0.64 + Math.abs(scuffs) * 0.06,
+      color[0] + fibers * 1.1 + scuffs,
+      color[1] + fibers * 1.1 + scuffs,
+      color[2] + fibers + scuffs,
+      0.5 + fibers * 0.0018,
+      0.66 + Math.abs(scuffs) * 0.025,
     ];
   });
 }
 
 export function acousticTile() {
   return texturedSurface(
-    128,
+    256,
     (u, v) => {
-      const pore = grain(Math.floor(u * 128), Math.floor(v * 128));
-      const pinhole = (u * 24) % 1 < 0.18 && (v * 24) % 1 < 0.18;
-      const shade = pinhole ? -11 : pore * 3;
-      return [213 + shade, 214 + shade, 204 + shade, pinhole ? 0.33 : 0.5, 0.96];
+      const pore = grain(Math.floor(u * 256), Math.floor(v * 256));
+      const distance = Math.hypot(((u * 32) % 1) - 0.5, ((v * 32) % 1) - 0.5);
+      const pinhole = 1 - smoothstep(0.045, 0.13, distance);
+      const shade = pore * 0.8 - pinhole * 5;
+      return [213 + shade, 214 + shade, 204 + shade, 0.5 - pinhole * 0.008 + pore * 0.0005, 0.95];
     },
-    [4, 4],
+    [8, 8],
   );
 }
 
 export function wainscot() {
-  return texturedSurface(512, (u, v) => {
-    const gap = (u * 24) % 1 < 0.018;
-    const fibers = Math.sin(u * 1200 + mottling(u * 60, v * 2) * 6);
-    const rubbed = Math.exp(-v * 12) * 5;
-    const tone = gap ? -16 : fibers * 1.1 + grain(Math.floor(u * 24), 81) * 4 - rubbed;
-    return [
-      114 + tone,
-      101 + tone,
-      81 + tone,
-      gap ? 0.23 : 0.5 + fibers * 0.006,
-      0.7 + rubbed * 0.018,
-    ];
-  });
+  return texturedSurface(
+    512,
+    (u, v) => {
+      const phase = (u * 6) % 1;
+      const edgeDistance = Math.min(phase, 1 - phase) * (5.4 / 24);
+      const groove = 1 - smoothstep(0.0002, 0.0024, edgeDistance);
+      const fibers =
+        mottling(u * 140, v * 3) * 0.8 + Math.sin(u * 600 + mottling(u * 20, v * 3) * 3) * 0.3;
+      const rubbed = Math.exp(-v * 12) * 2;
+      const tone = fibers + grain(Math.floor(u * 6), 81) * 3 - rubbed - groove * 10;
+      return [
+        114 + tone,
+        101 + tone,
+        81 + tone,
+        0.5 + fibers * 0.0015 - groove * 0.008,
+        0.7 + rubbed * 0.008 + fibers * 0.015,
+      ];
+    },
+    [4, 1],
+  );
 }
