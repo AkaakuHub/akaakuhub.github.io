@@ -7,6 +7,7 @@ import { illuminate } from "./scene/lighting";
 import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createRoom } from "./scene/room";
+import { batchStaticMeshes } from "./scene/static-batches";
 import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
 
@@ -26,6 +27,7 @@ camera.position.set(0, 1.55, 0.45);
 const materials = await loadMaterials(renderer);
 const board = createBoard();
 scene.add(createRoom(materials), createFurniture(materials), board.group);
+batchStaticMeshes(scene, new Set(board.notices.keys()));
 const lighting = illuminate(scene, renderer);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
 const noticeList = [...board.notices.values()];
