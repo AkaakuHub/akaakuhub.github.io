@@ -33,7 +33,7 @@ function createStool(materials: FurnitureMaterials): Group {
   return stool;
 }
 
-function createDeskLamp(materials: FurnitureMaterials): Group {
+function createDeskLamp(materials: FurnitureMaterials, surfaceY: number): Group {
   const lamp = new Group();
   cylinder(lamp, 0.085, 0.025, [0, 0.015, 0], materials.enamel);
   cylinder(lamp, 0.062, 0.014, [0, 0.035, 0], materials.enamel);
@@ -49,7 +49,7 @@ function createDeskLamp(materials: FurnitureMaterials): Group {
   const shade = cylinder(lamp, 0.075, 0.075, [0.18, 0.275, 0], materials.enamel, 0.027);
   shade.rotation.z = -0.25;
   cylinder(lamp, 0.062, 0.003, [0.17, 0.236, 0], materials.ivory);
-  lamp.position.set(-0.25, 0.805, -0.57);
+  lamp.position.set(-0.25, surfaceY - 0.0025, -0.57);
   return lamp;
 }
 
@@ -71,8 +71,9 @@ export function createWorkbench(materials: FurnitureMaterials): Group {
   rod(workbench, [0.345, 0.635, 0.47], [0.345, 0.635, 0.67], 0.007, materials.metal);
   for (const z of [0.47, 0.67])
     rod(workbench, [0.323, 0.635, z], [0.345, 0.635, z], 0.007, materials.metal);
-  createWorktopObjects(workbench, materials);
-  workbench.add(createDeskLamp(materials));
+  const surfaceY = 0.796;
+  createWorktopObjects(workbench, materials, surfaceY);
+  workbench.add(createDeskLamp(materials, surfaceY));
   workbench.position.set(-1.94, 0, -0.36);
   group.add(workbench, createStool(materials));
   return group;

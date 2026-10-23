@@ -16,7 +16,7 @@ export function createBoard(): { group: Group; notices: Map<Object3D, Notice> } 
   for (const notice of boardNotices) {
     const [width, height] = notice.size;
     const sheet = new Group();
-    sheet.position.set(...notice.position, 0.05);
+    sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
     const paper = createPaper(width, height, notice);
     sheet.add(paper);
@@ -26,7 +26,7 @@ export function createBoard(): { group: Group; notices: Map<Object3D, Notice> } 
         surface(notice.ink, 0.4, 0.08),
       );
       magnet.rotation.x = Math.PI / 2;
-      magnet.position.set(x, height / 2 - 0.035, 0.009);
+      magnet.position.set(x, height / 2 - 0.035, 0.0073);
       magnet.castShadow = true;
       magnet.receiveShadow = true;
       sheet.add(magnet);

@@ -77,7 +77,7 @@ export function createPaper(width: number, height: number, print: PaperPrint): M
     const u = positions.getX(index) / width + 0.5;
     const v = positions.getY(index) / height + 0.5;
     const corner = Math.max(0, (u - 0.6) / 0.4) * Math.max(0, (0.4 - v) / 0.4);
-    const lift = 0.0015 + 0.008 * (1 - v) ** 2 + 0.026 * corner ** 2;
+    const lift = 0.00025 + 0.002 * (1 - v) ** 2 + 0.012 * corner ** 2;
     positions.setZ(index, lift);
   }
   geometry.computeVertexNormals();

@@ -16,10 +16,10 @@ function readingCart(materials: FurnitureMaterials): Group {
   const cart = new Group();
   for (const x of [-0.285, 0.285]) {
     for (const z of [-0.17, 0.17]) {
-      rod(cart, [x, 0.08, z], [x, 0.94, z], 0.012, materials.metal);
-      const wheel = cylinder(cart, 0.035, 0.022, [x, 0.04, z], materials.rubber);
+      rod(cart, [x, 0.075, z], [x, 0.94, z], 0.012, materials.metal);
+      const wheel = cylinder(cart, 0.035, 0.022, [x, 0.035, z], materials.rubber);
       wheel.rotation.z = Math.PI / 2;
-      box(cart, [0.04, 0.045, 0.03], [x, 0.073, z], materials.enamel);
+      box(cart, [0.04, 0.045, 0.03], [x, 0.068, z], materials.enamel);
     }
     rod(cart, [x, 0.92, -0.17], [x, 0.92, 0.17], 0.012, materials.metal);
   }
@@ -45,7 +45,7 @@ function readingCart(materials: FurnitureMaterials): Group {
     const stack = roundBox(
       cart,
       [0.36, 0.043, 0.25],
-      [-0.05, 0.61 + index * 0.045, 0.015],
+      [-0.05, 0.604 + index * 0.043, 0.015],
       materials.paper,
       0.003,
     );
@@ -61,15 +61,15 @@ function readingCart(materials: FurnitureMaterials): Group {
     [0, 0.012],
   ].map(([x, y]) => new Vector2(x, y));
   const cup = new Mesh(new LatheGeometry(profile, 32), materials.ivory);
-  cup.position.set(-0.12, 0.923, 0.02);
+  cup.position.set(-0.12, 0.9205, 0.02);
   cup.castShadow = cup.receiveShadow = true;
   const handle = new Mesh(new TorusGeometry(0.022, 0.005, 8, 20), materials.ivory);
   handle.position.set(0.045, 0.042, 0);
   handle.castShadow = true;
   cup.add(handle);
   cart.add(cup);
-  cylinder(cart, 0.062, 0.008, [-0.12, 0.918, 0.02], materials.ivory);
-  const notebook = roundBox(cart, [0.2, 0.025, 0.27], [0.14, 0.926, 0.015], materials.rust, 0.005);
+  cylinder(cart, 0.062, 0.008, [-0.12, 0.9165, 0.02], materials.ivory);
+  const notebook = roundBox(cart, [0.2, 0.025, 0.27], [0.14, 0.925, 0.015], materials.rust, 0.005);
   notebook.rotation.y = -0.1;
   cart.position.set(-2.02, 0, -2.12);
   return cart;
@@ -77,8 +77,8 @@ function readingCart(materials: FurnitureMaterials): Group {
 
 function coatStand(materials: FurnitureMaterials): Group {
   const stand = new Group();
-  cylinder(stand, 0.22, 0.025, [0, 0.022, 0], materials.graphite, 0.18);
-  cylinder(stand, 0.05, 0.055, [0, 0.059, 0], materials.graphite, 0.027);
+  cylinder(stand, 0.22, 0.025, [0, 0.0125, 0], materials.graphite, 0.18);
+  cylinder(stand, 0.05, 0.055, [0, 0.0525, 0], materials.graphite, 0.027);
   rod(stand, [0, 0.05, 0], [0, 1.82, 0], 0.018, materials.deepGreen);
   for (let index = 0; index < 3; index++) {
     const angle = (index * Math.PI * 2) / 3;
