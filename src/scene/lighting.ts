@@ -9,6 +9,7 @@ import {
 import type { Scene, WebGLRenderer } from "three";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { tokyoSunlight } from "./daylight/solar";
+import { cameraExposure, photometry, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
 
 export function illuminate(scene: Scene, renderer: WebGLRenderer) {
@@ -28,13 +29,21 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   scene.add(sun, sun.target);
 
   RectAreaLightUniformsLib.init();
-  const ceilingLights = [-1.05, 1.35].map((z) => {
-    const light = new RectAreaLight("#f4fff2", 80, 0.36, 1.03);
+  const lampColor = new Color(1.414516, 0.923789, 0.534348);
+  const lampRadiance =
+    (photometry.tubesPerFixture * photometry.tubeLumens * photometry.scale) /
+    (photometry.fixtureWidth * photometry.fixtureLength * Math.PI);
+  for (const z of [-1.05, 1.35]) {
+    const light = new RectAreaLight(
+      lampColor,
+      lampRadiance,
+      photometry.fixtureWidth,
+      photometry.fixtureLength,
+    );
     light.position.set(0, 2.765, z);
     light.rotation.x = -Math.PI / 2;
     scene.add(light);
-    return light;
-  });
+  }
   const skylight = new RectAreaLight(0xffffff, 0, 3.8, 1.48);
   skylight.position.set(-2.58, 1.78, 0);
   skylight.lookAt(0, 1.78, 0);
@@ -51,6 +60,10 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
         tubeMaterials.add(material);
     }
   });
+  for (const material of tubeMaterials) {
+    material.emissive.copy(lampColor);
+    material.emissiveIntensity = lampRadiance;
+  }
   const background = new Color();
   scene.background = background;
   const updateReflection = createRoomReflection(scene, renderer);
@@ -61,16 +74,11 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     sun.color.copy(state.color);
     sun.intensity = state.intensity;
     sun.shadow.needsUpdate = true;
-    skylight.color.copy(state.sky);
-    skylight.intensity = state.daylight * 1.4;
+    unitLuminance(skylight.color.copy(state.sky));
+    skylight.intensity = (photometry.skyIlluminance * photometry.scale * state.daylight) / Math.PI;
     background.copy(state.sky);
     for (const material of skyMaterials) material.color.copy(state.sky);
-    const lampRadiance = 80 - state.daylight * 45;
-    for (const light of ceilingLights) light.intensity = lampRadiance;
-    for (const material of tubeMaterials) {
-      material.emissive.set("#f4fff2");
-      material.emissiveIntensity = lampRadiance;
-    }
+    renderer.toneMappingExposure = cameraExposure(state.daylight);
     updateReflection(date);
   }
 
