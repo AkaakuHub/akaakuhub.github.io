@@ -1,0 +1,6 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": { "correctness": "error" },
+  "rules": { "max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }] },
+  "ignorePatterns": ["dist/**"]
+}

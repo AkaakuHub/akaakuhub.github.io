@@ -1,15 +1,5 @@
 {
-  "ignore": [
-    "**/*.d.ts",
-    "**/node_modules/**",
-    "**/.next/**",
-    "out/**",
-    "dist/**",
-    "build/**",
-    "coverage/**",
-    "knip.json"
-  ],
-  "entry": ["src/app/globals.css"],
-  "project": ["src/**/*.{ts,tsx,js,jsx}"],
-  "includeEntryExports": true
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/main.ts", "vite.config.ts"],
+  "project": ["src/**/*.ts", "vite.config.ts"]
 }
