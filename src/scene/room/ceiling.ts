@@ -1,6 +1,6 @@
 import type { MetalMaterials } from "../materials/metal";
 import { CylinderGeometry, Group, Mesh, MeshStandardMaterial } from "three";
-import { box, surface } from "../primitives";
+import { box } from "../primitives";
 import type { ArchitectureMaterials } from "./materials/architecture";
 
 export function createCeiling(materials: ArchitectureMaterials, metals: MetalMaterials): Group {
@@ -10,7 +10,7 @@ export function createCeiling(materials: ArchitectureMaterials, metals: MetalMat
   for (const x of [-1.3, 1.3]) {
     box(ceiling, [0.105, 0.12, 5.2], [x, 2.85, 0], beams);
   }
-  const seam = surface("#a7ab9d", 0.8);
+  const seam = metals.ivory;
   for (let z = -1.95; z < 2.6; z += 0.65) {
     box(ceiling, [5.2, 0.012, 0.012], [0, 2.893, z], seam);
   }

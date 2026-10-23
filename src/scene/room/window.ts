@@ -1,7 +1,8 @@
+import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
 import type { PbrMaps } from "../materials/library";
-import { Group, MeshBasicMaterial, MeshPhysicalMaterial } from "three";
-import { box, surface } from "../primitives";
+import { Group, MeshBasicMaterial } from "three";
+import { box } from "../primitives";
 import { HardwareBatch } from "../details/hardware";
 import { windowPull } from "../details/pull";
 import { createCurtains } from "./curtains";
@@ -11,6 +12,7 @@ export function createWindow(
   materials: ArchitectureMaterials,
   fabric: PbrMaps,
   metals: MetalMaterials,
+  props: PropMaterials,
 ): Group {
   const window = new Group();
   const frame = materials.frame;
@@ -30,18 +32,15 @@ export function createWindow(
   const masonry = materials.wall;
   const exterior = box(window, [0.55, 1.25, 7.4], [-7.6, 0.15, 0.3], masonry);
   exterior.castShadow = false;
+  const exteriorGlass = props.glass.clone();
+  exteriorGlass.color.set("#637d82");
+  exteriorGlass.transmission = 0;
+  exteriorGlass.roughness = 0.33;
   for (let z = -2.9; z < 3.3; z += 0.75) {
-    const pane = box(window, [0.03, 0.56, 0.44], [-7.3, 0.32, z], surface("#637d82", 0.33));
+    const pane = box(window, [0.03, 0.56, 0.44], [-7.3, 0.32, z], exteriorGlass);
     pane.castShadow = false;
   }
-  const glass = new MeshPhysicalMaterial({
-    color: "#e8f0eb",
-    roughness: 0.04,
-    metalness: 0,
-    transparent: true,
-    opacity: 0.08,
-    depthWrite: false,
-  });
+  const glass = props.glass;
   for (const [center, width] of [
     [-1.28, 1.3],
     [0, 1.26],
@@ -70,7 +69,8 @@ export function createWindow(
   box(window, [0.055, 0.115, 4.1], [-2.31, 0.9, 0], sill);
   for (const x of [-2.54, -2.58]) box(window, [0.002, 0.006, 3.78], [x, 1.0605, 0], steel);
   hardware.finish(window);
-  const dust = surface("#8a8170", 0.99);
+  const dust = props.paper.clone();
+  dust.color.set("#8a8170");
   box(window, [0.018, 0.004, 3.82], [-2.53, 0.996, 0], dust);
   window.add(createCurtains(fabric, metals));
   return window;

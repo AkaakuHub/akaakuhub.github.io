@@ -1,13 +1,18 @@
+import type { PropMaterials } from "../materials/props";
 import { Group } from "three";
 import type { MaterialLibrary } from "../materials/library";
 import type { MetalMaterials } from "../materials/metal";
-import { box, surface } from "../primitives";
+import { box } from "../primitives";
 import { createCeiling } from "./ceiling";
 import { createDoor } from "./door";
 import { createArchitectureMaterials } from "./materials/architecture";
 import { createWindow } from "./window";
 
-export function createRoom(maps: MaterialLibrary, metals: MetalMaterials): Group {
+export function createRoom(
+  maps: MaterialLibrary,
+  metals: MetalMaterials,
+  props: PropMaterials,
+): Group {
   const materials = createArchitectureMaterials(maps);
   const room = new Group();
   room.name = "clubroom-architecture";
@@ -27,20 +32,17 @@ export function createRoom(maps: MaterialLibrary, metals: MetalMaterials): Group
   }
   const boards = materials.boards;
   const trim = materials.trim;
-  const contact = surface("#5f594b", 0.99);
   for (const z of [-2.586, 2.586]) {
     box(room, [5.2, 0.84, 0.025], [0, 0.42, z], boards);
     box(room, [5.2, 0.07, 0.05], [0, 0.043, z - Math.sign(z) * 0.015], trim);
     box(room, [5.2, 0.038, 0.065], [0, 0.862, z - Math.sign(z) * 0.017], trim);
     box(room, [5.2, 0.058, 0.045], [0, 2.724, z - Math.sign(z) * 0.012], trim);
-    box(room, [5.2, 0.006, 0.012], [0, 0.008, z - Math.sign(z) * 0.025], contact);
   }
   for (const x of [-2.586, 2.586]) {
     box(room, [0.025, 0.84, 5.2], [x, 0.42, 0], boards);
     box(room, [0.05, 0.07, 5.2], [x - Math.sign(x) * 0.015, 0.043, 0], trim);
     box(room, [0.065, 0.038, 5.2], [x - Math.sign(x) * 0.017, 0.862, 0], trim);
     box(room, [0.045, 0.058, 5.2], [x - Math.sign(x) * 0.012, 2.724, 0], trim);
-    box(room, [0.012, 0.006, 5.2], [x - Math.sign(x) * 0.025, 0.008, 0], contact);
   }
   for (const x of [-2.535, 2.535]) {
     for (const z of [-2.535, 2.535]) {
@@ -51,8 +53,8 @@ export function createRoom(maps: MaterialLibrary, metals: MetalMaterials): Group
   }
   room.add(
     createCeiling(materials, metals),
-    createWindow(materials, maps.fabric, metals),
-    createDoor(materials, metals),
+    createWindow(materials, maps.fabric, metals, props),
+    createDoor(materials, metals, props),
   );
   return room;
 }

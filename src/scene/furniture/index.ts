@@ -1,3 +1,4 @@
+import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
 import { Group } from "three";
 import type { MaterialLibrary } from "../materials/library";
@@ -7,10 +8,14 @@ import { createCabinets } from "./cabinets";
 import { createInstrumentCorner } from "./instrument";
 import { createFrontFurniture } from "./front";
 
-export function createFurniture(maps: MaterialLibrary, metals: MetalMaterials): Group {
+export function createFurniture(
+  maps: MaterialLibrary,
+  metals: MetalMaterials,
+  props: PropMaterials,
+): Group {
   const furniture = new Group();
   furniture.name = "furniture";
-  const materials = createFurnitureMaterials(maps, metals);
+  const materials = createFurnitureMaterials(maps, metals, props);
   furniture.add(
     createWorkbench(materials),
     createCabinets(materials),

@@ -1,6 +1,6 @@
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace, Vector2 } from "three";
-import type { PbrMaps } from "../../materials/library";
-import { scannedSurface } from "../../materials/surface";
+import type { PbrMaps } from "../library";
+import { scannedSurface } from "../surface";
 
 export function bookLabelMaterial(paper: PbrMaps) {
   const canvas = document.createElement("canvas");

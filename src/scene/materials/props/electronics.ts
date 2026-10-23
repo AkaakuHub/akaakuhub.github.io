@@ -1,6 +1,6 @@
 import { CanvasTexture, SRGBColorSpace, Vector2 } from "three";
-import type { PbrMaps } from "../../materials/library";
-import { physicalSurface } from "../../materials/surface";
+import type { PbrMaps } from "../library";
+import { physicalSurface } from "../surface";
 
 export function stationDisplay(plastic: PbrMaps) {
   const canvas = document.createElement("canvas");

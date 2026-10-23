@@ -6,6 +6,7 @@ import { createFurniture } from "./scene/furniture";
 import { illuminate } from "./scene/lighting";
 import { loadMaterials } from "./scene/materials/library";
 import { createMetalMaterials } from "./scene/materials/metal";
+import { createPropMaterials } from "./scene/materials/props";
 import { createRendering } from "./scene/rendering";
 import { createRoom } from "./scene/room";
 import { batchStaticMeshes } from "./scene/static-batches";
@@ -27,8 +28,13 @@ const camera = new PerspectiveCamera(62, 1, 0.05, 40);
 camera.position.set(0, 1.55, 0.45);
 const materials = await loadMaterials(renderer);
 const metals = createMetalMaterials(materials);
-const board = createBoard(metals, materials.paper);
-scene.add(createRoom(materials, metals), createFurniture(materials, metals), board.group);
+const props = createPropMaterials(materials);
+const board = createBoard(metals, materials.paper, props);
+scene.add(
+  createRoom(materials, metals, props),
+  createFurniture(materials, metals, props),
+  board.group,
+);
 batchStaticMeshes(scene, new Set(board.notices.keys()));
 const lighting = illuminate(scene, renderer);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);

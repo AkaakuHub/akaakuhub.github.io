@@ -1,5 +1,6 @@
+import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
-import { CatmullRomCurve3, Group, MeshPhysicalMaterial, TubeGeometry, Vector3 } from "three";
+import { CatmullRomCurve3, Group, TubeGeometry, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { hinge } from "../details/hinge";
@@ -7,7 +8,11 @@ import { metricBoxUv } from "../materials/uv";
 import { box } from "../primitives";
 import type { ArchitectureMaterials } from "./materials/architecture";
 
-export function createDoor(materials: ArchitectureMaterials, metals: MetalMaterials): Group {
+export function createDoor(
+  materials: ArchitectureMaterials,
+  metals: MetalMaterials,
+  props: PropMaterials,
+): Group {
   const door = new Group();
   door.position.set(2.51, 0, 0.95);
   const wood = materials.door;
@@ -23,13 +28,7 @@ export function createDoor(materials: ArchitectureMaterials, metals: MetalMateri
   box(door, [0.06, 0.17, 1.0], [0.027, 2.13, 0], wood);
   box(door, [0.06, 0.86, 0.26], [0.027, 1.62, -0.37], wood);
   box(door, [0.06, 0.86, 0.2], [0.027, 1.62, 0.4], wood);
-  const glass = new MeshPhysicalMaterial({
-    color: "#bdc6b9",
-    roughness: 0.68,
-    metalness: 0,
-    transmission: 0.35,
-    thickness: 0.006,
-  });
+  const glass = props.frostedGlass;
   box(door, [0.012, 0.82, 0.53], [-0.023, 1.62, 0.03], glass).castShadow = false;
   for (const z of [-0.24, 0.3]) {
     box(door, [0.028, 0.86, 0.027], [-0.027, 1.62, z], trim);

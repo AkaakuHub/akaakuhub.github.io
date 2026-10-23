@@ -1,10 +1,13 @@
-import { MeshPhysicalMaterial, Vector2 } from "three";
 import type { MaterialLibrary } from "../materials/library";
 import { physicalSurface, scannedSurface } from "../materials/surface";
 import type { MetalMaterials } from "../materials/metal";
-import { createPropMaterials } from "./materials/props";
+import type { PropMaterials } from "../materials/props";
 
-export function createFurnitureMaterials(maps: MaterialLibrary, metals: MetalMaterials) {
+export function createFurnitureMaterials(
+  maps: MaterialLibrary,
+  metals: MetalMaterials,
+  props: PropMaterials,
+) {
   return {
     ash: scannedSurface(maps.ash),
     walnut: scannedSurface(maps.walnut),
@@ -21,20 +24,7 @@ export function createFurnitureMaterials(maps: MaterialLibrary, metals: MetalMat
     brass: metals.brass,
     graphite: metals.graphite,
     rubber: metals.rubber,
-    ...createPropMaterials(maps),
-    glass: new MeshPhysicalMaterial({
-      color: "#dce9df",
-      roughness: 0.065,
-      roughnessMap: maps.plastic.roughnessMap,
-      normalMap: maps.plastic.normalMap,
-      normalScale: new Vector2(0.025, 0.025),
-      metalness: 0,
-      transmission: 0.9,
-      thickness: 0.006,
-      ior: 1.52,
-      transparent: true,
-      depthWrite: false,
-    }),
+    ...props,
   };
 }
 

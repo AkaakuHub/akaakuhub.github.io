@@ -1,7 +1,7 @@
 import { DoubleSide, Vector2 } from "three";
-import type { MaterialLibrary } from "../../materials/library";
-import { physicalSurface, scannedSurface } from "../../materials/surface";
-import { bookLabelMaterial, pageEdgeMaterial } from "./book-labels";
+import type { MaterialLibrary } from "../library";
+import { physicalSurface, scannedSurface } from "../surface";
+import { bookLabelMaterial, pageEdgeMaterial } from "./books";
 import { stationDisplay } from "./electronics";
 
 export function createPropMaterials(maps: MaterialLibrary) {
@@ -23,6 +23,27 @@ export function createPropMaterials(maps: MaterialLibrary) {
     });
   return {
     stationDisplay: stationDisplay(maps.plastic),
+    glass: physicalSurface(maps.plastic, {
+      map: null,
+      color: "#f5faf7",
+      roughness: 0.065,
+      transmission: 1,
+      thickness: 0.006,
+      ior: 1.52,
+      transparent: true,
+      depthWrite: false,
+      normalScale: new Vector2(0.025, 0.025),
+    }),
+    frostedGlass: physicalSurface(maps.plastic, {
+      map: null,
+      color: "#bdc6b9",
+      roughness: 0.9,
+      transmission: 0.35,
+      thickness: 0.006,
+      ior: 1.52,
+      normalScale: new Vector2(0.1, 0.1),
+    }),
+    felt: cloth("#3d453e"),
     bookLabels: bookLabelMaterial(maps.paper),
     pageEdges: pageEdgeMaterial(maps.paper),
     paper: scannedSurface(maps.paper, {
@@ -35,7 +56,8 @@ export function createPropMaterials(maps: MaterialLibrary) {
     bookCream: cloth("#e9e0c4"),
     bookGreen: cloth("#627566"),
     porcelain: physicalSurface(maps.plastic, {
-      color: "#fff0d3",
+      map: null,
+      color: "#e6e2d8",
       roughness: 0.45,
       clearcoat: 0.8,
       clearcoatRoughness: 0.18,
@@ -72,3 +94,5 @@ export function createPropMaterials(maps: MaterialLibrary) {
     stem: scannedSurface(maps.ash, { color: "#627844", roughness: 1 }),
   };
 }
+
+export type PropMaterials = ReturnType<typeof createPropMaterials>;
