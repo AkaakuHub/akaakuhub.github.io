@@ -1,4 +1,4 @@
-import { CylinderGeometry, Mesh, SphereGeometry, Vector3 } from "three";
+import { CylinderGeometry, Mesh, Vector3 } from "three";
 import type { Material, Object3D } from "three";
 import { metricBoxUv } from "../materials/uv";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
@@ -66,18 +66,4 @@ export function rod(
   mesh.position.copy(start.add(end).multiplyScalar(0.5));
   mesh.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), direction.normalize());
   return mesh;
-}
-
-export function leaf(
-  parent: Object3D,
-  position: readonly [number, number, number],
-  angle: number,
-  material: Material,
-): void {
-  const mesh = new Mesh(new SphereGeometry(1, 12, 8), material);
-  mesh.scale.set(0.027, 0.085, 0.012);
-  mesh.position.set(...position);
-  mesh.rotation.z = angle;
-  mesh.castShadow = true;
-  parent.add(mesh);
 }
