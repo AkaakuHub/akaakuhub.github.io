@@ -1,0 +1,176 @@
+{
+  "provider": "Poly Haven",
+  "providerUrl": "https://polyhaven.com",
+  "assets": [
+    {
+      "id": "herringbone_parquet",
+      "name": "Herringbone Parquet",
+      "authors": {
+        "Jenelle van Heerden": "Processing",
+        "Sergej Majboroda": "Photography"
+      },
+      "source": "https://polyhaven.com/a/herringbone_parquet",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [3.4000000953674316, 3.4000000953674316],
+      "maps": {
+        "color": {
+          "file": "herringbone_parquet/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_diff_1k.jpg",
+          "md5": "dae9d3dd6d8a2c2e387da22fd8228265"
+        },
+        "normal": {
+          "file": "herringbone_parquet/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_nor_gl_1k.jpg",
+          "md5": "c0a64eb61ea44add715c6fe29b958adf"
+        },
+        "arm": {
+          "file": "herringbone_parquet/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_arm_1k.jpg",
+          "md5": "0c5a18f599282509ae37e2f0bcc4e492"
+        }
+      }
+    },
+    {
+      "id": "painted_plaster_wall",
+      "name": "Painted Plaster Wall",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "source": "https://polyhaven.com/a/painted_plaster_wall",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [2.0, 2.0],
+      "maps": {
+        "color": {
+          "file": "painted_plaster_wall/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
+          "md5": "15ba8c1f63a5ab412b1eabe31728540a"
+        },
+        "normal": {
+          "file": "painted_plaster_wall/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_nor_gl_1k.jpg",
+          "md5": "43fff290583dbdfc9bfa088a2750e840"
+        },
+        "arm": {
+          "file": "painted_plaster_wall/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_arm_1k.jpg",
+          "md5": "a4c1ff7470669daec9e274d915471246"
+        }
+      }
+    },
+    {
+      "id": "ash_veneer",
+      "name": "Ash Veneer",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "source": "https://polyhaven.com/a/ash_veneer",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [1.0, 1.0],
+      "maps": {
+        "color": {
+          "file": "ash_veneer/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_diff_1k.jpg",
+          "md5": "5be48b4be87620998cfaee5a4281169d"
+        },
+        "normal": {
+          "file": "ash_veneer/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_nor_gl_1k.jpg",
+          "md5": "6986a1e827968726d996b76d77f3a2ac"
+        },
+        "arm": {
+          "file": "ash_veneer/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_arm_1k.jpg",
+          "md5": "ee110cc4704b23e84f8f7d75a954d5ff"
+        }
+      }
+    },
+    {
+      "id": "walnut_veneer",
+      "name": "Walnut Veneer",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "source": "https://polyhaven.com/a/walnut_veneer",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [1.7999999523162842, 1.7999999523162842],
+      "maps": {
+        "color": {
+          "file": "walnut_veneer/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_diff_1k.jpg",
+          "md5": "70e160b3d44d414728a2fb4194fde2a6"
+        },
+        "normal": {
+          "file": "walnut_veneer/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_nor_gl_1k.jpg",
+          "md5": "fc0df784c71c1cff9d80d4a6de0b2ab4"
+        },
+        "arm": {
+          "file": "walnut_veneer/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_arm_1k.jpg",
+          "md5": "7db3474a1d0d1ed15e0cc349541ac1e3"
+        }
+      }
+    },
+    {
+      "id": "terlenka",
+      "name": "Terlenka",
+      "authors": {
+        "colormass": "Photography",
+        "Rico Cilliers": "Processing"
+      },
+      "source": "https://polyhaven.com/a/terlenka",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [0.26570814767607126, 0.2662999927997589],
+      "maps": {
+        "color": {
+          "file": "terlenka/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_diff_1k.jpg",
+          "md5": "202624e89023d9ace2845b372015490c"
+        },
+        "normal": {
+          "file": "terlenka/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_nor_gl_1k.jpg",
+          "md5": "88d445044fb8519c516c97acabf93ef1"
+        },
+        "arm": {
+          "file": "terlenka/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_arm_1k.jpg",
+          "md5": "94613807db9da499643913b0d40eb16c"
+        }
+      }
+    },
+    {
+      "id": "blue_metal_plate",
+      "name": "Blue Metal Plate",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "source": "https://polyhaven.com/a/blue_metal_plate",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [2.5, 2.5],
+      "maps": {
+        "color": {
+          "file": "blue_metal_plate/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_diff_1k.jpg",
+          "md5": "a906d0e554596fb76c6969f2f644c5e6"
+        },
+        "normal": {
+          "file": "blue_metal_plate/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_nor_gl_1k.jpg",
+          "md5": "f14c0f01832f8b18c39f07e4b5d6f749"
+        },
+        "arm": {
+          "file": "blue_metal_plate/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/blue_metal_plate/blue_metal_plate_arm_1k.jpg",
+          "md5": "7314bc335cd9bcc8a18841ad15e10985"
+        }
+      }
+    }
+  ]
+}
