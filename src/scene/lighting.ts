@@ -58,6 +58,7 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     }
   });
   const background = new Color();
+  const ceilingBounce = new Color("#dce2cb");
   scene.background = background;
 
   function update(date: Date): void {
@@ -66,13 +67,13 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     sun.color.copy(state.color);
     sun.intensity = state.intensity;
     sun.shadow.needsUpdate = true;
-    hemisphere.color.copy(state.sky);
+    hemisphere.color.copy(state.sky).lerp(ceilingBounce, 1 - state.daylight);
     hemisphere.groundColor.set("#6e6654");
-    hemisphere.intensity = 0.08 + state.daylight * 0.65;
-    scene.environmentIntensity = 0.035 + state.daylight * 0.22;
+    hemisphere.intensity = 0.26 + state.daylight * 0.45;
+    scene.environmentIntensity = 0.08 + state.daylight * 0.2;
     background.copy(state.sky);
     for (const material of skyMaterials) material.color.copy(state.sky);
-    for (const light of ceilingLights) light.intensity = 12 - state.daylight * 6;
+    for (const light of ceilingLights) light.intensity = 80 - state.daylight * 45;
     for (const material of tubeMaterials) material.emissiveIntensity = 2.5 - state.daylight;
   }
 
