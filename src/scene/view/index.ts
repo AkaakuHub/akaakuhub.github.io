@@ -1,8 +1,9 @@
 import { MathUtils, Quaternion, Vector3 } from "three";
 import type { PerspectiveCamera } from "three";
-import { inspectionPose, isRoomDirection, roomPose } from "./targets";
+import { inspectionBounds, inspectionPose, isRoomDirection, roomPose } from "./targets";
 import type {
   CameraPose,
+  InspectionFraming,
   InspectionTarget,
   InspectionViewport,
   RoomDirection,
@@ -23,16 +24,22 @@ export function createView(
   let state: ViewState = { mode: "room", direction: 0 };
   let roomDirection: RoomDirection = 0;
   let heading = 0;
+  const framing: InspectionFraming = { zoom: 1, panX: 0, panY: 0 };
   let start: CameraPose = { position: new Vector3(), quaternion: new Quaternion(), fov: 62 };
   let target = roomPose(0, heading, camera.aspect);
   let elapsed = 1;
   let duration = 1;
+  let navigating = false;
 
   function pose(): CameraPose {
     if (state.mode === "room") return roomPose(state.direction, heading, camera.aspect);
     const inspection = inspections[state.index];
     if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
-    return inspectionPose(inspection, getViewport());
+    const viewport = getViewport();
+    const bounds = inspectionBounds(inspection, viewport, framing.zoom);
+    framing.panX = MathUtils.clamp(framing.panX, -bounds.maxX, bounds.maxX);
+    framing.panY = MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY);
+    return inspectionPose(inspection, viewport, framing);
   }
   function apply(result: CameraPose): void {
     camera.position.copy(result.position);
@@ -42,15 +49,20 @@ export function createView(
   }
   function transition(next: ViewState, seconds: number): void {
     state = next;
+    navigating = true;
+    onChange(state);
+    move(seconds);
+  }
+  function move(seconds: number): void {
     start = {
       position: camera.position.clone(),
       quaternion: camera.quaternion.clone(),
       fov: camera.fov,
     };
-    onChange(state);
     target = pose();
     elapsed = 0;
     duration = seconds;
+    if (seconds === 0) apply(target);
     invalidate();
   }
   function select(index: number): void {
@@ -63,6 +75,9 @@ export function createView(
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
     if (state.mode === "notice" && state.index === index) return;
+    framing.zoom = 1;
+    framing.panX = 0;
+    framing.panY = 0;
     transition({ mode: "notice", index }, 1.05);
   }
   apply(target);
@@ -74,8 +89,30 @@ export function createView(
     get moving(): boolean {
       return elapsed < duration && !motion.matches;
     },
+    get zoomFactor(): number {
+      return framing.zoom;
+    },
     select,
     inspect,
+    zoom(factor: number, animated: boolean) {
+      if (state.mode !== "notice") return;
+      if (navigating && elapsed < duration && !motion.matches) return;
+      const zoom = MathUtils.clamp(framing.zoom * factor, 1, 2.8);
+      if (zoom === framing.zoom) return;
+      framing.zoom = zoom;
+      navigating = false;
+      move(animated ? 0.2 : 0);
+    },
+    pan(dx: number, dy: number) {
+      if (state.mode !== "notice" || framing.zoom === 1) return;
+      if (navigating && elapsed < duration && !motion.matches) return;
+      const inspection = inspections[state.index];
+      if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
+      const bounds = inspectionBounds(inspection, getViewport(), framing.zoom);
+      framing.panX -= dx * bounds.visibleWidth;
+      framing.panY += dy * bounds.visibleHeight;
+      move(0);
+    },
     turn(step: number) {
       select((((heading + step) % 4) + 4) % 4);
     },
@@ -99,7 +136,7 @@ export function createView(
     },
     update(delta: number) {
       elapsed = motion.matches ? duration : Math.min(duration, elapsed + delta);
-      const t = MathUtils.smootherstep(elapsed / duration, 0, 1);
+      const t = duration === 0 ? 1 : MathUtils.smootherstep(elapsed / duration, 0, 1);
       camera.position.lerpVectors(start.position, target.position, t);
       camera.quaternion.slerpQuaternions(start.quaternion, target.quaternion, t);
       camera.fov = MathUtils.lerp(start.fov, target.fov, t);

@@ -32,6 +32,7 @@ export function roomMarkup(): string {
         <button class="inspection-back ${controlClass} pointer-events-auto absolute ${topClass} ${leftClass} size-11" aria-label="部屋に戻る" title="部屋に戻る"><i data-lucide="undo-2"></i></button>
         <a class="inspection-link ${controlClass} pointer-events-auto absolute ${topClass} ${rightClass} size-11 no-underline aria-disabled:pointer-events-none aria-disabled:opacity-50" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link"></i></a>
         <button class="previous-notice ${controlClass} pointer-events-auto absolute ${bottomClass} ${leftClass} size-11" aria-label="前の紙を見る" title="前の紙を見る"><i data-lucide="chevron-left"></i></button>
+        <button class="zoom-notice ${controlClass} pointer-events-auto absolute ${bottomClass} left-[calc(max(1rem,env(safe-area-inset-left))+3.5rem)] h-11 min-w-11 gap-2 px-3 text-xs" aria-label="紙を拡大" title="紙を拡大"><i data-lucide="zoom-in"></i>拡大</button>
         <button class="next-notice ${controlClass} pointer-events-auto absolute ${bottomClass} ${rightClass} size-11" aria-label="次の紙を見る" title="次の紙を見る"><i data-lucide="chevron-right"></i></button>
       </nav>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>

@@ -12,6 +12,8 @@ import {
   Presentation,
   ScanSearch,
   Undo2,
+  ZoomIn,
+  ZoomOut,
   createElement,
   createIcons,
 } from "lucide";
@@ -38,6 +40,7 @@ export function createInterface(root: HTMLElement) {
       Presentation,
       ScanSearch,
       Undo2,
+      ZoomIn,
     },
     attrs: { "aria-hidden": "true" },
   });
@@ -49,7 +52,18 @@ export function createInterface(root: HTMLElement) {
   const inspection = root.querySelector<HTMLElement>(".inspection-navigation");
   const link = root.querySelector<HTMLAnchorElement>(".inspection-link");
   const action = root.querySelector<HTMLButtonElement>(".board-action");
-  if (!canvas || !room || !header || !status || !navigation || !inspection || !link || !action)
+  const zoom = root.querySelector<HTMLButtonElement>(".zoom-notice");
+  if (
+    !canvas ||
+    !room ||
+    !header ||
+    !status ||
+    !navigation ||
+    !inspection ||
+    !link ||
+    !action ||
+    !zoom
+  )
     throw new Error("画面の初期化に失敗しました。");
   room.append(loading);
   const fullscreen = root.querySelector<HTMLButtonElement>(".fullscreen");
@@ -74,8 +88,20 @@ export function createInterface(root: HTMLElement) {
   let wasInspecting = false;
   let wasMoving = false;
   let announcement = "ホワイトボードを向いています";
+  function setZoom(factor: number): void {
+    if (!zoom) throw new Error("掲示の拡大操作が見つかりません。");
+    const expanded = factor > 1;
+    const label = expanded ? "紙全体を表示" : "紙を拡大";
+    zoom.setAttribute("aria-label", label);
+    zoom.setAttribute("title", label);
+    zoom.replaceChildren(
+      createElement(expanded ? ZoomOut : ZoomIn, { "aria-hidden": "true" }),
+      document.createTextNode(expanded ? "全体" : "拡大"),
+    );
+  }
   return {
     canvas,
+    setZoom,
     ready() {
       loading.remove();
     },
@@ -131,6 +157,7 @@ export function createInterface(root: HTMLElement) {
         link.href = notice.link.href;
         link.setAttribute("aria-label", notice.link.label);
         link.setAttribute("title", notice.link.label);
+        setZoom(1);
       }
       status.textContent = announcement;
       if (wasInspecting !== inspecting) {

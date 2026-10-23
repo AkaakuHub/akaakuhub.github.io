@@ -16,6 +16,11 @@ export interface InspectionViewport {
   insetX: number;
   insetY: number;
 }
+export interface InspectionFraming {
+  zoom: number;
+  panX: number;
+  panY: number;
+}
 export interface CameraPose {
   position: Vector3;
   quaternion: Quaternion;
@@ -38,23 +43,50 @@ export function roomPose(direction: RoomDirection, heading: number, aspect: numb
   };
 }
 
-export function inspectionPose(target: InspectionTarget, viewport: InspectionViewport): CameraPose {
-  target.object.updateWorldMatrix(true, false);
-  const fov = 55;
-  const halfAngle = Math.tan(MathUtils.degToRad(fov / 2));
+export function inspectionBounds(
+  target: InspectionTarget,
+  viewport: InspectionViewport,
+  zoom: number,
+) {
+  const halfAngle = Math.tan(MathUtils.degToRad(55 / 2));
   const aspect = viewport.width / viewport.height;
   const widthFraction = Math.max(1, viewport.width - viewport.insetX * 2) / viewport.width;
   const heightFraction = Math.max(1, viewport.height - viewport.insetY * 2) / viewport.height;
-  const distance = Math.max(
-    target.width / (2 * halfAngle * aspect * 0.82),
-    target.height / (2 * halfAngle * 0.78),
-    Math.min(
-      target.width / (2 * halfAngle * aspect * widthFraction),
-      target.height / (2 * halfAngle * heightFraction),
-    ),
-  );
+  const distance =
+    Math.max(
+      target.width / (2 * halfAngle * aspect * 0.82),
+      target.height / (2 * halfAngle * 0.78),
+      Math.min(
+        target.width / (2 * halfAngle * aspect * widthFraction),
+        target.height / (2 * halfAngle * heightFraction),
+      ),
+    ) / zoom;
+  const visibleHeight = distance * 2 * halfAngle;
+  const visibleWidth = visibleHeight * aspect;
+  return {
+    distance,
+    visibleWidth,
+    visibleHeight,
+    maxX: Math.max(0, (target.width - visibleWidth) / 2),
+    maxY: Math.max(0, (target.height - visibleHeight) / 2),
+  };
+}
+
+export function inspectionPose(
+  target: InspectionTarget,
+  viewport: InspectionViewport,
+  framing: InspectionFraming,
+): CameraPose {
+  target.object.updateWorldMatrix(true, false);
+  const bounds = inspectionBounds(target, viewport, framing.zoom);
   const quaternion = target.object.getWorldQuaternion(new Quaternion());
   const position = target.object.getWorldPosition(new Vector3());
-  position.add(new Vector3(0, 0, distance).applyQuaternion(quaternion));
-  return { position, quaternion, fov };
+  position.add(
+    new Vector3(
+      MathUtils.clamp(framing.panX, -bounds.maxX, bounds.maxX),
+      MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY),
+      bounds.distance,
+    ).applyQuaternion(quaternion),
+  );
+  return { position, quaternion, fov: 55 };
 }
