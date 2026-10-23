@@ -1,9 +1,10 @@
 import { tubeGeometry } from "../geometry/curves";
-import { CatmullRomCurve3, Curve, Group, Mesh, Vector3 } from "three";
+import { CatmullRomCurve3, Curve, Group, Mesh, PlaneGeometry, Vector3 } from "three";
 import { box } from "../primitives";
 import { closedNotebook } from "./bindings";
 import { ceramicMug } from "./ceramic";
 import { cylinder, rod, roundBox } from "./geometry";
+import { solderSpool } from "./solder-spool";
 import type { FurnitureMaterials } from "./materials";
 
 class BenchCable extends Curve<Vector3> {
@@ -26,6 +27,11 @@ function solderStation(parent: Group, materials: FurnitureMaterials, matTop: num
   roundBox(station, [0.23, 0.11, 0.19], [0, 0.067, 0], materials.plasticIvory, 0.016);
   box(station, [0.235, 0.024, 0.193], [0, 0.012, 0], materials.plasticGraphite);
   box(station, [0.002, 0.035, 0.075], [0.116, 0.067, 0.02], materials.plasticGraphite);
+  const display = new Mesh(new PlaneGeometry(0.067, 0.027), materials.stationDisplay);
+  display.rotation.y = Math.PI / 2;
+  display.position.set(0.1171, 0.067, 0.02);
+  display.receiveShadow = true;
+  station.add(display);
   cylinder(station, 0.023, 0.011, [0.1225, 0.055, -0.054], materials.plasticGraphite).rotation.z =
     Math.PI / 2;
   cylinder(station, 0.003, 0.005, [0.1185, 0.085, -0.025], materials.signalRed).rotation.z =
@@ -61,9 +67,9 @@ function solderStation(parent: Group, materials: FurnitureMaterials, matTop: num
   const cord = new Mesh(tubeGeometry(curve, 48, 0.003, 8, false), materials.rubber);
   cord.castShadow = true;
   parent.add(cord);
-  cylinder(parent, 0.039, 0.05, [-0.19, matTop + 0.025, -0.23], materials.metal);
-  cylinder(parent, 0.047, 0.008, [-0.19, matTop + 0.054, -0.23], materials.plasticIvory);
-  cylinder(parent, 0.012, 0.01, [-0.19, matTop + 0.063, -0.23], materials.plasticGraphite);
+  const spool = solderSpool(materials);
+  spool.position.set(-0.19, matTop, -0.23);
+  parent.add(spool);
 }
 
 export function createWorktopObjects(
@@ -79,8 +85,8 @@ export function createWorktopObjects(
     0.003,
   );
   for (let line = -2; line <= 2; line++) {
-    box(mat, [0.41, 0.0003, 0.001], [0, 0.00415, line * 0.08], materials.enamel);
-    box(mat, [0.001, 0.0003, 0.48], [line * 0.08, 0.00415, 0], materials.enamel);
+    box(mat, [0.41, 0.0003, 0.001], [0, 0.00415, line * 0.08], materials.plasticIvory);
+    box(mat, [0.001, 0.0003, 0.48], [line * 0.08, 0.00415, 0], materials.plasticIvory);
   }
   solderStation(parent, materials, surfaceY + 0.008);
   const notebook = closedNotebook(0.32, 0.025, 0.24, materials.rust, materials, 15);
