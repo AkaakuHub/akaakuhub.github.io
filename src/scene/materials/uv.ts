@@ -1,4 +1,4 @@
-import type { BufferGeometry, CylinderGeometry } from "three";
+import type { BufferGeometry, CylinderGeometry, TorusGeometry } from "three";
 
 export function metricBoxUv(geometry: BufferGeometry): void {
   const positions = geometry.getAttribute("position");
@@ -55,5 +55,16 @@ export function metricCylinderUv(geometry: CylinderGeometry): void {
         uv.setXY(index, positions.getX(index), positions.getZ(index));
       }
     }
+  }
+}
+
+export function metricTorusUv(geometry: TorusGeometry): void {
+  const uv = geometry.getAttribute("uv");
+  for (let index = 0; index < uv.count; index++) {
+    uv.setXY(
+      index,
+      uv.getX(index) * Math.PI * 2 * geometry.parameters.radius,
+      uv.getY(index) * Math.PI * 2 * geometry.parameters.tube,
+    );
   }
 }

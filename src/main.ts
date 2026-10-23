@@ -28,7 +28,7 @@ camera.position.set(0, 1.55, 0.45);
 const materials = await loadMaterials(renderer);
 const metals = createMetalMaterials(materials);
 const board = createBoard(metals);
-scene.add(createRoom(materials), createFurniture(materials, metals), board.group);
+scene.add(createRoom(materials, metals), createFurniture(materials, metals), board.group);
 batchStaticMeshes(scene, new Set(board.notices.keys()));
 const lighting = illuminate(scene, renderer);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
