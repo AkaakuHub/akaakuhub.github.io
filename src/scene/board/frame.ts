@@ -47,10 +47,10 @@ export function createFrame(): Group {
     clearcoat: 0.58,
     clearcoatRoughness: 0.3,
   });
-  roundBox(frame, [2.98, 1.36, 0.075], [0, 1.72, 0], aluminum, 0.026);
-  roundBox(frame, [2.9, 1.28, 0.012], [0, 1.72, 0.039], ceramic, 0.014);
-  box(frame, [2.84, 1.22, 0.015], [0, 1.72, -0.045], backing);
-  for (const x of [-1.49, 1.49]) {
+  roundBox(frame, [2.64, 1.36, 0.075], [0, 1.72, 0], aluminum, 0.026);
+  roundBox(frame, [2.56, 1.28, 0.012], [0, 1.72, 0.039], ceramic, 0.014);
+  box(frame, [2.5, 1.22, 0.015], [0, 1.72, -0.045], backing);
+  for (const x of [-1.32, 1.32]) {
     roundBox(frame, [0.052, 1.67, 0.065], [x, 0.99, -0.012], coating, 0.012);
     roundBox(frame, [0.066, 0.056, 0.68], [x, 0.153, 0], coating, 0.014);
     for (const z of [-0.285, 0.285]) caster(frame, x, z, aluminum, rubber);
@@ -62,7 +62,7 @@ export function createFrame(): Group {
     const brace = box(frame, [0.026, 0.78, 0.027], [x, 0.54, -0.13], coating);
     brace.rotation.x = -0.3;
   }
-  box(frame, [2.9, 0.035, 0.035], [0, 0.42, -0.06], coating);
+  box(frame, [2.56, 0.035, 0.035], [0, 0.42, -0.06], coating);
   roundBox(frame, [1.78, 0.025, 0.13], [0.15, 1.025, 0.08], aluminum, 0.008);
   box(frame, [1.78, 0.035, 0.012], [0.15, 1.035, 0.142], coating);
   const eraser = roundBox(frame, [0.145, 0.035, 0.067], [0.76, 1.055, 0.075], coating, 0.01);

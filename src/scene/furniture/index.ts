@@ -3,6 +3,7 @@ import { createFurnitureMaterials } from "./materials";
 import { createWorkbench } from "./workbench";
 import { createCabinets } from "./cabinets";
 import { createInstrumentCorner } from "./instrument";
+import { createFrontFurniture } from "./front";
 
 export function createFurniture(): Group {
   const furniture = new Group();
@@ -12,6 +13,7 @@ export function createFurniture(): Group {
     createWorkbench(materials),
     createCabinets(materials),
     createInstrumentCorner(materials),
+    createFrontFurniture(materials),
   );
   return furniture;
 }
