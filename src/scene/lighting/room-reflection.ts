@@ -23,8 +23,8 @@ export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
     if (capturedAt !== undefined && Math.abs(timestamp - capturedAt) < 60_000) return;
     const environment = scene.environment;
     const background = scene.background;
-    const visibility = sources.map((object) => object.visible);
-    for (const object of sources) object.visible = false;
+    const visibility = sources.map((object) => ({ object, visible: object.visible }));
+    for (const { object } of visibility) object.visible = false;
     scene.environment = null;
     scene.background = unlit;
     renderer.shadowMap.needsUpdate = true;
@@ -34,7 +34,7 @@ export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
     } finally {
       scene.environment = environment;
       scene.background = background;
-      for (const [index, object] of sources.entries()) object.visible = visibility[index] === true;
+      for (const { object, visible } of visibility) object.visible = visible;
     }
     scene.environment = next.texture;
     scene.environmentIntensity = 1;
