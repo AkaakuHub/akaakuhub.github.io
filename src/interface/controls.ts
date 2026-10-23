@@ -44,7 +44,11 @@ export function bindRoomControls(
   }
   let start: { id: number; x: number; y: number } | undefined;
   ui.canvas.addEventListener("pointerdown", (event) => {
-    if (!event.isPrimary || event.button !== 0 || ui.dialog.open) return;
+    if (!event.isPrimary) {
+      start = undefined;
+      return;
+    }
+    if (event.button !== 0 || ui.dialog.open) return;
     start = { id: event.pointerId, x: event.clientX, y: event.clientY };
     ui.canvas.setPointerCapture(event.pointerId);
   });
@@ -55,6 +59,7 @@ export function bindRoomControls(
     start = undefined;
     if (ui.canvas.hasPointerCapture(event.pointerId))
       ui.canvas.releasePointerCapture(event.pointerId);
+    if (ui.dialog.open) return;
     const threshold = Math.min(72, Math.max(36, ui.canvas.clientWidth * 0.1));
     if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy) * 1.25) view.turn(dx > 0 ? 1 : -1);
     else if (Math.hypot(dx, dy) < 10) {
