@@ -75,6 +75,11 @@ button svg {
   align-items: center;
   gap: 11px;
   min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #ffffffb3;
+  border-radius: 24px;
+  background: #f8f6eeeb;
+  backdrop-filter: blur(16px);
   color: #293c32;
   text-decoration: none;
   font-size: clamp(17px, 2vw, 19px);
