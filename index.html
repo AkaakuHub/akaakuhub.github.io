@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#e7e4db" />
+    <link rel="stylesheet" href="/src/style.css" />
     <meta
       name="description"
       content="AkaakuHubの部室。ホワイトボードを眺めたり、部屋を見回したり。"
@@ -11,7 +12,9 @@
     <title>AkaakuHub — 部室</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div class="loading" role="status">部室を開けています<span></span></div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

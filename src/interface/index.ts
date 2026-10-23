@@ -21,6 +21,8 @@ const directions = [
 ] as const;
 
 export function createInterface(root: HTMLElement) {
+  const loading = root.querySelector<HTMLElement>(".loading");
+  if (!loading) throw new Error("読み込み状態の表示先が見つかりません。");
   root.innerHTML = `
     <main class="room" aria-label="AkaakuHubの部室">
       <canvas class="room__canvas" aria-label="4方向を見回せる3Dの部室"></canvas>
@@ -28,7 +30,6 @@ export function createInterface(root: HTMLElement) {
         <a class="wordmark" href="/" aria-label="AkaakuHubのトップ"><span class="status-dot"></span>AkaakuHub</a>
         <button class="icon-button fullscreen" aria-label="全画面表示"><i data-lucide="maximize"></i></button>
       </header>
-      <div class="loading" role="status">部室を開けています<span></span></div>
       <nav class="navigation" aria-label="部屋の向き">
         <button class="icon-button turn-left" aria-label="左を向く"><i data-lucide="arrow-left"></i></button>
         <div class="directions">${directions.map(({ name, icon }, index) => `<button class="direction" data-direction="${index}" aria-label="${name}を向く" title="${name}" aria-pressed="${index === 0}"><i data-lucide="${icon}" aria-hidden="true"></i><span class="direction-name">${name}</span></button>`).join("")}</div>
@@ -50,8 +51,10 @@ export function createInterface(root: HTMLElement) {
   const content = root.querySelector(".notice-content");
   const status = root.querySelector(".view-status");
   const action = root.querySelector<HTMLButtonElement>(".board-action");
-  if (!canvas || !dialog || !content || !status || !action)
+  const room = root.querySelector("main");
+  if (!canvas || !dialog || !content || !status || !action || !room)
     throw new Error("画面の初期化に失敗しました。");
+  room.append(loading);
   root.querySelector(".close-dialog")?.addEventListener("click", () => dialog.close());
   dialog.addEventListener("click", (event) => {
     const bounds = dialog.getBoundingClientRect();
@@ -85,7 +88,7 @@ export function createInterface(root: HTMLElement) {
     canvas,
     dialog,
     ready() {
-      root.querySelector(".loading")?.remove();
+      loading.remove();
     },
     setDirection(index: number) {
       root

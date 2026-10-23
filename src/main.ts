@@ -8,7 +8,6 @@ import { createRendering } from "./scene/rendering";
 import { createRoom } from "./scene/room";
 import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
-import "./style.css";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
