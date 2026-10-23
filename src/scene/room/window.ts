@@ -6,7 +6,9 @@ export function createWindow(): Group {
   const aluminum = surface("#c6c8bf", 0.32, 0.7);
   const edge = surface("#777e76", 0.6, 0.45);
   const sky = new MeshBasicMaterial({ color: "#c6dded" });
-  box(window, [0.04, 5.5, 8.5], [-5.5, 2.4, 0], sky).castShadow = false;
+  const skyBackdrop = box(window, [0.04, 5.5, 8.5], [-5.5, 2.4, 0], sky);
+  skyBackdrop.castShadow = false;
+  skyBackdrop.name = "world-sky";
   const exterior = surface("#c9c8b8", 0.95);
   const outside = box(window, [0.9, 1.4, 6], [-5.2, 0.5, -0.7], exterior);
   outside.castShadow = false;

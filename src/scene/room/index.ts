@@ -59,7 +59,7 @@ export function createRoom(): Group {
   for (const z of [-1.05, 1.35]) {
     box(room, [0.43, 0.07, 1.15], [0, 2.83, z], fixture);
     for (const x of [-0.12, 0.12]) {
-      box(room, [0.06, 0.035, 1.03], [x, 2.778, z], light);
+      box(room, [0.06, 0.035, 1.03], [x, 2.778, z], light).name = "room-fluorescent";
     }
   }
   room.add(createWindow(), createDoor());
