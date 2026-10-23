@@ -94,7 +94,6 @@ export function createFurnitureMaterials() {
       transparent: true,
       depthWrite: false,
     }),
-    mirror: new MeshStandardMaterial({ color: "#b9cecc", roughness: 0.055, metalness: 1 }),
   };
 }
 

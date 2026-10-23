@@ -1,4 +1,5 @@
-import { Group, LatheGeometry, Mesh, Vector2 } from "three";
+import { CircleGeometry, Group, LatheGeometry, Mesh, Vector2 } from "three";
+import { Reflector } from "three/addons/objects/Reflector.js";
 import { box } from "../primitives";
 import { cylinder, leaf, rod, roundBox } from "./geometry";
 import type { FurnitureMaterials } from "./materials";
@@ -90,8 +91,21 @@ function mirror(materials: FurnitureMaterials): Group {
   cylinder(group, 0.11, 0.025, [0, 0.015, 0], materials.walnut);
   rod(group, [0, 0.03, 0], [0, 0.18, 0], 0.008, materials.brass);
   cylinder(group, 0.17, 0.023, [0, 0.3, 0], materials.brass).rotation.x = Math.PI / 2;
-  const face = cylinder(group, 0.156, 0.003, [0, 0.3, -0.014], materials.mirror);
-  face.rotation.x = Math.PI / 2;
+  const face = new Reflector(new CircleGeometry(0.156, 48), {
+    textureWidth: 384,
+    textureHeight: 384,
+    clipBias: 0.002,
+    color: "#d6dbd6",
+    multisample: 0,
+  });
+  face.position.set(0, 0.3, -0.014);
+  face.rotation.y = Math.PI;
+  const reflect = face.onBeforeRender.bind(face);
+  face.onBeforeRender = (renderer, scene, camera, geometry, material, renderGroup) => {
+    if (scene.overrideMaterial) return;
+    reflect(renderer, scene, camera, geometry, material, renderGroup);
+  };
+  group.add(face);
   group.rotation.x = -0.12;
   return group;
 }
