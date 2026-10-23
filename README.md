@@ -14,7 +14,7 @@ Three.jsで描画する部室を入口にした個人サイトです。室内で
 
 スマホとPCで同じ空間を描画し、画面の実寸に合わせて画角・描画解像度を調整します。
 
-床・壁・木材・布・塗装金属には[Poly HavenのCC0素材](https://polyhaven.com/license)を使い、色・法線・AO・粗さを実寸で適用しています。素材の出典と著者は[素材一覧](public/materials/attribution.json)に記録しています。参考作品のモデルやテクスチャは使用していません。
+床・壁・木材・布・金具には[Poly Haven](https://polyhaven.com/license)と[ambientCG](https://docs.ambientcg.com/license/)のCC0素材を使い、色・法線・粗さ・金属度を実寸で適用しています。支柱、蝶番、ビス、キャスター、窓やドアの金具も用途別の材質を共有します。素材の出典と著者は[素材一覧](public/materials/attribution.json)に記録しています。参考作品のモデルやテクスチャは使用していません。
 
 ## 開発
 
