@@ -1,3 +1,4 @@
+import type { PbrMaps } from "../materials/library";
 import {
   CanvasTexture,
   DoubleSide,
@@ -5,6 +6,7 @@ import {
   MeshStandardMaterial,
   PlaneGeometry,
   SRGBColorSpace,
+  Vector2,
 } from "three";
 
 interface PaperPrint {
@@ -15,7 +17,12 @@ interface PaperPrint {
   link: { label: string; href: string };
 }
 
-function printedPaper(print: PaperPrint): CanvasTexture {
+function printedPaper(
+  print: PaperPrint,
+  maps: PbrMaps,
+  sheetWidth: number,
+  sheetHeight: number,
+): CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = 960;
   canvas.height = 1344;
@@ -24,23 +31,21 @@ function printedPaper(print: PaperPrint): CanvasTexture {
   context.scale(1.5, 1.5);
   const width = 640;
   const height = 896;
+  const stock = maps.map.image;
+  const pattern = context.createPattern(stock, "repeat");
+  if (!pattern) throw new Error("紙の繊維を描画できませんでした。");
+  pattern.setTransform(
+    new DOMMatrix().scale(
+      (0.3 * width) / (sheetWidth * stock.width),
+      (0.3 * height) / (sheetHeight * stock.height),
+    ),
+  );
+  context.fillStyle = pattern;
+  context.fillRect(0, 0, width, height);
+  context.globalCompositeOperation = "multiply";
   context.fillStyle = print.stock;
   context.fillRect(0, 0, width, height);
-  let randomState = 71357;
-  const random = () => {
-    randomState = (randomState * 48271) % 2147483647;
-    return randomState / 2147483647;
-  };
-  for (let fiber = 0; fiber < 14000; fiber++) {
-    const shade = random() > 0.5 ? "88,73,48" : "255,255,245";
-    context.strokeStyle = `rgba(${shade},${random() * 0.055})`;
-    const x = random() * width;
-    const y = random() * height;
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x + random() * 3, y + random() * 0.8);
-    context.stroke();
-  }
+  context.globalCompositeOperation = "source-over";
   const margin = 60;
   const headingY = 220;
   context.fillStyle = print.ink;
@@ -77,7 +82,7 @@ function printedPaper(print: PaperPrint): CanvasTexture {
   return texture;
 }
 
-export function createPaper(width: number, height: number, print: PaperPrint): Mesh {
+export function createPaper(width: number, height: number, print: PaperPrint, maps: PbrMaps): Mesh {
   const geometry = new PlaneGeometry(width, height, 20, 24);
   const positions = geometry.getAttribute("position");
   for (let index = 0; index < positions.count; index++) {
@@ -88,10 +93,21 @@ export function createPaper(width: number, height: number, print: PaperPrint): M
     positions.setZ(index, lift);
   }
   geometry.computeVertexNormals();
+  const surfaceUv = geometry.getAttribute("uv").clone();
+  for (let index = 0; index < surfaceUv.count; index++)
+    surfaceUv.setXY(index, surfaceUv.getX(index) * width, surfaceUv.getY(index) * height);
+  geometry.setAttribute("uv1", surfaceUv);
+  const normalMap = maps.normalMap.clone();
+  normalMap.channel = 1;
+  const roughnessMap = maps.roughnessMap.clone();
+  roughnessMap.channel = 1;
   const paper = new Mesh(
     geometry,
     new MeshStandardMaterial({
-      map: printedPaper(print),
+      map: printedPaper(print, maps, width, height),
+      normalMap,
+      normalScale: new Vector2(0.08, 0.08),
+      roughnessMap,
       roughness: 0.96,
       side: DoubleSide,
     }),

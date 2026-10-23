@@ -27,7 +27,7 @@ const camera = new PerspectiveCamera(62, 1, 0.05, 40);
 camera.position.set(0, 1.55, 0.45);
 const materials = await loadMaterials(renderer);
 const metals = createMetalMaterials(materials);
-const board = createBoard(metals);
+const board = createBoard(metals, materials.paper);
 scene.add(createRoom(materials, metals), createFurniture(materials, metals), board.group);
 batchStaticMeshes(scene, new Set(board.notices.keys()));
 const lighting = illuminate(scene, renderer);

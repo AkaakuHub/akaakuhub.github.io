@@ -1,4 +1,4 @@
-import { MeshPhysicalMaterial } from "three";
+import { MeshPhysicalMaterial, Vector2 } from "three";
 import type { MaterialLibrary } from "../materials/library";
 import { scannedSurface } from "../materials/surface";
 import type { MetalMaterials } from "../materials/metal";
@@ -20,6 +20,9 @@ export function createFurnitureMaterials(maps: MaterialLibrary, metals: MetalMat
     glass: new MeshPhysicalMaterial({
       color: "#dce9df",
       roughness: 0.065,
+      roughnessMap: maps.plastic.roughnessMap,
+      normalMap: maps.plastic.normalMap,
+      normalScale: new Vector2(0.025, 0.025),
       metalness: 0,
       transmission: 0.9,
       thickness: 0.006,

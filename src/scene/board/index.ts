@@ -1,3 +1,4 @@
+import type { PbrMaps } from "../materials/library";
 import { CylinderGeometry, Group, Mesh } from "three";
 import type { Object3D } from "three";
 import { surface } from "../primitives";
@@ -9,7 +10,10 @@ import { createPaper } from "./paper";
 
 export type { Notice } from "./notices";
 
-export function createBoard(metals: MetalMaterials): {
+export function createBoard(
+  metals: MetalMaterials,
+  paperMaps: PbrMaps,
+): {
   group: Group;
   notices: Map<Object3D, Notice>;
 } {
@@ -22,7 +26,7 @@ export function createBoard(metals: MetalMaterials): {
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
-    const paper = createPaper(width, height, notice);
+    const paper = createPaper(width, height, notice, paperMaps);
     sheet.add(paper);
     for (const x of [-width * 0.34, width * 0.34]) {
       const magnet = new Mesh(
