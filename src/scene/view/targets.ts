@@ -10,6 +10,12 @@ export interface InspectionTarget {
   width: number;
   height: number;
 }
+export interface InspectionViewport {
+  width: number;
+  height: number;
+  insetX: number;
+  insetY: number;
+}
 export interface CameraPose {
   position: Vector3;
   quaternion: Quaternion;
@@ -32,13 +38,20 @@ export function roomPose(direction: RoomDirection, heading: number, aspect: numb
   };
 }
 
-export function inspectionPose(target: InspectionTarget, aspect: number): CameraPose {
+export function inspectionPose(target: InspectionTarget, viewport: InspectionViewport): CameraPose {
   target.object.updateWorldMatrix(true, false);
   const fov = 55;
   const halfAngle = Math.tan(MathUtils.degToRad(fov / 2));
+  const aspect = viewport.width / viewport.height;
+  const widthFraction = Math.max(1, viewport.width - viewport.insetX * 2) / viewport.width;
+  const heightFraction = Math.max(1, viewport.height - viewport.insetY * 2) / viewport.height;
   const distance = Math.max(
     target.width / (2 * halfAngle * aspect * 0.82),
-    target.height / (2 * halfAngle * 0.72),
+    target.height / (2 * halfAngle * 0.78),
+    Math.min(
+      target.width / (2 * halfAngle * aspect * widthFraction),
+      target.height / (2 * halfAngle * heightFraction),
+    ),
   );
   const quaternion = target.object.getWorldQuaternion(new Quaternion());
   const position = target.object.getWorldPosition(new Vector3());

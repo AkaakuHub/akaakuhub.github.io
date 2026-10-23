@@ -1,7 +1,13 @@
 import { MathUtils, Quaternion, Vector3 } from "three";
 import type { PerspectiveCamera } from "three";
 import { inspectionPose, isRoomDirection, roomPose } from "./targets";
-import type { CameraPose, InspectionTarget, RoomDirection, ViewState } from "./targets";
+import type {
+  CameraPose,
+  InspectionTarget,
+  InspectionViewport,
+  RoomDirection,
+  ViewState,
+} from "./targets";
 
 export type { ViewState } from "./targets";
 
@@ -10,6 +16,7 @@ export function createView(
   inspections: readonly InspectionTarget[],
   onChange: (state: ViewState) => void,
   invalidate: () => void,
+  getViewport: () => InspectionViewport,
 ) {
   if (inspections.length === 0) throw new Error("掲示用紙が配置されていません。");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -25,7 +32,7 @@ export function createView(
     if (state.mode === "room") return roomPose(state.direction, heading, camera.aspect);
     const inspection = inspections[state.index];
     if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
-    return inspectionPose(inspection, camera.aspect);
+    return inspectionPose(inspection, getViewport());
   }
   function apply(result: CameraPose): void {
     camera.position.copy(result.position);
@@ -40,20 +47,22 @@ export function createView(
       quaternion: camera.quaternion.clone(),
       fov: camera.fov,
     };
+    onChange(state);
     target = pose();
     elapsed = 0;
     duration = seconds;
-    onChange(state);
     invalidate();
   }
   function select(index: number): void {
     if (!isRoomDirection(index)) throw new Error("部屋の向きが見つかりません。");
+    if (state.mode === "room" && state.direction === index) return;
     roomDirection = index;
     if (index < 4) heading = index;
     transition({ mode: "room", direction: index }, 0.85);
   }
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
+    if (state.mode === "notice" && state.index === index) return;
     transition({ mode: "notice", index }, 1.05);
   }
   apply(target);

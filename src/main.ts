@@ -42,6 +42,7 @@ const view = createView(
     ui.setMoving(true);
   },
   invalidate,
+  () => ui.inspectionViewport(),
 );
 let frame = 0;
 let previous = performance.now();
