@@ -338,6 +338,137 @@
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_arm_1k.jpg"
         }
       }
+    },
+    {
+      "id": "Paper001",
+      "name": "Paper 001",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/Paper001",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRApproximated",
+      "maps": {
+        "color": {
+          "file": "Paper001/color.jpg",
+          "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
+          "archiveMember": "Paper001_1K-JPG_Color.jpg",
+          "sha256": "e8db6f5b91f7882f4711ab5b2dc5c2e91f822d4f80a7d0081991532cf5cd9b9a"
+        },
+        "normal": {
+          "file": "Paper001/normal.jpg",
+          "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
+          "archiveMember": "Paper001_1K-JPG_NormalGL.jpg",
+          "sha256": "ae083d9d11e13f686d1de0b5ba30518c3ecac6ec5ec06c2016462c9eb197c0dd"
+        },
+        "roughness": {
+          "file": "Paper001/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
+          "archiveMember": "Paper001_1K-JPG_Roughness.jpg",
+          "sha256": "28bcbbc7648ff0f99a47417b272bf98ae130126f74e8e5de640b7c2defd4e855"
+        }
+      }
+    },
+    {
+      "id": "LeafSet024",
+      "name": "Leaf Set 024",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/LeafSet024",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRPhotogrammetry",
+      "maps": {
+        "color": {
+          "file": "LeafSet024/color.jpg",
+          "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
+          "archiveMember": "LeafSet024_1K-JPG_Color.jpg",
+          "sha256": "f5c6cbf36de217af8ae06cf5d7badd035e04c341594aa618abacc2a9d8dbb8c8"
+        },
+        "normal": {
+          "file": "LeafSet024/normal.jpg",
+          "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
+          "archiveMember": "LeafSet024_1K-JPG_NormalGL.jpg",
+          "sha256": "b184bc151c22381c1b9e377de496fd4e55bd1dcfbbe5717cbbdb0fc7456add12"
+        },
+        "roughness": {
+          "file": "LeafSet024/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
+          "archiveMember": "LeafSet024_1K-JPG_Roughness.jpg",
+          "sha256": "b68cb9e409bfeffec98ee27e01ebc1aa1beda07ffe0c144a17892d9fbc6e28ab"
+        },
+        "opacity": {
+          "file": "LeafSet024/opacity.jpg",
+          "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
+          "archiveMember": "LeafSet024_1K-JPG_Opacity.jpg",
+          "sha256": "1b8e15edfc3b28f7f7607097499768cc7110345a3611d9b75d4bf70c54faef0b"
+        }
+      }
+    },
+    {
+      "id": "Plastic010",
+      "name": "Plastic 010",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/a/Plastic010",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRProcedural",
+      "maps": {
+        "color": {
+          "file": "Plastic010/color.jpg",
+          "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
+          "archiveMember": "Plastic010_1K-JPG_Color.jpg",
+          "sha256": "4a91d8a74184acb5e84fb9ddbfbc12c49102864157c91e2b3b5950133ef05e06"
+        },
+        "normal": {
+          "file": "Plastic010/normal.jpg",
+          "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
+          "archiveMember": "Plastic010_1K-JPG_NormalGL.jpg",
+          "sha256": "cc073c8312edd35f42e038c45861e055f511f7f627dcb04f420324e38b5ce861"
+        },
+        "roughness": {
+          "file": "Plastic010/roughness.jpg",
+          "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
+          "archiveMember": "Plastic010_1K-JPG_Roughness.jpg",
+          "sha256": "02f35e8fdb8f1ba78594a3e43792683276d7f713e53d3002a8c8f53bb35a88cb"
+        }
+      }
+    },
+    {
+      "id": "brown_leather",
+      "name": "Brown Leather",
+      "provider": "Poly Haven",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "source": "https://polyhaven.com/a/brown_leather",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [0.4000000059604645, 0.40000003576278687],
+      "maps": {
+        "color": {
+          "file": "brown_leather/color.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_albedo_1k.jpg",
+          "sha256": "7e9e1d6566d1fd91d4ceb4966c4820361e85d53a7a828b6bab3b2a093a876cd1"
+        },
+        "normal": {
+          "file": "brown_leather/normal.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_nor_gl_1k.jpg",
+          "sha256": "506a0b7650c2dea285e247f26ed2d0d6ec38fc10dd584359f0d203e9c082236d"
+        },
+        "arm": {
+          "file": "brown_leather/arm.jpg",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_arm_1k.jpg",
+          "sha256": "8f40d242830b2c1310470abfaf2df15f52658d01c21d97dd96f0679589677de1"
+        }
+      }
     }
   ]
 }
