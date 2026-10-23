@@ -1,12 +1,17 @@
 import { Group } from "three";
-import { createDesk } from "./desk";
 import { createFurnitureMaterials } from "./materials";
-import { createStorage } from "./storage";
+import { createWorkbench } from "./workbench";
+import { createCabinets } from "./cabinets";
+import { createInstrumentCorner } from "./instrument";
 
 export function createFurniture(): Group {
-  const group = new Group();
-  group.name = "furniture";
+  const furniture = new Group();
+  furniture.name = "furniture";
   const materials = createFurnitureMaterials();
-  group.add(createDesk(materials), createStorage(materials));
-  return group;
+  furniture.add(
+    createWorkbench(materials),
+    createCabinets(materials),
+    createInstrumentCorner(materials),
+  );
+  return furniture;
 }
