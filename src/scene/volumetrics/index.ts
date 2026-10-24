@@ -44,11 +44,9 @@ export class VolumetricPass extends Pass {
   constructor(
     private readonly camera: PerspectiveCamera,
     private readonly sun: DirectionalLight,
-    depth: Texture,
     steps: number,
   ) {
     super();
-    this.uniforms.sceneDepth.value = depth;
     const options = {
       uniforms: this.uniforms,
       vertexShader,
@@ -81,6 +79,8 @@ export class VolumetricPass extends Pass {
     writeBuffer: WebGLRenderTarget,
     readBuffer: WebGLRenderTarget,
   ): void {
+    if (!readBuffer.depthTexture) throw new Error("部屋の深度テクスチャが生成されていません。");
+    this.uniforms.sceneDepth.value = readBuffer.depthTexture;
     const depth = this.sun.shadow.map?.depthTexture;
     if (!depth) throw new Error("太陽光の深度テクスチャが生成されていません。");
     this.uniforms.sunDepth.value = depth;

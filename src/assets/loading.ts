@@ -16,11 +16,11 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   const controller = new AbortController();
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
-    [...materialAssetIds, "lighting/fluorescent.data"].map((id) => [
+    materialAssetIds.map((id) => [
       id,
       {
         identity: `akaakuhub:${id}`,
-        assetType: id.endsWith(".webp") ? "image" : "lighting",
+        assetType: "image",
         label: id,
       },
     ]),

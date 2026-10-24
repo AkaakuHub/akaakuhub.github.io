@@ -5,7 +5,6 @@ import { bindRoomSwitch } from "./interface/room-switch";
 import { bindRoomControls } from "./interface/controls";
 import { assembleClubroom } from "./scene/clubroom";
 import { illuminate } from "./scene/lighting";
-import { createBakedLighting, prepareBakedLighting } from "./scene/lighting/baked";
 import { createRoomAssetLoader } from "./assets/loading";
 import { streamMaterials } from "./scene/materials/stream";
 import { loadMaterials } from "./scene/materials/library";
@@ -33,18 +32,14 @@ const assets = createRoomAssetLoader((summary) => {
   else loading.progress("素材を準備中", summary.succeeded, summary.total);
 });
 const materialLoading = loadMaterials(renderer, assets);
-const lightingReady = prepareBakedLighting(assets);
 const { materials } = materialLoading;
-const [lightingData] = await Promise.all([lightingReady, materialLoading.paperReady]);
+await materialLoading.paperReady;
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const { board, lightSwitch, rocker } = assembleClubroom(scene, materials);
-const bakedLighting = createBakedLighting(scene);
-const { skyRadiance, fluorescentIntensity } = bakedLighting;
-bakedLighting.apply(lightingData);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const lighting = illuminate(scene, renderer, skyRadiance, fluorescentIntensity);
+const lighting = illuminate(scene, renderer);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
 const noticeList = [...board.notices.values()];
 const inspections = [...board.notices].map(([object, notice]) => ({

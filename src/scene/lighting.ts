@@ -1,15 +1,21 @@
-import { Color, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial } from "three";
-import type { Scene, Uniform, Vector3, WebGLRenderer } from "three";
+import {
+  Color,
+  DirectionalLight,
+  HemisphereLight,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+} from "three";
+import type { Scene, WebGLRenderer } from "three";
 import { roomSunlight } from "./daylight/solar";
 import { cameraExposure, photometry, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
+import { createRoomLights } from "./lighting/room-lights";
 
-export function illuminate(
-  scene: Scene,
-  renderer: WebGLRenderer,
-  skyRadiance: Uniform<Vector3>,
-  fluorescentIntensity: Uniform<number>,
-) {
+export function illuminate(scene: Scene, renderer: WebGLRenderer) {
+  const skyLight = new HemisphereLight(0xffffff, 0x000000, 0);
+  scene.add(skyLight);
+  const setFixtures = createRoomLights(scene);
   const sun = new DirectionalLight();
   sun.target.position.set(0, 1.2, 0);
   sun.castShadow = true;
@@ -48,9 +54,8 @@ export function illuminate(
     sun.intensity = state.intensity;
     sun.shadow.needsUpdate = true;
     const sky = unitLuminance(state.sky.clone());
-    skyRadiance.value
-      .set(sky.r, sky.g, sky.b)
-      .multiplyScalar((photometry.skyIlluminance * photometry.scale * state.daylight) / Math.PI);
+    skyLight.color.copy(sky);
+    skyLight.intensity = (photometry.skyIlluminance * photometry.scale * state.daylight) / Math.PI;
     background.copy(state.sky);
     for (const material of skyMaterials) material.color.copy(state.sky);
     renderer.toneMappingExposure = cameraExposure(state.daylight);
@@ -58,7 +63,7 @@ export function illuminate(
   }
 
   function setRoomLights(on: boolean): void {
-    fluorescentIntensity.value = on ? 1 : 0;
+    setFixtures(on);
     for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
     updateReflection(new Date(), true);
   }

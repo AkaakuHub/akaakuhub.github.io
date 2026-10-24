@@ -13,8 +13,7 @@ export function box(
   const key = size.join(":");
   let geometry = geometries.get(key);
   if (!geometry) {
-    const segments = size.map((length) => Math.max(1, Math.ceil(length / 0.18)));
-    geometry = new BoxGeometry(...size, segments[0], segments[1], segments[2]);
+    geometry = new BoxGeometry(...size);
     metricBoxUv(geometry);
     geometries.set(key, geometry);
   }

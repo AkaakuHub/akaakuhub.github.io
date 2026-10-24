@@ -1,6 +1,6 @@
 import manifest from "./manifest.json";
 
-const sources = import.meta.glob<string>(["./materials/**/*.webp", "./lighting/*.data"], {
+const sources = import.meta.glob<string>("./materials/**/*.webp", {
   eager: true,
   query: "?url",
   import: "default",
