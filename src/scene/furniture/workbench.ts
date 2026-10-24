@@ -75,7 +75,7 @@ function createDeskLamp(materials: FurnitureMaterials, surfaceY: number): Group 
   shade.position.set(0.18, 0.275, 0);
   shade.rotation.z = -0.25;
   lamp.add(shade);
-  lamp.position.set(-0.25, surfaceY - 0.0025, -0.57);
+  lamp.position.set(-0.25, surfaceY - 0.0025, -0.31);
   return lamp;
 }
 
