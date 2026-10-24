@@ -6,10 +6,6 @@ import { celestialVisibility, lunarIrradiance } from "./visibility";
 const latitude = 36.5732;
 const longitude = 136.67774;
 const northYaw = 180;
-const directLightGain = 3;
-const peakSunBrightness = 0.9 * directLightGain;
-const moonDisplayRatio = 0.48 / peakSunBrightness;
-const nightSkyDisplayRatio = 0.16 / (peakSunBrightness + 0.24);
 
 function direction(altitude: number, azimuth: number): Vector3 {
   const elevation = MathUtils.degToRad(altitude);
@@ -32,7 +28,7 @@ export function roomCelestialLighting(date: Date) {
   const warmth = (1 - MathUtils.smoothstep(altitude, 1, 15)) * twilight;
   const lunarWeight = MathUtils.smoothstep(-altitude, 6, 12);
   const moonBrightness =
-    moonDisplayRatio *
+    photometry.moonIlluminance *
     lunarIrradiance(fraction, moon.distance) *
     lunarWeight *
     celestialVisibility(moon.altitude);
@@ -41,17 +37,17 @@ export function roomCelestialLighting(date: Date) {
     moonActive ? new Color("#bed2ff") : new Color("#ffad63").lerp(new Color("#fff5e6"), highSun),
   );
   const intensity =
-    photometry.solarIlluminance *
     photometry.scale *
-    (moonActive ? moonBrightness : celestialVisibility(altitude));
+    (moonActive ? moonBrightness : photometry.solarIlluminance * celestialVisibility(altitude));
   const sky = new Color("#071221")
     .lerp(new Color("#657a9f"), twilight)
     .lerp(new Color("#b7d4eb"), highSun);
   sky.lerp(new Color("#c5997d"), warmth * 0.48);
   const skyIntensity =
-    photometry.skyIlluminance *
     photometry.scale *
-    (daylight + nightSkyDisplayRatio * (1 - twilight) + moonBrightness * 0.5);
+    (photometry.skyIlluminance * daylight +
+      photometry.nightSkyIlluminance * (1 - twilight) +
+      moonBrightness * 0.5);
   const source = moonActive ? moon : sun;
   return {
     daylight,

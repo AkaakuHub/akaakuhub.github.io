@@ -35,11 +35,22 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     }
   });
   const background = new Color();
+  const exteriorSky = new Color();
   scene.background = background;
   const updateReflection = createRoomReflection(scene, renderer);
+  let roomLightsOn = true;
+  let daylight = 0;
+
+  function updateExposure(): void {
+    const exposure = cameraExposure(daylight, roomLightsOn);
+    renderer.toneMappingExposure = exposure;
+    background.copy(exteriorSky).multiplyScalar(1 / exposure);
+    for (const material of skyMaterials) material.color.copy(background);
+  }
 
   function update(date: Date, captureReflection = true): void {
     const state = roomCelestialLighting(date);
+    daylight = state.daylight;
     celestialLight.position
       .copy(state.direction)
       .multiplyScalar(16)
@@ -49,15 +60,16 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     celestialLight.shadow.needsUpdate = true;
     const sky = unitLuminance(state.sky.clone());
     fixtures.updateSky(sky, state.skyIntensity / Math.PI);
-    background.copy(state.sky);
-    for (const material of skyMaterials) material.color.copy(state.sky);
-    renderer.toneMappingExposure = cameraExposure(state.daylight);
+    exteriorSky.copy(state.sky);
+    updateExposure();
     if (captureReflection) updateReflection(date);
   }
 
   function setRoomLights(on: boolean): void {
+    roomLightsOn = on;
     fixtures.setRoomLights(on);
     for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
+    updateExposure();
     updateReflection(new Date(), true);
   }
   update(new Date(), false);

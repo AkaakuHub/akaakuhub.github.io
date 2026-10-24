@@ -61,4 +61,8 @@ export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>
     scene.add(merged);
     for (const mesh of meshes) mesh.removeFromParent();
   }
+  scene.traverse((object) => {
+    if (!preserved.has(object)) object.matrixAutoUpdate = false;
+  });
+  scene.updateMatrixWorld(true);
 }

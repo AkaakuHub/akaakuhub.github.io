@@ -16,9 +16,11 @@ Three.jsで描画する部室を入口にした個人サイトです。室内で
 
 天空光は実際の窓ガラスの位置・寸法から矩形光源を作り、室内側へ照らします。色と明るさは太陽の高度と月光に合わせて更新します。蛍光灯と天空光の矩形光源には影マップを使わず、多重反射は計算しません。照明はリアルタイムで計算するため、形状・配置・材質を変更してそのまま確認できます。
 
-チンダル現象の散乱光は通常の照明と同じ影マップを参照し、画面の深度から復元した物体の表面まで視線に沿って積分します。Henyey–Greenstein位相関数とBeer–Lambert則を使い、半解像度の計算結果を深度に応じて合成します。[参考にした描画処理](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/rendering/scattering.hlsl)の原理をもとに、メートル単位の部室用GLSLとして実装しています。参照元の散乱係数0.000762/インチは0.03/メートルへ変換しています。
+チンダル現象の散乱光は通常の照明と同じ影マップを参照し、画面の深度から復元した物体の表面まで視線に沿って積分します。Henyey–Greenstein位相関数とBeer–Lambert則を使い、縦横をそれぞれ4分の1にした解像度で計算して、深度に応じて合成します。スマホは24ステップ、PCは48ステップを使い、合成時には再積分しません。[参考にした描画処理](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/rendering/scattering.hlsl)の原理をもとに、メートル単位の部室用GLSLとして実装しています。参照元の散乱係数0.000762/インチは0.03/メートルへ変換しています。
 
-月光の位相・距離による減衰は[参照元の月光計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_moon.lua)、地平線と大気減衰は[共通の可視率計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_celestial_visibility.lua)に合わせています。夜間の見やすさを保つため、月光と夜の天空光には[参照元の照明設定](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_lighting.lua)の昼夜の強度比を使います。この比率と夜の青みは表示上の設定であり、月光の実照度や実際の色を再現した測光値ではありません。
+月光の位相・距離による減衰は[参照元の月光計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_moon.lua)、地平線と大気減衰は[共通の可視率計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_celestial_visibility.lua)に合わせています。参照元の表示用の強度比は転用せず、月光の基準照度は0.3lux、月のない夜の天空光は0.002luxとしています。[NPSの満月の照度範囲](https://www.nps.gov/subjects/nightskies/upload/FINAL_NPS_The_Power_of_Night_Handbook_lowres_508.pdf)と[夜空の照度の資料](https://parkplanning.nps.gov/showFile.cfm?projectID=60370&sfid=264018)を参考にしています。
+
+消灯時の夜間露出はEV100=2、点灯時はEV100=7とし、昼はEV100=10へ補間します。これは画面上の見やすさを調整する表示設定です。外の空の色は露出を補正してから合成し、室内の消灯による露出変更で夜空まで白くなることを防ぎます。夜の青みも表示上の設定であり、測光値を保証するものではありません。
 
 スマホとPCで同じ空間を描画し、画面の実寸に合わせて画角・描画解像度を調整します。
 

@@ -45,21 +45,6 @@ float phaseFunction(float cosine) {
   return (1.0 - g * g) / (12.5663706 * pow(1.0 + g * g - 2.0 * g * clamp(cosine, -1.0, 1.0), 1.5));
 }
 
-float illuminatedFraction(vec3 start, vec3 finish, float first, float last) {
-  if (abs(first - last) < 0.01) return (first + last) * 0.5;
-  float lower = 0.0;
-  float upper = 1.0;
-  float threshold = (first + last) * 0.5;
-  bool rising = last > first;
-  for (int refinement = 0; refinement < 6; refinement++) {
-    float midpoint = (lower + upper) * 0.5;
-    float visibility = visibilityAt(mix(start, finish, midpoint));
-    if ((visibility < threshold) == rising) lower = midpoint;
-    else upper = midpoint;
-  }
-  return mix(last, first, (lower + upper) * 0.5);
-}
-
 vec4 integrateScattering(vec2 screenUv) {
   vec3 delta = surfaceAt(screenUv) - eye;
   float surfaceDistance = length(delta);
@@ -69,19 +54,12 @@ vec4 integrateScattering(vec2 screenUv) {
   if (segment <= 0.0 || length(lightRadiance) <= 0.0) return vec4(0.0, 0.0, 0.0, surfaceDistance);
   float stepSize = segment / float(SCATTER_STEPS);
   float illuminated = 0.0;
-  vec3 start = eye + direction * interval.x;
-  float first = visibilityAt(start);
   for (int index = 0; index < SCATTER_STEPS; index++) {
     float distanceAlongRay = interval.x + (float(index) + 0.5) * stepSize;
     vec3 world = eye + direction * distanceAlongRay;
-    vec3 finish = eye + direction * (interval.x + float(index + 1) * stepSize);
-    float last = visibilityAt(finish);
-    float fraction = illuminatedFraction(start, finish, first, last);
     float lightPath = roomInterval(world, lightDirection).y;
     float transmittance = exp(-extinction * (distanceAlongRay - interval.x + lightPath));
-    illuminated += fraction * transmittance * stepSize;
-    start = finish;
-    first = last;
+    illuminated += visibilityAt(world) * transmittance * stepSize;
   }
   float phase = phaseFunction(dot(direction, lightDirection));
   return vec4(lightRadiance * (extinction * illuminated * phase), surfaceDistance);

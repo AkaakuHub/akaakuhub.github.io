@@ -4,7 +4,8 @@ uniform vec2 scatteringSize;
 varying vec2 vUv;
 
 void main() {
-  float surfaceDistance = length(surfaceAt(vUv) - eye);
+  vec3 delta = surfaceAt(vUv) - eye;
+  float surfaceDistance = length(delta);
   vec2 pixel = vUv * scatteringSize - 0.5;
   vec2 base = floor(pixel);
   vec2 fraction = fract(pixel);
@@ -24,8 +25,7 @@ void main() {
     }
   }
   if (total > 0.00001) radiance /= total;
-  else radiance = integrateScattering(vUv).rgb;
-  vec3 direction = normalize(surfaceAt(vUv) - eye);
+  vec3 direction = delta / max(surfaceDistance, 0.0001);
   vec2 interval = roomInterval(eye, direction);
   float segment = max(0.0, min(surfaceDistance, interval.y) - interval.x);
   gl_FragColor = vec4(texture2D(sceneColor, vUv).rgb * exp(-extinction * segment) + radiance, 1.0);

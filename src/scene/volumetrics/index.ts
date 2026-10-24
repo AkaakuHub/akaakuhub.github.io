@@ -68,10 +68,10 @@ export class VolumetricPass extends Pass {
   }
 
   override setSize(width: number, height: number): void {
-    const halfWidth = Math.max(1, Math.ceil(width / 2));
-    const halfHeight = Math.max(1, Math.ceil(height / 2));
-    this.target.setSize(halfWidth, halfHeight);
-    this.uniforms.scatteringSize.value.set(halfWidth, halfHeight);
+    const scatteringWidth = Math.max(1, Math.ceil(width / 4));
+    const scatteringHeight = Math.max(1, Math.ceil(height / 4));
+    this.target.setSize(scatteringWidth, scatteringHeight);
+    this.uniforms.scatteringSize.value.set(scatteringWidth, scatteringHeight);
   }
 
   override render(

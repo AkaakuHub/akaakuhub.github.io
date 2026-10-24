@@ -1,11 +1,11 @@
 import type { PerspectiveCamera, WebGLRenderer } from "three";
-import type { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import type { createRendering } from "./rendering";
 
 export function observeViewport(
   canvas: HTMLCanvasElement,
   camera: PerspectiveCamera,
   renderer: WebGLRenderer,
-  composer: EffectComposer,
+  composer: ReturnType<typeof createRendering>,
   onResize: () => void,
 ): void {
   const container = canvas.parentElement;

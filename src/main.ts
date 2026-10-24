@@ -92,7 +92,7 @@ function render(time: number) {
     frame = requestAnimationFrame(render);
     return;
   }
-  const moving = view.update(Math.min((time - previous) / 1000, 0.05));
+  const moving = view.update((time - previous) / 1000);
   ui.setMoving(moving);
   previous = time;
   lastRendered = time;
