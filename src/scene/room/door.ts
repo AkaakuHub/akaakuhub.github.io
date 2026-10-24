@@ -1,6 +1,6 @@
 import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
-import { CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
+import { BoxGeometry, CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { hinge } from "../details/hinge";
@@ -29,7 +29,12 @@ export function createDoor(
   box(door, [0.06, 0.86, 0.26], [0.027, 1.62, -0.37], wood);
   box(door, [0.06, 0.86, 0.2], [0.027, 1.62, 0.4], wood);
   const glass = props.frostedGlass;
-  box(door, [0.012, 0.82, 0.53], [-0.023, 1.62, 0.03], glass).castShadow = false;
+  const paneGeometry = new BoxGeometry(0.012, 0.812, 0.512, 1, 17, 11);
+  metricBoxUv(paneGeometry);
+  const pane = new Mesh(paneGeometry, glass);
+  pane.position.set(-0.023, 1.62, 0.03);
+  pane.receiveShadow = true;
+  door.add(pane);
   for (const z of [-0.24, 0.3]) {
     box(door, [0.028, 0.86, 0.027], [-0.027, 1.62, z], trim);
   }

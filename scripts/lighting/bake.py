@@ -27,7 +27,7 @@ async def main():
         async def expose(route):
             response = await route.fetch(headers={key: value for key, value in route.request.headers.items() if key.lower() not in {"if-none-match", "if-modified-since"}})
             source = await response.text()
-            source = source.replace("applyBakedLighting(scene, lightingData);", "")
+            source = source.replace("bakedLighting.apply(lightingData)", "void 0")
             await route.fulfill(response=response, body=source + "\nglobalThis.bakeScene = scene;")
 
         await page.route("**/src/main.ts*", expose)

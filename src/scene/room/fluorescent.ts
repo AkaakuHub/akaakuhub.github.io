@@ -1,7 +1,13 @@
 import { CylinderGeometry, Group, Mesh, MeshStandardMaterial } from "three";
 import type { MetalMaterials } from "../materials/metal";
-import { fixturePositions, fluorescentColor } from "../lighting/fixtures";
-import { photometry } from "../lighting/photometry";
+import {
+  fixtureHeight,
+  fixturePositions,
+  fluorescentColor,
+  fluorescentRadiance,
+  tubeLength,
+  tubeRadius,
+} from "../lighting/fixtures";
 import { box } from "../primitives";
 import { roundBox } from "../furniture/geometry";
 
@@ -10,8 +16,7 @@ export function createFluorescentFixtures(metals: MetalMaterials): Group {
   const tubeMaterial = new MeshStandardMaterial({
     color: "#f3f3ed",
     emissive: fluorescentColor,
-    emissiveIntensity:
-      (photometry.tubeLumens * photometry.scale) / (2 * Math.PI ** 2 * 0.013 * 1.06),
+    emissiveIntensity: fluorescentRadiance,
     roughness: 0.32,
   });
   for (const z of fixturePositions) {
@@ -33,14 +38,17 @@ export function createFluorescentFixtures(metals: MetalMaterials): Group {
         );
         const cap = new Mesh(new CylinderGeometry(0.0135, 0.0135, 0.019, 16), metals.aluminum);
         cap.rotation.x = Math.PI / 2;
-        cap.position.set(x, 2.776, z + edge * 0.529);
+        cap.position.set(x, fixtureHeight, z + edge * 0.529);
         cap.castShadow = cap.receiveShadow = true;
         fixtures.add(cap);
       }
-      const tube = new Mesh(new CylinderGeometry(0.013, 0.013, 1.04, 16), tubeMaterial);
+      const tube = new Mesh(
+        new CylinderGeometry(tubeRadius, tubeRadius, tubeLength, 16),
+        tubeMaterial,
+      );
       tube.name = "room-fluorescent";
       tube.rotation.x = Math.PI / 2;
-      tube.position.set(x, 2.776, z);
+      tube.position.set(x, fixtureHeight, z);
       fixtures.add(tube);
     }
   }

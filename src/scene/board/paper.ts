@@ -32,6 +32,7 @@ function printedPaper(
   const width = 640;
   const height = 896;
   const stock = maps.map.image;
+  if (!stock) throw new Error("掲示用紙の画像が準備されていません。");
   const pattern = context.createPattern(stock, "repeat");
   if (!pattern) throw new Error("紙の繊維を描画できませんでした。");
   pattern.setTransform(
@@ -99,16 +100,13 @@ export function createPaper(width: number, height: number, print: PaperPrint, ma
   geometry.setAttribute("uv1", surfaceUv);
   const normalMap = maps.normalMap.clone();
   normalMap.channel = 1;
-  const roughnessMap = maps.roughnessMap.clone();
-  roughnessMap.channel = 1;
   const paper = new Mesh(
     geometry,
     new MeshStandardMaterial({
       map: printedPaper(print, maps, width, height),
       normalMap,
-      normalScale: new Vector2(0.08, 0.08),
-      roughnessMap,
-      roughness: 0.96,
+      normalScale: new Vector2(0.04, 0.04),
+      roughness: 1,
       side: DoubleSide,
     }),
   );

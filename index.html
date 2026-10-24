@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" class="h-full overflow-hidden bg-[#e7e4db] font-sans text-[#303b33] antialiased">
+<html lang="ja" class="h-full overflow-hidden bg-[#111a18] font-sans text-[#303b33] antialiased">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -13,31 +13,16 @@
   </head>
   <body class="m-0 h-full w-full overflow-hidden">
     <div id="app" class="h-full w-full overflow-hidden">
-      <div
-        class="loading fixed inset-0 z-20 flex flex-col bg-[#e7e4db] p-[max(1.5rem,env(safe-area-inset-left))] text-[#303b33]"
-      >
-        <span class="text-[17px] font-medium tracking-tight">AkaakuHub</span>
-        <div class="m-auto w-full max-w-80 pb-12">
-          <output
-            data-loading-value
-            class="mb-8 block min-h-14 text-5xl font-light tabular-nums tracking-tight"
-            aria-live="off"
-          ></output>
-          <p data-loading-label class="mb-5 text-sm" role="status" aria-live="polite">
-            アプリを読み込み中
-          </p>
+      <div class="loading" role="status" aria-live="polite">
+        <div class="loading-content">
+          <h1 class="loading-title">AkaakuHub</h1>
+          <span data-loading-label class="sr-only">部室を読み込んでいます</span>
           <progress
             data-loading-progress
             aria-label="読み込みの進捗"
-            class="block h-1 w-full overflow-hidden rounded-full accent-[#456253] [&[hidden]]:hidden [&::-webkit-progress-bar]:bg-[#d2d5c9] [&::-webkit-progress-value]:bg-[#456253] [&::-moz-progress-bar]:bg-[#456253]"
+            class="loading-progress"
           ></progress>
-          <button
-            data-loading-retry
-            class="mt-4 min-h-11 cursor-pointer rounded-md border border-[#456253]/30 px-4 text-sm hover:bg-[#456253]/10 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#456253] [&[hidden]]:hidden"
-            hidden
-          >
-            再読み込み
-          </button>
+          <button data-loading-retry class="loading-retry" hidden>再読み込み</button>
         </div>
       </div>
     </div>

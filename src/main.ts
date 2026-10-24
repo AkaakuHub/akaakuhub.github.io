@@ -5,8 +5,9 @@ import { bindRoomControls } from "./interface/controls";
 import { createBoard } from "./scene/board";
 import { createFurniture } from "./scene/furniture";
 import { illuminate } from "./scene/lighting";
-import { applyBakedLighting, prepareBakedLighting } from "./scene/lighting/baked";
+import { createBakedLighting, prepareBakedLighting } from "./scene/lighting/baked";
 import { createRoomAssetLoader } from "./assets/loading";
+import { streamMaterials } from "./scene/materials/stream";
 import { loadMaterials } from "./scene/materials/library";
 import { createMetalMaterials } from "./scene/materials/metal";
 import { createPropMaterials } from "./scene/materials/props";
@@ -35,10 +36,10 @@ const assets = createRoomAssetLoader((summary) => {
   if (failure) loading.fail(failure.reason);
   else loading.progress("素材を準備中", summary.succeeded, summary.total);
 });
-const [materials, lightingData] = await Promise.all([
-  loadMaterials(renderer, assets),
-  prepareBakedLighting(assets),
-]);
+const materialLoading = loadMaterials(renderer, assets);
+const lightingReady = prepareBakedLighting(assets);
+const { materials } = materialLoading;
+const [lightingData] = await Promise.all([lightingReady, materialLoading.paperReady]);
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const metals = createMetalMaterials(materials);
@@ -50,11 +51,12 @@ scene.add(
   board.group,
 );
 batchStaticMeshes(scene, new Set(board.notices.keys()));
-applyBakedLighting(scene, lightingData);
+const bakedLighting = createBakedLighting(scene);
+const { skyRadiance } = bakedLighting;
+bakedLighting.apply(lightingData);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const lighting = illuminate(scene, renderer);
-await renderer.compileAsync(scene, camera);
+const lighting = illuminate(scene, renderer, skyRadiance);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
 const noticeList = [...board.notices.values()];
 const inspections = [...board.notices].map(([object, notice]) => ({
@@ -76,9 +78,9 @@ let frame = 0;
 let previous = performance.now();
 let lastRendered = 0;
 let ready = false;
+let prepared = false;
 const compact = window.matchMedia("(pointer: coarse)");
 
-bindRoomControls(root, ui, view, camera, scene, board.notices);
 observeViewport(ui.canvas, camera, renderer, rendering, () => {
   view.resize();
   invalidate();
@@ -86,7 +88,7 @@ observeViewport(ui.canvas, camera, renderer, rendering, () => {
 
 function updateTime() {
   if (document.hidden) return;
-  lighting.update(new Date());
+  lighting.update(new Date(), prepared);
   renderer.shadowMap.needsUpdate = true;
   invalidate();
 }
@@ -112,7 +114,7 @@ function render(time: number) {
   previous = time;
   lastRendered = time;
   rendering.render();
-  if (!ready) {
+  if (!ready && prepared) {
     loading.complete();
     ready = true;
   }
@@ -123,4 +125,17 @@ function invalidate() {
   previous = performance.now() - 16;
   frame = requestAnimationFrame(render);
 }
+const streamed = streamMaterials(scene, materialLoading.pending, invalidate);
 updateTime();
+await new Promise<void>((resolve) =>
+  requestAnimationFrame(() => {
+    rendering.render();
+    resolve();
+  }),
+);
+await Promise.all([materialLoading.ready, streamed]);
+prepared = true;
+lighting.update(new Date());
+await renderer.compileAsync(scene, camera);
+bindRoomControls(root, ui, view, camera, scene, board.notices);
+invalidate();

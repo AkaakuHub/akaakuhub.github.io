@@ -3,6 +3,8 @@ import type { PbrMaps } from "../library";
 import { scannedSurface } from "../surface";
 
 export function bookLabelMaterial(paper: PbrMaps) {
+  const stock = paper.map.image;
+  if (!stock) throw new Error("背表紙の画像が準備されていません。");
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 1024;
   const context = canvas.getContext("2d");
@@ -28,7 +30,7 @@ export function bookLabelMaterial(paper: PbrMaps) {
   for (const [index, title] of titles.entries()) {
     const x = (index % 4) * 256;
     const y = Math.floor(index / 4) * 256;
-    context.drawImage(paper.map.image, x, y, 256, 256);
+    context.drawImage(stock, x, y, 256, 256);
     context.fillStyle = "#29382f";
     context.font = "500 62px serif";
     context.textAlign = "center";
@@ -54,12 +56,14 @@ export function bookLabelMaterial(paper: PbrMaps) {
 }
 
 export function pageEdgeMaterial(paper: PbrMaps) {
+  const stock = paper.map.image;
+  if (!stock) throw new Error("小口の画像が準備されていません。");
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 256;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("本の小口を描画できませんでした。");
-  context.drawImage(paper.map.image, 0, 0, 1024, 256);
+  context.drawImage(stock, 0, 0, 1024, 256);
   for (let page = 0; page < 16; page++) {
     context.fillStyle = `rgba(76,65,44,${0.025 + (page % 5) * 0.008})`;
     context.fillRect(0, page * 16, 1024, 2);

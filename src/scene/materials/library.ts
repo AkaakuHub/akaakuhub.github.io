@@ -5,73 +5,53 @@ import { createTextureLoader } from "./textures";
 import type { RoomAssetLoader } from "../../assets/loading";
 
 export interface PbrMaps {
-  map: Texture<ImageBitmap>;
-  normalMap: Texture<ImageBitmap>;
-  roughnessMap: Texture<ImageBitmap>;
-  aoMap: Texture<ImageBitmap> | null;
-  alphaMap: Texture<ImageBitmap> | null;
+  map: Texture<ImageBitmap | null>;
+  normalMap: Texture<ImageBitmap | null>;
+  roughnessMap: Texture<ImageBitmap | null>;
+  aoMap: Texture<ImageBitmap | null> | null;
+  alphaMap: Texture<ImageBitmap | null> | null;
 }
 
 export type MetalMaps = Pick<PbrMaps, "normalMap">;
 
-export async function loadMaterials(renderer: WebGLRenderer, assets: RoomAssetLoader) {
-  const texture = createTextureLoader(renderer, assets);
-  async function loadSet({ id, meters, format }: SurfaceDefinition): Promise<PbrMaps> {
+export function loadMaterials(renderer: WebGLRenderer, assets: RoomAssetLoader) {
+  const loader = createTextureLoader(renderer, assets);
+  const { texture } = loader;
+  function loadSet({ id, meters, format }: SurfaceDefinition): PbrMaps {
     const packed = format === "arm";
-    const [map, normalMap, roughnessMap, aoMap, alphaMap] = await Promise.all([
-      texture(id, "color", meters),
-      texture(id, "normal", meters),
-      texture(id, packed ? "arm" : "roughness", meters),
-      packed ? texture(id, "arm", meters) : Promise.resolve(null),
-      format === "leaf" ? texture(id, "opacity", meters) : Promise.resolve(null),
-    ]);
-    return { map, normalMap, roughnessMap, aoMap, alphaMap };
+    return {
+      map: texture(id, "color", meters),
+      normalMap: texture(id, "normal", meters),
+      roughnessMap: texture(id, packed ? "arm" : "roughness", meters),
+      aoMap: packed ? texture(id, "arm", meters) : null,
+      alphaMap: format === "leaf" ? texture(id, "opacity", meters) : null,
+    };
   }
-  async function loadMetal({ id, meters }: MetalDefinition): Promise<MetalMaps> {
-    const normalMap = await texture(id, "normal", meters);
+  function loadMetal({ id, meters }: MetalDefinition): MetalMaps {
+    const normalMap = texture(id, "normal", meters);
     return { normalMap };
   }
-  const [
-    floor,
-    plaster,
-    ash,
-    walnut,
-    fabric,
-    aluminum,
-    steel,
-    brass,
-    powder,
-    paper,
-    plastic,
-    leaves,
-  ] = await Promise.all([
-    loadSet(materialDefinitions.floor),
-    loadSet(materialDefinitions.plaster),
-    loadSet(materialDefinitions.ash),
-    loadSet(materialDefinitions.walnut),
-    loadSet(materialDefinitions.fabric),
-    loadMetal(materialDefinitions.aluminum),
-    loadMetal(materialDefinitions.steel),
-    loadMetal(materialDefinitions.brass),
-    loadMetal(materialDefinitions.powder),
-    loadSet(materialDefinitions.paper),
-    loadSet(materialDefinitions.plastic),
-    loadSet(materialDefinitions.leaves),
-  ]);
-  return {
-    floor,
-    plaster,
-    ash,
-    walnut,
-    fabric,
-    aluminum,
-    steel,
-    brass,
-    powder,
-    paper,
-    plastic,
-    leaves,
+  const materials = {
+    floor: loadSet(materialDefinitions.floor),
+    plaster: loadSet(materialDefinitions.plaster),
+    ash: loadSet(materialDefinitions.ash),
+    walnut: loadSet(materialDefinitions.walnut),
+    fabric: loadSet(materialDefinitions.fabric),
+    aluminum: loadMetal(materialDefinitions.aluminum),
+    steel: loadMetal(materialDefinitions.steel),
+    brass: loadMetal(materialDefinitions.brass),
+    powder: loadMetal(materialDefinitions.powder),
+    paper: loadSet(materialDefinitions.paper),
+    plastic: loadSet(materialDefinitions.plastic),
+    leaves: loadSet(materialDefinitions.leaves),
   };
+  const ready = Promise.all(loader.pending.values());
+  const paperReady = Promise.all(
+    [materials.paper.map, materials.paper.normalMap, materials.paper.roughnessMap].map((map) =>
+      loader.pending.get(map),
+    ),
+  );
+  return { materials, ready, paperReady, pending: loader.pending };
 }
 
-export type MaterialLibrary = Awaited<ReturnType<typeof loadMaterials>>;
+export type MaterialLibrary = ReturnType<typeof loadMaterials>["materials"];

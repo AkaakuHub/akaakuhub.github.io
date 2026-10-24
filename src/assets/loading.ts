@@ -1,14 +1,12 @@
-import {
-  reduceArtifactLoadEntryEvent,
-  resolveArtifactLoadSummary,
-  runArtifactLoadStep,
-} from "unified-asset-loader";
+import { runArtifactLoadStep } from "unified-asset-loader/application/artifactLoadWorkflow";
+import { reduceArtifactLoadEntryEvent } from "unified-asset-loader/domain/artifactLoadEntryState";
 import type {
   ArtifactLoadEntryEvent,
   ArtifactLoadEntryState,
-  ArtifactLoadSummary,
-} from "unified-asset-loader";
-import { loadBinaryAsset } from "unified-asset-loader/browser";
+} from "unified-asset-loader/domain/artifactLoadEntryState";
+import { resolveArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
+import type { ArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
+import { loadBinaryAsset } from "unified-asset-loader/browser/loadBinaryAsset";
 import { asset } from "./catalog";
 import { materialAssetIds } from "./materials";
 

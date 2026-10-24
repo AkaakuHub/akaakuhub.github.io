@@ -32,20 +32,21 @@ function caster(
   frame: Material,
   rubber: Material,
 ): void {
-  box(parent, [0.035, 0.07, 0.035], [x, 0.11, z], frame);
+  box(parent, [0.025, 0.034, 0.025], [x, 0.12, z], frame);
+  box(parent, [0.05, 0.008, 0.046], [x, 0.103, z], frame);
   for (const side of [-1, 1]) {
-    box(parent, [0.008, 0.043, 0.046], [x + side * 0.021, 0.066, z], frame);
+    box(parent, [0.008, 0.066, 0.046], [x + side * 0.021, 0.074, z], frame);
   }
   const wheel = new Mesh(metricCylinderGeometry(0.047, 0.032), rubber);
   wheel.rotation.z = Math.PI / 2;
-  wheel.position.set(x, 0.049, z);
+  wheel.position.set(x, 0.047, z);
   wheel.castShadow = true;
   wheel.receiveShadow = true;
   parent.add(wheel);
   const hub = metricCylinderGeometry(0.023, 0.034);
-  hardware.add(hub, frame, [x, 0.049, z], [0, 0, Math.PI / 2]);
+  hardware.add(hub, frame, [x, 0.047, z], [0, 0, Math.PI / 2]);
   for (const side of [-1, 1])
-    hardware.bolt(frame, [x + side * 0.027, 0.049, z], [0, (side * Math.PI) / 2, 0]);
+    hardware.bolt(frame, [x + side * 0.027, 0.047, z], [0, (side * Math.PI) / 2, 0]);
   hub.dispose();
 }
 
@@ -91,7 +92,7 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
     const cap = roundBox(frame, [0.055, 0.008, 0.068], [x, 1.828, -0.012], rubber, 0.004);
     cap.name = "stand-tube-endcap";
     const brace = box(frame, [0.026, 0.78, 0.027], [x, 0.54, -0.13], coating);
-    brace.rotation.x = -0.3;
+    brace.rotation.x = 0.3;
   }
   box(frame, [2.56, 0.035, 0.035], [0, 0.42, -0.06], coating);
   roundBox(frame, [1.78, 0.025, 0.13], [0.15, 1.025, 0.08], aluminum, 0.008);

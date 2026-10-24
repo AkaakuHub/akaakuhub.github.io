@@ -10,13 +10,25 @@ import type { WebGLRenderer } from "three";
 import type { RoomAssetLoader } from "../../assets/loading";
 
 export function createTextureLoader(renderer: WebGLRenderer, assets: RoomAssetLoader) {
-  const pending = new Map<string, Promise<Texture<ImageBitmap>>>();
+  const textures = new Map<string, Texture<ImageBitmap | null>>();
+  const pending = new Map<Texture<ImageBitmap | null>, Promise<void>>();
   const anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  return (id: string, file: string, meters: number): Promise<Texture<ImageBitmap>> => {
+  function texture(id: string, file: string, meters: number): Texture<ImageBitmap | null> {
     const key = `${id}/${file}`;
-    let task = pending.get(key);
-    if (!task) {
-      task = assets.load(`materials/${key}.webp`, async (bytes) => {
+    const existing = textures.get(key);
+    if (existing) return existing;
+    const result = new Texture<ImageBitmap | null>(null);
+    result.name = key;
+    result.colorSpace = file === "color" ? SRGBColorSpace : NoColorSpace;
+    result.wrapS = result.wrapT = RepeatWrapping;
+    result.repeat.set(1 / meters, 1 / meters);
+    result.magFilter = LinearFilter;
+    result.minFilter = LinearMipmapLinearFilter;
+    result.anisotropy = anisotropy;
+    textures.set(key, result);
+    pending.set(
+      result,
+      assets.load(`materials/${key}.webp`, async (bytes) => {
         const bitmap = await createImageBitmap(
           new Blob([Uint8Array.from(bytes)], { type: "image/webp" }),
           {
@@ -25,20 +37,12 @@ export function createTextureLoader(renderer: WebGLRenderer, assets: RoomAssetLo
             colorSpaceConversion: "none",
           },
         );
-        const texture = new Texture(bitmap);
-        texture.name = key;
-        texture.colorSpace = file === "color" ? SRGBColorSpace : NoColorSpace;
-        texture.wrapS = texture.wrapT = RepeatWrapping;
-        texture.repeat.set(1 / meters, 1 / meters);
-        texture.magFilter = LinearFilter;
-        texture.minFilter = LinearMipmapLinearFilter;
-        texture.anisotropy = anisotropy;
-        texture.needsUpdate = true;
-        renderer.initTexture(texture);
-        return texture;
-      });
-      pending.set(key, task);
-    }
-    return task;
-  };
+        result.image = bitmap;
+        result.needsUpdate = true;
+        renderer.initTexture(result);
+      }),
+    );
+    return result;
+  }
+  return { texture, pending };
 }

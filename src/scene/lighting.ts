@@ -1,11 +1,10 @@
-import { Color, DirectionalLight, Mesh, MeshBasicMaterial, RectAreaLight } from "three";
-import type { Scene, WebGLRenderer } from "three";
-import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
+import { Color, DirectionalLight, Mesh, MeshBasicMaterial } from "three";
+import type { Scene, Uniform, Vector3, WebGLRenderer } from "three";
 import { roomSunlight } from "./daylight/solar";
 import { cameraExposure, photometry, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
 
-export function illuminate(scene: Scene, renderer: WebGLRenderer) {
+export function illuminate(scene: Scene, renderer: WebGLRenderer, skyRadiance: Uniform<Vector3>) {
   const sun = new DirectionalLight();
   sun.target.position.set(0, 1.2, 0);
   sun.castShadow = true;
@@ -21,11 +20,6 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   sun.shadow.radius = 2;
   scene.add(sun, sun.target);
 
-  RectAreaLightUniformsLib.init();
-  const skylight = new RectAreaLight(0xffffff, 0, 3.8, 1.48);
-  skylight.position.set(-2.58, 1.78, 0);
-  skylight.lookAt(0, 1.78, 0);
-  scene.add(skylight);
   const skyMaterials = new Set<MeshBasicMaterial>();
   scene.traverse((object) => {
     if (!(object instanceof Mesh)) return;
@@ -39,20 +33,22 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   scene.background = background;
   const updateReflection = createRoomReflection(scene, renderer);
 
-  function update(date: Date): void {
+  function update(date: Date, captureReflection = true): void {
     const state = roomSunlight(date);
     sun.position.copy(state.direction).multiplyScalar(16).add(sun.target.position);
     sun.color.copy(state.color);
     sun.intensity = state.intensity;
     sun.shadow.needsUpdate = true;
-    unitLuminance(skylight.color.copy(state.sky));
-    skylight.intensity = (photometry.skyIlluminance * photometry.scale * state.daylight) / Math.PI;
+    const sky = unitLuminance(state.sky.clone());
+    skyRadiance.value
+      .set(sky.r, sky.g, sky.b)
+      .multiplyScalar((photometry.skyIlluminance * photometry.scale * state.daylight) / Math.PI);
     background.copy(state.sky);
     for (const material of skyMaterials) material.color.copy(state.sky);
     renderer.toneMappingExposure = cameraExposure(state.daylight);
-    updateReflection(date);
+    if (captureReflection) updateReflection(date);
   }
 
-  update(new Date());
+  update(new Date(), false);
   return { sun, update };
 }

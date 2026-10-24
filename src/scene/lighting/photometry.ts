@@ -6,9 +6,6 @@ export const photometry = {
   solarIlluminance: 120_000,
   skyIlluminance: 18_000,
   tubeLumens: 3350,
-  tubesPerFixture: 2,
-  fixtureWidth: 0.36,
-  fixtureLength: 1.03,
   nightEv100: 7,
   dayEv100: 10,
 } as const;

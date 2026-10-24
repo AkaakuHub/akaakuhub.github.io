@@ -1,1 +1,90 @@
 @import "tailwindcss";
+
+#app canvas {
+  filter: blur(var(--loading-blur, 0px));
+  transition:
+    filter 650ms ease,
+    transform 900ms ease;
+}
+
+#app[data-loading] canvas {
+  transform: scale(1.04);
+}
+
+#app[data-loading] .room-header,
+#app[data-loading] .navigation,
+#app[data-loading] .board-action {
+  visibility: hidden;
+}
+
+.loading {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  align-items: end;
+  padding: max(2rem, env(safe-area-inset-bottom)) max(2rem, env(safe-area-inset-left));
+  color: #f5f3e9;
+  background: linear-gradient(transparent 45%, #111a18b3);
+  transition: opacity 650ms ease;
+}
+
+.loading-content {
+  width: min(100%, 22rem);
+  margin: 0 auto 6vh;
+}
+
+.loading-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.loading-progress {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border: 0;
+  background: #ffffff30;
+  accent-color: #f5f3e9;
+}
+
+.loading-progress::-webkit-progress-bar {
+  background: #ffffff30;
+}
+.loading-progress::-webkit-progress-value {
+  background: #f5f3e9;
+}
+.loading-progress::-moz-progress-bar {
+  background: #f5f3e9;
+}
+.loading-progress[hidden],
+.loading-retry[hidden] {
+  display: none;
+}
+.loading-complete {
+  opacity: 0;
+  pointer-events: none;
+}
+.loading-error {
+  background: #111a18e6;
+}
+.loading-error .loading-title {
+  display: none;
+}
+.loading-retry {
+  margin-top: 1rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ffffff40;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app canvas,
+  .loading {
+    transition: none;
+  }
+}
