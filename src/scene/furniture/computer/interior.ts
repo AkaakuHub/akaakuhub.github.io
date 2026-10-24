@@ -1,14 +1,4 @@
-import {
-  CanvasTexture,
-  CatmullRomCurve3,
-  Group,
-  Mesh,
-  MeshStandardMaterial,
-  PlaneGeometry,
-  SRGBColorSpace,
-  TubeGeometry,
-  Vector3,
-} from "three";
+import { CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
 import type { Material } from "three";
 import { box } from "../../primitives";
 import { roundBox } from "../geometry";
@@ -21,39 +11,7 @@ function wire(
   material: Material,
 ) {
   const curve = new CatmullRomCurve3(points.map((point) => new Vector3(...point)));
-  parent.add(new Mesh(new TubeGeometry(curve, 24, radius, 6, false), material));
-}
-
-function gpuLabel(): Mesh {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1024;
-  canvas.height = 96;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("GPUの表示を描画できません。");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#75c9ff";
-  context.font = "700 62px sans-serif";
-  context.fillText("AERO", 25, 70);
-  context.fillStyle = "#777b7b";
-  context.font = "600 43px sans-serif";
-  context.fillText("GEFORCE RTX", 540, 68);
-  const map = new CanvasTexture(canvas);
-  map.colorSpace = SRGBColorSpace;
-  const label = new Mesh(
-    new PlaneGeometry(0.3, 0.028),
-    new MeshStandardMaterial({
-      map,
-      transparent: true,
-      depthWrite: false,
-      roughness: 1,
-      emissive: "#ffffff",
-      emissiveMap: map,
-      emissiveIntensity: 0.45,
-    }),
-  );
-  label.rotation.y = -Math.PI / 2;
-  label.position.set(-0.081, 0.155, -0.01);
-  return label;
+  parent.add(new Mesh(new TubeGeometry(curve, 12, radius, 4, false), material));
 }
 
 export function computerInterior(white: Material, metal: Material, dark: Material): Group {
@@ -70,7 +28,6 @@ export function computerInterior(white: Material, metal: Material, dark: Materia
   for (let index = 0; index < 70; index++)
     box(interior, [0.15, 0.038, 0.001], [0.002, 0.158, -0.162 + index * 0.0044], metal);
   for (const y of [0.134, 0.18]) box(interior, [0.006, 0.007, 0.326], [-0.078, y, -0.01], white);
-  interior.add(gpuLabel());
   for (const offset of [-0.01, 0.01])
     wire(
       interior,

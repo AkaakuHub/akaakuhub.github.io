@@ -2,7 +2,6 @@ import { DoubleSide, Vector2 } from "three";
 import type { MaterialLibrary } from "../library";
 import { physicalSurface, scannedSurface } from "../surface";
 import { bookLabelMaterial, pageEdgeMaterial } from "./books";
-import { stationDisplay } from "./electronics";
 
 export function createPropMaterials(maps: MaterialLibrary) {
   const cloth = (color: string) =>
@@ -22,7 +21,6 @@ export function createPropMaterials(maps: MaterialLibrary) {
       clearcoatRoughness: 0.5,
     });
   return {
-    stationDisplay: stationDisplay(maps.plastic),
     glass: physicalSurface(maps.plastic, {
       map: null,
       color: "#f5faf7",
@@ -68,8 +66,6 @@ export function createPropMaterials(maps: MaterialLibrary) {
     }),
     plasticIvory: plastic("#e4decb", 0.8),
     plasticGraphite: plastic("#303633", 0.9),
-    cuttingMat: plastic("#4d7065", 1),
-    signalRed: plastic("#b94c35", 0.4),
     foliage: physicalSurface(maps.leaves, {
       color: "#d7e6b1",
       side: DoubleSide,
