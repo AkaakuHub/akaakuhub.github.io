@@ -2,6 +2,7 @@ import { Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, SphereGeometry } 
 import { box } from "../../primitives";
 import { cylinder, roundBox } from "../geometry";
 import { desktopTower } from "./tower";
+import { mechanicalKeyboard } from "./keyboard";
 
 export function desktopComputer(): Group {
   const computer = new Group();
@@ -13,17 +14,9 @@ export function desktopComputer(): Group {
   roundBox(computer, [0.045, 0.17, 0.035], [0, 0.095, -0.19], white, 0.006);
   roundBox(computer, [0.61, 0.358, 0.026], [0, 0.33, -0.19], white, 0.008);
   box(computer, [0.589, 0.331, 0.001], [0, 0.333, -0.176], display);
-  roundBox(computer, [0.427, 0.016, 0.142], [0, 0.008, 0.173], white, 0.005);
-  for (let row = 0; row < 5; row++)
-    for (let column = 0; column < 14; column++)
-      roundBox(
-        computer,
-        [0.025, 0.007, 0.022],
-        [-0.19 + column * 0.029, 0.02, 0.117 + row * 0.026],
-        graphite,
-        0.002,
-      );
-  roundBox(computer, [0.15, 0.007, 0.02], [-0.035, 0.02, 0.247], graphite, 0.002);
+  const keyboard = mechanicalKeyboard();
+  keyboard.position.set(0, 0, 0.173);
+  computer.add(keyboard);
   const mouse = new Group();
   roundBox(mouse, [0.06, 0.005, 0.1], [0, 0.0025, 0], white, 0.002);
   const shell = new Mesh(new SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), white);
