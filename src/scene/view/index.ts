@@ -70,7 +70,7 @@ export function createView(
     if (state.mode === "room" && state.direction === index) return;
     roomDirection = index;
     if (index < 4) heading = index;
-    transition({ mode: "room", direction: index }, 0.85);
+    transition({ mode: "room", direction: index }, 0.3);
   }
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
@@ -78,7 +78,7 @@ export function createView(
     framing.zoom = 1;
     framing.panX = 0;
     framing.panY = 0;
-    transition({ mode: "notice", index }, 1.05);
+    transition({ mode: "notice", index }, 0.4);
   }
   apply(target);
   onChange(state);
@@ -127,7 +127,7 @@ export function createView(
         inspect((state.index + step + inspections.length) % inspections.length);
     },
     back() {
-      if (state.mode === "notice") transition({ mode: "room", direction: roomDirection }, 0.95);
+      if (state.mode === "notice") transition({ mode: "room", direction: roomDirection }, 0.35);
     },
     resize() {
       target = pose();

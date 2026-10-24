@@ -97,7 +97,7 @@ function render(time: number) {
   previous = time;
   lastRendered = time;
   if (prepared) roomSwitch.update(view.state.mode === "room" && !view.moving);
-  rendering.render();
+  rendering.render(moving || !prepared);
   if (!ready && prepared) {
     loading.complete();
     ready = true;
@@ -122,13 +122,15 @@ const streamed = streamMaterials(
 updateTime();
 await new Promise<void>((resolve) =>
   requestAnimationFrame(() => {
-    rendering.render();
+    rendering.render(true);
     resolve();
   }),
 );
 await Promise.all([materialLoading.ready, streamed]);
 lighting.update(new Date());
 await renderer.compileAsync(scene, camera);
+rendering.render(true);
+rendering.render();
 bindRoomControls(root, ui, view, camera, scene, board.notices);
 const roomSwitch = bindRoomSwitch(
   root,
