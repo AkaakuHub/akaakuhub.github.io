@@ -47,6 +47,7 @@ export function createWindow(
     [1.28, 1.3],
   ] as const) {
     const pane = box(window, [0.008, 1.48, width - 0.02], [-2.626, 1.785, center], glass);
+    pane.name = "room-window-pane";
     pane.castShadow = false;
     pane.receiveShadow = false;
     for (const edge of [-width / 2 + 0.018, width / 2 - 0.018]) {
