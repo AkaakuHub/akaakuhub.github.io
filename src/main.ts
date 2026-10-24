@@ -6,7 +6,7 @@ import { createBoard } from "./scene/board";
 import { createFurniture } from "./scene/furniture";
 import { illuminate } from "./scene/lighting";
 import { applyBakedLighting, prepareBakedLighting } from "./scene/lighting/baked";
-import { materialAssetIds } from "./assets/materials";
+import { createRoomAssetLoader } from "./assets/loading";
 import { loadMaterials } from "./scene/materials/library";
 import { createMetalMaterials } from "./scene/materials/metal";
 import { createPropMaterials } from "./scene/materials/props";
@@ -30,25 +30,14 @@ renderer.shadowMap.autoUpdate = false;
 const scene = new Scene();
 const camera = new PerspectiveCamera(62, 1, 0.05, 40);
 camera.position.set(0, 1.55, 0.45);
-let completedMaterials = 0;
-let completedLighting = 0;
-function reportAssets() {
-  loading.progress(
-    "素材を読み込み中",
-    completedMaterials + completedLighting,
-    materialAssetIds.length + 1,
-  );
-}
+const assets = createRoomAssetLoader((summary) => {
+  const failure = summary.failures[0];
+  if (failure) loading.fail(failure.reason);
+  else loading.progress("素材を準備中", summary.succeeded, summary.total);
+});
 const [materials, lightingData] = await Promise.all([
-  loadMaterials(renderer, (completed) => {
-    completedMaterials = completed;
-    reportAssets();
-  }),
-  prepareBakedLighting().then((data) => {
-    completedLighting = 1;
-    reportAssets();
-    return data;
-  }),
+  loadMaterials(renderer, assets),
+  prepareBakedLighting(assets),
 ]);
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));

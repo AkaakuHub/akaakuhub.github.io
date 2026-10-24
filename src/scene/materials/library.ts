@@ -2,6 +2,7 @@ import type { Texture, WebGLRenderer } from "three";
 import { materialDefinitions } from "../../assets/materials";
 import type { MetalDefinition, SurfaceDefinition } from "../../assets/materials";
 import { createTextureLoader } from "./textures";
+import type { RoomAssetLoader } from "../../assets/loading";
 
 export interface PbrMaps {
   map: Texture<ImageBitmap>;
@@ -13,11 +14,8 @@ export interface PbrMaps {
 
 export type MetalMaps = Pick<PbrMaps, "normalMap">;
 
-export async function loadMaterials(
-  renderer: WebGLRenderer,
-  progress: (completed: number, total: number) => void,
-) {
-  const texture = createTextureLoader(renderer, progress);
+export async function loadMaterials(renderer: WebGLRenderer, assets: RoomAssetLoader) {
+  const texture = createTextureLoader(renderer, assets);
   async function loadSet({ id, meters, format }: SurfaceDefinition): Promise<PbrMaps> {
     const packed = format === "arm";
     const [map, normalMap, roughnessMap, aoMap, alphaMap] = await Promise.all([

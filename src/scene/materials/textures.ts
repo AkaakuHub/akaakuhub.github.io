@@ -1,5 +1,4 @@
 import {
-  ImageBitmapLoader,
   LinearFilter,
   LinearMipmapLinearFilter,
   NoColorSpace,
@@ -8,27 +7,24 @@ import {
   Texture,
 } from "three";
 import type { WebGLRenderer } from "three";
-import { asset } from "../../assets/catalog";
-import { materialAssetIds } from "../../assets/materials";
+import type { RoomAssetLoader } from "../../assets/loading";
 
-export function createTextureLoader(
-  renderer: WebGLRenderer,
-  progress: (completed: number, total: number) => void,
-) {
+export function createTextureLoader(renderer: WebGLRenderer, assets: RoomAssetLoader) {
   const pending = new Map<string, Promise<Texture<ImageBitmap>>>();
-  const loader = new ImageBitmapLoader().setOptions({
-    imageOrientation: "flipY",
-    premultiplyAlpha: "none",
-    colorSpaceConversion: "none",
-  });
   const anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  let completed = 0;
-  progress(completed, materialAssetIds.length);
   return (id: string, file: string, meters: number): Promise<Texture<ImageBitmap>> => {
     const key = `${id}/${file}`;
     let task = pending.get(key);
     if (!task) {
-      task = loader.loadAsync(asset(`materials/${key}.webp`).url).then((bitmap) => {
+      task = assets.load(`materials/${key}.webp`, async (bytes) => {
+        const bitmap = await createImageBitmap(
+          new Blob([Uint8Array.from(bytes)], { type: "image/webp" }),
+          {
+            imageOrientation: "flipY",
+            premultiplyAlpha: "none",
+            colorSpaceConversion: "none",
+          },
+        );
         const texture = new Texture(bitmap);
         texture.name = key;
         texture.colorSpace = file === "color" ? SRGBColorSpace : NoColorSpace;
@@ -39,8 +35,6 @@ export function createTextureLoader(
         texture.anisotropy = anisotropy;
         texture.needsUpdate = true;
         renderer.initTexture(texture);
-        completed++;
-        progress(completed, materialAssetIds.length);
         return texture;
       });
       pending.set(key, task);

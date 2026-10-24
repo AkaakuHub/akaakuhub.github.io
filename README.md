@@ -20,9 +20,16 @@ Three.jsで描画する部室を入口にした個人サイトです。室内で
 
 画像と照明データは`src/assets/`へ集約し、ビルド時に内容に対応したファイル名で出力します。`manifest.json`には実ファイルのサイズとSHA-256を記録します。材質画像は約2.2MB、照明データは約1MBです。最初に小さい起動用モジュールを読み込み、素材の完了件数と描画の準備状況を表示します。
 
+取得・検証・共有・OPFS保存にはnpm版`unified-asset-loader@0.1.0`を使用します。マニフェストのSHA-256を取得元の識別に使い、素材を更新すると対象のキャッシュだけを入れ替えます。画像の展開とGPUへの転送、照明データの展開まで完了した件数を表示します。保存や展開に失敗した場合は読み込みを停止します。
+
 ## 開発
 
-Node.js 22.18以降とpnpmを使用します。
+Node.js24.22.1以降とpnpmを使用します。HTTPSの証明書と秘密鍵を用意し、Git管理外の`.env.local`へパスを設定します。
+
+```dotenv
+DEV_TLS_CERT_FILE=/path/to/development.crt
+DEV_TLS_KEY_FILE=/path/to/development.key
+```
 
 ```sh
 pnpm install
@@ -42,14 +49,21 @@ pnpm check
 pnpm build
 ```
 
-Vite+、TypeScript、Oxfmt、Oxlint、Knip、Lefthookを使用しています。`dist/`を静的ホスティングに配置できます。
+Vite+、TypeScript、Oxfmt、Oxlint、Knip、Lefthookを使用しています。開発・プレビューはHTTPSで配信し、OPFS用Workerに必要なヘッダーを付与します。
+
+本番の配信先にもHTTPSと次のレスポンスヘッダーが必要です。レスポンスヘッダーは配信側で設定します。
+
+```http
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
 
 ## 照明の再計算
 
 形状・配置・材質の色を変更した場合は、起動済みの開発サーバーとChromiumを指定して照明データを再生成します。Python側はPlaywrightを使用します。
 
 ```sh
-uv run --with playwright python scripts/lighting/bake.py --url http://localhost:5174/ --browser /path/to/chromium
+uv run --with playwright python scripts/lighting/bake.py --url https://your-development-host:5174/ --browser /path/to/chromium
 ```
 
 蛍光灯を面光源としてサンプリングし、実際の三角形との交差から直接光と一度の拡散反射を計算します。結果は頂点ごとの半精度浮動小数点で保存し、gzipで圧縮します。形状と材質の指紋を読み込み時に照合し、古いデータでは起動しません。多重反射と動く物体の照明は計算しません。
