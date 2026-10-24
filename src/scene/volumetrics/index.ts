@@ -24,14 +24,14 @@ export class VolumetricPass extends Pass {
   });
   private readonly uniforms = {
     sceneDepth: new Uniform<Texture | null>(null),
-    sunDepth: new Uniform<Texture | null>(null),
+    lightDepth: new Uniform<Texture | null>(null),
     inverseProjection: new Uniform(new Matrix4()),
     cameraWorld: new Uniform(new Matrix4()),
-    sunMatrix: new Uniform(new Matrix4()),
+    lightMatrix: new Uniform(new Matrix4()),
     eye: new Uniform(new Vector3()),
-    sunDirection: new Uniform(new Vector3()),
-    sunRadiance: new Uniform(new Vector3()),
-    sunShadowBias: new Uniform(0),
+    lightDirection: new Uniform(new Vector3()),
+    lightRadiance: new Uniform(new Vector3()),
+    lightShadowBias: new Uniform(0),
     sceneColor: new Uniform<Texture | null>(null),
     scattering: new Uniform(this.target.texture),
     scatteringSize: new Uniform(new Vector2(1, 1)),
@@ -43,7 +43,7 @@ export class VolumetricPass extends Pass {
 
   constructor(
     private readonly camera: PerspectiveCamera,
-    private readonly sun: DirectionalLight,
+    private readonly light: DirectionalLight,
     steps: number,
   ) {
     super();
@@ -81,22 +81,22 @@ export class VolumetricPass extends Pass {
   ): void {
     if (!readBuffer.depthTexture) throw new Error("部屋の深度テクスチャが生成されていません。");
     this.uniforms.sceneDepth.value = readBuffer.depthTexture;
-    const depth = this.sun.shadow.map?.depthTexture;
-    if (!depth) throw new Error("太陽光の深度テクスチャが生成されていません。");
-    this.uniforms.sunDepth.value = depth;
+    const depth = this.light.shadow.map?.depthTexture;
+    if (!depth) throw new Error("天体光の深度テクスチャが生成されていません。");
+    this.uniforms.lightDepth.value = depth;
     this.uniforms.inverseProjection.value.copy(this.camera.projectionMatrixInverse);
     this.uniforms.cameraWorld.value.copy(this.camera.matrixWorld);
-    this.uniforms.sunMatrix.value.copy(this.sun.shadow.matrix);
-    this.uniforms.sunShadowBias.value = this.sun.shadow.bias;
+    this.uniforms.lightMatrix.value.copy(this.light.shadow.matrix);
+    this.uniforms.lightShadowBias.value = this.light.shadow.bias;
     this.camera.getWorldPosition(this.uniforms.eye.value);
-    this.sun.target.getWorldPosition(this.targetPosition);
-    this.sun
-      .getWorldPosition(this.uniforms.sunDirection.value)
+    this.light.target.getWorldPosition(this.targetPosition);
+    this.light
+      .getWorldPosition(this.uniforms.lightDirection.value)
       .sub(this.targetPosition)
       .normalize();
-    this.uniforms.sunRadiance.value
-      .set(this.sun.color.r, this.sun.color.g, this.sun.color.b)
-      .multiplyScalar(this.sun.intensity);
+    this.uniforms.lightRadiance.value
+      .set(this.light.color.r, this.light.color.g, this.light.color.b)
+      .multiplyScalar(this.light.intensity);
     this.quad.material = this.scatteringMaterial;
     renderer.setRenderTarget(this.target);
     this.quad.render(renderer);

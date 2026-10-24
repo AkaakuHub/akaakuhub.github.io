@@ -40,7 +40,7 @@ const { board, lightSwitch, rocker } = assembleClubroom(scene, materials);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const lighting = illuminate(scene, renderer);
-const rendering = createRendering(renderer, scene, camera, lighting.sun);
+const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
 const noticeList = [...board.notices.values()];
 const inspections = [...board.notices].map(([object, notice]) => ({
   object,

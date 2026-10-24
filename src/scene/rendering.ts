@@ -10,7 +10,7 @@ export function createRendering(
   renderer: WebGLRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
-  sun: DirectionalLight,
+  celestialLight: DirectionalLight,
 ) {
   const compact = window.matchMedia("(pointer: coarse)").matches;
   renderer.toneMapping = ACESFilmicToneMapping;
@@ -21,7 +21,7 @@ export function createRendering(
   });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new VolumetricPass(camera, sun, compact ? 48 : 96));
+  composer.addPass(new VolumetricPass(camera, celestialLight, compact ? 48 : 96));
   composer.addPass(new OutputPass());
   if (compact) composer.addPass(new AntialiasPass());
   return composer;
