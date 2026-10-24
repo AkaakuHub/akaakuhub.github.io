@@ -1,9 +1,10 @@
 import { CylinderGeometry, Mesh, Vector3 } from "three";
-import type { Material, Object3D } from "three";
+import type { BufferGeometry, Material, Object3D } from "three";
 import { metricBoxUv, metricCylinderUv } from "../materials/uv";
+import { TessellateModifier } from "three/addons/modifiers/TessellateModifier.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
-const roundedBoxes = new Map<string, RoundedBoxGeometry>();
+const roundedBoxes = new Map<string, BufferGeometry>();
 const cylinders = new Map<string, CylinderGeometry>();
 
 export function roundBox(
@@ -17,6 +18,11 @@ export function roundBox(
   let geometry = roundedBoxes.get(key);
   if (!geometry) {
     geometry = new RoundedBoxGeometry(...size, 2, radius);
+    if (Math.max(...size) > 0.6) {
+      const rounded = geometry;
+      geometry = new TessellateModifier(0.18, 8).modify(rounded);
+      rounded.dispose();
+    }
     metricBoxUv(geometry);
     roundedBoxes.set(key, geometry);
   }

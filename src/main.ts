@@ -125,7 +125,16 @@ function invalidate() {
   previous = performance.now() - 16;
   frame = requestAnimationFrame(render);
 }
-const streamed = streamMaterials(scene, materialLoading.pending, invalidate);
+const streamed = streamMaterials(
+  scene,
+  materialLoading.pending,
+  renderer,
+  camera,
+  (completed, total) => {
+    loading.rendering(completed, total);
+    invalidate();
+  },
+);
 updateTime();
 await new Promise<void>((resolve) =>
   requestAnimationFrame(() => {

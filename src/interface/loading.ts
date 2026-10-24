@@ -8,6 +8,14 @@ export function createLoading(root: HTMLElement) {
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
   retry.onclick = () => location.reload();
+  let materials = 0;
+  let rendering = 0;
+  const update = (): void => {
+    const value = materials * 0.65 + rendering * 0.25;
+    progress.max = 1;
+    progress.value = value;
+    root.style.setProperty("--loading-blur", `${14 * (1 - value)}px`);
+  };
   return {
     stage(text: string) {
       label.textContent = text;
@@ -22,9 +30,12 @@ export function createLoading(root: HTMLElement) {
       )
         throw new Error("読み込みの進捗が不正です。");
       label.textContent = text;
-      progress.max = 1;
-      progress.value = (completed / total) * 0.85;
-      root.style.setProperty("--loading-blur", `${14 - (completed / total) * 10}px`);
+      materials = completed / total;
+      update();
+    },
+    rendering(completed: number, total: number) {
+      rendering = completed / total;
+      update();
     },
     complete() {
       root.setAttribute("aria-busy", "false");

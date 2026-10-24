@@ -1,12 +1,14 @@
-import { Mesh, MeshStandardMaterial } from "three";
-import type { Scene, Texture } from "three";
+import { Group, Mesh, MeshStandardMaterial } from "three";
+import type { Camera, Scene, Texture, WebGLRenderer } from "three";
 
 const slots = ["map", "normalMap", "roughnessMap", "metalnessMap", "aoMap", "alphaMap"] as const;
 
 export function streamMaterials(
   scene: Scene,
   pending: ReadonlyMap<Texture<ImageBitmap | null>, Promise<void>>,
-  invalidate: () => void,
+  renderer: WebGLRenderer,
+  camera: Camera,
+  ready: (completed: number, total: number) => void,
 ): Promise<void[]> {
   const materials = new Map<MeshStandardMaterial, Mesh[]>();
   scene.traverseVisible((object) => {
@@ -15,6 +17,7 @@ export function streamMaterials(
     if (meshes) meshes.push(object);
     else materials.set(object.material, [object]);
   });
+  let completed = 0;
   return Promise.all(
     [...materials].map(async ([material, meshes]) => {
       const bindings: { slot: (typeof slots)[number]; map: Texture; ready: Promise<void> }[] = [];
@@ -26,13 +29,20 @@ export function streamMaterials(
         bindings.push({ slot, map, ready: source[1] });
         material[slot] = null;
       }
-      if (bindings.length === 0) return;
       for (const mesh of meshes) mesh.visible = false;
       await Promise.all(bindings.map(({ ready }) => ready));
       for (const { slot, map } of bindings) material[slot] = map;
-      material.needsUpdate = true;
+      if (bindings.length > 0) material.needsUpdate = true;
+      const group = new Group();
+      for (const mesh of meshes) {
+        const candidate = mesh.clone(false);
+        candidate.visible = true;
+        group.add(candidate);
+      }
+      await renderer.compileAsync(group, camera, scene);
       for (const mesh of meshes) mesh.visible = true;
-      invalidate();
+      completed++;
+      ready(completed, materials.size);
     }),
   );
 }
