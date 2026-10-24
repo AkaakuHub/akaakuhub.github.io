@@ -73,14 +73,6 @@ export function createPropMaterials(maps: MaterialLibrary) {
     plasticGraphite: plastic("#303633", 0.9),
     cuttingMat: plastic("#4d7065", 1),
     signalRed: plastic("#b94c35", 0.4),
-    leather: physicalSurface(maps.leather, {
-      color: "#556362",
-      roughness: 1,
-      clearcoat: 0.08,
-      clearcoatRoughness: 0.6,
-      normalScale: new Vector2(0.55, 0.55),
-    }),
-    fingerboard: scannedSurface(maps.walnut, { color: "#49473d", roughness: 1 }),
     foliage: physicalSurface(maps.leaves, {
       color: "#d7e6b1",
       side: DoubleSide,

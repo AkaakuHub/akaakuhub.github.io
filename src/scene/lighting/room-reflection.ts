@@ -1,6 +1,5 @@
 import { Color, PMREMGenerator, Vector3 } from "three";
 import type { Object3D, Scene, WebGLRenderer, WebGLRenderTarget } from "three";
-import { Reflector } from "three/addons/objects/Reflector.js";
 
 export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
   const generator = new PMREMGenerator(renderer);
@@ -8,12 +7,7 @@ export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
   const unlit = new Color(0);
   const sources: Object3D[] = [];
   scene.traverse((object) => {
-    if (
-      object instanceof Reflector ||
-      object.name === "world-sky" ||
-      object.name === "room-fluorescent"
-    )
-      sources.push(object);
+    if (object.name === "world-sky" || object.name === "room-fluorescent") sources.push(object);
   });
   let reflection: WebGLRenderTarget | undefined;
   let capturedAt: number | undefined;

@@ -5,7 +5,6 @@ import type { MaterialLibrary } from "../materials/library";
 import { createFurnitureMaterials } from "./materials";
 import { createWorkbench } from "./workbench";
 import { createCabinets } from "./cabinets";
-import { createInstrumentCorner } from "./instrument";
 import { createFrontFurniture } from "./front";
 
 export function createFurniture(
@@ -19,7 +18,6 @@ export function createFurniture(
   furniture.add(
     createWorkbench(materials),
     createCabinets(materials),
-    createInstrumentCorner(materials),
     createFrontFurniture(materials),
   );
   return furniture;

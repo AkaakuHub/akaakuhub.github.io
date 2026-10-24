@@ -31,7 +31,6 @@ export interface MaterialLibrary {
   paintGreen: PbrMaps;
   paper: PbrMaps;
   plastic: PbrMaps;
-  leather: PbrMaps;
   leaves: PbrMaps;
 }
 
@@ -102,7 +101,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     paintGreen,
     paper,
     plastic,
-    leather,
     leaves,
   ] = await Promise.all([
     loadSet("herringbone_parquet", 3.4, 1024, "arm"),
@@ -117,7 +115,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     loadSet("green_metal_rust", 1, 1024, "arm"),
     loadSet("Paper001", 0.3, 512, "dielectric"),
     loadSet("Plastic010", 0.2, 512, "dielectric"),
-    loadSet("brown_leather", 0.4, 1024, "arm"),
     loadSet("LeafSet024", 1, 1024, "leaf"),
   ]);
   return {
@@ -133,7 +130,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     paintGreen,
     paper,
     plastic,
-    leather,
     leaves,
   };
 }

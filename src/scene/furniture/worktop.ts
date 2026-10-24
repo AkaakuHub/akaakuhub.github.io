@@ -1,7 +1,7 @@
 import { tubeGeometry } from "../geometry/curves";
 import { CatmullRomCurve3, Curve, Group, Mesh, PlaneGeometry, Vector3 } from "three";
 import { box } from "../primitives";
-import { closedNotebook } from "./bindings";
+import { laptop } from "./laptop";
 import { ceramicMug } from "./ceramic";
 import { cylinder, rod, roundBox } from "./geometry";
 import { solderSpool } from "./solder-spool";
@@ -89,17 +89,10 @@ export function createWorktopObjects(
     box(mat, [0.001, 0.0003, 0.48], [line * 0.08, 0.00415, 0], materials.plasticIvory);
   }
   solderStation(parent, materials, surfaceY + 0.008);
-  const notebook = closedNotebook(0.32, 0.025, 0.24, materials.rust, materials, 15);
-  notebook.position.set(0.02, surfaceY, 0.57);
-  notebook.rotation.y = -0.1;
-  parent.add(notebook);
-  rod(
-    parent,
-    [-0.1, surfaceY + 0.029, 0.55],
-    [0.08, surfaceY + 0.029, 0.61],
-    0.004,
-    materials.plasticGraphite,
-  );
+  const computer = laptop(materials);
+  computer.position.set(0.04, surfaceY, 0.57);
+  computer.rotation.y = Math.PI / 2;
+  parent.add(computer);
   const cup = ceramicMug(materials.porcelain, 0.09, 0.042);
   cup.position.set(-0.22, surfaceY, 0.63);
   cup.rotation.y = Math.PI / 2;
