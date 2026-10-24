@@ -1,10 +1,15 @@
-import { Color, DirectionalLight, Mesh, MeshBasicMaterial } from "three";
+import { Color, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial } from "three";
 import type { Scene, Uniform, Vector3, WebGLRenderer } from "three";
 import { roomSunlight } from "./daylight/solar";
 import { cameraExposure, photometry, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
 
-export function illuminate(scene: Scene, renderer: WebGLRenderer, skyRadiance: Uniform<Vector3>) {
+export function illuminate(
+  scene: Scene,
+  renderer: WebGLRenderer,
+  skyRadiance: Uniform<Vector3>,
+  fluorescentIntensity: Uniform<number>,
+) {
   const sun = new DirectionalLight();
   sun.target.position.set(0, 1.2, 0);
   sun.castShadow = true;
@@ -21,10 +26,13 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer, skyRadiance: U
   scene.add(sun, sun.target);
 
   const skyMaterials = new Set<MeshBasicMaterial>();
+  const tubes = new Map<MeshStandardMaterial, number>();
   scene.traverse((object) => {
     if (!(object instanceof Mesh)) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
+      if (object.name === "room-fluorescent" && material instanceof MeshStandardMaterial)
+        tubes.set(material, material.emissiveIntensity);
       if (object.name === "world-sky" && material instanceof MeshBasicMaterial)
         skyMaterials.add(material);
     }
@@ -49,6 +57,11 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer, skyRadiance: U
     if (captureReflection) updateReflection(date);
   }
 
+  function setRoomLights(on: boolean): void {
+    fluorescentIntensity.value = on ? 1 : 0;
+    for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
+    updateReflection(new Date(), true);
+  }
   update(new Date(), false);
-  return { sun, update };
+  return { sun, update, setRoomLights };
 }

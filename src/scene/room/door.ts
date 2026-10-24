@@ -80,7 +80,10 @@ export function createDoor(
   for (const y of [0.3, 2.1])
     for (const z of [-0.54, 0.54]) hardware.screw(steel, [-0.0702, y, z], [0, -Math.PI / 2, 0]);
   const switchPlate = box(door, [0.025, 0.115, 0.07], [-0.011, 1.16, -0.8], metals.ivory);
-  box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], metals.ivory);
+  switchPlate.name = "room-light-switch";
+  const rocker = box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], metals.ivory);
+  rocker.name = "room-light-switch-rocker";
+  rocker.rotation.z = -0.16;
   for (const y of [1.116, 1.204]) hardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
   hardware.finish(door);
   door.traverse((object) => {

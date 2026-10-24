@@ -1,19 +1,15 @@
 import { PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { createInterface } from "./interface";
 import { createLoading } from "./interface/loading";
+import { bindRoomSwitch } from "./interface/room-switch";
 import { bindRoomControls } from "./interface/controls";
-import { createBoard } from "./scene/board";
-import { createFurniture } from "./scene/furniture";
+import { assembleClubroom } from "./scene/clubroom";
 import { illuminate } from "./scene/lighting";
 import { createBakedLighting, prepareBakedLighting } from "./scene/lighting/baked";
 import { createRoomAssetLoader } from "./assets/loading";
 import { streamMaterials } from "./scene/materials/stream";
 import { loadMaterials } from "./scene/materials/library";
-import { createMetalMaterials } from "./scene/materials/metal";
-import { createPropMaterials } from "./scene/materials/props";
 import { createRendering } from "./scene/rendering";
-import { createRoom } from "./scene/room";
-import { batchStaticMeshes } from "./scene/static-batches";
 import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
 
@@ -42,21 +38,13 @@ const { materials } = materialLoading;
 const [lightingData] = await Promise.all([lightingReady, materialLoading.paperReady]);
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const metals = createMetalMaterials(materials);
-const props = createPropMaterials(materials);
-const board = createBoard(metals, materials.paper, props);
-scene.add(
-  createRoom(materials, metals, props),
-  createFurniture(materials, metals, props),
-  board.group,
-);
-batchStaticMeshes(scene, new Set(board.notices.keys()));
+const { board, lightSwitch, rocker } = assembleClubroom(scene, materials);
 const bakedLighting = createBakedLighting(scene);
-const { skyRadiance } = bakedLighting;
+const { skyRadiance, fluorescentIntensity } = bakedLighting;
 bakedLighting.apply(lightingData);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const lighting = illuminate(scene, renderer, skyRadiance);
+const lighting = illuminate(scene, renderer, skyRadiance, fluorescentIntensity);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
 const noticeList = [...board.notices.values()];
 const inspections = [...board.notices].map(([object, notice]) => ({
@@ -113,6 +101,7 @@ function render(time: number) {
   ui.setMoving(moving);
   previous = time;
   lastRendered = time;
+  if (prepared) roomSwitch.update(view.state.mode === "room" && !view.moving);
   rendering.render();
   if (!ready && prepared) {
     loading.complete();
@@ -143,8 +132,17 @@ await new Promise<void>((resolve) =>
   }),
 );
 await Promise.all([materialLoading.ready, streamed]);
-prepared = true;
 lighting.update(new Date());
 await renderer.compileAsync(scene, camera);
 bindRoomControls(root, ui, view, camera, scene, board.notices);
+const roomSwitch = bindRoomSwitch(
+  root,
+  lightSwitch,
+  rocker,
+  camera,
+  lighting.setRoomLights,
+  invalidate,
+);
+roomSwitch.update();
+prepared = true;
 invalidate();

@@ -35,6 +35,7 @@ export function roomMarkup(): string {
         <button class="zoom-notice ${controlClass} pointer-events-auto absolute ${bottomClass} left-[calc(max(1rem,env(safe-area-inset-left))+3.5rem)] h-11 min-w-11 gap-2 px-3 text-xs" aria-label="紙を拡大" title="紙を拡大"><i data-lucide="zoom-in"></i>拡大</button>
         <button class="next-notice ${controlClass} pointer-events-auto absolute ${bottomClass} ${rightClass} size-11" aria-label="次の紙を見る" title="次の紙を見る"><i data-lucide="chevron-right"></i></button>
       </nav>
+      <button class="room-light-switch absolute z-10 size-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-md border border-transparent bg-transparent hover:border-white/50 focus-visible:outline-2 focus-visible:outline-white [&[hidden]]:hidden" role="switch" aria-label="部屋の照明" aria-checked="true" hidden></button>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>
     </main>`;
 }

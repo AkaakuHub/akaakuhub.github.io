@@ -52,6 +52,7 @@ export function createBakedLighting(scene: Scene) {
   const expectedFingerprint = lightingFingerprint(scene);
   const meshes = bakedMeshes(scene);
   const skyRadiance = new Uniform(new Vector3());
+  const fluorescentIntensity = new Uniform(1);
   function apply(buffer: ArrayBuffer): void {
     const fingerprint = new TextDecoder().decode(new Uint8Array(buffer, 0, 16));
     if (fingerprint !== expectedFingerprint)
@@ -76,6 +77,7 @@ export function createBakedLighting(scene: Scene) {
     for (const material of materials) {
       material.onBeforeCompile = (shader) => {
         shader.uniforms.bakedSkyRadiance = skyRadiance;
+        shader.uniforms.bakedFluorescentIntensity = fluorescentIntensity;
         shader.vertexShader = shader.vertexShader
           .replace(
             "#include <common>",
@@ -88,16 +90,16 @@ export function createBakedLighting(scene: Scene) {
         shader.fragmentShader = shader.fragmentShader
           .replace(
             "#include <common>",
-            "#include <common>\nuniform vec3 bakedSkyRadiance;\nvarying vec3 vBakedFluorescent;\nvarying vec3 vBakedSky;",
+            "#include <common>\nuniform vec3 bakedSkyRadiance;\nuniform float bakedFluorescentIntensity;\nvarying vec3 vBakedFluorescent;\nvarying vec3 vBakedSky;",
           )
           .replace(
             "#include <lights_fragment_maps>",
-            "#include <lights_fragment_maps>\n#if defined(RE_IndirectDiffuse)\niblIrradiance = vec3(0.0);\nirradiance += vBakedFluorescent + vBakedSky * bakedSkyRadiance;\n#endif",
+            "#include <lights_fragment_maps>\n#if defined(RE_IndirectDiffuse)\niblIrradiance = vec3(0.0);\nirradiance += vBakedFluorescent * bakedFluorescentIntensity + vBakedSky * bakedSkyRadiance;\n#endif",
           );
       };
       material.customProgramCacheKey = () => "baked-room-irradiance";
       material.needsUpdate = true;
     }
   }
-  return { skyRadiance, apply };
+  return { skyRadiance, fluorescentIntensity, apply };
 }

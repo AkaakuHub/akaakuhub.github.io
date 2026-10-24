@@ -12,9 +12,9 @@ export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
   let reflection: WebGLRenderTarget | undefined;
   let capturedAt: number | undefined;
 
-  return (date: Date): void => {
+  return (date: Date, force = false): void => {
     const timestamp = date.getTime();
-    if (capturedAt !== undefined && Math.abs(timestamp - capturedAt) < 300_000) return;
+    if (!force && capturedAt !== undefined && Math.abs(timestamp - capturedAt) < 300_000) return;
     const environment = scene.environment;
     const background = scene.background;
     const visibility = sources.map((object) => ({ object, visible: object.visible }));

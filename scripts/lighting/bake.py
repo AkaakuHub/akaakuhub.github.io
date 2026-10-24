@@ -1,70 +1,69 @@
 import argparse
 import asyncio
 import base64
-import gzip
 import json
 import subprocess
+import time
+import re
 from pathlib import Path
 
 from playwright.async_api import async_playwright
 
 
-async def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--url", required=True)
-    parser.add_argument("--browser", required=True)
-    options = parser.parse_args()
+async def export_scene(options):
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(
             executable_path=options.browser,
             headless=True,
             args=["--no-sandbox", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
         )
-        page = await browser.new_page(viewport={"width": 320, "height": 200}, reduced_motion="reduce")
-        errors = []
-        page.on("pageerror", lambda error: errors.append(str(error)))
+        page = await browser.new_page(viewport={"width":320,"height":200})
+        cdp = await page.context.new_cdp_session(page)
+        await cdp.send("Emulation.setHardwareConcurrencyOverride", {"hardwareConcurrency":4})
+        revision = time.time_ns()
 
-        async def expose(route):
-            response = await route.fetch(headers={key: value for key, value in route.request.headers.items() if key.lower() not in {"if-none-match", "if-modified-since"}})
-            source = await response.text()
-            source = source.replace("bakedLighting.apply(lightingData)", "void 0")
-            await route.fulfill(response=response, body=source + "\nglobalThis.bakeScene = scene;")
+        async def fresh(route):
+            separator = "&" if "?" in route.request.url else "?"
+            response = await route.fetch(url=f"{route.request.url}{separator}bake_revision={revision}", headers={key:value for key,value in route.request.headers.items() if key.lower() not in {"if-none-match","if-modified-since"}})
+            await route.fulfill(response=response)
 
-        await page.route("**/src/main.ts*", expose)
-        await page.route("**/@vite/client", lambda route: route.fulfill(content_type="application/javascript", body=""))
+        await page.route(re.compile(r".*\.(?:ts|json)(?:\?.*)?$"), fresh)
+        entry = options.module_root + "scripts/lighting/entry.ts"
+        source = f"import {{exportRoom}} from {json.dumps(entry)}; try{{globalThis.bakeExport=await exportRoom()}}catch(error){{globalThis.bakeError=String(error)}}"
+        await page.route("**/src/main.ts*", lambda route:route.fulfill(content_type="application/javascript",body=source))
+        await page.route("**/@vite/client", lambda route:route.fulfill(content_type="application/javascript",body=""))
         await page.goto(options.url, wait_until="domcontentloaded")
-        await page.wait_for_function("Boolean(globalThis.bakeScene)", timeout=180_000)
-        await page.evaluate("""async () => {
-            const { bakeLighting } = await import('/scripts/lighting/bake.ts');
-            globalThis.bakeResult = null;
-            globalThis.bakeError = null;
-            bakeLighting(globalThis.bakeScene, (completed, total) => {
-                globalThis.bakeProgress = { completed, total };
-            }).then(data => {
-                let encoded = '';
-                for (let i = 0; i < data.length; i += 8192)
-                    encoded += String.fromCharCode(...data.subarray(i, i + 8192));
-                globalThis.bakeResult = btoa(encoded);
-            }).catch(error => { globalThis.bakeError = String(error); });
+        await page.wait_for_function("Boolean(globalThis.bakeExport||globalThis.bakeError)", timeout=180_000)
+        result = await page.evaluate("""()=>{
+            if(globalThis.bakeError)throw new Error(globalThis.bakeError);
+            const {binary,...metadata}=globalThis.bakeExport;
+            let encoded='';
+            for(let i=0;i<binary.length;i+=8192)encoded+=String.fromCharCode(...binary.subarray(i,i+8192));
+            return {binary:btoa(encoded),metadata};
         }""")
-        previous = None
-        while True:
-            status = await page.evaluate("({ progress: globalThis.bakeProgress, error: globalThis.bakeError, done: Boolean(globalThis.bakeResult) })")
-            if status != previous:
-                print(json.dumps(status), flush=True)
-                previous = status
-            if status.get("error") or errors:
-                raise RuntimeError({"status": status, "errors": errors})
-            if status["done"]:
-                break
-            await asyncio.sleep(2)
-        encoded = await page.evaluate("globalThis.bakeResult")
-        output = Path("src/assets/lighting/fluorescent.data")
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(gzip.compress(base64.b64decode(encoded), mtime=0))
-        print(json.dumps({"file": str(output), "bytes": output.stat().st_size}), flush=True)
+        options.work_directory.mkdir(parents=True,exist_ok=True)
+        (options.work_directory/"scene.glb").write_bytes(base64.b64decode(result["binary"]))
+        (options.work_directory/"scene.json").write_text(json.dumps(result["metadata"],separators=(",",":")))
         await browser.close()
-        subprocess.run(["rtk", "proxy", "node", "scripts/assets/catalog.mjs"], check=True)
+
+
+async def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--url", required=True)
+    parser.add_argument("--browser", required=True)
+    parser.add_argument("--blender", default="blender")
+    parser.add_argument("--module-root", default="/")
+    parser.add_argument("--work-directory", type=Path, required=True)
+    parser.add_argument("--samples", type=int, default=256)
+    options = parser.parse_args()
+    options.work_directory = options.work_directory.resolve()
+    if not options.module_root.startswith("/") or not options.module_root.endswith("/"):
+        parser.error("module-root must start and end with a slash")
+    await export_scene(options)
+    subprocess.run(["rtk","proxy",options.blender,"--background","--factory-startup","--threads","4","--python-exit-code","1","--python",str(Path(__file__).with_name("cycles.py").resolve()),"--","--input",str(options.work_directory),"--output",str(Path("src/assets/lighting/fluorescent.data").resolve()),"--samples",str(options.samples)],check=True)
+    subprocess.run(["rtk","proxy","node","scripts/assets/catalog.mjs"],check=True)
+    for filename in ["scene.glb","scene.json"]:
+        (options.work_directory/filename).unlink()
 
 
 asyncio.run(main())
