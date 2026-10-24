@@ -24,22 +24,22 @@ export function createRendering(
   composer.addPass(new RenderPass(scene, camera));
   const surfaces = new SurfaceDepthPass(scene, camera);
   composer.addPass(surfaces);
-  const ambientOcclusion = new GTAOPass(scene, camera, 1, 1);
-  ambientOcclusion.setGBuffer(surfaces.depthTexture, surfaces.normalTexture);
-  const depthUniform = ambientOcclusion.depthRenderMaterial.uniforms.tDepth;
-  if (!depthUniform) throw new Error("接触影の深度を設定できませんでした。");
-  depthUniform.value = surfaces.depthTexture;
-  ambientOcclusion.updateGtaoMaterial({
-    radius: 0.25,
-    thickness: 0.18,
-    samples: 12,
-    distanceFallOff: 1,
-  });
-  ambientOcclusion.blendIntensity = 0.65;
-  composer.addPass(ambientOcclusion);
-  composer.addPass(
-    new VolumetricPass(camera, sun, ambientOcclusion.depthTexture, compact ? 48 : 96),
-  );
+  if (!compact) {
+    const ambientOcclusion = new GTAOPass(scene, camera, 1, 1);
+    ambientOcclusion.setGBuffer(surfaces.depthTexture, surfaces.normalTexture);
+    const depthUniform = ambientOcclusion.depthRenderMaterial.uniforms.tDepth;
+    if (!depthUniform) throw new Error("接触影の深度を設定できませんでした。");
+    depthUniform.value = surfaces.depthTexture;
+    ambientOcclusion.updateGtaoMaterial({
+      radius: 0.25,
+      thickness: 0.18,
+      samples: 12,
+      distanceFallOff: 1,
+    });
+    ambientOcclusion.blendIntensity = 0.4;
+    composer.addPass(ambientOcclusion);
+  }
+  composer.addPass(new VolumetricPass(camera, sun, surfaces.depthTexture, compact ? 48 : 96));
   composer.addPass(new OutputPass());
   if (compact) composer.addPass(new AntialiasPass());
   return composer;

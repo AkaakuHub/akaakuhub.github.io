@@ -24,9 +24,6 @@ export function curtainMaterials(maps: PbrMaps) {
     sheenRoughness: 0.85,
     sheenColor: "#ebe2c5",
     side: DoubleSide,
-    transmission: 0.08,
-    thickness: 0.0008,
-    ior: 1.45,
   });
   const holes = new Uint8Array(32 * 32 * 4);
   for (let y = 0; y < 32; y++) {

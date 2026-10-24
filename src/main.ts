@@ -4,6 +4,7 @@ import { bindRoomControls } from "./interface/controls";
 import { createBoard } from "./scene/board";
 import { createFurniture } from "./scene/furniture";
 import { illuminate } from "./scene/lighting";
+import { loadBakedLighting } from "./scene/lighting/baked";
 import { loadMaterials } from "./scene/materials/library";
 import { createMetalMaterials } from "./scene/materials/metal";
 import { createPropMaterials } from "./scene/materials/props";
@@ -36,6 +37,7 @@ scene.add(
   board.group,
 );
 batchStaticMeshes(scene, new Set(board.notices.keys()));
+await loadBakedLighting(scene);
 const lighting = illuminate(scene, renderer);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
 const noticeList = [...board.notices.values()];

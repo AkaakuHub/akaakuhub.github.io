@@ -1,11 +1,4 @@
-import {
-  Color,
-  DirectionalLight,
-  Mesh,
-  MeshBasicMaterial,
-  MeshStandardMaterial,
-  RectAreaLight,
-} from "three";
+import { Color, DirectionalLight, Mesh, MeshBasicMaterial, RectAreaLight } from "three";
 import type { Scene, WebGLRenderer } from "three";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { roomSunlight } from "./daylight/solar";
@@ -29,41 +22,19 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   scene.add(sun, sun.target);
 
   RectAreaLightUniformsLib.init();
-  const lampColor = new Color(1.414516, 0.923789, 0.534348);
-  const lampRadiance =
-    (photometry.tubesPerFixture * photometry.tubeLumens * photometry.scale) /
-    (photometry.fixtureWidth * photometry.fixtureLength * Math.PI);
-  for (const z of [-1.05, 1.35]) {
-    const light = new RectAreaLight(
-      lampColor,
-      lampRadiance,
-      photometry.fixtureWidth,
-      photometry.fixtureLength,
-    );
-    light.position.set(0, 2.765, z);
-    light.rotation.x = -Math.PI / 2;
-    scene.add(light);
-  }
   const skylight = new RectAreaLight(0xffffff, 0, 3.8, 1.48);
   skylight.position.set(-2.58, 1.78, 0);
   skylight.lookAt(0, 1.78, 0);
   scene.add(skylight);
   const skyMaterials = new Set<MeshBasicMaterial>();
-  const tubeMaterials = new Set<MeshStandardMaterial>();
   scene.traverse((object) => {
     if (!(object instanceof Mesh)) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
       if (object.name === "world-sky" && material instanceof MeshBasicMaterial)
         skyMaterials.add(material);
-      if (object.name === "room-fluorescent" && material instanceof MeshStandardMaterial)
-        tubeMaterials.add(material);
     }
   });
-  for (const material of tubeMaterials) {
-    material.emissive.copy(lampColor);
-    material.emissiveIntensity = lampRadiance;
-  }
   const background = new Color();
   scene.background = background;
   const updateReflection = createRoomReflection(scene, renderer);

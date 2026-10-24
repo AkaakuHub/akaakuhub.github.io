@@ -75,7 +75,7 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     const packed = format === "arm";
     const [map, normalMap, roughnessMap, metalnessMap, aoMap, alphaMap] = await Promise.all([
       texture("color", true, resolution),
-      texture("normal", false, resolution),
+      texture("normal", false, Math.min(512, resolution)),
       texture(packed ? "arm" : "roughness", false, 512),
       packed
         ? texture("arm", false, 512)
@@ -83,7 +83,7 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
           ? texture("metalness", false, 512)
           : Promise.resolve(null),
       packed ? texture("arm", false, 512) : Promise.resolve(null),
-      format === "leaf" ? texture("opacity", false, resolution) : Promise.resolve(null),
+      format === "leaf" ? texture("opacity", false, 512) : Promise.resolve(null),
     ]);
     return { map, normalMap, roughnessMap, metalnessMap, aoMap, alphaMap };
   }
@@ -106,8 +106,8 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     loadSet("ash_veneer", 1, 1024, "arm"),
     loadSet("walnut_veneer", 1.8, 1024, "arm"),
     loadSet("terlenka", 0.266, 512, "arm"),
-    loadSet("Metal050B", 0.25, 1024, "metal"),
-    loadSet("Metal049B", 0.25, 1024, "metal"),
+    loadSet("Metal050B", 0.25, 512, "metal"),
+    loadSet("Metal049B", 0.25, 512, "metal"),
     loadSet("Metal048B", 0.2, 512, "metal"),
     loadSet("Metal027", 0.1, 512, "metal"),
     loadSet("Paper001", 0.3, 512, "dielectric"),

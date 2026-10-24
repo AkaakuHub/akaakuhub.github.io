@@ -33,7 +33,7 @@ export function createNormalMaterial(): ShaderMaterial {
     if (!(object instanceof Mesh)) throw new Error("接触影の対象は3Dの面に限定されています。");
     const source: Material | Material[] = object.material;
     if (Array.isArray(source)) throw new Error("接触影の材質は部材ごとに指定してください。");
-    uniforms.clearGlass.value = source instanceof MeshPhysicalMaterial && source.transmission === 1;
+    uniforms.clearGlass.value = source instanceof MeshPhysicalMaterial && source.transparent;
     uniforms.alphaThreshold.value = 0;
     uniforms.alphaMask.value = null;
     if (

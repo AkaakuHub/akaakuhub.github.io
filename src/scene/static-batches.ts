@@ -1,6 +1,6 @@
 import { Mesh, MeshPhysicalMaterial } from "three";
 import type { BufferGeometry, Material, Object3D, Scene } from "three";
-import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 
 export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>): void {
   scene.updateMatrixWorld(true);
@@ -47,9 +47,11 @@ export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>
     const geometry = mergeGeometries(parts);
     for (const part of parts) part.dispose();
     if (!geometry) throw new Error("静止した部材の描画をまとめられませんでした。");
-    geometry.computeBoundingBox();
-    geometry.computeBoundingSphere();
-    const merged = new Mesh(geometry, first.material);
+    const welded = mergeVertices(geometry);
+    geometry.dispose();
+    welded.computeBoundingBox();
+    welded.computeBoundingSphere();
+    const merged = new Mesh(welded, first.material);
     merged.name = `static-${first.material.uuid}`;
     merged.castShadow = first.castShadow;
     merged.receiveShadow = first.receiveShadow;

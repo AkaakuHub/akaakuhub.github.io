@@ -8,7 +8,8 @@ export function box(
   position: readonly [number, number, number],
   material: Material,
 ): Mesh<BoxGeometry, Material> {
-  const geometry = new BoxGeometry(...size);
+  const segments = size.map((length) => Math.max(1, Math.ceil(length / 0.18)));
+  const geometry = new BoxGeometry(...size, segments[0], segments[1], segments[2]);
   metricBoxUv(geometry);
   const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
