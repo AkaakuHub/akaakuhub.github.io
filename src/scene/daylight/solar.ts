@@ -2,13 +2,14 @@ import { getPosition } from "suncalc";
 import { Color, MathUtils, Vector3 } from "three";
 import { photometry, unitLuminance } from "../lighting/photometry";
 
-const latitude = 35.6812;
-const longitude = 139.7671;
+const latitude = 36.5732;
+const longitude = 136.67774;
+const northYaw = 180;
 
-export function tokyoSunlight(date: Date) {
+export function roomSunlight(date: Date) {
   const { altitude, azimuth } = getPosition(date, latitude, longitude);
   const elevation = MathUtils.degToRad(altitude);
-  const bearing = MathUtils.degToRad(azimuth);
+  const bearing = MathUtils.degToRad(northYaw - azimuth);
   const daylight = MathUtils.smoothstep(altitude, -6, 15);
   const twilight = MathUtils.smoothstep(altitude, -12, 0);
   const highSun = MathUtils.smoothstep(altitude, 0, 40);

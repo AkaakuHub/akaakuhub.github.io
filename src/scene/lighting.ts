@@ -8,7 +8,7 @@ import {
 } from "three";
 import type { Scene, WebGLRenderer } from "three";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
-import { tokyoSunlight } from "./daylight/solar";
+import { roomSunlight } from "./daylight/solar";
 import { cameraExposure, photometry, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
 
@@ -69,7 +69,7 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
   const updateReflection = createRoomReflection(scene, renderer);
 
   function update(date: Date): void {
-    const state = tokyoSunlight(date);
+    const state = roomSunlight(date);
     sun.position.copy(state.direction).multiplyScalar(16).add(sun.target.position);
     sun.color.copy(state.color);
     sun.intensity = state.intensity;
