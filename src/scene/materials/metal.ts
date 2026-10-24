@@ -6,8 +6,7 @@ function texturedMetal(maps: MetalMaps, parameters: MeshPhysicalMaterialParamete
   return new MeshPhysicalMaterial({
     map: null,
     normalMap: maps.normalMap,
-    normalScale: new Vector2(0.4, 0.4),
-    roughnessMap: maps.roughnessMap,
+    normalScale: new Vector2(0.08, 0.08),
     roughness: 1,
     metalness: 1,
     ...parameters,
@@ -16,9 +15,9 @@ function texturedMetal(maps: MetalMaps, parameters: MeshPhysicalMaterialParamete
 
 export function createMetalMaterials(maps: MaterialLibrary) {
   return {
-    aluminum: texturedMetal(maps.aluminum, { color: "#e6e9e7", roughness: 0.8 }),
-    steel: texturedMetal(maps.steel, { color: "#c8cbd0", roughness: 0.85 }),
-    brass: texturedMetal(maps.brass, { color: "#dbdcc9", roughness: 0.9 }),
+    aluminum: texturedMetal(maps.aluminum, { color: "#e6e9e7", roughness: 0.5 }),
+    steel: texturedMetal(maps.steel, { color: "#c8cbd0", roughness: 0.42 }),
+    brass: texturedMetal(maps.brass, { color: "#dbdcc9", roughness: 0.4 }),
     enamel: texturedMetal(maps.powder, {
       color: "#bfc9bd",
       metalness: 0,

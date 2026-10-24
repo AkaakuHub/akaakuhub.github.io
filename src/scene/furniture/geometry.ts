@@ -3,6 +3,9 @@ import type { Material, Object3D } from "three";
 import { metricBoxUv, metricCylinderUv } from "../materials/uv";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
+const roundedBoxes = new Map<string, RoundedBoxGeometry>();
+const cylinders = new Map<string, CylinderGeometry>();
+
 export function roundBox(
   parent: Object3D,
   size: readonly [number, number, number],
@@ -10,8 +13,13 @@ export function roundBox(
   material: Material,
   radius = 0.012,
 ): Mesh {
-  const geometry = new RoundedBoxGeometry(...size, 2, radius);
-  metricBoxUv(geometry);
+  const key = [...size, radius].join(":");
+  let geometry = roundedBoxes.get(key);
+  if (!geometry) {
+    geometry = new RoundedBoxGeometry(...size, 2, radius);
+    metricBoxUv(geometry);
+    roundedBoxes.set(key, geometry);
+  }
   const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
   mesh.castShadow = mesh.receiveShadow = true;
@@ -27,8 +35,13 @@ export function cylinder(
   material: Material,
   topRadius = radius,
 ): Mesh {
-  const geometry = new CylinderGeometry(topRadius, radius, height, 24);
-  metricCylinderUv(geometry);
+  const key = [topRadius, radius, height].join(":");
+  let geometry = cylinders.get(key);
+  if (!geometry) {
+    geometry = new CylinderGeometry(topRadius, radius, height, 24);
+    metricCylinderUv(geometry);
+    cylinders.set(key, geometry);
+  }
   const mesh = new Mesh(geometry, material);
   mesh.position.set(...position);
   mesh.castShadow = mesh.receiveShadow = true;

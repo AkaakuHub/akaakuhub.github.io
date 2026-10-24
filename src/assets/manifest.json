@@ -1,8 +1,8 @@
 [
   {
     "id": "lighting/fluorescent.data",
-    "bytes": 988212,
-    "sha256": "a0baeba4aafd7f22c3c28a769b799c57bd222ca78eb4b2dafaefacde0164a286"
+    "bytes": 982913,
+    "sha256": "05e365b03e0d15514556706ceaaba3b4c16a513cfafad68ffa211e6b0c17414d"
   },
   {
     "id": "materials/ash_veneer/arm.webp",
@@ -60,19 +60,9 @@
     "sha256": "6da6c4df04523030598b19a6a980c4e220d2d3063fd255930e31d750e3b432a0"
   },
   {
-    "id": "materials/Metal027/roughness.webp",
-    "bytes": 22226,
-    "sha256": "0c0f7ca1eec028f2895f5e9349a015a06772b61cc87bfeab9c193cb98b2f570b"
-  },
-  {
     "id": "materials/Metal048B/normal.webp",
     "bytes": 18108,
     "sha256": "9105a11e82b141f1ed100346397c23689bd2cbacd22bb81de63aad84d5386fdf"
-  },
-  {
-    "id": "materials/Metal048B/roughness.webp",
-    "bytes": 20474,
-    "sha256": "37cee9fce3e581be5fff795cd0207210a7c2765add94ae1b1d6b083addf0955a"
   },
   {
     "id": "materials/Metal049B/normal.webp",
@@ -80,19 +70,9 @@
     "sha256": "350b23ae78929effc6f11105c25ae982316c1b6e1a7e0b9bcabfbffbda12d371"
   },
   {
-    "id": "materials/Metal049B/roughness.webp",
-    "bytes": 20432,
-    "sha256": "6e7ba0e476bd4278a18c3ec6dac491f20bf73f90a4f338133a63f0638a39087b"
-  },
-  {
     "id": "materials/Metal050B/normal.webp",
     "bytes": 18774,
     "sha256": "6fd65d6f2f5685fd5787e3ecc18c258041d1221270ed01f1831a8c3020bed369"
-  },
-  {
-    "id": "materials/Metal050B/roughness.webp",
-    "bytes": 24584,
-    "sha256": "0329dd8ca6115aedbfa799bffd0dfdbbcb7cb069d5ec5b440fea23a21353d605"
   },
   {
     "id": "materials/painted_plaster_wall/arm.webp",

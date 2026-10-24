@@ -198,14 +198,6 @@
           "sha256": "6fd65d6f2f5685fd5787e3ecc18c258041d1221270ed01f1831a8c3020bed369",
           "sourceHash": "4ca515f9c254ae4012592bb8335ee304d66e0b7df4837a19d70d061960241ba5",
           "dimensions": [256, 256]
-        },
-        "roughness": {
-          "file": "src/assets/materials/Metal050B/roughness.webp",
-          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
-          "archiveMember": "Metal050B_1K-JPG_Roughness.jpg",
-          "sha256": "0329dd8ca6115aedbfa799bffd0dfdbbcb7cb069d5ec5b440fea23a21353d605",
-          "sourceHash": "99145f1f9c1a36fe2a2de7a3c6688962a8c103df2fd0694f840158a80730bfff",
-          "dimensions": [256, 256]
         }
       }
     },
@@ -229,14 +221,6 @@
           "archiveMember": "Metal049B_1K-JPG_NormalGL.jpg",
           "sha256": "350b23ae78929effc6f11105c25ae982316c1b6e1a7e0b9bcabfbffbda12d371",
           "sourceHash": "17741f9c8ceaba73ebdb8943df889945f7e2df80de10f85dc352a06256753bfb",
-          "dimensions": [256, 256]
-        },
-        "roughness": {
-          "file": "src/assets/materials/Metal049B/roughness.webp",
-          "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
-          "archiveMember": "Metal049B_1K-JPG_Roughness.jpg",
-          "sha256": "6e7ba0e476bd4278a18c3ec6dac491f20bf73f90a4f338133a63f0638a39087b",
-          "sourceHash": "0ab93f5def97f1b1fce5b7aeda5c85b539e0068edc5c0d97ac689e8e36883c54",
           "dimensions": [256, 256]
         }
       }
@@ -262,14 +246,6 @@
           "sha256": "9105a11e82b141f1ed100346397c23689bd2cbacd22bb81de63aad84d5386fdf",
           "sourceHash": "697f5f87f7c87eb732e1cbe65630f166fa6f4e4a91eda944b5fce4257ec4e15a",
           "dimensions": [256, 256]
-        },
-        "roughness": {
-          "file": "src/assets/materials/Metal048B/roughness.webp",
-          "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
-          "archiveMember": "Metal048B_1K-JPG_Roughness.jpg",
-          "sha256": "37cee9fce3e581be5fff795cd0207210a7c2765add94ae1b1d6b083addf0955a",
-          "sourceHash": "288e01b1a8caab31b895b7616b4ee007b0efec8f3773b3fb9c37c06f6482cbc4",
-          "dimensions": [256, 256]
         }
       }
     },
@@ -293,14 +269,6 @@
           "archiveMember": "Metal027_1K-JPG_NormalGL.jpg",
           "sha256": "6da6c4df04523030598b19a6a980c4e220d2d3063fd255930e31d750e3b432a0",
           "sourceHash": "afbf8ca3df45111ac5543174582b6b98cb1bf154f7c7ee8f198720042b92d7c8",
-          "dimensions": [256, 256]
-        },
-        "roughness": {
-          "file": "src/assets/materials/Metal027/roughness.webp",
-          "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
-          "archiveMember": "Metal027_1K-JPG_Roughness.jpg",
-          "sha256": "0c0f7ca1eec028f2895f5e9349a015a06772b61cc87bfeab9c193cb98b2f570b",
-          "sourceHash": "8f01484981a8bf83199d4f4cb435a344294cd80cb4ee623cf8567a7726fb289e",
           "dimensions": [256, 256]
         }
       }

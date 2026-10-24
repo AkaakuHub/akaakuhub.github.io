@@ -18,7 +18,7 @@ type MaterialDefinition = (typeof materialDefinitions)[keyof typeof materialDefi
 export const materialAssetIds = Object.values(materialDefinitions).flatMap((definition) => {
   const files =
     definition.format === "metal"
-      ? ["normal", "roughness"]
+      ? ["normal"]
       : definition.format === "arm"
         ? ["color", "normal", "arm"]
         : definition.format === "leaf"

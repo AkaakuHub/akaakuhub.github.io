@@ -11,7 +11,7 @@ export interface PbrMaps {
   alphaMap: Texture<ImageBitmap> | null;
 }
 
-export type MetalMaps = Pick<PbrMaps, "normalMap" | "roughnessMap">;
+export type MetalMaps = Pick<PbrMaps, "normalMap">;
 
 export async function loadMaterials(
   renderer: WebGLRenderer,
@@ -30,11 +30,8 @@ export async function loadMaterials(
     return { map, normalMap, roughnessMap, aoMap, alphaMap };
   }
   async function loadMetal({ id, meters }: MetalDefinition): Promise<MetalMaps> {
-    const [normalMap, roughnessMap] = await Promise.all([
-      texture(id, "normal", meters),
-      texture(id, "roughness", meters),
-    ]);
-    return { normalMap, roughnessMap };
+    const normalMap = await texture(id, "normal", meters);
+    return { normalMap };
   }
   const [
     floor,

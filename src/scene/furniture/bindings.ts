@@ -27,6 +27,7 @@ function printedLabel(
 }
 
 function pageSurface(mesh: Mesh, axis: "x" | "y"): void {
+  mesh.geometry = mesh.geometry.clone();
   const positions = mesh.geometry.getAttribute("position");
   const uv = mesh.geometry.getAttribute("uv");
   mesh.geometry.setAttribute("uv1", uv.clone());

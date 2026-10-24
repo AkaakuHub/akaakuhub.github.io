@@ -80,6 +80,7 @@ export function createDoor(
   hardware.finish(door);
   door.traverse((object) => {
     if (!(object instanceof Mesh) || object.material !== wood) return;
+    object.geometry = object.geometry.clone();
     const uv = object.geometry.getAttribute("uv");
     for (let index = 0; index < uv.count; index++) {
       const u = uv.getX(index);
