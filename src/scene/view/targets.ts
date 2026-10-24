@@ -39,7 +39,7 @@ export function roomPose(direction: RoomDirection, heading: number, aspect: numb
   return {
     position: new Vector3(0, 1.55, 0.45),
     quaternion: new Quaternion().setFromEuler(new Euler(pitch, yaw, 0, "YXZ")),
-    fov: MathUtils.clamp(fittingFov, 62, 82),
+    fov: MathUtils.clamp(fittingFov, 62, 120),
   };
 }
 
@@ -56,10 +56,8 @@ export function inspectionBounds(
     Math.max(
       target.width / (2 * halfAngle * aspect * 0.82),
       target.height / (2 * halfAngle * 0.78),
-      Math.min(
-        target.width / (2 * halfAngle * aspect * widthFraction),
-        target.height / (2 * halfAngle * heightFraction),
-      ),
+      target.width / (2 * halfAngle * aspect * widthFraction),
+      target.height / (2 * halfAngle * heightFraction),
     ) / zoom;
   const visibleHeight = distance * 2 * halfAngle;
   const visibleWidth = visibleHeight * aspect;
