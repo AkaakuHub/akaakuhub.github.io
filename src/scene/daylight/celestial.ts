@@ -6,6 +6,8 @@ import { celestialVisibility, lunarIrradiance } from "./visibility";
 const latitude = 36.5732;
 const longitude = 136.67774;
 const northYaw = 180;
+const moonLightGain = 0.48;
+const nightSkyFill = 0.16;
 
 function direction(altitude: number, azimuth: number): Vector3 {
   const elevation = MathUtils.degToRad(altitude);
@@ -28,7 +30,7 @@ export function roomCelestialLighting(date: Date) {
   const warmth = (1 - MathUtils.smoothstep(altitude, 1, 15)) * twilight;
   const lunarWeight = MathUtils.smoothstep(-altitude, 6, 12);
   const moonBrightness =
-    photometry.moonIlluminance *
+    moonLightGain *
     lunarIrradiance(fraction, moon.distance) *
     lunarWeight *
     celestialVisibility(moon.altitude);
@@ -36,25 +38,27 @@ export function roomCelestialLighting(date: Date) {
   const color = unitLuminance(
     moonActive ? new Color("#bed2ff") : new Color("#ffad63").lerp(new Color("#fff5e6"), highSun),
   );
-  const intensity =
-    photometry.scale *
-    (moonActive ? moonBrightness : photometry.solarIlluminance * celestialVisibility(altitude));
-  const sky = new Color("#071221")
+  const intensity = moonActive
+    ? moonBrightness
+    : photometry.scale * photometry.solarIlluminance * celestialVisibility(altitude);
+  const exterior = new Color("#071221")
     .lerp(new Color("#657a9f"), twilight)
     .lerp(new Color("#b7d4eb"), highSun);
-  sky.lerp(new Color("#c5997d"), warmth * 0.48);
+  exterior.lerp(new Color("#c5997d"), warmth * 0.48);
+  const nightWeight = MathUtils.smoothstep(-altitude, 0, 12);
+  const sky = new Color("#bed2ff").lerp(new Color("#6491eb"), nightWeight);
+  const skyTwilight = MathUtils.smoothstep(altitude, -6, 6);
   const skyIntensity =
-    photometry.scale *
-    (photometry.skyIlluminance * daylight +
-      photometry.nightSkyIlluminance * (1 - twilight) +
-      moonBrightness * 0.5);
+    photometry.scale * photometry.skyIlluminance * daylight +
+    nightSkyFill * (1 - skyTwilight) +
+    moonBrightness * 0.5;
   const source = moonActive ? moon : sun;
   return {
-    daylight,
     color,
     direction: direction(source.altitude, source.azimuth),
     intensity,
     sky,
     skyIntensity,
+    exterior,
   };
 }

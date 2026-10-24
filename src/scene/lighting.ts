@@ -6,6 +6,7 @@ import { createRoomReflection } from "./lighting/room-reflection";
 import { createRoomLights } from "./lighting/room-lights";
 
 export function illuminate(scene: Scene, renderer: WebGLRenderer) {
+  renderer.toneMappingExposure = cameraExposure;
   const fixtures = createRoomLights(scene);
   const celestialLight = new DirectionalLight();
   celestialLight.target.position.set(0, 1.2, 0);
@@ -35,22 +36,11 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     }
   });
   const background = new Color();
-  const exteriorSky = new Color();
   scene.background = background;
   const updateReflection = createRoomReflection(scene, renderer);
-  let roomLightsOn = true;
-  let daylight = 0;
-
-  function updateExposure(): void {
-    const exposure = cameraExposure(daylight, roomLightsOn);
-    renderer.toneMappingExposure = exposure;
-    background.copy(exteriorSky).multiplyScalar(1 / exposure);
-    for (const material of skyMaterials) material.color.copy(background);
-  }
 
   function update(date: Date, captureReflection = true): void {
     const state = roomCelestialLighting(date);
-    daylight = state.daylight;
     celestialLight.position
       .copy(state.direction)
       .multiplyScalar(16)
@@ -60,16 +50,14 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer) {
     celestialLight.shadow.needsUpdate = true;
     const sky = unitLuminance(state.sky.clone());
     fixtures.updateSky(sky, state.skyIntensity / Math.PI);
-    exteriorSky.copy(state.sky);
-    updateExposure();
+    background.copy(state.exterior).multiplyScalar(1 / cameraExposure);
+    for (const material of skyMaterials) material.color.copy(background);
     if (captureReflection) updateReflection(date);
   }
 
   function setRoomLights(on: boolean): void {
-    roomLightsOn = on;
     fixtures.setRoomLights(on);
     for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
-    updateExposure();
     updateReflection(new Date(), true);
   }
   update(new Date(), false);

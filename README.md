@@ -18,9 +18,9 @@ Three.jsで描画する部室を入口にした個人サイトです。室内で
 
 チンダル現象の散乱光は通常の照明と同じ影マップを参照し、画面の深度から復元した物体の表面まで視線に沿って積分します。Henyey–Greenstein位相関数とBeer–Lambert則を使い、縦横をそれぞれ4分の1にした解像度で計算して、深度に応じて合成します。スマホは24ステップ、PCは48ステップを使い、合成時には再積分しません。[参考にした描画処理](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/rendering/scattering.hlsl)の原理をもとに、メートル単位の部室用GLSLとして実装しています。参照元の散乱係数0.000762/インチは0.03/メートルへ変換しています。
 
-月光の位相・距離による減衰は[参照元の月光計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_moon.lua)、地平線と大気減衰は[共通の可視率計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_celestial_visibility.lua)に合わせています。参照元の表示用の強度比は転用せず、月光の基準照度は0.3lux、月のない夜の天空光は0.002luxとしています。[NPSの満月の照度範囲](https://www.nps.gov/subjects/nightskies/upload/FINAL_NPS_The_Power_of_Night_Handbook_lowres_508.pdf)と[夜空の照度の資料](https://parkplanning.nps.gov/showFile.cfm?projectID=60370&sfid=264018)を参考にしています。
+月光の位相・距離による減衰は[参照元の月光計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_moon.lua)、地平線と大気減衰は[共通の可視率計算](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_celestial_visibility.lua)に合わせています。[参照元の照明設定](https://github.com/AkaakuHub/steamvr-workshop-tools-win/blob/main/scripts/vscripts/stage03_lighting.lua)と同じく、月光の表示用の基準値を0.48、夜の天空光を0.16とし、天空光には月光の半分も加算します。これらは画面上の光量を決める値であり、luxへ校正した測光値ではありません。天空光の色も参照元と同じく、昼のRGB(190,210,255)から夜のRGB(100,145,235)へ補間します。
 
-消灯時の夜間露出はEV100=2、点灯時はEV100=7とし、昼はEV100=10へ補間します。これは画面上の見やすさを調整する表示設定です。外の空の色は露出を補正してから合成し、室内の消灯による露出変更で夜空まで白くなることを防ぎます。夜の青みも表示上の設定であり、測光値を保証するものではありません。
+参照元と同じ固定露出の方式を使い、この部屋では昼間の既存設定であるEV100=10を維持します。時刻や照明スイッチによる露出変更は行いません。外の空の色と、室内を照らす天空光の色・強度は別に計算し、外景には露出補正を適用してから合成します。月光の増加で夜空の色まで白くしないための表示設定です。参照元と同じ最終画素や、実際の月光の測光値を保証するものではありません。
 
 スマホとPCで同じ空間を描画し、画面の実寸に合わせて画角・描画解像度を調整します。
 
