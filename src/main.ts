@@ -72,7 +72,7 @@ function updateTime() {
   renderer.shadowMap.needsUpdate = true;
   invalidate();
 }
-setInterval(updateTime, 1000);
+setInterval(updateTime, 60_000);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     cancelAnimationFrame(frame);

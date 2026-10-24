@@ -28,7 +28,6 @@ export interface MaterialLibrary {
   steel: PbrMaps;
   brass: PbrMaps;
   powder: PbrMaps;
-  paintGreen: PbrMaps;
   paper: PbrMaps;
   plastic: PbrMaps;
   leaves: PbrMaps;
@@ -52,7 +51,7 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
         resizeQuality: "high",
       });
       const bitmap = await loader.loadAsync(
-        `${import.meta.env.BASE_URL}materials/${id}/${file}.jpg`,
+        `${import.meta.env.BASE_URL}materials/${id}/${file}.webp`,
       );
       const texture = new Texture(bitmap);
       texture.name = `${id}/${file}`;
@@ -98,7 +97,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     steel,
     brass,
     powder,
-    paintGreen,
     paper,
     plastic,
     leaves,
@@ -112,7 +110,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     loadSet("Metal049B", 0.25, 1024, "metal"),
     loadSet("Metal048B", 0.2, 512, "metal"),
     loadSet("Metal027", 0.1, 512, "metal"),
-    loadSet("green_metal_rust", 1, 1024, "arm"),
     loadSet("Paper001", 0.3, 512, "dielectric"),
     loadSet("Plastic010", 0.2, 512, "dielectric"),
     loadSet("LeafSet024", 1, 1024, "leaf"),
@@ -127,7 +124,6 @@ export async function loadMaterials(renderer: WebGLRenderer): Promise<MaterialLi
     steel,
     brass,
     powder,
-    paintGreen,
     paper,
     plastic,
     leaves,

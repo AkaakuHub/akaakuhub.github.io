@@ -1,6 +1,6 @@
 import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
-import { CatmullRomCurve3, Group, TubeGeometry, Vector3 } from "three";
+import { CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { hinge } from "../details/hinge";
@@ -78,5 +78,13 @@ export function createDoor(
   box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], metals.ivory);
   for (const y of [1.116, 1.204]) hardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
   hardware.finish(door);
+  door.traverse((object) => {
+    if (!(object instanceof Mesh) || object.material !== wood) return;
+    const uv = object.geometry.getAttribute("uv");
+    for (let index = 0; index < uv.count; index++) {
+      const u = uv.getX(index);
+      uv.setXY(index, uv.getY(index), -u);
+    }
+  });
   return door;
 }

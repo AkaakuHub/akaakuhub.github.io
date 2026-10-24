@@ -13,19 +13,25 @@
       "sizeMeters": [3.4000000953674316, 3.4000000953674316],
       "maps": {
         "color": {
-          "file": "herringbone_parquet/color.jpg",
+          "file": "herringbone_parquet/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_diff_1k.jpg",
-          "md5": "dae9d3dd6d8a2c2e387da22fd8228265"
+          "sourceHash": "dae9d3dd6d8a2c2e387da22fd8228265",
+          "sha256": "bdf6c14f81587fe691bde6433cbc3e17a0906bb0b3260a8cf59fcc652dbd9a4d",
+          "dimensions": [1024, 1024]
         },
         "normal": {
-          "file": "herringbone_parquet/normal.jpg",
+          "file": "herringbone_parquet/normal.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_nor_gl_1k.jpg",
-          "md5": "c0a64eb61ea44add715c6fe29b958adf"
+          "sourceHash": "c0a64eb61ea44add715c6fe29b958adf",
+          "sha256": "c601dbb6e03c70fe25f9ccb68b6e73552a9a367207ace35edc8f4daca1aad7f0",
+          "dimensions": [512, 512]
         },
         "arm": {
-          "file": "herringbone_parquet/arm.jpg",
+          "file": "herringbone_parquet/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_arm_1k.jpg",
-          "md5": "0c5a18f599282509ae37e2f0bcc4e492"
+          "sourceHash": "0c5a18f599282509ae37e2f0bcc4e492",
+          "sha256": "ad981d10c57229b81f18cd4b8604735d65d78c9680bb2243abf431b5a89370c3",
+          "dimensions": [512, 512]
         }
       },
       "provider": "Poly Haven"
@@ -42,19 +48,25 @@
       "sizeMeters": [2.0, 2.0],
       "maps": {
         "color": {
-          "file": "painted_plaster_wall/color.jpg",
+          "file": "painted_plaster_wall/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
-          "md5": "15ba8c1f63a5ab412b1eabe31728540a"
+          "sourceHash": "15ba8c1f63a5ab412b1eabe31728540a",
+          "sha256": "a4b40dd2d7c64add236ea1370ed2db65af240b49ef2e01cc08dc4a02da7c4ec0",
+          "dimensions": [512, 512]
         },
         "normal": {
-          "file": "painted_plaster_wall/normal.jpg",
+          "file": "painted_plaster_wall/normal.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_nor_gl_1k.jpg",
-          "md5": "43fff290583dbdfc9bfa088a2750e840"
+          "sourceHash": "43fff290583dbdfc9bfa088a2750e840",
+          "sha256": "26f58e750a5399fd79c344cfc35b9d1a88ad3cf8da330f5f25a644f0ed925f26",
+          "dimensions": [512, 512]
         },
         "arm": {
-          "file": "painted_plaster_wall/arm.jpg",
+          "file": "painted_plaster_wall/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_arm_1k.jpg",
-          "md5": "a4c1ff7470669daec9e274d915471246"
+          "sourceHash": "a4c1ff7470669daec9e274d915471246",
+          "sha256": "103a1e025828a949f0afdf8264bb756542ddcf42bf11ece76c0b8da9301e92c4",
+          "dimensions": [512, 512]
         }
       },
       "provider": "Poly Haven"
@@ -71,19 +83,25 @@
       "sizeMeters": [1.0, 1.0],
       "maps": {
         "color": {
-          "file": "ash_veneer/color.jpg",
+          "file": "ash_veneer/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_diff_1k.jpg",
-          "md5": "5be48b4be87620998cfaee5a4281169d"
+          "sourceHash": "5be48b4be87620998cfaee5a4281169d",
+          "sha256": "74c147241672623e682b6b3927751387c6a3e92e5c202644c8d4044491b1b42b",
+          "dimensions": [1024, 1024]
         },
         "normal": {
-          "file": "ash_veneer/normal.jpg",
+          "file": "ash_veneer/normal.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_nor_gl_1k.jpg",
-          "md5": "6986a1e827968726d996b76d77f3a2ac"
+          "sourceHash": "6986a1e827968726d996b76d77f3a2ac",
+          "sha256": "7ead2a8f7806756028310e69c6b62e9ba9c2645889640ee67e0a728c386540cf",
+          "dimensions": [512, 512]
         },
         "arm": {
-          "file": "ash_veneer/arm.jpg",
+          "file": "ash_veneer/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_arm_1k.jpg",
-          "md5": "ee110cc4704b23e84f8f7d75a954d5ff"
+          "sourceHash": "ee110cc4704b23e84f8f7d75a954d5ff",
+          "sha256": "4a7641f944055197355e12370e9bd633c57303cd89062ac5d6d867310e7d2a7c",
+          "dimensions": [512, 512]
         }
       },
       "provider": "Poly Haven"
@@ -100,19 +118,25 @@
       "sizeMeters": [1.7999999523162842, 1.7999999523162842],
       "maps": {
         "color": {
-          "file": "walnut_veneer/color.jpg",
+          "file": "walnut_veneer/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_diff_1k.jpg",
-          "md5": "70e160b3d44d414728a2fb4194fde2a6"
+          "sourceHash": "70e160b3d44d414728a2fb4194fde2a6",
+          "sha256": "80d76eba3bbe0fe355434cfde289761484856f1af38d2bfb1613443c108d41b7",
+          "dimensions": [1024, 1024]
         },
         "normal": {
-          "file": "walnut_veneer/normal.jpg",
+          "file": "walnut_veneer/normal.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_nor_gl_1k.jpg",
-          "md5": "fc0df784c71c1cff9d80d4a6de0b2ab4"
+          "sourceHash": "fc0df784c71c1cff9d80d4a6de0b2ab4",
+          "sha256": "cfbc613ff9cc7e706350f9111b00c0f0bbf94817d1c4876f7597eea278137f60",
+          "dimensions": [512, 512]
         },
         "arm": {
-          "file": "walnut_veneer/arm.jpg",
+          "file": "walnut_veneer/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_arm_1k.jpg",
-          "md5": "7db3474a1d0d1ed15e0cc349541ac1e3"
+          "sourceHash": "7db3474a1d0d1ed15e0cc349541ac1e3",
+          "sha256": "5625cb1845bd7b2510308ec21e5769392c82e1964a119c89941aed8f253a0258",
+          "dimensions": [512, 512]
         }
       },
       "provider": "Poly Haven"
@@ -130,19 +154,25 @@
       "sizeMeters": [0.26570814767607126, 0.2662999927997589],
       "maps": {
         "color": {
-          "file": "terlenka/color.jpg",
+          "file": "terlenka/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_diff_1k.jpg",
-          "md5": "202624e89023d9ace2845b372015490c"
+          "sourceHash": "202624e89023d9ace2845b372015490c",
+          "sha256": "4cc57041d122e11d1fd8abbad3a72b2a2d5a584069b0ff3075ffbd9e0b6bf398",
+          "dimensions": [511, 512]
         },
         "normal": {
-          "file": "terlenka/normal.jpg",
+          "file": "terlenka/normal.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_nor_gl_1k.jpg",
-          "md5": "88d445044fb8519c516c97acabf93ef1"
+          "sourceHash": "88d445044fb8519c516c97acabf93ef1",
+          "sha256": "d45450ff2abe3c767adb76dd1c631856831b4b8c8d6113e7dc8b2729f34da208",
+          "dimensions": [511, 512]
         },
         "arm": {
-          "file": "terlenka/arm.jpg",
+          "file": "terlenka/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_arm_1k.jpg",
-          "md5": "94613807db9da499643913b0d40eb16c"
+          "sourceHash": "94613807db9da499643913b0d40eb16c",
+          "sha256": "c1767b94c6241d2082d90a00fc5f2b86c11b8af117558e4496e60e0389a6c77f",
+          "dimensions": [511, 512]
         }
       },
       "provider": "Poly Haven"
@@ -162,28 +192,36 @@
       "scaleNote": "配布元に実寸指定がないため、アルミの細かな擦り傷を表す大きさとして設定。",
       "maps": {
         "color": {
-          "file": "Metal050B/color.jpg",
+          "file": "Metal050B/color.webp",
           "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
           "archiveMember": "Metal050B_1K-JPG_Color.jpg",
-          "sha256": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d"
+          "sha256": "e4fa57458f42d0196338cebb2bae5b6720a0572bbfb4d248621b410a712e185d",
+          "sourceHash": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d",
+          "dimensions": [512, 512]
         },
         "normal": {
-          "file": "Metal050B/normal.jpg",
+          "file": "Metal050B/normal.webp",
           "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
           "archiveMember": "Metal050B_1K-JPG_NormalGL.jpg",
-          "sha256": "4ca515f9c254ae4012592bb8335ee304d66e0b7df4837a19d70d061960241ba5"
+          "sha256": "04e0a4fa40d8283c3f3d350c2aa098d51602f0a5d707df7ecf0b1de7a058a822",
+          "sourceHash": "4ca515f9c254ae4012592bb8335ee304d66e0b7df4837a19d70d061960241ba5",
+          "dimensions": [512, 512]
         },
         "roughness": {
-          "file": "Metal050B/roughness.jpg",
+          "file": "Metal050B/roughness.webp",
           "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
           "archiveMember": "Metal050B_1K-JPG_Roughness.jpg",
-          "sha256": "99145f1f9c1a36fe2a2de7a3c6688962a8c103df2fd0694f840158a80730bfff"
+          "sha256": "5fc7f60d60f43c11950b9f7a23a8453715df2acc08a3460067de03bca55e3666",
+          "sourceHash": "99145f1f9c1a36fe2a2de7a3c6688962a8c103df2fd0694f840158a80730bfff",
+          "dimensions": [512, 512]
         },
         "metalness": {
-          "file": "Metal050B/metalness.jpg",
+          "file": "Metal050B/metalness.webp",
           "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
           "archiveMember": "Metal050B_1K-JPG_Metalness.jpg",
-          "sha256": "be3f57a50cf2cf7f43a603b0f1c7a03b8e71d5a65bd6d67cb7e3c95d06dac290"
+          "sha256": "84e5e3737f8c5f30992b2107312b268ab7176ae509c118d7e21c089baaaee7b3",
+          "sourceHash": "be3f57a50cf2cf7f43a603b0f1c7a03b8e71d5a65bd6d67cb7e3c95d06dac290",
+          "dimensions": [512, 512]
         }
       }
     },
@@ -202,28 +240,36 @@
       "scaleNote": "配布元に実寸指定がないため、鋼の研磨跡と汚れを表す大きさとして設定。",
       "maps": {
         "color": {
-          "file": "Metal049B/color.jpg",
+          "file": "Metal049B/color.webp",
           "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
           "archiveMember": "Metal049B_1K-JPG_Color.jpg",
-          "sha256": "93a2dceba159ae4509d8563e232ca00a470774fe57bd0c664abcd888824ea14a"
+          "sha256": "f9cdcec64d2b139c04d092569fbfa214dd743aa519a7486d64fc62b55def8a03",
+          "sourceHash": "93a2dceba159ae4509d8563e232ca00a470774fe57bd0c664abcd888824ea14a",
+          "dimensions": [512, 512]
         },
         "normal": {
-          "file": "Metal049B/normal.jpg",
+          "file": "Metal049B/normal.webp",
           "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
           "archiveMember": "Metal049B_1K-JPG_NormalGL.jpg",
-          "sha256": "17741f9c8ceaba73ebdb8943df889945f7e2df80de10f85dc352a06256753bfb"
+          "sha256": "cef315689c21972f4b9b3968faad98e6c3031a89cf59a6dd77e4bf233bcd432c",
+          "sourceHash": "17741f9c8ceaba73ebdb8943df889945f7e2df80de10f85dc352a06256753bfb",
+          "dimensions": [512, 512]
         },
         "roughness": {
-          "file": "Metal049B/roughness.jpg",
+          "file": "Metal049B/roughness.webp",
           "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
           "archiveMember": "Metal049B_1K-JPG_Roughness.jpg",
-          "sha256": "0ab93f5def97f1b1fce5b7aeda5c85b539e0068edc5c0d97ac689e8e36883c54"
+          "sha256": "c4a2f620a44576ffd9e53e4af413374066dd28e7815cfbc117eca263c451ab27",
+          "sourceHash": "0ab93f5def97f1b1fce5b7aeda5c85b539e0068edc5c0d97ac689e8e36883c54",
+          "dimensions": [512, 512]
         },
         "metalness": {
-          "file": "Metal049B/metalness.jpg",
+          "file": "Metal049B/metalness.webp",
           "url": "https://ambientcg.com/get?file=Metal049B_1K-JPG.zip",
           "archiveMember": "Metal049B_1K-JPG_Metalness.jpg",
-          "sha256": "d075a1a722d2dd1e9fb1d0bec1d82de1d107f31a1612e857609e832003f17930"
+          "sha256": "51e953dcac934c18d15bed8c8323d3abdedf354e0586ce9f8eaebf61bf533275",
+          "sourceHash": "d075a1a722d2dd1e9fb1d0bec1d82de1d107f31a1612e857609e832003f17930",
+          "dimensions": [512, 512]
         }
       }
     },
@@ -242,28 +288,36 @@
       "scaleNote": "配布元に実寸指定がないため、真鍮の擦り傷と指跡を表す大きさとして設定。",
       "maps": {
         "color": {
-          "file": "Metal048B/color.jpg",
+          "file": "Metal048B/color.webp",
           "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
           "archiveMember": "Metal048B_1K-JPG_Color.jpg",
-          "sha256": "0614a52181c7cb1f1fa4e75cf3a1914091b9736d96ee6a193e6867ad09a8d034"
+          "sha256": "bf4487efa20987effe6b8700da3ff74b17ef1ff5f89580ab2590090a84ba8d29",
+          "sourceHash": "0614a52181c7cb1f1fa4e75cf3a1914091b9736d96ee6a193e6867ad09a8d034",
+          "dimensions": [512, 512]
         },
         "normal": {
-          "file": "Metal048B/normal.jpg",
+          "file": "Metal048B/normal.webp",
           "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
           "archiveMember": "Metal048B_1K-JPG_NormalGL.jpg",
-          "sha256": "697f5f87f7c87eb732e1cbe65630f166fa6f4e4a91eda944b5fce4257ec4e15a"
+          "sha256": "dd5c793ac16e94bef7b587de4729c6db20fa868e1dbb86e8233a60ab31333bac",
+          "sourceHash": "697f5f87f7c87eb732e1cbe65630f166fa6f4e4a91eda944b5fce4257ec4e15a",
+          "dimensions": [512, 512]
         },
         "roughness": {
-          "file": "Metal048B/roughness.jpg",
+          "file": "Metal048B/roughness.webp",
           "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
           "archiveMember": "Metal048B_1K-JPG_Roughness.jpg",
-          "sha256": "288e01b1a8caab31b895b7616b4ee007b0efec8f3773b3fb9c37c06f6482cbc4"
+          "sha256": "a5c9cdf43dcc24d593296d9b7109d3d97157008cd437c5b3146dfe613cce2525",
+          "sourceHash": "288e01b1a8caab31b895b7616b4ee007b0efec8f3773b3fb9c37c06f6482cbc4",
+          "dimensions": [512, 512]
         },
         "metalness": {
-          "file": "Metal048B/metalness.jpg",
+          "file": "Metal048B/metalness.webp",
           "url": "https://ambientcg.com/get?file=Metal048B_1K-JPG.zip",
           "archiveMember": "Metal048B_1K-JPG_Metalness.jpg",
-          "sha256": "33220998ae3792f801251f52e9eec82e02b0dcd209843eec456c6b55fb66d706"
+          "sha256": "3f84c9c35ae92eecf81969e7598274747cb52fca5a7aea9568df6c6683a377ff",
+          "sourceHash": "33220998ae3792f801251f52e9eec82e02b0dcd209843eec456c6b55fb66d706",
+          "dimensions": [512, 512]
         }
       }
     },
@@ -282,60 +336,36 @@
       "scaleNote": "配布元に実寸指定がないため、粉体塗装の細かな凹凸を表す大きさとして設定。",
       "maps": {
         "color": {
-          "file": "Metal027/color.jpg",
+          "file": "Metal027/color.webp",
           "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
           "archiveMember": "Metal027_1K-JPG_Color.jpg",
-          "sha256": "8e2e69e767b2692da211723ccb7def5f27b9c7712c6952bc45c526e2a5183ae0"
+          "sha256": "3e38fce7cdf06dc06be1b31ed9cb22e2b083cfff19beadebd9047b69727e51c7",
+          "sourceHash": "8e2e69e767b2692da211723ccb7def5f27b9c7712c6952bc45c526e2a5183ae0",
+          "dimensions": [512, 512]
         },
         "normal": {
-          "file": "Metal027/normal.jpg",
+          "file": "Metal027/normal.webp",
           "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
           "archiveMember": "Metal027_1K-JPG_NormalGL.jpg",
-          "sha256": "afbf8ca3df45111ac5543174582b6b98cb1bf154f7c7ee8f198720042b92d7c8"
+          "sha256": "8d34993a3bc4bb0843796994e7dd83888113662a598a413e2b901ef39916bae2",
+          "sourceHash": "afbf8ca3df45111ac5543174582b6b98cb1bf154f7c7ee8f198720042b92d7c8",
+          "dimensions": [512, 512]
         },
         "roughness": {
-          "file": "Metal027/roughness.jpg",
+          "file": "Metal027/roughness.webp",
           "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
           "archiveMember": "Metal027_1K-JPG_Roughness.jpg",
-          "sha256": "8f01484981a8bf83199d4f4cb435a344294cd80cb4ee623cf8567a7726fb289e"
+          "sha256": "2f9c51b60321c8812c4a1b8fafe0b7fcd941452026dd3b741519c6595c202d0b",
+          "sourceHash": "8f01484981a8bf83199d4f4cb435a344294cd80cb4ee623cf8567a7726fb289e",
+          "dimensions": [512, 512]
         },
         "metalness": {
-          "file": "Metal027/metalness.jpg",
+          "file": "Metal027/metalness.webp",
           "url": "https://ambientcg.com/get?file=Metal027_1K-JPG.zip",
           "archiveMember": "Metal027_1K-JPG_Metalness.jpg",
-          "sha256": "843102638fa0a5bf897888868877efab8ccdc4cb84a48e57bdb52bfb30f5e714"
-        }
-      }
-    },
-    {
-      "id": "green_metal_rust",
-      "name": "Green Metal Rust",
-      "provider": "Poly Haven",
-      "authors": {
-        "Rob Tuytel": "All"
-      },
-      "source": "https://polyhaven.com/a/green_metal_rust",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://polyhaven.com/license",
-      "sizeMeters": [1.0, 1.0],
-      "maps": {
-        "color": {
-          "file": "green_metal_rust/color.jpg",
-          "size": 212088,
-          "md5": "f69d8c507961f0629019652162090917",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_diff_1k.jpg"
-        },
-        "normal": {
-          "file": "green_metal_rust/normal.jpg",
-          "size": 121379,
-          "md5": "a6cefc436aa41f73f15347dcf7a791d0",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_nor_gl_1k.jpg"
-        },
-        "arm": {
-          "file": "green_metal_rust/arm.jpg",
-          "size": 108674,
-          "md5": "f7474f11a76b3747265873c325ecbb88",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/green_metal_rust/green_metal_rust_arm_1k.jpg"
+          "sha256": "db8d66dc7eb696f65cb641543264e6f4c8b5467533db31fa5bd7a0275d6ee39b",
+          "sourceHash": "843102638fa0a5bf897888868877efab8ccdc4cb84a48e57bdb52bfb30f5e714",
+          "dimensions": [512, 512]
         }
       }
     },
@@ -352,22 +382,28 @@
       "creationMethod": "PBRApproximated",
       "maps": {
         "color": {
-          "file": "Paper001/color.jpg",
+          "file": "Paper001/color.webp",
           "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
           "archiveMember": "Paper001_1K-JPG_Color.jpg",
-          "sha256": "e8db6f5b91f7882f4711ab5b2dc5c2e91f822d4f80a7d0081991532cf5cd9b9a"
+          "sha256": "a9a94108c6606151f8b0604ac9c7b0a7fbcb8e2f2f64309d7c52b071d8f7c62b",
+          "sourceHash": "e8db6f5b91f7882f4711ab5b2dc5c2e91f822d4f80a7d0081991532cf5cd9b9a",
+          "dimensions": [512, 300]
         },
         "normal": {
-          "file": "Paper001/normal.jpg",
+          "file": "Paper001/normal.webp",
           "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
           "archiveMember": "Paper001_1K-JPG_NormalGL.jpg",
-          "sha256": "ae083d9d11e13f686d1de0b5ba30518c3ecac6ec5ec06c2016462c9eb197c0dd"
+          "sha256": "a48cafe0edf88123b8cb6991567e06925b51d3dee9ff81aaf7c4a941182c1cec",
+          "sourceHash": "ae083d9d11e13f686d1de0b5ba30518c3ecac6ec5ec06c2016462c9eb197c0dd",
+          "dimensions": [512, 300]
         },
         "roughness": {
-          "file": "Paper001/roughness.jpg",
+          "file": "Paper001/roughness.webp",
           "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
           "archiveMember": "Paper001_1K-JPG_Roughness.jpg",
-          "sha256": "28bcbbc7648ff0f99a47417b272bf98ae130126f74e8e5de640b7c2defd4e855"
+          "sha256": "9d1ec27a7d64d868fe2324a2aa190a001d1477420fd7489a21a87489cb427e34",
+          "sourceHash": "28bcbbc7648ff0f99a47417b272bf98ae130126f74e8e5de640b7c2defd4e855",
+          "dimensions": [512, 300]
         }
       }
     },
@@ -384,28 +420,36 @@
       "creationMethod": "PBRPhotogrammetry",
       "maps": {
         "color": {
-          "file": "LeafSet024/color.jpg",
+          "file": "LeafSet024/color.webp",
           "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
           "archiveMember": "LeafSet024_1K-JPG_Color.jpg",
-          "sha256": "f5c6cbf36de217af8ae06cf5d7badd035e04c341594aa618abacc2a9d8dbb8c8"
+          "sha256": "7794ae95e360023f8dd4aba8a7ef5e8b9b89abd9d9d9722ae7417b0db3222d00",
+          "sourceHash": "f5c6cbf36de217af8ae06cf5d7badd035e04c341594aa618abacc2a9d8dbb8c8",
+          "dimensions": [1024, 1024]
         },
         "normal": {
-          "file": "LeafSet024/normal.jpg",
+          "file": "LeafSet024/normal.webp",
           "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
           "archiveMember": "LeafSet024_1K-JPG_NormalGL.jpg",
-          "sha256": "b184bc151c22381c1b9e377de496fd4e55bd1dcfbbe5717cbbdb0fc7456add12"
+          "sha256": "3f05d41913ddd49d69147386b2d50e21cc778b22addfe62c48ce54ffe00ff07a",
+          "sourceHash": "b184bc151c22381c1b9e377de496fd4e55bd1dcfbbe5717cbbdb0fc7456add12",
+          "dimensions": [512, 512]
         },
         "roughness": {
-          "file": "LeafSet024/roughness.jpg",
+          "file": "LeafSet024/roughness.webp",
           "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
           "archiveMember": "LeafSet024_1K-JPG_Roughness.jpg",
-          "sha256": "b68cb9e409bfeffec98ee27e01ebc1aa1beda07ffe0c144a17892d9fbc6e28ab"
+          "sha256": "5f87e0622eda1791ec8e25d7d0405bf736f9f80a6f445e4be09af20ded1fa24b",
+          "sourceHash": "b68cb9e409bfeffec98ee27e01ebc1aa1beda07ffe0c144a17892d9fbc6e28ab",
+          "dimensions": [512, 512]
         },
         "opacity": {
-          "file": "LeafSet024/opacity.jpg",
+          "file": "LeafSet024/opacity.webp",
           "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
           "archiveMember": "LeafSet024_1K-JPG_Opacity.jpg",
-          "sha256": "1b8e15edfc3b28f7f7607097499768cc7110345a3611d9b75d4bf70c54faef0b"
+          "sha256": "50178c0dddc2add78384a973304e5bac9da39eb9a6a81d80126984ba3d865d5d",
+          "sourceHash": "1b8e15edfc3b28f7f7607097499768cc7110345a3611d9b75d4bf70c54faef0b",
+          "dimensions": [512, 512]
         }
       }
     },
@@ -422,51 +466,28 @@
       "creationMethod": "PBRProcedural",
       "maps": {
         "color": {
-          "file": "Plastic010/color.jpg",
+          "file": "Plastic010/color.webp",
           "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
           "archiveMember": "Plastic010_1K-JPG_Color.jpg",
-          "sha256": "4a91d8a74184acb5e84fb9ddbfbc12c49102864157c91e2b3b5950133ef05e06"
+          "sha256": "08826b9c691f6dd217d3212ef14b789ea614a9473c0d31f7a813ecc80a58a68f",
+          "sourceHash": "4a91d8a74184acb5e84fb9ddbfbc12c49102864157c91e2b3b5950133ef05e06",
+          "dimensions": [512, 512]
         },
         "normal": {
-          "file": "Plastic010/normal.jpg",
+          "file": "Plastic010/normal.webp",
           "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
           "archiveMember": "Plastic010_1K-JPG_NormalGL.jpg",
-          "sha256": "cc073c8312edd35f42e038c45861e055f511f7f627dcb04f420324e38b5ce861"
+          "sha256": "24b6debc81d3154a891a2bcb845177cd9c8de1955ba5dec8f4396de9e0304380",
+          "sourceHash": "cc073c8312edd35f42e038c45861e055f511f7f627dcb04f420324e38b5ce861",
+          "dimensions": [512, 512]
         },
         "roughness": {
-          "file": "Plastic010/roughness.jpg",
+          "file": "Plastic010/roughness.webp",
           "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
           "archiveMember": "Plastic010_1K-JPG_Roughness.jpg",
-          "sha256": "02f35e8fdb8f1ba78594a3e43792683276d7f713e53d3002a8c8f53bb35a88cb"
-        }
-      }
-    },
-    {
-      "id": "brown_leather",
-      "name": "Brown Leather",
-      "provider": "Poly Haven",
-      "authors": {
-        "Rob Tuytel": "All"
-      },
-      "source": "https://polyhaven.com/a/brown_leather",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://polyhaven.com/license",
-      "sizeMeters": [0.4000000059604645, 0.40000003576278687],
-      "maps": {
-        "color": {
-          "file": "brown_leather/color.jpg",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_albedo_1k.jpg",
-          "sha256": "7e9e1d6566d1fd91d4ceb4966c4820361e85d53a7a828b6bab3b2a093a876cd1"
-        },
-        "normal": {
-          "file": "brown_leather/normal.jpg",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_nor_gl_1k.jpg",
-          "sha256": "506a0b7650c2dea285e247f26ed2d0d6ec38fc10dd584359f0d203e9c082236d"
-        },
-        "arm": {
-          "file": "brown_leather/arm.jpg",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_leather/brown_leather_arm_1k.jpg",
-          "sha256": "8f40d242830b2c1310470abfaf2df15f52658d01c21d97dd96f0679589677de1"
+          "sha256": "b1390d4448096fb3630e8934560328659a9e599c4cd3f5366117f6e5d6d5a27c",
+          "sourceHash": "02f35e8fdb8f1ba78594a3e43792683276d7f713e53d3002a8c8f53bb35a88cb",
+          "dimensions": [512, 512]
         }
       }
     }
