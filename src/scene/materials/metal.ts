@@ -1,14 +1,13 @@
 import { MeshPhysicalMaterial, Vector2 } from "three";
 import type { MeshPhysicalMaterialParameters } from "three";
-import type { MaterialLibrary, PbrMaps } from "./library";
+import type { MaterialLibrary, MetalMaps } from "./library";
 
-function texturedMetal(maps: PbrMaps, parameters: MeshPhysicalMaterialParameters) {
+function texturedMetal(maps: MetalMaps, parameters: MeshPhysicalMaterialParameters) {
   return new MeshPhysicalMaterial({
     map: null,
     normalMap: maps.normalMap,
     normalScale: new Vector2(0.4, 0.4),
     roughnessMap: maps.roughnessMap,
-    aoMap: maps.aoMap,
     roughness: 1,
     metalness: 1,
     ...parameters,

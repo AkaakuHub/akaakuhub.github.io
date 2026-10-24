@@ -9,7 +9,6 @@ function pbrParameters(maps: PbrMaps): MeshStandardMaterialParameters {
     normalScale: new Vector2(0.45, 0.45),
     aoMap: maps.aoMap,
     roughnessMap: maps.roughnessMap,
-    metalnessMap: maps.metalnessMap,
     alphaMap: maps.alphaMap,
     roughness: 1,
     metalness: 0,

@@ -3,6 +3,7 @@ import asyncio
 import base64
 import gzip
 import json
+import subprocess
 from pathlib import Path
 
 from playwright.async_api import async_playwright
@@ -26,7 +27,7 @@ async def main():
         async def expose(route):
             response = await route.fetch(headers={key: value for key, value in route.request.headers.items() if key.lower() not in {"if-none-match", "if-modified-since"}})
             source = await response.text()
-            source = source.replace("await loadBakedLighting(scene);", "")
+            source = source.replace("applyBakedLighting(scene, lightingData);", "")
             await route.fulfill(response=response, body=source + "\nglobalThis.bakeScene = scene;")
 
         await page.route("**/src/main.ts*", expose)
@@ -58,11 +59,12 @@ async def main():
                 break
             await asyncio.sleep(2)
         encoded = await page.evaluate("globalThis.bakeResult")
-        output = Path("public/lighting/fluorescent.data")
+        output = Path("src/assets/lighting/fluorescent.data")
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_bytes(gzip.compress(base64.b64decode(encoded), mtime=0))
         print(json.dumps({"file": str(output), "bytes": output.stat().st_size}), flush=True)
         await browser.close()
+        subprocess.run(["rtk", "proxy", "node", "scripts/assets/catalog.mjs"], check=True)
 
 
 asyncio.run(main())

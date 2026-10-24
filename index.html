@@ -14,14 +14,33 @@
   <body class="m-0 h-full w-full overflow-hidden">
     <div id="app" class="h-full w-full overflow-hidden">
       <div
-        class="loading fixed inset-0 z-20 flex items-center justify-center gap-3 bg-[#e7e4db] text-sm"
-        role="status"
+        class="loading fixed inset-0 z-20 flex flex-col bg-[#e7e4db] p-[max(1.5rem,env(safe-area-inset-left))] text-[#303b33]"
       >
-        部室を開けています<span
-          class="size-2 animate-pulse rounded-full bg-[#567565] motion-reduce:animate-none"
-        ></span>
+        <span class="text-[17px] font-medium tracking-tight">AkaakuHub</span>
+        <div class="m-auto w-full max-w-80 pb-12">
+          <output
+            data-loading-value
+            class="mb-8 block min-h-14 text-5xl font-light tabular-nums tracking-tight"
+            aria-live="off"
+          ></output>
+          <p data-loading-label class="mb-5 text-sm" role="status" aria-live="polite">
+            アプリを読み込み中
+          </p>
+          <progress
+            data-loading-progress
+            aria-label="読み込みの進捗"
+            class="block h-1 w-full overflow-hidden rounded-full accent-[#456253] [&[hidden]]:hidden [&::-webkit-progress-bar]:bg-[#d2d5c9] [&::-webkit-progress-value]:bg-[#456253] [&::-moz-progress-bar]:bg-[#456253]"
+          ></progress>
+          <button
+            data-loading-retry
+            class="mt-4 min-h-11 cursor-pointer rounded-md border border-[#456253]/30 px-4 text-sm hover:bg-[#456253]/10 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#456253] [&[hidden]]:hidden"
+            hidden
+          >
+            再読み込み
+          </button>
+        </div>
       </div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/bootstrap.ts"></script>
   </body>
 </html>

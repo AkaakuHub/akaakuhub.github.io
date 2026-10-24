@@ -1,10 +1,12 @@
 import { PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { createInterface } from "./interface";
+import { createLoading } from "./interface/loading";
 import { bindRoomControls } from "./interface/controls";
 import { createBoard } from "./scene/board";
 import { createFurniture } from "./scene/furniture";
 import { illuminate } from "./scene/lighting";
-import { loadBakedLighting } from "./scene/lighting/baked";
+import { applyBakedLighting, prepareBakedLighting } from "./scene/lighting/baked";
+import { materialAssetIds } from "./assets/materials";
 import { loadMaterials } from "./scene/materials/library";
 import { createMetalMaterials } from "./scene/materials/metal";
 import { createPropMaterials } from "./scene/materials/props";
@@ -17,6 +19,7 @@ import { observeViewport } from "./scene/viewport";
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
 const ui = createInterface(root);
+const loading = createLoading(root);
 await new Promise<void>((resolve) => {
   requestAnimationFrame(() => setTimeout(resolve, 0));
 });
@@ -27,7 +30,28 @@ renderer.shadowMap.autoUpdate = false;
 const scene = new Scene();
 const camera = new PerspectiveCamera(62, 1, 0.05, 40);
 camera.position.set(0, 1.55, 0.45);
-const materials = await loadMaterials(renderer);
+let completedMaterials = 0;
+let completedLighting = 0;
+function reportAssets() {
+  loading.progress(
+    "素材を読み込み中",
+    completedMaterials + completedLighting,
+    materialAssetIds.length + 1,
+  );
+}
+const [materials, lightingData] = await Promise.all([
+  loadMaterials(renderer, (completed) => {
+    completedMaterials = completed;
+    reportAssets();
+  }),
+  prepareBakedLighting().then((data) => {
+    completedLighting = 1;
+    reportAssets();
+    return data;
+  }),
+]);
+loading.stage("部屋を組み立て中");
+await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const metals = createMetalMaterials(materials);
 const props = createPropMaterials(materials);
 const board = createBoard(metals, materials.paper, props);
@@ -37,8 +61,11 @@ scene.add(
   board.group,
 );
 batchStaticMeshes(scene, new Set(board.notices.keys()));
-await loadBakedLighting(scene);
+applyBakedLighting(scene, lightingData);
+loading.stage("描画を準備中");
+await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const lighting = illuminate(scene, renderer);
+await renderer.compileAsync(scene, camera);
 const rendering = createRendering(renderer, scene, camera, lighting.sun);
 const noticeList = [...board.notices.values()];
 const inspections = [...board.notices].map(([object, notice]) => ({
@@ -97,7 +124,7 @@ function render(time: number) {
   lastRendered = time;
   rendering.render();
   if (!ready) {
-    ui.ready();
+    loading.complete();
     ready = true;
   }
   if (moving) frame = requestAnimationFrame(render);

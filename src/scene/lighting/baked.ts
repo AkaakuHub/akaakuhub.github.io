@@ -1,5 +1,6 @@
 import { Float16BufferAttribute, Mesh, MeshStandardMaterial } from "three";
 import type { Scene } from "three";
+import { asset } from "../../assets/catalog";
 
 export function bakedMeshes(scene: Scene): Mesh[] {
   const meshes: Mesh[] = [];
@@ -39,13 +40,14 @@ export function lightingFingerprint(scene: Scene): string {
   return [first, second].map((value) => (value >>> 0).toString(16).padStart(8, "0")).join("");
 }
 
-export async function loadBakedLighting(scene: Scene): Promise<void> {
-  const response = await fetch(`${import.meta.env.BASE_URL}lighting/fluorescent.data`);
+export async function prepareBakedLighting(): Promise<ArrayBuffer> {
+  const response = await fetch(asset("lighting/fluorescent.data").url);
   if (!response.ok) throw new Error("照明のベイクデータを読み込めませんでした。");
   if (!response.body) throw new Error("照明のベイクデータが空です。");
-  const buffer = await new Response(
-    response.body.pipeThrough(new DecompressionStream("gzip")),
-  ).arrayBuffer();
+  return new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
+}
+
+export function applyBakedLighting(scene: Scene, buffer: ArrayBuffer): void {
   const fingerprint = new TextDecoder().decode(new Uint8Array(buffer, 0, 16));
   if (fingerprint !== lightingFingerprint(scene))
     throw new Error("部屋の形状と照明のベイクデータが一致しません。");

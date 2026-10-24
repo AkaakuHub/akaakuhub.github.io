@@ -1,0 +1,172 @@
+[
+  {
+    "id": "lighting/fluorescent.data",
+    "bytes": 988212,
+    "sha256": "a0baeba4aafd7f22c3c28a769b799c57bd222ca78eb4b2dafaefacde0164a286"
+  },
+  {
+    "id": "materials/ash_veneer/arm.webp",
+    "bytes": 75310,
+    "sha256": "33fdf02c3ffaebcacf75fb4545b8414c1607256c9ddd4d698665ad2543561d40"
+  },
+  {
+    "id": "materials/ash_veneer/color.webp",
+    "bytes": 137546,
+    "sha256": "74c147241672623e682b6b3927751387c6a3e92e5c202644c8d4044491b1b42b"
+  },
+  {
+    "id": "materials/ash_veneer/normal.webp",
+    "bytes": 200312,
+    "sha256": "1a283c7c16e86be731bf7b7323156f8aa2088970ba8ef8616836ab9012475d9a"
+  },
+  {
+    "id": "materials/herringbone_parquet/arm.webp",
+    "bytes": 62388,
+    "sha256": "866e848b562bfb708d6a68591417a4380ace752ec1259d6f16ae1533e28c0d4b"
+  },
+  {
+    "id": "materials/herringbone_parquet/color.webp",
+    "bytes": 270268,
+    "sha256": "bdf6c14f81587fe691bde6433cbc3e17a0906bb0b3260a8cf59fcc652dbd9a4d"
+  },
+  {
+    "id": "materials/herringbone_parquet/normal.webp",
+    "bytes": 191130,
+    "sha256": "c601dbb6e03c70fe25f9ccb68b6e73552a9a367207ace35edc8f4daca1aad7f0"
+  },
+  {
+    "id": "materials/LeafSet024/color.webp",
+    "bytes": 130084,
+    "sha256": "7794ae95e360023f8dd4aba8a7ef5e8b9b89abd9d9d9722ae7417b0db3222d00"
+  },
+  {
+    "id": "materials/LeafSet024/normal.webp",
+    "bytes": 236364,
+    "sha256": "189a5fee4d33821664972efb642a948599de91e90faefaf53e94b162de8ece6f"
+  },
+  {
+    "id": "materials/LeafSet024/opacity.webp",
+    "bytes": 8230,
+    "sha256": "e57723eeceb6ceacde814869723d9b73073c30fa09dddfcc3910c7b45485b2ff"
+  },
+  {
+    "id": "materials/LeafSet024/roughness.webp",
+    "bytes": 19058,
+    "sha256": "9625888505a9d640d0331918d798b9dbf909767299384387a35c14533836b66b"
+  },
+  {
+    "id": "materials/Metal027/normal.webp",
+    "bytes": 35470,
+    "sha256": "6da6c4df04523030598b19a6a980c4e220d2d3063fd255930e31d750e3b432a0"
+  },
+  {
+    "id": "materials/Metal027/roughness.webp",
+    "bytes": 22226,
+    "sha256": "0c0f7ca1eec028f2895f5e9349a015a06772b61cc87bfeab9c193cb98b2f570b"
+  },
+  {
+    "id": "materials/Metal048B/normal.webp",
+    "bytes": 18108,
+    "sha256": "9105a11e82b141f1ed100346397c23689bd2cbacd22bb81de63aad84d5386fdf"
+  },
+  {
+    "id": "materials/Metal048B/roughness.webp",
+    "bytes": 20474,
+    "sha256": "37cee9fce3e581be5fff795cd0207210a7c2765add94ae1b1d6b083addf0955a"
+  },
+  {
+    "id": "materials/Metal049B/normal.webp",
+    "bytes": 17864,
+    "sha256": "350b23ae78929effc6f11105c25ae982316c1b6e1a7e0b9bcabfbffbda12d371"
+  },
+  {
+    "id": "materials/Metal049B/roughness.webp",
+    "bytes": 20432,
+    "sha256": "6e7ba0e476bd4278a18c3ec6dac491f20bf73f90a4f338133a63f0638a39087b"
+  },
+  {
+    "id": "materials/Metal050B/normal.webp",
+    "bytes": 18774,
+    "sha256": "6fd65d6f2f5685fd5787e3ecc18c258041d1221270ed01f1831a8c3020bed369"
+  },
+  {
+    "id": "materials/Metal050B/roughness.webp",
+    "bytes": 24584,
+    "sha256": "0329dd8ca6115aedbfa799bffd0dfdbbcb7cb069d5ec5b440fea23a21353d605"
+  },
+  {
+    "id": "materials/painted_plaster_wall/arm.webp",
+    "bytes": 51628,
+    "sha256": "f23a6696d8e9bb552c09901670f2aff39507eabbd689a3b7b9e474f3726449db"
+  },
+  {
+    "id": "materials/painted_plaster_wall/color.webp",
+    "bytes": 29958,
+    "sha256": "a4b40dd2d7c64add236ea1370ed2db65af240b49ef2e01cc08dc4a02da7c4ec0"
+  },
+  {
+    "id": "materials/painted_plaster_wall/normal.webp",
+    "bytes": 75044,
+    "sha256": "7a872306d7a712f21e5e1e0f9e7e743473240a667c86b453259ecb423a9c305a"
+  },
+  {
+    "id": "materials/Paper001/color.webp",
+    "bytes": 7676,
+    "sha256": "a9a94108c6606151f8b0604ac9c7b0a7fbcb8e2f2f64309d7c52b071d8f7c62b"
+  },
+  {
+    "id": "materials/Paper001/normal.webp",
+    "bytes": 43798,
+    "sha256": "c95feac25012699494f6b903aa2027d9d2f681365176a2294c3b5b9431738ac7"
+  },
+  {
+    "id": "materials/Paper001/roughness.webp",
+    "bytes": 24228,
+    "sha256": "94fb6a0fbd1875b9634c95b4eb58f36c55819a07e09c919bf7c672b2a1bad9b4"
+  },
+  {
+    "id": "materials/Plastic010/color.webp",
+    "bytes": 820,
+    "sha256": "08826b9c691f6dd217d3212ef14b789ea614a9473c0d31f7a813ecc80a58a68f"
+  },
+  {
+    "id": "materials/Plastic010/normal.webp",
+    "bytes": 20590,
+    "sha256": "4b4b957ecb7b656ebf4bf2452557fa75f640b5f6e2e08c45624b7883adc49a55"
+  },
+  {
+    "id": "materials/Plastic010/roughness.webp",
+    "bytes": 30076,
+    "sha256": "e1716041ff69fe7fbcc47e13de438d2d2d662a8f4779178161d7b20047b281d8"
+  },
+  {
+    "id": "materials/terlenka/arm.webp",
+    "bytes": 62476,
+    "sha256": "7ce44ed62318600219dd68b01600822e99e19cc8b709bda018c0dcc1ec4da4ef"
+  },
+  {
+    "id": "materials/terlenka/color.webp",
+    "bytes": 1870,
+    "sha256": "4cc57041d122e11d1fd8abbad3a72b2a2d5a584069b0ff3075ffbd9e0b6bf398"
+  },
+  {
+    "id": "materials/terlenka/normal.webp",
+    "bytes": 43548,
+    "sha256": "df70f7ae6c0456e4b71e2cb3f06e48a9693c7b5f9d694219029618c755e25d4a"
+  },
+  {
+    "id": "materials/walnut_veneer/arm.webp",
+    "bytes": 62308,
+    "sha256": "a85b258f68f7878d9c6b3dac79f2df1c481c05a8d9463071d08c06553206a162"
+  },
+  {
+    "id": "materials/walnut_veneer/color.webp",
+    "bytes": 86042,
+    "sha256": "80d76eba3bbe0fe355434cfde289761484856f1af38d2bfb1613443c108d41b7"
+  },
+  {
+    "id": "materials/walnut_veneer/normal.webp",
+    "bytes": 256608,
+    "sha256": "df0869ff93d109472f1618cc29ed479914c0550f9e15841d45075769d1400927"
+  }
+]

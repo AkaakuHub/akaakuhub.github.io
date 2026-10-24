@@ -102,9 +102,6 @@ export function createInterface(root: HTMLElement) {
   return {
     canvas,
     setZoom,
-    ready() {
-      loading.remove();
-    },
     inspectionViewport(): InspectionViewport {
       const viewport = canvas.getBoundingClientRect();
       const controls = [...inspection.querySelectorAll<HTMLElement>("button, a")].map((element) =>
