@@ -1,13 +1,13 @@
 [
   {
     "id": "lighting/ltc.bin",
-    "bytes": 131072,
-    "sha256": "8e897cb72bfa6a20f7737d21bc9e9d6d47bb1405c2cb067aabe4b02a8ba68263"
+    "bytes": 65536,
+    "sha256": "de13346ddf530f99127993fc850985997dcdadbdf5b3ea820072eb78b4c7c428"
   },
   {
     "id": "materials/ash_veneer/arm.webp",
-    "bytes": 75310,
-    "sha256": "33fdf02c3ffaebcacf75fb4545b8414c1607256c9ddd4d698665ad2543561d40"
+    "bytes": 58206,
+    "sha256": "b4c9f623199aad09a5c552bd56aee40cae6c3a202edd97725e953d4b4ecb6d75"
   },
   {
     "id": "materials/ash_veneer/color.webp",
@@ -21,8 +21,8 @@
   },
   {
     "id": "materials/herringbone_parquet/arm.webp",
-    "bytes": 62388,
-    "sha256": "866e848b562bfb708d6a68591417a4380ace752ec1259d6f16ae1533e28c0d4b"
+    "bytes": 45536,
+    "sha256": "cc235f44fde38d228552e03cf6758fbb1016b8d98138b2b6916871e1fe06e446"
   },
   {
     "id": "materials/herringbone_parquet/color.webp",
@@ -86,8 +86,8 @@
   },
   {
     "id": "materials/painted_plaster_wall/arm.webp",
-    "bytes": 51628,
-    "sha256": "f23a6696d8e9bb552c09901670f2aff39507eabbd689a3b7b9e474f3726449db"
+    "bytes": 39954,
+    "sha256": "1fb63cbf7248922af9adad0b23340051542a1763bd1bdad0df850088c015443e"
   },
   {
     "id": "materials/painted_plaster_wall/color.webp",
@@ -101,8 +101,8 @@
   },
   {
     "id": "materials/PaintedMetal001/arm.webp",
-    "bytes": 71328,
-    "sha256": "668e26b9da90dd8ecc0a412c581ba87fa4359618f90687bb2d40652d0d9d6c03"
+    "bytes": 30542,
+    "sha256": "38b867390e59dbdfca4460b193e75b1483346fff1fd1d61e6c8c32b0251f278d"
   },
   {
     "id": "materials/PaintedMetal001/color.webp",
@@ -146,8 +146,8 @@
   },
   {
     "id": "materials/terlenka/arm.webp",
-    "bytes": 62476,
-    "sha256": "7ce44ed62318600219dd68b01600822e99e19cc8b709bda018c0dcc1ec4da4ef"
+    "bytes": 46938,
+    "sha256": "90dd2d4e4204b84becf5ed6572aefca5aa42877c5eefd38c2c9566f853f652f0"
   },
   {
     "id": "materials/terlenka/color.webp",
@@ -161,8 +161,8 @@
   },
   {
     "id": "materials/walnut_veneer/arm.webp",
-    "bytes": 62308,
-    "sha256": "a85b258f68f7878d9c6b3dac79f2df1c481c05a8d9463071d08c06553206a162"
+    "bytes": 48714,
+    "sha256": "9ac52351d0b8da1dc834a6d6a047ef5f9b65a8acd5df789347053b34740d3294"
   },
   {
     "id": "materials/walnut_veneer/color.webp",

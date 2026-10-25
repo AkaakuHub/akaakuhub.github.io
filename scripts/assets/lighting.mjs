@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { RectAreaLightTexturesLib } from "three/addons/lights/RectAreaLightTexturesLib.js";
 
 RectAreaLightTexturesLib.init();
-const tables = [RectAreaLightTexturesLib.LTC_FLOAT_1, RectAreaLightTexturesLib.LTC_FLOAT_2];
+const tables = [RectAreaLightTexturesLib.LTC_HALF_1, RectAreaLightTexturesLib.LTC_HALF_2];
 const bytes = Buffer.concat(tables.map((texture) => Buffer.from(texture.image.data.buffer)));
 await mkdir("src/assets/lighting", { recursive: true });
 await writeFile("src/assets/lighting/ltc.bin", bytes);

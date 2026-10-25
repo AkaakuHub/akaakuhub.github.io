@@ -9,7 +9,8 @@
     "scripts/assets/skill-logos.mjs",
     "scripts/assets/surface-wear.mjs",
     "scripts/assets/normal-encoding.mjs",
-    "scripts/assets/board-text-font.mjs"
+    "scripts/assets/board-text-font.mjs",
+    "scripts/assets/packed-surfaces.mjs"
   ],
   "project": ["src/**/*.{ts,css}", "scripts/**/*.mjs", "worker/**/*.ts"]
 }

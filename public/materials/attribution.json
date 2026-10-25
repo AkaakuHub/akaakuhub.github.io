@@ -31,8 +31,9 @@
           "file": "src/assets/materials/herringbone_parquet/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_arm_1k.jpg",
           "sourceHash": "0c5a18f599282509ae37e2f0bcc4e492",
-          "sha256": "866e848b562bfb708d6a68591417a4380ace752ec1259d6f16ae1533e28c0d4b",
-          "dimensions": [256, 256]
+          "sha256": "cc235f44fde38d228552e03cf6758fbb1016b8d98138b2b6916871e1fe06e446",
+          "dimensions": [256, 256],
+          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       },
       "provider": "Poly Haven"
@@ -67,8 +68,9 @@
           "file": "src/assets/materials/painted_plaster_wall/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_arm_1k.jpg",
           "sourceHash": "a4c1ff7470669daec9e274d915471246",
-          "sha256": "f23a6696d8e9bb552c09901670f2aff39507eabbd689a3b7b9e474f3726449db",
-          "dimensions": [256, 256]
+          "sha256": "1fb63cbf7248922af9adad0b23340051542a1763bd1bdad0df850088c015443e",
+          "dimensions": [256, 256],
+          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       },
       "provider": "Poly Haven",
@@ -105,8 +107,9 @@
           "file": "src/assets/materials/ash_veneer/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_arm_1k.jpg",
           "sourceHash": "ee110cc4704b23e84f8f7d75a954d5ff",
-          "sha256": "33fdf02c3ffaebcacf75fb4545b8414c1607256c9ddd4d698665ad2543561d40",
-          "dimensions": [256, 256]
+          "sha256": "b4c9f623199aad09a5c552bd56aee40cae6c3a202edd97725e953d4b4ecb6d75",
+          "dimensions": [256, 256],
+          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       },
       "provider": "Poly Haven"
@@ -141,8 +144,9 @@
           "file": "src/assets/materials/walnut_veneer/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_arm_1k.jpg",
           "sourceHash": "7db3474a1d0d1ed15e0cc349541ac1e3",
-          "sha256": "a85b258f68f7878d9c6b3dac79f2df1c481c05a8d9463071d08c06553206a162",
-          "dimensions": [256, 256]
+          "sha256": "9ac52351d0b8da1dc834a6d6a047ef5f9b65a8acd5df789347053b34740d3294",
+          "dimensions": [256, 256],
+          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       },
       "provider": "Poly Haven"
@@ -178,8 +182,9 @@
           "file": "src/assets/materials/terlenka/arm.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_arm_1k.jpg",
           "sourceHash": "94613807db9da499643913b0d40eb16c",
-          "sha256": "7ce44ed62318600219dd68b01600822e99e19cc8b709bda018c0dcc1ec4da4ef",
-          "dimensions": [255, 256]
+          "sha256": "90dd2d4e4204b84becf5ed6572aefca5aa42877c5eefd38c2c9566f853f652f0",
+          "dimensions": [255, 256],
+          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       },
       "provider": "Poly Haven"
@@ -477,8 +482,9 @@
             "Roughness": "c0166ff9364ae9d83878066b2a788f66bc5bcc5748a78a47cc51c940a8491e41",
             "Metalness": "c8e278ad680208abde1af0158a2657031c93e25274276076d57623214fecf2ab"
           },
-          "sha256": "668e26b9da90dd8ecc0a412c581ba87fa4359618f90687bb2d40652d0d9d6c03",
-          "dimensions": [256, 256]
+          "sha256": "38b867390e59dbdfca4460b193e75b1483346fff1fd1d61e6c8c32b0251f278d",
+          "dimensions": [256, 256],
+          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       }
     }
