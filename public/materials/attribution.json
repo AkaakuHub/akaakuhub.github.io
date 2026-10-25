@@ -45,7 +45,7 @@
       "source": "https://polyhaven.com/a/painted_plaster_wall",
       "license": "CC0-1.0",
       "licenseUrl": "https://polyhaven.com/license",
-      "sizeMeters": [2.0, 2.0],
+      "sizeMeters": [2, 2],
       "maps": {
         "color": {
           "file": "src/assets/materials/painted_plaster_wall/color.webp",
@@ -80,7 +80,7 @@
       "source": "https://polyhaven.com/a/ash_veneer",
       "license": "CC0-1.0",
       "licenseUrl": "https://polyhaven.com/license",
-      "sizeMeters": [1.0, 1.0],
+      "sizeMeters": [1, 1],
       "maps": {
         "color": {
           "file": "src/assets/materials/ash_veneer/color.webp",
@@ -197,6 +197,27 @@
           "archiveMember": "Metal050B_1K-JPG_NormalGL.jpg",
           "sha256": "6fd65d6f2f5685fd5787e3ecc18c258041d1221270ed01f1831a8c3020bed369",
           "sourceHash": "4ca515f9c254ae4012592bb8335ee304d66e0b7df4837a19d70d061960241ba5",
+          "dimensions": [256, 256]
+        },
+        "color": {
+          "file": "src/assets/materials/Metal050B/color.webp",
+          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
+          "archiveMembers": ["Metal050B_1K-JPG_Color.jpg"],
+          "sourceHashes": {
+            "Color": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d"
+          },
+          "sha256": "edb6b62f9f5984ac9a5af9217adafa67fcfe066b15ff19866001ba1ab6ce943b",
+          "dimensions": [512, 512]
+        },
+        "arm": {
+          "file": "src/assets/materials/Metal050B/arm.webp",
+          "url": "https://ambientcg.com/get?file=Metal050B_1K-JPG.zip",
+          "archiveMembers": ["Metal050B_1K-JPG_Roughness.jpg", "Metal050B_1K-JPG_Metalness.jpg"],
+          "sourceHashes": {
+            "Roughness": "99145f1f9c1a36fe2a2de7a3c6688962a8c103df2fd0694f840158a80730bfff",
+            "Metalness": "be3f57a50cf2cf7f43a603b0f1c7a03b8e71d5a65bd6d67cb7e3c95d06dac290"
+          },
+          "sha256": "91012d48d351ede74f7661c23f7cd9be1188bd3ccbdfaa000bf946e8556dab8a",
           "dimensions": [256, 256]
         }
       }
@@ -391,6 +412,57 @@
           "archiveMember": "Plastic010_1K-JPG_Roughness.jpg",
           "sha256": "e1716041ff69fe7fbcc47e13de438d2d2d662a8f4779178161d7b20047b281d8",
           "sourceHash": "02f35e8fdb8f1ba78594a3e43792683276d7f713e53d3002a8c8f53bb35a88cb",
+          "dimensions": [256, 256]
+        }
+      }
+    },
+    {
+      "id": "PaintedMetal001",
+      "name": "PaintedMetal001",
+      "provider": "ambientCG",
+      "authors": {
+        "Lennart Demes": "Material creation"
+      },
+      "source": "https://ambientcg.com/view?id=PaintedMetal001",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://docs.ambientcg.com/license/",
+      "creationMethod": "PBRProcedural",
+      "appliedSizeMeters": [0.8, 0.8],
+      "scaleNote": "配布元に実寸指定がないため、塗装金具の擦り傷を表す大きさとして設定。",
+      "processing": "黄色の塗装色を無彩色化して明度差を圧縮し、金具ごとの塗装色を乗算。R=255、G=粗さ、B=金属度で格納。",
+      "maps": {
+        "color": {
+          "file": "src/assets/materials/PaintedMetal001/color.webp",
+          "url": "https://ambientcg.com/get?file=PaintedMetal001_1K-JPG.zip",
+          "archiveMembers": ["PaintedMetal001_1K-JPG_Color.jpg"],
+          "sourceHashes": {
+            "Color": "55e84662a1eca23d73ef851a5ad99857c388adde627f4264b861d9fe5e8cc84f"
+          },
+          "sha256": "550b7c262c2bcf944a8dc43839437a1969cd956145fdeb4be2ff2b332f5122e2",
+          "dimensions": [512, 512]
+        },
+        "normal": {
+          "file": "src/assets/materials/PaintedMetal001/normal.webp",
+          "url": "https://ambientcg.com/get?file=PaintedMetal001_1K-JPG.zip",
+          "archiveMembers": ["PaintedMetal001_1K-JPG_NormalGL.jpg"],
+          "sourceHashes": {
+            "NormalGL": "3bc4900f42e2716bd71d8ccbaea4224c24012abbe99aee806d13439aee9a398d"
+          },
+          "sha256": "17b8ce9c51bbb2b27ce15602b5be39b18e51407678290530da4227f5d0622aa9",
+          "dimensions": [256, 256]
+        },
+        "arm": {
+          "file": "src/assets/materials/PaintedMetal001/arm.webp",
+          "url": "https://ambientcg.com/get?file=PaintedMetal001_1K-JPG.zip",
+          "archiveMembers": [
+            "PaintedMetal001_1K-JPG_Roughness.jpg",
+            "PaintedMetal001_1K-JPG_Metalness.jpg"
+          ],
+          "sourceHashes": {
+            "Roughness": "c0166ff9364ae9d83878066b2a788f66bc5bcc5748a78a47cc51c940a8491e41",
+            "Metalness": "c8e278ad680208abde1af0158a2657031c93e25274276076d57623214fecf2ab"
+          },
+          "sha256": "668e26b9da90dd8ecc0a412c581ba87fa4359618f90687bb2d40652d0d9d6c03",
           "dimensions": [256, 256]
         }
       }

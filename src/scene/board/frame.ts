@@ -58,6 +58,11 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
   const rubber = metals.rubber;
   const backing = metals.ivory;
   const ceramic = metals.ivory.clone();
+  ceramic.map = null;
+  ceramic.normalMap = metals.aluminum.normalMap;
+  ceramic.roughnessMap = null;
+  ceramic.metalnessMap = null;
+  ceramic.metalness = 0;
   ceramic.color.set("#f0f2e9");
   ceramic.roughness = 0.34;
   ceramic.normalScale.set(0.08, 0.08);
