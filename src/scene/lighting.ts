@@ -5,6 +5,7 @@ import { cameraExposure, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
 import { createRoomLights } from "./lighting/room-lights";
 import type { TokyoWeather } from "../weather/schema";
+import { renderingProfile } from "./quality";
 
 export function illuminate(scene: Scene, renderer: WebGLRenderer, weather: TokyoWeather) {
   renderer.toneMappingExposure = cameraExposure;
@@ -12,7 +13,8 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer, weather: Tokyo
   const celestialLight = new DirectionalLight();
   celestialLight.target.position.set(0, 1.2, 0);
   celestialLight.castShadow = true;
-  celestialLight.shadow.mapSize.set(2048, 2048);
+  const shadowSize = renderingProfile().shadowSize;
+  celestialLight.shadow.mapSize.set(shadowSize, shadowSize);
   celestialLight.shadow.camera.left = -4.4;
   celestialLight.shadow.camera.right = 4.4;
   celestialLight.shadow.camera.top = 4.4;

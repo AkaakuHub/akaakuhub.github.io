@@ -14,6 +14,7 @@ import { observeViewport } from "./scene/viewport";
 import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
 import { createWeatherStatus } from "./interface/weather";
 import { weatherAt } from "./weather/schema";
+import { createFrameMetrics } from "./scene/frame-metrics";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -25,6 +26,7 @@ await new Promise<void>((resolve) => {
   requestAnimationFrame(() => setTimeout(resolve, 0));
 });
 const renderer = new WebGLRenderer({ canvas: ui.canvas, antialias: false });
+const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = PCFShadowMap;
 renderer.shadowMap.autoUpdate = false;
@@ -51,7 +53,7 @@ const weather = observeTokyoWeather(
     weatherStatus.loaded();
     const sample = weatherAt(current, Date.now());
     weatherStatus.update(sample, new Date());
-    lighting.update(new Date(), sample, prepared);
+    lighting.update(new Date(), sample, prepared && !view.moving);
     invalidate();
   },
   weatherStatus.fail,
@@ -93,7 +95,7 @@ function updateTime() {
   }
   const sample = weatherAt(weather.current, Date.now());
   weatherStatus.update(sample, new Date());
-  lighting.update(new Date(), sample, prepared);
+  lighting.update(new Date(), sample, prepared && !view.moving);
   renderer.shadowMap.needsUpdate = true;
   invalidate();
 }
@@ -119,7 +121,9 @@ function render(time: number) {
   previous = time;
   lastRendered = time;
   if (prepared) roomSwitch.update(view.state.mode === "room" && !view.moving);
+  frameMetrics?.begin(moving);
   rendering.render(moving || !prepared);
+  frameMetrics?.end(moving);
   if (!ready && prepared) {
     loading.complete();
     ready = true;

@@ -5,6 +5,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { AntialiasPass } from "./antialias";
 import { VolumetricPass } from "./volumetrics";
+import { renderingProfile } from "./quality";
 
 export function createRendering(
   renderer: WebGLRenderer,
@@ -12,7 +13,7 @@ export function createRendering(
   camera: PerspectiveCamera,
   celestialLight: DirectionalLight,
 ) {
-  const compact = window.matchMedia("(pointer: coarse)").matches;
+  const profile = renderingProfile();
   renderer.toneMapping = ACESFilmicToneMapping;
   function pipeline(steps: number) {
     const target = new WebGLRenderTarget(1, 1, {
@@ -28,8 +29,8 @@ export function createRendering(
     composer.addPass(new AntialiasPass());
     return { composer, scattering };
   }
-  const still = pipeline(compact ? 24 : 48);
-  const motion = pipeline(compact ? 12 : 24);
+  const still = pipeline(profile.scatteringSteps);
+  const motion = pipeline(profile.motionScatteringSteps);
   let pixelRatio = 1;
   return {
     setPixelRatio(ratio: number) {
@@ -39,9 +40,13 @@ export function createRendering(
       const pixelWidth = Math.max(1, Math.floor(width * pixelRatio));
       const pixelHeight = Math.max(1, Math.floor(height * pixelRatio));
       still.composer.setSize(pixelWidth, pixelHeight);
+      const scale = Math.min(
+        0.5,
+        Math.sqrt(profile.motionPixelBudget / (pixelWidth * pixelHeight)),
+      );
       motion.composer.setSize(
-        Math.max(1, Math.floor(pixelWidth / 2)),
-        Math.max(1, Math.floor(pixelHeight / 2)),
+        Math.max(1, Math.floor(pixelWidth * scale)),
+        Math.max(1, Math.floor(pixelHeight * scale)),
       );
     },
     render(moving = false) {

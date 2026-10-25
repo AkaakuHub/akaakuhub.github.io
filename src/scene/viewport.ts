@@ -1,5 +1,6 @@
 import type { PerspectiveCamera, WebGLRenderer } from "three";
 import type { createRendering } from "./rendering";
+import { renderingProfile } from "./quality";
 
 export function observeViewport(
   canvas: HTMLCanvasElement,
@@ -19,11 +20,11 @@ export function observeViewport(
     pending = 0;
     const { width, height } = container.getBoundingClientRect();
     if (width < 1 || height < 1) return;
-    const budget = compact.matches ? 900_000 : 2_000_000;
+    const profile = renderingProfile();
     const pixelRatio = Math.min(
       window.devicePixelRatio,
-      compact.matches ? 1.5 : 1.75,
-      Math.sqrt(budget / (width * height)),
+      profile.pixelRatio,
+      Math.sqrt(profile.pixelBudget / (width * height)),
     );
     if (width === previousWidth && height === previousHeight && pixelRatio === previousRatio)
       return;

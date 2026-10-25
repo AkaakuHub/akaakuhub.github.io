@@ -8,11 +8,15 @@ import {
 } from "three";
 import type { WebGLRenderer } from "three";
 import type { RoomAssetLoader } from "../../assets/loading";
+import { renderingProfile } from "../quality";
 
 export function createTextureLoader(renderer: WebGLRenderer, assets: RoomAssetLoader) {
   const textures = new Map<string, Texture<ImageBitmap | null>>();
   const pending = new Map<Texture<ImageBitmap | null>, Promise<void>>();
-  const anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  const anisotropy = Math.min(
+    renderingProfile().anisotropy,
+    renderer.capabilities.getMaxAnisotropy(),
+  );
   function texture(id: string, file: string, meters: number): Texture<ImageBitmap | null> {
     const key = `${id}/${file}`;
     const existing = textures.get(key);
