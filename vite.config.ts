@@ -43,6 +43,6 @@ export default defineConfig(({ command, mode }) => {
       watch: { ignored: ["**/worktree/**"] },
     },
     preview: { https, headers },
-    build: { target: "es2023" },
+    build: { target: "es2023", assetsInlineLimit: 0 },
   };
 });
