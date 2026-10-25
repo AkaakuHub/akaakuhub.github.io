@@ -56,6 +56,7 @@ export function createComputerInspection(
       return object.geometry.parameters.depth;
     },
     resizeInspection,
+    offsetY: 0,
     topAligned: false,
   };
 }

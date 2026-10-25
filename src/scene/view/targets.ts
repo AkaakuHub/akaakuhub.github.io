@@ -11,6 +11,7 @@ export interface InspectionTarget {
   width: number;
   height: number;
   depth: number;
+  offsetY: number;
   topAligned: boolean;
 }
 export interface InspectionViewport {
@@ -84,7 +85,8 @@ export function inspectionPose(
   position.add(
     new Vector3(
       MathUtils.clamp(framing.panX, -bounds.maxX, bounds.maxX),
-      MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY) -
+      target.offsetY +
+        MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY) -
         (target.topAligned && viewport.height > viewport.width
           ? Math.max(0, bounds.visibleHeight - target.height) * 0.36
           : 0),

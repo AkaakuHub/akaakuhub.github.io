@@ -109,13 +109,14 @@ export async function startRoom(
   const inspections = [...board.notices].map(([object, notice], index) => ({
     object,
     get width() {
-      return notice.size[0];
+      return notice.size[0] + 0.04;
     },
     get height() {
-      return notice.size[1];
+      return notice.size[1] + (index < 3 ? 0.16 : 0.04);
     },
     depth: 0,
-    topAligned: index === 0 || index === 2,
+    offsetY: index < 3 ? 0.06 : 0,
+    topAligned: false,
   }));
   let introduction: ReturnType<typeof createIntroduction> | undefined;
   let updateDirections: ReturnType<typeof createDirectionControls> | undefined;

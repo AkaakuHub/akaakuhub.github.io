@@ -74,7 +74,7 @@ export function createView(
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
     if (state.mode === "notice" && state.index === index) return;
-    if (state.mode === "room") framing.zoom = 1;
+    framing.zoom = 1;
     framing.panX = 0;
     framing.panY = 0;
     transition({ mode: "notice", index }, 0.36);
