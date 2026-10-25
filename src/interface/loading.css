@@ -26,7 +26,7 @@ body {
   padding: clamp(24px, 5vw, 72px);
   color: var(--ink);
   background: #edf0e5;
-  font-family: "Zen Maru Gothic", sans-serif;
+  font-family: "Zen Maru Gothic Board", sans-serif;
   transition: opacity 0.65s ease;
 }
 .loading *,
@@ -98,7 +98,7 @@ body {
   width: max-content;
   justify-self: center;
   font:
-    clamp(64px, 9vw, 128px)/1 "Zen Maru Gothic",
+    clamp(64px, 9vw, 128px)/1 "Zen Maru Gothic Board",
     sans-serif;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;

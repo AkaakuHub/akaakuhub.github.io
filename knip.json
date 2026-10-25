@@ -8,7 +8,8 @@
     "scripts/assets/board-font.mjs",
     "scripts/assets/skill-logos.mjs",
     "scripts/assets/surface-wear.mjs",
-    "scripts/assets/normal-encoding.mjs"
+    "scripts/assets/normal-encoding.mjs",
+    "scripts/assets/board-text-font.mjs"
   ],
   "project": ["src/**/*.{ts,css}", "scripts/**/*.mjs", "worker/**/*.ts"]
 }
