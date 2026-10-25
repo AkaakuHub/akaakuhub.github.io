@@ -1,26 +1,14 @@
 import { tubeGeometry } from "../geometry/curves";
 import { CatmullRomCurve3, Group, Mesh, Vector3 } from "three";
-import { box } from "../primitives";
 import { closedNotebook, standingBook } from "./bindings";
 import { ceramicMug } from "./ceramic";
-import { cylinder, rod, roundBox } from "./geometry";
+import { cylinder, rod } from "./geometry";
 import type { FurnitureMaterials } from "./materials";
+import { cartFrame } from "./cart-frame";
 
 function readingCart(materials: FurnitureMaterials): Group {
   const cart = new Group();
-  for (const x of [-0.285, 0.285]) {
-    for (const z of [-0.17, 0.17]) {
-      rod(cart, [x, 0.075, z], [x, 0.94, z], 0.012, materials.metal);
-      const wheel = cylinder(cart, 0.035, 0.022, [x, 0.035, z], materials.rubber);
-      wheel.rotation.z = Math.PI / 2;
-      box(cart, [0.04, 0.045, 0.03], [x, 0.068, z], materials.enamel);
-    }
-    rod(cart, [x, 0.92, -0.17], [x, 0.92, 0.17], 0.012, materials.metal);
-  }
-  for (const y of [0.18, 0.57, 0.9]) {
-    roundBox(cart, [0.62, 0.025, 0.4], [0, y, 0], materials.enamel, 0.007);
-    box(cart, [0.62, 0.045, 0.015], [0, y + 0.025, -0.2], materials.enamel);
-  }
+  cartFrame(cart, materials);
   const covers = [materials.navy, materials.rust, materials.mustard, materials.bookCream];
   for (let index = 0; index < 7; index++) {
     const cover = covers[index % covers.length];
