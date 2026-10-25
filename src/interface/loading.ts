@@ -6,10 +6,7 @@ export function createLoading(root: HTMLElement) {
   const panel = root.querySelector<HTMLElement>(".loading");
   const progress = root.querySelector<HTMLProgressElement>("[data-loading-progress]");
   const percent = root.querySelector<HTMLElement>("[data-loading-percent]");
-  const errorPanel = root.querySelector<HTMLElement>("[data-loading-failure]");
-  const retry = root.querySelector<HTMLButtonElement>("[data-loading-retry]");
-  if (!panel || !progress || !percent || !errorPanel || !retry)
-    throw new Error("読み込み状態の表示先が見つかりません。");
+  if (!panel || !progress || !percent) throw new Error("読み込み状態の表示先が見つかりません。");
   const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
   if (digits.length !== 3) throw new Error("進捗の桁が揃っていません。");
   function setPercent(value: number): void {
@@ -23,39 +20,24 @@ export function createLoading(root: HTMLElement) {
   let failed = false;
   let materials = 0;
   let rendering = 0;
-  let reloadTimer: ReturnType<typeof setTimeout> | undefined;
   let restarting = false;
-  const stop = (): void => {
-    root.setAttribute("aria-busy", "false");
-    panel.classList.add("loading-error");
-    errorPanel.hidden = false;
-    retry.disabled = false;
-  };
   const schedule = (): void => {
-    if (retryAvailableAt() > Date.now()) {
-      stop();
-      return;
-    }
-    reloadTimer = setTimeout(() => void restart(true), retryDelay());
+    const delay = Math.max(retryDelay(), retryAvailableAt() - Date.now());
+    setTimeout(() => void restart(), delay);
   };
-  const restart = async (automatic: boolean): Promise<void> => {
+  const restart = async (): Promise<void> => {
     if (restarting) return;
     restarting = true;
-    retry.disabled = true;
     try {
-      if (!(await reloadEverything(automatic))) {
+      if (!(await reloadEverything())) {
         restarting = false;
-        stop();
+        schedule();
       }
     } catch (error) {
       console.error(error);
       restarting = false;
       schedule();
     }
-  };
-  retry.onclick = () => {
-    clearTimeout(reloadTimer);
-    void restart(false);
   };
   const update = (): void => {
     if (failed) return;
@@ -106,6 +88,11 @@ export function createLoading(root: HTMLElement) {
       panel.classList.remove("loading-complete");
       root.dataset.loading = "true";
       root.setAttribute("aria-busy", "true");
+      materials = 0;
+      rendering = 0;
+      progress.value = 0;
+      panel.style.setProperty("--load-progress", "0");
+      setPercent(0);
       schedule();
     },
   };

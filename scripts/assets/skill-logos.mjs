@@ -53,3 +53,4 @@ await writeFile(
   ) + "\n",
 );
 console.log(`${skillIconNames.length} logos in one ${columns * cell}px atlas`);
+await import("./catalog.mjs");

@@ -55,19 +55,11 @@ export async function prepareRecovery(): Promise<void> {
   await Promise.all(names.map((name) => caches.delete(name)));
 }
 
-export async function reloadEverything(automatic: boolean): Promise<boolean> {
-  const current = retryState();
-  const state = automatic
-    ? reserveRetry(current, Date.now())
-    : (current ?? { startedAt: Date.now(), attempts: 0 });
+export async function reloadEverything(): Promise<boolean> {
+  const state = reserveRetry(retryState(), Date.now());
   if (!state) return false;
   sessionStorage.setItem(key, JSON.stringify(state));
-  const response = await fetch("/api/reload", {
-    method: "POST",
-    cache: "no-store",
-    signal: AbortSignal.timeout(5000),
-  });
-  if (!response.ok) throw new Error(`キャッシュを消去できませんでした: HTTP ${response.status}`);
+  await prepareRecovery();
   const url = new URL(location.href);
   url.searchParams.set("reload", String(Date.now()));
   location.replace(url);
