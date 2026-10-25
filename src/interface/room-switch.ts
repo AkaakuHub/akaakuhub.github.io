@@ -14,6 +14,7 @@ export function bindRoomSwitch(
       setLights(on);
       rocker.rotation.z = on ? -0.16 : 0.16;
       invalidate();
+      return on;
     },
   };
 }

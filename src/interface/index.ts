@@ -1,4 +1,3 @@
-import { Monitor, ScanSearch, createIcons } from "lucide";
 import type { Notice } from "../scene/board";
 import type { ViewState } from "../scene/view";
 import type { InspectionViewport } from "../scene/view/targets";
@@ -8,20 +7,19 @@ export function createInterface(root: HTMLElement) {
   const loading = root.querySelector<HTMLElement>(".loading");
   if (!loading) throw new Error("読み込み表示先が見つかりません。");
   root.innerHTML = roomMarkup();
-  createIcons({ icons: { Monitor, ScanSearch }, attrs: { "aria-hidden": "true" } });
   const canvas = root.querySelector("canvas");
   const room = root.querySelector("main");
   const status = root.querySelector(".view-status");
-  const action = root.querySelector<HTMLButtonElement>(".board-action");
-  const computerAction = root.querySelector<HTMLButtonElement>(".computer-action");
-  if (!canvas || !room || !status || !action || !computerAction)
-    throw new Error("画面の初期化に失敗しました。");
+  if (!canvas || !room || !status) throw new Error("画面の初期化に失敗しました。");
   room.append(loading);
-  let wasInspecting = false;
   let wasMoving = false;
   let announcement = "ホワイトボードを向いています";
   return {
     canvas,
+    announce(message: string): void {
+      announcement = message;
+      status.textContent = message;
+    },
     inspectionViewport(): InspectionViewport {
       const viewport = canvas.getBoundingClientRect();
       return { width: viewport.width, height: viewport.height, insetX: 12, insetY: 12 };
@@ -33,9 +31,6 @@ export function createInterface(root: HTMLElement) {
       if (!moving) status.textContent = announcement;
     },
     setView(state: ViewState, notice?: Notice) {
-      const inspecting = state.mode !== "room";
-      action.hidden = state.mode !== "room" || state.direction !== 0;
-      computerAction.hidden = state.mode !== "room" || state.direction !== 1;
       if (state.mode === "room") {
         announcement = `${directions[state.direction]}を向いています`;
       } else if (state.mode === "notice") {
@@ -46,8 +41,6 @@ export function createInterface(root: HTMLElement) {
           state.mode === "monitor" ? "リポジトリ一覧を表示しています" : "PCを表示しています";
       }
       status.textContent = announcement;
-      if (wasInspecting && !inspecting) canvas.focus({ preventScroll: true });
-      wasInspecting = inspecting;
     },
   };
 }

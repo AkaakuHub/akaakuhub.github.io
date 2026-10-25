@@ -1,4 +1,5 @@
 import "./tailwind.css";
+import "./interface/keyboard.css";
 import { Color, PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { createInterface } from "./interface";
 import type { Loading } from "./interface/loading";
@@ -111,8 +112,10 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     lighting.setMonitorPower,
   );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
+  let controls: ReturnType<typeof bindRoomControls>;
   const boardLoader = createBoardLoader((state) => {
     board.setState(state);
+    controls.syncNotices();
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
   }, computerInterface.setState);
@@ -193,7 +196,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   await renderer.compileAsync(scene, camera);
   loading.rendering(2, 2);
   rendering.render();
-  bindRoomControls(
+  controls = bindRoomControls(
     root,
     ui,
     view,

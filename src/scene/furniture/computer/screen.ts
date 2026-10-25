@@ -27,8 +27,9 @@ export function createComputerScreen(material: MeshBasicMaterial) {
       offset: number,
       compact: boolean,
       readmes: ReadonlyMap<string, ReadmeState>,
+      selectedIndex: number | null,
     ): void {
-      regions = drawScreen(context, powered, state, offset, compact, readmes, cards);
+      regions = drawScreen(context, powered, state, offset, compact, readmes, cards, selectedIndex);
       texture.needsUpdate = true;
     },
     hit(u: number, v: number) {

@@ -15,6 +15,7 @@ export function drawScreen(
   compact: boolean,
   readmes: ReadonlyMap<string, ReadmeState>,
   cards: Map<string, CachedCard>,
+  selectedIndex: number | null,
 ): ScreenRegion[] {
   context.fillStyle = powered ? "#f2f5f1" : "#080b0a";
   context.fillRect(0, 0, 1200, 675);
@@ -73,6 +74,11 @@ export function drawScreen(
       }
       const y = layout.top + index * layout.height;
       context.drawImage(cached.canvas, 52, y);
+      if (index === selectedIndex) {
+        context.strokeStyle = "#245f49";
+        context.lineWidth = 5;
+        context.strokeRect(54.5, y + 2.5, 1091, layout.height - 25);
+      }
       regions.push({
         x: 52,
         y: y - layout.offset,

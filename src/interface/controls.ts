@@ -6,6 +6,7 @@ import type { createView } from "../scene/view";
 import { createPicker } from "./picking";
 import type { createComputerInterface } from "./computer";
 import type { bindRoomSwitch } from "./room-switch";
+import { bindKeyboardTargets } from "./keyboard-targets";
 
 export function bindRoomControls(
   root: HTMLElement,
@@ -17,12 +18,19 @@ export function bindRoomControls(
   computer: ReturnType<typeof createComputerInterface>,
   lightSwitch: ReturnType<typeof bindRoomSwitch>,
   refreshBoard: () => void,
-): void {
+) {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
   const pick = createPicker(ui.canvas, camera, scene, papers, computer.targets, lightSwitch.object);
-  root.querySelector(".board-action")?.addEventListener("click", () => view.inspect(0));
-  root.querySelector(".computer-action")?.addEventListener("click", () => view.inspectComputer());
+  const keyboard = bindKeyboardTargets(
+    root,
+    ui,
+    view,
+    entries.map(([, notice]) => notice),
+    computer,
+    lightSwitch,
+    refreshBoard,
+  );
   function zoom(factor: number, animated: boolean): void {
     view.zoom(factor, animated);
   }
@@ -37,14 +45,31 @@ export function bindRoomControls(
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.key === "Escape") {
       view.back();
+      ui.canvas.focus({ preventScroll: true });
+      return;
+    }
+    if (document.activeElement !== ui.canvas && document.activeElement !== document.body) return;
+    if ((event.key === "Enter" || event.key === " ") && view.state.mode !== "room") {
+      event.preventDefault();
+      if (view.state.mode === "monitor") computer.activateSelection();
+      else if (view.state.mode === "notice") {
+        const notice = entries[view.state.index]?.[1];
+        if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
+        if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
+        else refreshBoard();
+      }
+      return;
     }
     if (
       view.state.mode === "monitor" &&
       ["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)
     ) {
       event.preventDefault();
-      const distance = event.key === "PageUp" || event.key === "PageDown" ? 540 : 70;
-      computer.scroll(event.key === "ArrowUp" || event.key === "PageUp" ? -distance : distance);
+      const step = event.key === "PageUp" || event.key === "PageDown" ? 3 : 1;
+      const selected = computer.select(
+        event.key === "ArrowUp" || event.key === "PageUp" ? -step : step,
+      );
+      if (selected) ui.announce(selected);
       return;
     }
     if (view.state.mode !== "room" && ["+", "=", "-", "0"].includes(event.key)) {
@@ -85,6 +110,7 @@ export function bindRoomControls(
   }
   ui.canvas.addEventListener("pointerdown", (event) => {
     if (event.button !== 0 || view.moving) return;
+    ui.canvas.focus({ preventScroll: true });
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     ui.canvas.setPointerCapture(event.pointerId);
     if (pointers.size === 1) {
@@ -158,11 +184,11 @@ export function bindRoomControls(
       return;
     }
     if (hit.type === "power") {
-      computer.togglePower();
+      keyboard.togglePower();
       return;
     }
     if (hit.type === "light") {
-      lightSwitch.toggle();
+      keyboard.toggleLight();
       return;
     }
     if (hit.type === "monitor") {
@@ -200,4 +226,5 @@ export function bindRoomControls(
     },
     { passive: false },
   );
+  return keyboard;
 }

@@ -11,9 +11,6 @@ importers:
       fast-xml-parser:
         specifier: ^5.11.2
         version: 5.11.2
-      lucide:
-        specifier: ^1.61.0
-        version: 1.61.0
       marked:
         specifier: ^18.1.1
         version: 18.1.1
@@ -1890,9 +1887,6 @@ packages:
     resolution: {integrity: sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==}
     engines: {node: '>= 12.0.0'}
 
-  lucide@1.61.0:
-    resolution: {integrity: sha512-RPNMBgej6WjPKuCNEODg83CF8lnraCeDOsZ3HZ7KvUYf0O5hdJBzer/Ax/meBHl3xvrp5NmKX0IDA5myyzlvGw==}
-
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
@@ -3526,8 +3520,6 @@ snapshots:
       lightningcss-linux-x64-musl: 1.33.0
       lightningcss-win32-arm64-msvc: 1.33.0
       lightningcss-win32-x64-msvc: 1.33.0
-
-  lucide@1.61.0: {}
 
   lz-string@1.5.0: {}
 

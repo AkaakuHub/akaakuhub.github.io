@@ -129,10 +129,6 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-#app[data-loading] .board-action,
-#app[data-loading] .computer-action {
-  visibility: hidden;
-}
 @keyframes room-orbit {
   50% {
     transform: rotateX(-18deg) rotateY(50deg) translateY(-8px);

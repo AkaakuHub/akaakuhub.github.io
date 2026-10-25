@@ -1,13 +1,18 @@
-import { bottomClass, controlClass, rightClass } from "./styles";
-
 export const directions = ["ホワイトボード", "窓", "本棚", "ドア", "天井"] as const;
 
 export function roomMarkup(): string {
   return `
     <main class="room relative h-dvh w-full overflow-hidden" aria-label="AkaakuHubの部室">
-      <canvas class="room__canvas block size-full touch-none" tabindex="0" aria-label="視点を動かして掲示や部屋の設備を見る3Dの部室"></canvas>
-      <button class="board-action ${controlClass} absolute ${bottomClass} ${rightClass} h-11 gap-2.5 px-3.5 text-xs font-medium whitespace-nowrap [&[hidden]]:hidden">掲示を見る<i data-lucide="scan-search"></i></button>
-      <button class="computer-action ${controlClass} absolute ${bottomClass} ${rightClass} h-11 gap-2.5 px-3.5 text-xs font-medium whitespace-nowrap [&[hidden]]:hidden" hidden>PCを見る<i data-lucide="monitor"></i></button>
+      <canvas class="room__canvas block size-full touch-none" tabindex="0" aria-label="3Dの部室。矢印キーで視点を動かし、Tabキーで掲示や設備を選べます"></canvas>
+      <nav class="room-keyboard" aria-label="部室の操作対象">
+        <button type="button" data-notice-index="0">GitHubの掲示</button>
+        <button type="button" data-notice-index="1">スキルの掲示</button>
+        <button type="button" data-notice-index="2">最新記事1</button>
+        <button type="button" data-notice-index="3">最新記事2</button>
+        <button type="button" data-room-light aria-pressed="true">部屋の電気</button>
+        <button type="button" data-computer-power aria-pressed="false">PCの電源</button>
+        <button type="button" data-computer-monitor aria-keyshortcuts="ArrowUp ArrowDown Enter" disabled>モニターのリポジトリ</button>
+      </nav>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>
       <a class="absolute right-[max(1rem,env(safe-area-inset-right))] bottom-[max(.2rem,env(safe-area-inset-bottom))] text-[10px] text-white/70 no-underline hover:text-white" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a>
     </main>`;
