@@ -1,6 +1,7 @@
 import {
   BufferAttribute,
   Frustum,
+  Group,
   Matrix4,
   Mesh,
   MeshStandardMaterial,
@@ -14,6 +15,8 @@ export function createContributionDisplay(
   mount: Mesh<PlaneGeometry, MeshStandardMaterial>,
   invalidate: () => void,
 ) {
+  const object = new Group();
+  mount.add(object);
   const time = { value: 0 };
   const frustum = new Frustum();
   const projection = new Matrix4();
@@ -94,7 +97,7 @@ export function createContributionDisplay(
         logo.position.set(0, 0.043, 0.0061);
         logo.receiveShadow = true;
         logo.renderOrder = 2;
-        mount.add(surface, logo);
+        object.add(surface, logo);
         invalidate();
         return;
       } catch (error) {
@@ -107,19 +110,20 @@ export function createContributionDisplay(
   void load();
 
   return {
-    update(camera: PerspectiveCamera, now: number): { active: boolean; changed: boolean } {
-      if (!surface) return { active: false, changed: false };
+    object,
+    update(camera: PerspectiveCamera, now: number): boolean {
+      if (!surface) return false;
+      camera.updateMatrixWorld();
+      surface.updateWorldMatrix(true, false);
+      projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+      frustum.setFromProjectionMatrix(projection);
+      const visible = frustum.intersectsObject(surface);
       if (startedAt === undefined) {
-        camera.updateMatrixWorld();
-        surface.updateWorldMatrix(true, false);
-        projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-        frustum.setFromProjectionMatrix(projection);
-        if (!frustum.intersectsObject(surface)) return { active: false, changed: false };
+        if (!visible) return false;
         startedAt = now;
       }
-      const previous = time.value;
       time.value = Math.min(duration, (now - startedAt) / 1000);
-      return { active: time.value < duration, changed: time.value !== previous };
+      return visible && time.value < duration;
     },
   };
 }

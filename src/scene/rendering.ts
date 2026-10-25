@@ -4,6 +4,7 @@ import type {
   DirectionalLight,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
   PerspectiveCamera,
   Scene,
   WebGLRenderer,
@@ -24,10 +25,11 @@ export function createRendering(
   celestialLight: DirectionalLight,
   monitor: Mesh<BufferGeometry, MeshBasicMaterial>,
   fanSurfaces: readonly Mesh[],
+  contributions: Object3D,
 ) {
   const profile = renderingProfile();
   const weather = new WeatherPass(camera);
-  const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces]);
+  const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
   renderer.toneMapping = ACESFilmicToneMapping;
   const target = new WebGLRenderTarget(1, 1, {
     type: HalfFloatType,
@@ -36,7 +38,7 @@ export function createRendering(
   const composer = new EffectComposer(renderer, target);
   composer.setPixelRatio(1);
   composer.addPass(surfaces);
-  composer.addPass(new DynamicSurfacePass(monitor, fanSurfaces, scene, camera));
+  composer.addPass(new DynamicSurfacePass(monitor, fanSurfaces, contributions, scene, camera));
   composer.addPass(weather);
   const scattering = new VolumetricPass(
     camera,
@@ -50,6 +52,10 @@ export function createRendering(
   let pixelRatio = 1;
   return {
     weather,
+    beginTransition: () => surfaces.beginTransition(),
+    get transitioning(): boolean {
+      return surfaces.transitioning;
+    },
     invalidate: () => surfaces.invalidate(),
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;

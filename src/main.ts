@@ -76,6 +76,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       invalidate();
     },
   );
+  const contributions = createContributionDisplay(board.contributions, invalidate);
   const rendering = createRendering(
     renderer,
     scene,
@@ -83,9 +84,9 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     lighting.celestialLight,
     computer.monitor,
     computer.fanSurfaces,
+    contributions.object,
   );
   const noticeList = [...board.notices.values()];
-  const contributions = createContributionDisplay(board.contributions, invalidate);
   const inspections = [...board.notices].map(([object, notice], index) => ({
     object,
     get width() {
@@ -113,6 +114,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       topAligned: false,
     },
     (state) => {
+      rendering.beginTransition();
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
     },
@@ -188,7 +190,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     const scrolling = computerInterface.update(seconds, time);
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
-    if (animation.changed) rendering.invalidate();
     rendering.render(moving);
     frameMetrics?.end(moving);
     if (!ready) {
@@ -196,7 +197,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
-    if (moving || rendering.weather.active || scrolling || animation.active)
+    if (moving || rendering.transitioning || rendering.weather.active || scrolling || animation)
       frame = requestAnimationFrame(render);
   }
   function invalidate() {

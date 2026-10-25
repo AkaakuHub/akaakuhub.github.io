@@ -31,7 +31,6 @@ export function createView(
   let target = roomPose(0, heading, camera.aspect);
   let elapsed = 1;
   let duration = 1;
-  let navigating = false;
 
   function pose(): CameraPose {
     if (state.mode === "room") return roomPose(state.direction, heading, camera.aspect);
@@ -54,11 +53,10 @@ export function createView(
     camera.fov = result.fov;
     camera.updateProjectionMatrix();
   }
-  function transition(next: ViewState, seconds: number): void {
+  function transition(next: ViewState): void {
     state = next;
-    navigating = true;
     onChange(state, framing.zoom);
-    move(seconds);
+    move(0);
   }
   function move(seconds: number): void {
     start = {
@@ -77,7 +75,7 @@ export function createView(
     if (state.mode === "room" && state.direction === index) return;
     roomDirection = index;
     if (index < 4) heading = index;
-    transition({ mode: "room", direction: index }, 0.22);
+    transition({ mode: "room", direction: index });
   }
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
@@ -85,7 +83,7 @@ export function createView(
     if (state.mode === "room") framing.zoom = 1;
     framing.panX = 0;
     framing.panY = 0;
-    transition({ mode: "notice", index }, 0.28);
+    transition({ mode: "notice", index });
   }
   apply(target);
   onChange(state, framing.zoom);
@@ -106,27 +104,24 @@ export function createView(
       if (state.mode === "room") framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
-      transition({ mode: "computer" }, 0.28);
+      transition({ mode: "computer" });
     },
     inspectMonitor() {
       if (state.mode === "monitor") return;
       framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
-      transition({ mode: "monitor" }, 0.28);
+      transition({ mode: "monitor" });
     },
     zoom(factor: number, animated: boolean) {
       if (state.mode === "room") return;
-      if (navigating && elapsed < duration && !motion.matches) return;
       const zoom = MathUtils.clamp(framing.zoom * factor, 1, 2.8);
       if (zoom === framing.zoom) return;
       framing.zoom = zoom;
-      navigating = false;
       move(animated ? 0.2 : 0.08);
     },
     pan(dx: number, dy: number) {
       if (state.mode === "room" || framing.zoom === 1) return;
-      if (navigating && elapsed < duration && !motion.matches) return;
       const inspection =
         state.mode === "computer"
           ? computer
@@ -148,7 +143,7 @@ export function createView(
       else if (step < 0 && state.direction === 4) select(heading);
     },
     back() {
-      if (state.mode !== "room") transition({ mode: "room", direction: roomDirection }, 0.25);
+      if (state.mode !== "room") transition({ mode: "room", direction: roomDirection });
     },
     resize() {
       target = pose();
