@@ -79,12 +79,6 @@ export class VolumetricPass extends Pass {
     this.sampledRevision = -1;
   }
 
-  setSteps(steps: number): void {
-    if (this.uniforms.scatteringSteps.value === steps) return;
-    this.uniforms.scatteringSteps.value = steps;
-    this.sampledRevision = -1;
-  }
-
   override render(
     renderer: WebGLRenderer,
     writeBuffer: WebGLRenderTarget,

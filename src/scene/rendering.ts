@@ -60,8 +60,7 @@ export function createRendering(
       composer.setSize(pixelWidth, pixelHeight);
     },
     render(moving = false) {
-      scattering.setSteps(moving ? profile.motionScatteringSteps : profile.scatteringSteps);
-      scattering.enabled = celestialLight.intensity > 0;
+      scattering.enabled = !moving && celestialLight.intensity > 0;
       composer.render();
     },
   };

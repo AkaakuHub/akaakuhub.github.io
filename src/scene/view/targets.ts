@@ -39,9 +39,9 @@ export function roomPose(direction: RoomDirection, heading: number, aspect: numb
   const pitch = direction === 4 ? Math.PI / 2 : MathUtils.degToRad(-8);
   const fittingFov = MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(34)) / aspect));
   return {
-    position: new Vector3(0, 1.55, 0.45),
+    position: new Vector3(0, 1.55, aspect < 0.7 && direction === 0 ? 0.9 : 0.45),
     quaternion: new Quaternion().setFromEuler(new Euler(pitch, yaw, 0, "YXZ")),
-    fov: MathUtils.clamp(fittingFov, 62, 120),
+    fov: MathUtils.clamp(fittingFov, 62, 88),
   };
 }
 

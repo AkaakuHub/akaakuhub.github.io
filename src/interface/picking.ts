@@ -1,4 +1,4 @@
-import { Mesh, Raycaster, Vector2 } from "three";
+import { Mesh, Raycaster, Vector2, Vector3 } from "three";
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 
 interface ComputerTargets {
@@ -18,6 +18,8 @@ export function createPicker(
 ) {
   const raycaster = new Raycaster();
   const pointer = new Vector2();
+  const powerPoint = new Vector3();
+  const projectedPower = new Vector3();
   return (event: PointerEvent, occlusion: boolean) => {
     const rect = canvas.getBoundingClientRect();
     pointer.set(
@@ -27,6 +29,24 @@ export function createPicker(
     camera.updateMatrixWorld();
     raycaster.setFromCamera(pointer, camera);
     raycaster.far = Infinity;
+    if (event.pointerType === "touch" || event.pointerType === "pen") {
+      computer.power.getWorldPosition(powerPoint);
+      projectedPower.copy(powerPoint).project(camera);
+      const pixelDistance = Math.hypot(
+        ((pointer.x - projectedPower.x) * rect.width) / 2,
+        ((pointer.y - projectedPower.y) * rect.height) / 2,
+      );
+      if (projectedPower.z > -1 && projectedPower.z < 1 && pixelDistance <= 28) {
+        const distance = camera.position.distanceTo(powerPoint);
+        raycaster.far = distance - 0.15;
+        if (
+          !occlusion ||
+          !raycaster.intersectObjects(scene.children, true).some(({ object }) => object.visible)
+        )
+          return { type: "power" as const };
+        raycaster.far = Infinity;
+      }
+    }
     const targets = [...papers, computer.power, lightSwitch];
     if (computer.isPowered()) targets.push(computer.monitor);
     let candidate = raycaster.intersectObjects(targets, true)[0];

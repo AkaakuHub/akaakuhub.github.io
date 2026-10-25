@@ -125,7 +125,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   let lastRendered = 0;
   let ready = false;
   let prepared = false;
-  const compact = window.matchMedia("(pointer: coarse)");
 
   observeViewport(ui.canvas, camera, renderer, rendering, () => {
     view.resize();
@@ -156,7 +155,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   function render(time: number) {
     frame = 0;
     if (document.hidden || !prepared) return;
-    const frameDuration = compact.matches ? 1000 / 30 : 1000 / 60;
+    const frameDuration = 1000 / 60;
     if (time - lastRendered < frameDuration - 0.5) {
       frame = requestAnimationFrame(render);
       return;
