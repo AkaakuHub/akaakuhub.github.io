@@ -26,6 +26,8 @@ import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
 import { loadSkillAtlas } from "./assets/skills";
+import { createIntroduction } from "./interface/introduction";
+import { createCornerControls } from "./interface/corners";
 
 export async function startRoom(
   root: HTMLElement,
@@ -103,6 +105,8 @@ export async function startRoom(
     depth: 0,
     topAligned: index === 0 || index === 2,
   }));
+  let introduction: ReturnType<typeof createIntroduction> | undefined;
+  let updateCorners: ReturnType<typeof createCornerControls> | undefined;
   const view = createView(
     camera,
     inspections,
@@ -110,10 +114,15 @@ export async function startRoom(
     (state) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
+      introduction?.update(state);
+      updateCorners?.(state);
     },
     invalidate,
     () => ui.inspectionViewport(),
   );
+  introduction = createIntroduction(root, () => view.back());
+  updateCorners = createCornerControls(root, view);
+  updateCorners(view.state);
   const computerInterface = createComputerInterface(
     computer,
     view,
@@ -189,6 +198,7 @@ export async function startRoom(
       const measurement = performance.measure("room-first-frame", { start: 0 });
       if (import.meta.env.DEV) console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
       ready = true;
+      introduction?.start();
       contributions.load();
       void boardLoader.refresh(false);
       prewarmRoomViews(renderer, scene, camera, () => view.moving, loading.fail);

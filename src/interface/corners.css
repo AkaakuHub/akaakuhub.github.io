@@ -1,0 +1,59 @@
+.room-keyboard .room-corner {
+  position: fixed;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #fff;
+  opacity: 0.32;
+  cursor: pointer;
+  font:
+    500 40px/1 "Zen Maru Gothic Board",
+    sans-serif;
+  text-shadow: 0 1px 6px #0009;
+  animation: corner-float 3.8s ease-in-out infinite;
+  transition: opacity 0.2s;
+}
+.room-keyboard .room-corner[hidden] {
+  display: none;
+}
+.room-keyboard .room-corner:hover,
+.room-keyboard .room-corner:focus-visible {
+  opacity: 0.9;
+}
+.room-keyboard .room-corner:disabled {
+  opacity: 0.08;
+  cursor: default;
+}
+[data-view-corner="left"] {
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  rotate: 180deg;
+}
+[data-view-corner="right"] {
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+}
+[data-view-corner="up"] {
+  bottom: max(12px, env(safe-area-inset-bottom));
+  left: max(12px, env(safe-area-inset-left));
+  rotate: -90deg;
+}
+[data-view-corner="down"] {
+  bottom: max(12px, env(safe-area-inset-bottom));
+  right: max(12px, env(safe-area-inset-right));
+  rotate: 90deg;
+}
+@keyframes corner-float {
+  50% {
+    translate: 0 -4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-keyboard .room-corner {
+    animation: none;
+  }
+}

@@ -41,6 +41,10 @@ export function bindRoomControls(
     const row = MathUtils.clamp((state.index % 2) + rowStep, 0, 1);
     view.inspect(column * 2 + row);
   }
+  function nextNotice(step: number): void {
+    if (view.state.mode !== "notice" || view.moving) return;
+    view.inspect(MathUtils.clamp(view.state.index + step, 0, papers.length - 1));
+  }
   window.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.key === "Escape") {
@@ -141,11 +145,11 @@ export function bindRoomControls(
     if (view.state.mode !== "room" && view.zoomFactor > 1) {
       if (Math.hypot(dx, dy) >= 10) return;
     } else if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy) * 1.25) {
-      if (view.state.mode === "notice") moveNotice(dx < 0 ? 1 : -1, 0);
+      if (view.state.mode === "notice") nextNotice(dx < 0 ? 1 : -1);
       else if (view.state.mode === "room") view.turn(dx > 0 ? 1 : -1);
       return;
     } else if (Math.abs(dy) > threshold && Math.abs(dy) > Math.abs(dx) * 1.25) {
-      if (view.state.mode === "notice") moveNotice(0, dy < 0 ? 1 : -1);
+      if (view.state.mode === "notice") nextNotice(dy < 0 ? 1 : -1);
       else view.vertical(dy > 0 ? 1 : -1);
       return;
     }
@@ -182,12 +186,28 @@ export function bindRoomControls(
   };
   ui.canvas.addEventListener("pointercancel", cancel);
   ui.canvas.addEventListener("lostpointercapture", cancel);
+  let wheelDistance = 0;
+  let lastWheelTime = 0;
+  let lastNoticeTime = -Infinity;
   ui.canvas.addEventListener(
     "wheel",
     (event) => {
       if (view.state.mode === "room") return;
       event.preventDefault();
       const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 540 : 1;
+      if (view.state.mode === "notice" && !event.ctrlKey) {
+        const now = performance.now();
+        if (view.moving || now - lastNoticeTime < 600) return;
+        if (now - lastWheelTime > 160) wheelDistance = 0;
+        lastWheelTime = now;
+        wheelDistance += event.deltaY * unit;
+        if (Math.abs(wheelDistance) >= 36) {
+          nextNotice(Math.sign(wheelDistance));
+          lastNoticeTime = now;
+          wheelDistance = 0;
+        }
+        return;
+      }
       zoom(Math.exp(-MathUtils.clamp(event.deltaY * unit, -200, 200) * 0.003), true);
     },
     { passive: false },

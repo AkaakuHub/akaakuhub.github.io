@@ -22,12 +22,12 @@ export function createView(
 ) {
   if (inspections.length === 0) throw new Error("掲示用紙が配置されていません。");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let state: ViewState = { mode: "room", direction: 0 };
+  let state: ViewState = { mode: "notice", index: 0 };
   let roomDirection: RoomDirection = 0;
   let heading = 0;
   const framing: InspectionFraming = { zoom: 1, panX: 0, panY: 0 };
   let start: CameraPose = { position: new Vector3(), quaternion: new Quaternion(), fov: 62 };
-  let target = roomPose(0, heading, camera.aspect);
+  let target: CameraPose;
   let elapsed = 1;
   let duration = 1;
 
@@ -79,6 +79,7 @@ export function createView(
     framing.panY = 0;
     transition({ mode: "notice", index }, 0.36);
   }
+  target = pose();
   apply(target);
   onChange(state, framing.zoom);
   return {

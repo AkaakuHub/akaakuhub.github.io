@@ -9,7 +9,7 @@
   z-index: 10;
 }
 
-.room-keyboard button {
+.room-keyboard button:not([data-view-corner]) {
   position: absolute;
   width: 1px;
   height: 1px;
