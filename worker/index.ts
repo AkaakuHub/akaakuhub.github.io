@@ -15,7 +15,7 @@ export default {
     if (cached) return cached;
     const id = env.WEATHER.idFromName("tokyo");
     const response = await env.WEATHER.get(id).fetch("https://weather/api/weather");
-    if (response.ok) ctx.waitUntil(cache.put(key, response.clone()));
+    if (response.ok || response.status === 503) ctx.waitUntil(cache.put(key, response.clone()));
     return response;
   },
 } satisfies ExportedHandler<Env>;

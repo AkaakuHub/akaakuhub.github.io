@@ -40,7 +40,7 @@ export class TokyoWeatherCache implements DurableObject {
   }
 
   private response(weather: WeatherDay, now: number): Response {
-    const ttl = Math.max(1, Math.floor((weather.expiresAt - now) / 1000));
+    const ttl = Math.max(0, Math.floor((weather.expiresAt - now) / 1000));
     return Response.json(weather, {
       headers: { "Cache-Control": `public, max-age=${ttl}, s-maxage=${ttl}` },
     });
@@ -51,7 +51,10 @@ export class TokyoWeatherCache implements DurableObject {
       { error: "東京の天気情報を取得できません。時間を置いて再読み込みしてください。" },
       {
         status: 503,
-        headers: { "Cache-Control": "no-store", "Retry-After": String(seconds) },
+        headers: {
+          "Cache-Control": `public, max-age=${Math.max(0, seconds - 1)}, s-maxage=${Math.max(0, seconds - 1)}`,
+          "Retry-After": String(seconds),
+        },
       },
     );
   }
