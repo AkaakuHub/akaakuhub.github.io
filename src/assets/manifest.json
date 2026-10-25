@@ -11,8 +11,8 @@
   },
   {
     "id": "materials/ash_veneer/color.webp",
-    "bytes": 137546,
-    "sha256": "74c147241672623e682b6b3927751387c6a3e92e5c202644c8d4044491b1b42b"
+    "bytes": 118714,
+    "sha256": "27d4d0f6b18559a863e02ce80b6729ec15635394dd5704e0ccf8c65974dab59b"
   },
   {
     "id": "materials/ash_veneer/normal.webp",
@@ -26,8 +26,8 @@
   },
   {
     "id": "materials/herringbone_parquet/color.webp",
-    "bytes": 270268,
-    "sha256": "bdf6c14f81587fe691bde6433cbc3e17a0906bb0b3260a8cf59fcc652dbd9a4d"
+    "bytes": 213632,
+    "sha256": "9220052ab08e3c38be1eaaa595dc67363fcc2c19e5942ef2a53b1be84b289eee"
   },
   {
     "id": "materials/herringbone_parquet/normal.webp",
@@ -36,8 +36,8 @@
   },
   {
     "id": "materials/LeafSet024/color.webp",
-    "bytes": 130084,
-    "sha256": "7794ae95e360023f8dd4aba8a7ef5e8b9b89abd9d9d9722ae7417b0db3222d00"
+    "bytes": 97386,
+    "sha256": "c2132ff2c34be204fbeaf488dd258da9adf2e0665975da373311b871a570723e"
   },
   {
     "id": "materials/LeafSet024/normal.webp",
@@ -76,8 +76,8 @@
   },
   {
     "id": "materials/Metal050B/color.webp",
-    "bytes": 2696,
-    "sha256": "0cc7b5c128d583280b1a27bfc0d6676bbc7296717260ae8ded438f599565e021"
+    "bytes": 2278,
+    "sha256": "e7e2ad8fba6c80acd036facfd855d7243b34ebae7c163de677f9067e22e2ce7c"
   },
   {
     "id": "materials/Metal050B/normal.webp",
@@ -91,8 +91,8 @@
   },
   {
     "id": "materials/painted_plaster_wall/color.webp",
-    "bytes": 21704,
-    "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95"
+    "bytes": 8268,
+    "sha256": "1ce94459ebef7d46e47fbb07db3e4714a39c6cc589784fe58bdeab844424e243"
   },
   {
     "id": "materials/painted_plaster_wall/normal.webp",
@@ -106,8 +106,8 @@
   },
   {
     "id": "materials/PaintedMetal001/color.webp",
-    "bytes": 13162,
-    "sha256": "2fb90ddedebbb85ca6f28c662ba36eff517ec67053625e823aa9d16e9c5605dc"
+    "bytes": 11410,
+    "sha256": "3a2aed2d8b0a36a8dcfeb6f061a80689f5fb3be9abd6b38e389c89a3b4278cf5"
   },
   {
     "id": "materials/PaintedMetal001/normal.webp",
@@ -116,8 +116,8 @@
   },
   {
     "id": "materials/Paper001/color.webp",
-    "bytes": 7676,
-    "sha256": "a9a94108c6606151f8b0604ac9c7b0a7fbcb8e2f2f64309d7c52b071d8f7c62b"
+    "bytes": 6350,
+    "sha256": "721d2037807ebd67300d769a158f447fb92c7da012da19655aba77137c18edb1"
   },
   {
     "id": "materials/Paper001/normal.webp",
@@ -131,8 +131,8 @@
   },
   {
     "id": "materials/Plastic010/color.webp",
-    "bytes": 820,
-    "sha256": "08826b9c691f6dd217d3212ef14b789ea614a9473c0d31f7a813ecc80a58a68f"
+    "bytes": 676,
+    "sha256": "621e38d583311ef239b44fda801185705115373e89b45db018561ac023ffc7c5"
   },
   {
     "id": "materials/Plastic010/normal.webp",
@@ -151,8 +151,8 @@
   },
   {
     "id": "materials/terlenka/color.webp",
-    "bytes": 1870,
-    "sha256": "4cc57041d122e11d1fd8abbad3a72b2a2d5a584069b0ff3075ffbd9e0b6bf398"
+    "bytes": 1316,
+    "sha256": "2ab1093445348599647daab9add508bec5823cf2a9f5e323278dd50e448779cf"
   },
   {
     "id": "materials/terlenka/normal.webp",
@@ -166,8 +166,8 @@
   },
   {
     "id": "materials/walnut_veneer/color.webp",
-    "bytes": 86042,
-    "sha256": "80d76eba3bbe0fe355434cfde289761484856f1af38d2bfb1613443c108d41b7"
+    "bytes": 65192,
+    "sha256": "412f708e8bfd9764ad9e9321fb99c98711f6ac291efa6274b76d58eae0f6d573"
   },
   {
     "id": "materials/walnut_veneer/normal.webp",

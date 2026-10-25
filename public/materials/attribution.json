@@ -16,8 +16,9 @@
           "file": "src/assets/materials/herringbone_parquet/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/herringbone_parquet/herringbone_parquet_diff_1k.jpg",
           "sourceHash": "dae9d3dd6d8a2c2e387da22fd8228265",
-          "sha256": "bdf6c14f81587fe691bde6433cbc3e17a0906bb0b3260a8cf59fcc652dbd9a4d",
-          "dimensions": [1024, 1024]
+          "sha256": "9220052ab08e3c38be1eaaa595dc67363fcc2c19e5942ef2a53b1be84b289eee",
+          "dimensions": [1024, 1024],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/herringbone_parquet/normal.webp",
@@ -53,8 +54,9 @@
           "file": "src/assets/materials/painted_plaster_wall/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
           "sourceHash": "15ba8c1f63a5ab412b1eabe31728540a",
-          "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95",
-          "dimensions": [1024, 1024]
+          "sha256": "1ce94459ebef7d46e47fbb07db3e4714a39c6cc589784fe58bdeab844424e243",
+          "dimensions": [1024, 1024],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/painted_plaster_wall/normal.webp",
@@ -92,8 +94,9 @@
           "file": "src/assets/materials/ash_veneer/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_diff_1k.jpg",
           "sourceHash": "5be48b4be87620998cfaee5a4281169d",
-          "sha256": "74c147241672623e682b6b3927751387c6a3e92e5c202644c8d4044491b1b42b",
-          "dimensions": [1024, 1024]
+          "sha256": "27d4d0f6b18559a863e02ce80b6729ec15635394dd5704e0ccf8c65974dab59b",
+          "dimensions": [1024, 1024],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/ash_veneer/normal.webp",
@@ -129,8 +132,9 @@
           "file": "src/assets/materials/walnut_veneer/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/walnut_veneer/walnut_veneer_diff_1k.jpg",
           "sourceHash": "70e160b3d44d414728a2fb4194fde2a6",
-          "sha256": "80d76eba3bbe0fe355434cfde289761484856f1af38d2bfb1613443c108d41b7",
-          "dimensions": [1024, 1024]
+          "sha256": "412f708e8bfd9764ad9e9321fb99c98711f6ac291efa6274b76d58eae0f6d573",
+          "dimensions": [1024, 1024],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/walnut_veneer/normal.webp",
@@ -167,8 +171,9 @@
           "file": "src/assets/materials/terlenka/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/terlenka/terlenka_diff_1k.jpg",
           "sourceHash": "202624e89023d9ace2845b372015490c",
-          "sha256": "4cc57041d122e11d1fd8abbad3a72b2a2d5a584069b0ff3075ffbd9e0b6bf398",
-          "dimensions": [511, 512]
+          "sha256": "2ab1093445348599647daab9add508bec5823cf2a9f5e323278dd50e448779cf",
+          "dimensions": [511, 512],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/terlenka/normal.webp",
@@ -219,8 +224,9 @@
           "sourceHashes": {
             "Color": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d"
           },
-          "sha256": "0cc7b5c128d583280b1a27bfc0d6676bbc7296717260ae8ded438f599565e021",
-          "dimensions": [512, 512]
+          "sha256": "e7e2ad8fba6c80acd036facfd855d7243b34ebae7c163de677f9067e22e2ce7c",
+          "dimensions": [512, 512],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "arm": {
           "file": "src/assets/materials/Metal050B/arm.webp",
@@ -326,9 +332,10 @@
           "file": "src/assets/materials/Paper001/color.webp",
           "url": "https://ambientcg.com/get?file=Paper001_1K-JPG.zip",
           "archiveMember": "Paper001_1K-JPG_Color.jpg",
-          "sha256": "a9a94108c6606151f8b0604ac9c7b0a7fbcb8e2f2f64309d7c52b071d8f7c62b",
+          "sha256": "721d2037807ebd67300d769a158f447fb92c7da012da19655aba77137c18edb1",
           "sourceHash": "e8db6f5b91f7882f4711ab5b2dc5c2e91f822d4f80a7d0081991532cf5cd9b9a",
-          "dimensions": [512, 300]
+          "dimensions": [512, 300],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/Paper001/normal.webp",
@@ -365,9 +372,10 @@
           "file": "src/assets/materials/LeafSet024/color.webp",
           "url": "https://ambientcg.com/get?file=LeafSet024_1K-JPG.zip",
           "archiveMember": "LeafSet024_1K-JPG_Color.jpg",
-          "sha256": "7794ae95e360023f8dd4aba8a7ef5e8b9b89abd9d9d9722ae7417b0db3222d00",
+          "sha256": "c2132ff2c34be204fbeaf488dd258da9adf2e0665975da373311b871a570723e",
           "sourceHash": "f5c6cbf36de217af8ae06cf5d7badd035e04c341594aa618abacc2a9d8dbb8c8",
-          "dimensions": [1024, 1024]
+          "dimensions": [1024, 1024],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/LeafSet024/normal.webp",
@@ -412,9 +420,10 @@
           "file": "src/assets/materials/Plastic010/color.webp",
           "url": "https://ambientcg.com/get?file=Plastic010_1K-JPG.zip",
           "archiveMember": "Plastic010_1K-JPG_Color.jpg",
-          "sha256": "08826b9c691f6dd217d3212ef14b789ea614a9473c0d31f7a813ecc80a58a68f",
+          "sha256": "621e38d583311ef239b44fda801185705115373e89b45db018561ac023ffc7c5",
           "sourceHash": "4a91d8a74184acb5e84fb9ddbfbc12c49102864157c91e2b3b5950133ef05e06",
-          "dimensions": [512, 512]
+          "dimensions": [512, 512],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/Plastic010/normal.webp",
@@ -457,8 +466,9 @@
           "sourceHashes": {
             "Color": "55e84662a1eca23d73ef851a5ad99857c388adde627f4264b861d9fe5e8cc84f"
           },
-          "sha256": "2fb90ddedebbb85ca6f28c662ba36eff517ec67053625e823aa9d16e9c5605dc",
-          "dimensions": [1024, 1024]
+          "sha256": "3a2aed2d8b0a36a8dcfeb6f061a80689f5fb3be9abd6b38e389c89a3b4278cf5",
+          "dimensions": [1024, 1024],
+          "encoding": "WebP quality 85, smart chroma subsampling"
         },
         "normal": {
           "file": "src/assets/materials/PaintedMetal001/normal.webp",
