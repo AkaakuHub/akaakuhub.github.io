@@ -12,7 +12,7 @@ import { renderingProfile } from "../quality";
 
 export function createTextureLoader(rendererReady: Promise<Renderer>, assets: RoomAssetLoader) {
   const textures = new Map<string, Texture<ImageBitmap | null>>();
-  const pending = new Map<Texture<ImageBitmap | null>, Promise<void>>();
+  const pending = new Map<Texture<ImageBitmap | null>, () => Promise<void>>();
   const anisotropy = renderingProfile().anisotropy;
   function texture(id: string, file: string, meters: number): Texture<ImageBitmap | null> {
     const key = `${id}/${file}`;
@@ -27,9 +27,9 @@ export function createTextureLoader(rendererReady: Promise<Renderer>, assets: Ro
     result.minFilter = LinearMipmapLinearFilter;
     result.anisotropy = anisotropy;
     textures.set(key, result);
-    pending.set(
-      result,
-      assets.load(`materials/${key}.webp`, async (bytes) => {
+    let loading: Promise<void> | undefined;
+    pending.set(result, () => {
+      loading ??= assets.load(`materials/${key}.webp`, async (bytes) => {
         const bitmap = await createImageBitmap(
           new Blob([Uint8Array.from(bytes)], { type: "image/webp" }),
           {
@@ -41,8 +41,9 @@ export function createTextureLoader(rendererReady: Promise<Renderer>, assets: Ro
         result.image = bitmap;
         result.needsUpdate = true;
         (await rendererReady).initTexture(result);
-      }),
-    );
+      });
+      return loading;
+    });
     return result;
   }
   return { texture, pending };

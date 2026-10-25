@@ -1,9 +1,10 @@
-import type { Texture } from "three";
+import type { PerspectiveCamera, Scene, Texture } from "three";
 import type { Renderer } from "three/webgpu";
 import { materialDefinitions } from "../../assets/materials";
 import type { MetalDefinition, SurfaceDefinition } from "../../assets/materials";
 import { createTextureLoader } from "./textures";
 import type { RoomAssetLoader } from "../../assets/loading";
+import { visibleTextures } from "./visible-textures";
 
 export interface PbrMaps {
   map: Texture<ImageBitmap | null>;
@@ -47,13 +48,34 @@ export function loadMaterials(rendererReady: Promise<Renderer>, assets: RoomAsse
     plastic: loadSet(materialDefinitions.plastic),
     leaves: loadSet(materialDefinitions.leaves),
   };
-  const ready = Promise.all(loader.pending.values());
+  function required(scene: Scene, camera: PerspectiveCamera) {
+    const sources = new Set([...visibleTextures(scene, camera)].map((map) => map.source));
+    return [...loader.pending].filter(([map]) => sources.has(map.source) && !map.image);
+  }
   const paperReady = Promise.all(
     [materials.paper.map, materials.paper.normalMap, materials.paper.roughnessMap].map((map) =>
-      loader.pending.get(map),
+      loader.pending.get(map)?.(),
     ),
   );
-  return { materials, ready, paperReady };
+  let complete = false;
+  return {
+    materials,
+    paperReady,
+    prepareView(scene: Scene, camera: PerspectiveCamera): Promise<void> | undefined {
+      if (complete) return;
+      const entries = required(scene, camera);
+      if (entries.length === 0) return;
+      return Promise.all(entries.map(([, load]) => load())).then(() => {});
+    },
+    async loadRemaining(): Promise<void> {
+      for (const [map, load] of loader.pending) {
+        if (map.image) continue;
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        await load();
+      }
+      complete = true;
+    },
+  };
 }
 
 export type MaterialLibrary = ReturnType<typeof loadMaterials>["materials"];

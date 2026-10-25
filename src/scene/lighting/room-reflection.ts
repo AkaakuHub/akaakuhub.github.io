@@ -4,14 +4,17 @@ import {
   DirectionalLight,
   HalfFloatType,
   LinearFilter,
+  PerspectiveCamera,
   RenderTarget,
   Scene,
   Vector3,
+  WebGPUCoordinateSystem,
 } from "three";
 import { PMREMGenerator } from "three/webgpu";
 import type { Renderer } from "three/webgpu";
 import type { Object3D } from "three";
 import { pmremTexture, vec3 } from "three/tsl";
+import { prepareRoomShaders } from "../rendering/prepare";
 
 export function createRoomReflection(scene: Scene, renderer: Renderer) {
   const generator = new PMREMGenerator(renderer);
@@ -47,7 +50,7 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
   let reflection: RenderTarget | undefined;
   let capturedAt: number | undefined;
 
-  return (date: Date, force = false): void => {
+  function capture(date: Date, force = false): void {
     const timestamp = date.getTime();
     if (!force && capturedAt !== undefined && Math.abs(timestamp - capturedAt) < 300_000) return;
     const visibility = sources.map((object) => ({ object, visible: object.visible }));
@@ -71,5 +74,15 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
     scene.environmentIntensity = 1;
     reflection = next;
     capturedAt = timestamp;
+  }
+  return {
+    capture,
+    async prepare(): Promise<void> {
+      captureScene.children = scene.children;
+      const camera = new PerspectiveCamera(90, 1, 0.05, 24);
+      camera.coordinateSystem = WebGPUCoordinateSystem;
+      camera.position.copy(position);
+      await prepareRoomShaders(renderer, captureScene, camera, () => {}, false);
+    },
   };
 }

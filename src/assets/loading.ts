@@ -13,7 +13,6 @@ import { asset } from "./catalog";
 import { materialAssetIds } from "./materials";
 import { areaLightAssetId } from "./lighting";
 import { skillAtlasAssetId } from "./skills";
-import { createDecodeSlot } from "./decode-slot";
 
 export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) => void) {
   if (!isSecureContext || !crossOriginIsolated || !navigator.storage.getDirectory)
@@ -40,48 +39,39 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     progress(resolveArtifactLoadSummary([...state.values()]));
   }
   for (const descriptor of descriptors.values()) report({ type: "started", ...descriptor });
-  const entries = new Map(
-    [...descriptors].map(([id, descriptor]) => {
-      const entry = asset(id);
-      const slot = createDecodeSlot();
-      const completed = runArtifactLoadStep(
-        descriptor,
-        report,
-        (reportProgress, reportCacheWriteFailure) =>
-          loadBinaryAsset({
-            source: {
-              key: descriptor.identity,
-              url: new URL(entry.url, location.href).href,
-              identity: entry.sha256,
-              size: entry.bytes,
-            },
-            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
-            decode: slot.run,
-            reportProgress,
-            reportCacheWriteFailure,
-          }),
-      ).then(() => {});
-      void completed.catch(abort);
-      return [id, { slot, completed }] as const;
-    }),
-  );
   function abort(cause: unknown): void {
     if (controller.signal.aborted) return;
     controller.abort(cause);
-    for (const { slot } of entries.values()) slot.cancel(cause);
   }
   return {
     abort,
     async load<Value>(id: string, decode: (bytes: Uint8Array) => Promise<Value>): Promise<Value> {
-      const entry = entries.get(id);
-      if (!entry) throw new Error(`読み込み対象が登録されていません: ${id}`);
+      const descriptor = descriptors.get(id);
+      if (!descriptor) throw new Error(`読み込み対象が登録されていません: ${id}`);
+      descriptors.delete(id);
+      const entry = asset(id);
       try {
-        return await entry.slot.claim(decode, entry.completed);
+        const result = await runArtifactLoadStep(
+          descriptor,
+          report,
+          (reportProgress, reportCacheWriteFailure) =>
+            loadBinaryAsset({
+              source: {
+                key: descriptor.identity,
+                url: new URL(entry.url, location.href).href,
+                identity: entry.sha256,
+                size: entry.bytes,
+              },
+              signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
+              decode,
+              reportProgress,
+              reportCacheWriteFailure,
+            }),
+        );
+        return result.value;
       } catch (cause) {
         abort(cause);
         throw cause;
-      } finally {
-        entries.delete(id);
       }
     },
   };
