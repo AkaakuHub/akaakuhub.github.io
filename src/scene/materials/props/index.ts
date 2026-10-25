@@ -5,12 +5,18 @@ import { bookLabelMaterial, pageEdgeMaterial } from "./books";
 
 export function createPropMaterials(maps: MaterialLibrary) {
   const cloth = (color: string) =>
-    physicalSurface(maps.fabric, {
+    scannedSurface(maps.fabric, {
       color,
-      sheen: 0.3,
-      sheenColor: color,
-      sheenRoughness: 0.9,
+      roughnessMap: null,
+      roughness: 0.94,
       normalScale: new Vector2(0.22, 0.22),
+    });
+  const cover = (color: string) =>
+    scannedSurface(maps.paper, {
+      color,
+      roughnessMap: null,
+      roughness: 0.9,
+      normalScale: new Vector2(0.12, 0.12),
     });
   const plastic = (color: string, roughness: number) =>
     physicalSurface(maps.plastic, {
@@ -45,11 +51,11 @@ export function createPropMaterials(maps: MaterialLibrary) {
       color: "#f2ebda",
       normalScale: new Vector2(0.12, 0.12),
     }),
-    navy: cloth("#54697b"),
-    rust: cloth("#a5654c"),
-    mustard: cloth("#b49a57"),
-    bookCream: cloth("#e9e0c4"),
-    bookGreen: cloth("#627566"),
+    navy: cover("#54697b"),
+    rust: cover("#a5654c"),
+    mustard: cover("#b49a57"),
+    bookCream: cover("#e9e0c4"),
+    bookGreen: cover("#627566"),
     porcelain: physicalSurface(maps.plastic, {
       map: null,
       color: "#e6e2d8",

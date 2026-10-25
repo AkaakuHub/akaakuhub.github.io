@@ -11,7 +11,8 @@ export function createFurnitureMaterials(
 ) {
   return {
     ash: scannedSurface(maps.ash, {
-      roughness: 0.64,
+      roughnessMap: null,
+      roughness: 0.76,
       normalScale: new Vector2(0.22, 0.22),
     }),
     ivory: metals.ivory,

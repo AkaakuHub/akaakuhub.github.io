@@ -5,7 +5,8 @@ import { scannedSurface } from "../../materials/surface";
 export function createArchitectureMaterials(maps: MaterialLibrary) {
   return {
     floor: scannedSurface(maps.floor, {
-      roughness: 0.78,
+      roughnessMap: null,
+      roughness: 0.7,
       normalScale: new Vector2(0.12, 0.12),
     }),
     wall: scannedSurface(maps.plaster, {
@@ -19,26 +20,31 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
     }),
     boards: scannedSurface(maps.ash, {
       color: "#f4eee3",
-      roughness: 0.85,
+      roughnessMap: null,
+      roughness: 0.86,
       normalScale: new Vector2(0.1, 0.1),
     }),
     trim: scannedSurface(maps.walnut, {
       color: "#d5cebb",
-      roughness: 0.62,
+      roughnessMap: null,
+      roughness: 0.8,
       normalScale: new Vector2(0.18, 0.18),
     }),
     frame: scannedSurface(maps.paint, {
       color: "#d8d8ce",
-      roughness: 0.6,
+      roughnessMap: null,
+      roughness: 0.82,
       normalScale: new Vector2(0.1, 0.1),
     }),
     sill: scannedSurface(maps.walnut, {
-      roughness: 0.58,
+      roughnessMap: null,
+      roughness: 0.76,
       normalScale: new Vector2(0.18, 0.18),
     }),
     door: scannedSurface(maps.ash, {
       color: "#c9b998",
-      roughness: 0.72,
+      roughnessMap: null,
+      roughness: 0.8,
       normalScale: new Vector2(0.12, 0.12),
     }),
   };
