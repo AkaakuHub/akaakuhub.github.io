@@ -18,6 +18,7 @@ import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont } from "./assets/typography";
+import { createContributionDisplay } from "./scene/board/contribution-display";
 
 export async function startRoom(root: HTMLElement, loading: Loading) {
   const ui = createInterface(root);
@@ -70,7 +71,16 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       invalidate();
     },
   );
-  const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
+  const container = ui.canvas.parentElement;
+  if (!container) throw new Error("部屋の表示領域が見つかりません。");
+  const contributions = createContributionDisplay(container, board.profilePaper, camera);
+  const rendering = createRendering(
+    renderer,
+    scene,
+    camera,
+    lighting.celestialLight,
+    contributions,
+  );
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice]) => ({
     object,
@@ -83,6 +93,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     inspections,
     computer,
     (state, zoom) => {
+      contributions.setView(state);
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setZoom(zoom);
       ui.setMoving(true);
@@ -90,11 +101,17 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     invalidate,
     () => ui.inspectionViewport(),
   );
-  const boardLoader = createBoardLoader((state) => {
-    board.setState(state);
-    if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
-    invalidate();
-  });
+  const boardLoader = createBoardLoader(
+    (state) => {
+      board.setState(state);
+      if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
+      invalidate();
+    },
+    (state) => {
+      contributions.setState(state);
+      invalidate();
+    },
+  );
   let frame = 0;
   let previous = performance.now();
   let lastRendered = 0;

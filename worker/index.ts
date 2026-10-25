@@ -27,12 +27,17 @@ export default {
         headers: { "Clear-Site-Data": '"cache"', "Cache-Control": "no-store" },
       });
     }
-    if (url.pathname !== "/api/weather" && url.pathname !== "/api/content")
+    if (
+      url.pathname !== "/api/weather" &&
+      url.pathname !== "/api/content" &&
+      url.pathname !== "/api/contributions"
+    )
       return env.ASSETS.fetch(request);
     if (request.method !== "GET")
       return new Response(null, { status: 405, headers: { Allow: "GET" } });
     if (url.search) return new Response(null, { status: 400 });
-    if (url.pathname === "/api/content") return serveContent(request, env);
+    if (url.pathname === "/api/content" || url.pathname === "/api/contributions")
+      return serveContent(request, env);
     const now = Date.now();
     const key = new Request(`${url.origin}/api/weather/${tokyoDay(now)}`);
     const cache = caches.default;

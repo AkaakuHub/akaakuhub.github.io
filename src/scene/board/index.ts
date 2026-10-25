@@ -20,6 +20,7 @@ export function createBoard(
   group: Group;
   notices: Map<Object3D, Notice>;
   weather: ReturnType<typeof createWeatherNotice>;
+  profilePaper: Object3D;
   setState: (state: BoardState) => void;
 } {
   const group = createFrame(metals, props);
@@ -65,12 +66,15 @@ export function createBoard(
     papers.push(paper);
   }
   const weather = createWeatherNotice();
+  const profilePaper = papers[0];
+  if (!profilePaper) throw new Error("プロフィールの掲示がありません。");
   group.add(weather.object);
   notices.set(weather.object, weather.notice);
   return {
     group,
     notices,
     weather,
+    profilePaper,
     setState(state): void {
       boardNotices(state).forEach((notice, index) => {
         const paper = papers[index];
