@@ -4,5 +4,5 @@
   font-weight: 400;
   font-display: swap;
   src: url(/src/assets/fonts/yomogi/heading.woff2) format("woff2");
-  unicode-range: U+4e8b, U+65b0, U+6700, U+8a18;
+  unicode-range: U+47-48, U+62, U+69, U+74-75, U+4e8b, U+65b0, U+6700, U+8a18;
 }

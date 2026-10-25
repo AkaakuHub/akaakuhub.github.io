@@ -62,7 +62,8 @@ function printedPaper(
   context.fillText(print.eyebrow, margin, 100);
   context.font = `500 ${headingSize}px ${siteFont}`;
   const textX = print.thumbnail ? width * 0.54 : margin;
-  const lines = wrapText(context, print.title, width - margin - textX);
+  const lines =
+    print.kind === "github" ? [] : wrapText(context, print.title, width - margin - textX);
   const headingY = 180;
   const lineHeight = headingSize * 1.4;
   if (print.thumbnail) {

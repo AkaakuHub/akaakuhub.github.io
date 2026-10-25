@@ -11,6 +11,7 @@ export type BoardState =
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
 export interface BoardNotice extends Notice {
+  kind: "github" | "article";
   eyebrow: string;
   position: readonly [number, number];
   angle: number;
@@ -21,7 +22,21 @@ export interface BoardNotice extends Notice {
 }
 
 export function boardNotices(state: BoardState): BoardNotice[] {
-  const notices: BoardNotice[] = [];
+  const notices: BoardNotice[] = [
+    {
+      kind: "github",
+      title: "GitHubの記録",
+      eyebrow: "",
+      size: [1.08, 0.43],
+      position: [-0.62, 1.955],
+      angle: 0.012,
+      ink: "#253b31",
+      stock: "#f3eee0",
+      lines: [],
+      thumbnail: null,
+      link: { label: "GitHubを開く", href: "https://github.com/AkaakuHub" },
+    },
+  ];
   const date = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
     year: "numeric",
@@ -37,6 +52,7 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       thumbnail = image;
     }
     notices.push({
+      kind: "article",
       eyebrow: article ? date.format(article.publishedAt) : "最近の記事",
       title: article
         ? article.title

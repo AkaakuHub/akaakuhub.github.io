@@ -1,5 +1,5 @@
 import type { PbrMaps } from "../materials/library";
-import { Group, Mesh, MeshStandardMaterial, PlaneGeometry, Vector2 } from "three";
+import { Group, Mesh, Vector2 } from "three";
 import type { Object3D } from "three";
 import type { PropMaterials } from "../materials/props";
 import { latheGeometry } from "../geometry/curves";
@@ -26,26 +26,16 @@ export function createBoard(
   group.name = "notice-board";
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
-  const contributions = new Mesh(
-    new PlaneGeometry(1.08, 0.38),
-    new MeshStandardMaterial({ transparent: true, opacity: 0, depthWrite: false }),
-  );
-  contributions.name = "github-contributions";
-  contributions.position.set(-0.62, 2.1, 0.0455);
-  group.add(contributions);
-  notices.set(contributions, {
-    title: "GitHubの記録",
-    size: [1.08, 0.38],
-    link: { label: "GitHubを開く", href: "https://github.com/AkaakuHub" },
-  });
+  let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
-  group.add(createBoardHeading());
+  group.add(createBoardHeading("GitHub", -0.85), createBoardHeading("最新記事", 0.39));
   for (const notice of boardNotices({ status: "loading" })) {
     const [width, height] = notice.size;
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
     const paper = createPaper(width, height, notice, paperMaps);
+    if (notice.kind === "github") contributions = paper;
     sheet.add(paper);
     const magnetMaterial = props.plasticGraphite.clone();
     magnetMaterial.color.set(notice.ink);
@@ -76,6 +66,7 @@ export function createBoard(
     notices.set(paper, { title: notice.title, size: notice.size, link: notice.link });
     papers.push(paper);
   }
+  if (!contributions) throw new Error("GitHubの掲示用紙がありません。");
   return {
     group,
     notices,

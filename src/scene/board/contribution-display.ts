@@ -27,7 +27,7 @@ export function createContributionDisplay(mount: Object3D, invalidate: () => voi
           const geometry = new PlaneGeometry(cell.width * scale, cell.height * scale);
           geometry.translate(
             (cell.x + cell.width / 2 - source.width / 2) * scale,
-            (source.height / 2 - cell.y - cell.height / 2) * scale - 0.045,
+            (source.height / 2 - cell.y - cell.height / 2) * scale + 0.015,
             0.006,
           );
           const uv = geometry.getAttribute("uv");
@@ -88,7 +88,7 @@ export function createContributionDisplay(mount: Object3D, invalidate: () => voi
             roughness: 1,
           }),
         );
-        logo.position.set(0, -0.045, 0.0061);
+        logo.position.set(0, 0.015, 0.0061);
         logo.receiveShadow = true;
         logo.renderOrder = 2;
         mount.add(surface, logo);
