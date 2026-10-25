@@ -14,6 +14,5 @@ export function roomMarkup(): string {
         <button type="button" data-computer-monitor aria-keyshortcuts="ArrowUp ArrowDown Enter" disabled>モニターのリポジトリ</button>
       </nav>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>
-      <a class="absolute right-[max(1rem,env(safe-area-inset-right))] bottom-[max(.2rem,env(safe-area-inset-bottom))] text-[10px] text-white/70 no-underline hover:text-white" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a>
     </main>`;
 }

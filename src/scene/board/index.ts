@@ -8,7 +8,7 @@ import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
 import type { BoardState, Notice } from "./notices";
 import { createPaper, updatePaper } from "./paper";
-import { createBoardHeading } from "./heading";
+import { createBoardCredit, createBoardHeading } from "./heading";
 
 export type { Notice } from "./notices";
 
@@ -33,6 +33,7 @@ export function createBoard(
     createBoardHeading("GitHub", -0.79, 2.265),
     createBoardHeading("Skills", -0.79, 1.65),
     createBoardHeading("最新記事", 0.33, 2.265),
+    createBoardCredit(),
   );
   for (const notice of boardNotices({ status: "loading" })) {
     const [width, height] = notice.size;

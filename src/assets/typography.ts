@@ -10,6 +10,9 @@ export async function prepareBoardFont(content: string): Promise<void> {
 }
 
 export async function prepareBoardHeadingFont(): Promise<void> {
-  const faces = await document.fonts.load('400 176px "Yomogi"', "最新記事GitHubSkills");
+  const faces = await document.fonts.load(
+    '400 176px "Yomogi"',
+    "最新記事GitHubSkillsWeather by Open-Meteo",
+  );
   if (faces.length === 0) throw new Error("見出しのフォントが読み込まれていません。");
 }

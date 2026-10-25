@@ -24,6 +24,24 @@ export function bindKeyboardTargets(
   const lightButton: HTMLButtonElement = light;
   const powerButton: HTMLButtonElement = power;
   const monitorButton: HTMLButtonElement = monitor;
+  const canvas = ui.canvas;
+  canvas.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab" || !event.shiftKey) return;
+    const last = [...navigation.querySelectorAll<HTMLButtonElement>("button:not(:disabled)")].at(
+      -1,
+    );
+    if (!last) return;
+    event.preventDefault();
+    last.focus({ preventScroll: true });
+  });
+  navigation.addEventListener("keydown", (event) => {
+    const last = [...navigation.querySelectorAll<HTMLButtonElement>("button:not(:disabled)")].at(
+      -1,
+    );
+    if (event.key !== "Tab" || event.shiftKey || event.target !== last) return;
+    event.preventDefault();
+    canvas.focus({ preventScroll: true });
+  });
 
   buttons.forEach((button, index) => {
     button.addEventListener("focus", () => view.inspect(index));

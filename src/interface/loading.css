@@ -95,6 +95,8 @@ body {
 .loading-number {
   display: grid;
   grid-template-columns: repeat(3, 0.64em) 0.85em;
+  width: max-content;
+  justify-self: center;
   font:
     clamp(80px, 11vw, 154px)/1 "Zen Maru Gothic",
     sans-serif;
@@ -166,7 +168,6 @@ body {
   }
   .loading-number {
     font-size: clamp(72px, 20vw, 100px);
-    justify-content: center;
   }
 }
 @media (max-height: 540px) {
