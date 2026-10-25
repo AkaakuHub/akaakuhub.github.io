@@ -4,7 +4,7 @@ export const photometry = {
   scale: 1 / 1000,
   radiationScale: 0.12,
   tubeLumens: 3350,
-  ev100: 10,
+  ev100: 8,
 } as const;
 
 export function unitLuminance(color: Color): Color {
