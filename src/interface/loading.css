@@ -94,11 +94,11 @@ body {
 }
 .loading-number {
   display: grid;
-  grid-template-columns: repeat(3, 0.64em) 0.85em;
+  grid-template-columns: repeat(3, 0.64em) 0.28em repeat(2, 0.64em) 0.85em;
   width: max-content;
   justify-self: center;
   font:
-    clamp(80px, 11vw, 154px)/1 "Zen Maru Gothic",
+    clamp(64px, 9vw, 128px)/1 "Zen Maru Gothic",
     sans-serif;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
@@ -167,7 +167,7 @@ body {
     scale: 0.72;
   }
   .loading-number {
-    font-size: clamp(72px, 20vw, 100px);
+    font-size: clamp(54px, 16vw, 84px);
   }
 }
 @media (max-height: 540px) {
@@ -179,7 +179,7 @@ body {
     grid-template-rows: 1fr;
   }
   .loading-number {
-    font-size: 70px;
+    font-size: 54px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

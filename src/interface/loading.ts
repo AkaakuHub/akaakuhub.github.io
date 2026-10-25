@@ -8,9 +8,9 @@ export function createLoading(root: HTMLElement) {
   const percent = root.querySelector<HTMLElement>("[data-loading-percent]");
   if (!panel || !progress || !percent) throw new Error("読み込み状態の表示先が見つかりません。");
   const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
-  if (digits.length !== 3) throw new Error("進捗の桁が揃っていません。");
+  if (digits.length !== 6) throw new Error("進捗の桁が揃っていません。");
   function setPercent(value: number): void {
-    const text = String(value).padStart(3, " ");
+    const text = value.toFixed(2).padStart(6, " ");
     digits.forEach((digit, index) => {
       digit.textContent = text.charAt(index);
     });
@@ -44,7 +44,7 @@ export function createLoading(root: HTMLElement) {
     const value = materials * 0.75 + rendering * 0.2;
     progress.value = value;
     panel.style.setProperty("--load-progress", String(value));
-    setPercent(Math.round(value * 100));
+    setPercent(value * 100);
   };
   return {
     progress(completed: number, total: number): void {
