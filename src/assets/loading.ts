@@ -10,7 +10,7 @@ import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBi
 import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
 import { isRecovering } from "../interface/recovery";
 import { asset } from "./catalog";
-import { materialAssetIds } from "./materials";
+import { materialAssetIds, materialDefinitions } from "./materials";
 import { areaLightAssetId } from "./lighting";
 import { skillAtlasAssetId } from "./skills";
 import { createImageDecoder } from "./images/decoder";
@@ -20,10 +20,20 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     throw new Error("HTTPSとクロスオリジン分離、OPFSが必要です。");
   const controller = new AbortController();
   const images = createImageDecoder();
+  const initialIds = [
+    ...materialAssetIds.filter((id) => id.startsWith(`materials/${materialDefinitions.paper.id}/`)),
+    areaLightAssetId,
+    skillAtlasAssetId,
+  ];
+  const initialUrls = new Set(initialIds.map((id) => new URL(asset(id).url, location.href).href));
   const { load: loadBinaryAsset } = createBinaryAssetLoader({
     loader: { load: loadBrowserArtifact },
     fetch: (url, signal) =>
-      fetch(url, { signal, priority: "low", cache: isRecovering() ? "reload" : "default" }),
+      fetch(url, {
+        signal,
+        priority: initialUrls.has(url) ? "high" : "low",
+        cache: isRecovering() ? "reload" : "default",
+      }),
   });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
@@ -42,42 +52,59 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   }
   for (const descriptor of descriptors.values()) report({ type: "started", ...descriptor });
   let remaining = descriptors.size;
+  const pending = new Map<string, Promise<Uint8Array>>();
   function abort(cause: unknown): void {
     if (controller.signal.aborted) return;
     controller.abort(cause);
     images.dispose(cause instanceof Error ? cause : new Error(String(cause)));
   }
+  function fetchBytes(id: string): Promise<Uint8Array> {
+    const existing = pending.get(id);
+    if (existing) return existing;
+    const descriptor = descriptors.get(id);
+    if (!descriptor) throw new Error(`読み込み対象が登録されていません: ${id}`);
+    const entry = asset(id);
+    const result = runArtifactLoadStep(
+      descriptor,
+      report,
+      (reportProgress, reportCacheWriteFailure) =>
+        loadBinaryAsset({
+          source: {
+            key: descriptor.identity,
+            url: new URL(entry.url, location.href).href,
+            identity: entry.sha256,
+            size: entry.bytes,
+          },
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
+          decode: async (bytes) => bytes,
+          reportProgress,
+          reportCacheWriteFailure,
+        }),
+    ).then((result) => result.value);
+    pending.set(id, result);
+    return result;
+  }
+  for (const id of initialIds) void fetchBytes(id).catch(abort);
   async function load<Value>(
     id: string,
     decode: (bytes: Uint8Array) => Promise<Value>,
   ): Promise<Value> {
     const descriptor = descriptors.get(id);
     if (!descriptor) throw new Error(`読み込み対象が登録されていません: ${id}`);
+    const bytes = fetchBytes(id);
     descriptors.delete(id);
-    const entry = asset(id);
     try {
-      const result = await runArtifactLoadStep(
-        descriptor,
-        report,
-        (reportProgress, reportCacheWriteFailure) =>
-          loadBinaryAsset({
-            source: {
-              key: descriptor.identity,
-              url: new URL(entry.url, location.href).href,
-              identity: entry.sha256,
-              size: entry.bytes,
-            },
-            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
-            decode,
-            reportProgress,
-            reportCacheWriteFailure,
-          }),
-      );
-      return result.value;
+      return await decode(await bytes);
     } catch (cause) {
+      report({
+        type: "failed",
+        ...descriptor,
+        error: cause instanceof Error ? cause.message : String(cause),
+      });
       abort(cause);
       throw cause;
     } finally {
+      pending.delete(id);
       remaining--;
       if (remaining === 0) images.dispose(new Error("全画像の復号が完了しました。"));
     }
