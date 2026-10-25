@@ -1,6 +1,7 @@
 import { fetchArticles, fetchRepositories, readArticles, readRepositories } from "./source";
 import { parseSiteContent } from "../../src/content/schema";
 import type { SiteContent } from "../../src/content/schema";
+import { fetchReadme } from "./readme";
 
 interface Cached<Value> {
   value: Value;
@@ -10,8 +11,34 @@ interface Cached<Value> {
 export class SiteContentCache implements DurableObject {
   constructor(private readonly ctx: DurableObjectState) {}
 
-  async fetch(): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
     return this.ctx.blockConcurrencyWhile(async () => {
+      const path = new URL(request.url).pathname;
+      if (path.startsWith("/api/readme/")) {
+        const name = decodeURIComponent(path.slice("/api/readme/".length));
+        if (!/^[a-zA-Z0-9_.-]{1,100}$/.test(name)) return new Response(null, { status: 400 });
+        const cached = await this.ctx.storage.get<Cached<string>>("repositories:raw");
+        if (
+          !cached ||
+          Date.now() >= cached.expiresAt ||
+          !readRepositories(cached.value).some((repository) => repository.name === name)
+        )
+          return new Response(null, { status: 404 });
+        try {
+          const entry = await this.resource(`readme:${name}`, 86_400_000, () => fetchReadme(name));
+          return Response.json(
+            { text: entry.value },
+            {
+              headers: {
+                "Cache-Control": `public, max-age=${Math.max(0, Math.floor((entry.expiresAt - Date.now()) / 1000))}`,
+              },
+            },
+          );
+        } catch (error) {
+          console.error(error);
+          return new Response(null, { status: 503, headers: { "Cache-Control": "no-store" } });
+        }
+      }
       const results = await Promise.allSettled([
         this.resource("repositories:raw", 86_400_000, fetchRepositories),
         this.resource("articles:raw", 86_400_000, fetchArticles),

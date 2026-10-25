@@ -16,7 +16,6 @@ import {
   Undo2,
   ZoomIn,
   ZoomOut,
-  X,
   createElement,
   createIcons,
 } from "lucide";
@@ -46,7 +45,6 @@ export function createInterface(root: HTMLElement) {
       ScanSearch,
       Undo2,
       ZoomIn,
-      X,
     },
     attrs: { "aria-hidden": "true" },
   });

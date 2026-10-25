@@ -88,7 +88,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     invalidate,
     () => ui.inspectionViewport(),
   );
-  const computerInterface = createComputerInterface(root, computer, view, invalidate);
+  const computerInterface = createComputerInterface(computer, view, invalidate);
+  const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   const boardLoader = createBoardLoader((state) => {
     board.setState(state);
     computerInterface.setState(state);
@@ -140,8 +141,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     ui.setMoving(moving);
     previous = time;
     lastRendered = time;
-    roomSwitch.update(view.state.mode === "room" && !view.moving);
-    computerInterface.update(camera, moving);
+    if (!moving) computerInterface.update();
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
     if (animation.changed) rendering.invalidate();
@@ -180,17 +180,9 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     scene,
     board.notices,
     computerInterface,
+    roomSwitch,
     () => void boardLoader.refresh(true),
   );
-  const roomSwitch = bindRoomSwitch(
-    root,
-    lightSwitch,
-    rocker,
-    camera,
-    lighting.setRoomLights,
-    invalidate,
-  );
-  roomSwitch.update();
   prepared = true;
   requestFrame();
   void boardLoader.refresh(false);
