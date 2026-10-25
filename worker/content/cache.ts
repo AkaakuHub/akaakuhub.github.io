@@ -14,7 +14,7 @@ export class SiteContentCache implements DurableObject {
     return this.ctx.blockConcurrencyWhile(async () => {
       const results = await Promise.allSettled([
         this.resource("repositories", 86_400_000, fetchRepositories),
-        this.resource("articles", 3_600_000, fetchArticles),
+        this.resource("articles", 86_400_000, fetchArticles),
       ]);
       const [repositories, articles] = results;
       const failures = results.filter((result) => result.status === "rejected");
