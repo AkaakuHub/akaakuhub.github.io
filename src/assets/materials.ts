@@ -1,6 +1,7 @@
 export const materialDefinitions = {
   floor: { id: "herringbone_parquet", meters: 3.4, format: "arm" },
   plaster: { id: "painted_plaster_wall", meters: 3.2, format: "arm" },
+  ceiling: { id: "school_ceiling", meters: 0.606, format: "dielectric" },
   ash: { id: "ash_veneer", meters: 1, format: "arm" },
   walnut: { id: "walnut_veneer", meters: 1.8, format: "arm" },
   fabric: { id: "terlenka", meters: 0.266, format: "arm" },

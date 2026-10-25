@@ -497,6 +497,38 @@
           "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }
       }
+    },
+    {
+      "id": "school_ceiling",
+      "name": "学校の岩綿吸音板を参考にした天井材",
+      "provider": "OpenAI imagegen",
+      "creationMethod": "AI生成画像から色・近似法線・粗さを作成",
+      "sourceHash": "168e21934f806e36718ca0603d3432f99a4ab1d4bf80a73f79ed9fc6fba147ec",
+      "references": [
+        "https://www.daiken.jp/buildingmaterials/publiccase/0031/img/0031_print.pdf",
+        "https://www.daiken.jp/business-p/DispOutLineDetail.do?itemID=t000100002983&volumeName=00001"
+      ],
+      "appliedSizeMeters": [0.606, 0.606],
+      "panelSizeMeters": [0.606, 0.303],
+      "processing": "512pxの色、256pxの近似法線、128pxの粗さを共有。目地も画像に含め、天井板や穴のポリゴンは追加しない。",
+      "generationPrompt": "Seamless orthographic albedo of clean warm-white Japanese school mineral-fiber acoustic ceiling board, 606 mm square, irregular travertine pinholes and short branching fissures, subtle gray-beige cavities, flat white field dominates, evenly lit, no borders, no grid, no fixtures, no text, no directional lighting.",
+      "maps": {
+        "color": {
+          "file": "src/assets/materials/school_ceiling/color.webp",
+          "sha256": "97a03b263d9c79240a767f94c65abf99f4862a982b46ae7f0e44c92e9e681e46",
+          "dimensions": [512, 512]
+        },
+        "normal": {
+          "file": "src/assets/materials/school_ceiling/normal.webp",
+          "sha256": "0e5b8c23b847891901e45e5dba353ab886576316ccee66366dc2ba476c3ecd20",
+          "dimensions": [256, 256]
+        },
+        "roughness": {
+          "file": "src/assets/materials/school_ceiling/roughness.webp",
+          "sha256": "d1d1cc7d52246af4877c5bdaf6d2ac61daaf35839f8073c32b01367fc690d06a",
+          "dimensions": [128, 128]
+        }
+      }
     }
   ]
 }

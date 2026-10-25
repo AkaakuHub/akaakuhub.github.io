@@ -170,6 +170,21 @@
     "sha256": "e1716041ff69fe7fbcc47e13de438d2d2d662a8f4779178161d7b20047b281d8"
   },
   {
+    "id": "materials/school_ceiling/color.webp",
+    "bytes": 55136,
+    "sha256": "97a03b263d9c79240a767f94c65abf99f4862a982b46ae7f0e44c92e9e681e46"
+  },
+  {
+    "id": "materials/school_ceiling/normal.webp",
+    "bytes": 21612,
+    "sha256": "0e5b8c23b847891901e45e5dba353ab886576316ccee66366dc2ba476c3ecd20"
+  },
+  {
+    "id": "materials/school_ceiling/roughness.webp",
+    "bytes": 2784,
+    "sha256": "d1d1cc7d52246af4877c5bdaf6d2ac61daaf35839f8073c32b01367fc690d06a"
+  },
+  {
     "id": "materials/terlenka/arm.webp",
     "bytes": 46938,
     "sha256": "90dd2d4e4204b84becf5ed6572aefca5aa42877c5eefd38c2c9566f853f652f0"

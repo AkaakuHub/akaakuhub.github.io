@@ -4,6 +4,7 @@
   "entry": [
     "src/tailwind.css",
     "scripts/assets/catalog.mjs",
+    "scripts/assets/ceiling.mjs",
     "scripts/assets/lighting.mjs",
     "scripts/assets/fonts.mjs",
     "scripts/assets/board-font.mjs",

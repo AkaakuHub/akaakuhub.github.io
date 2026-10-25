@@ -29,7 +29,7 @@ export function createMetalMaterials(maps: MaterialLibrary) {
       metalness: 0,
       clearcoat: 0.3,
       clearcoatRoughness: 0.42,
-      normalScale: new Vector2(0.12, 0.12),
+      normalScale: new Vector2(0.16, 0.16),
     }),
     deepGreen: physicalSurface(maps.paint, {
       color: "#334d43",
@@ -44,7 +44,7 @@ export function createMetalMaterials(maps: MaterialLibrary) {
       roughness: 1,
       clearcoat: 0.22,
       clearcoatRoughness: 0.5,
-      normalScale: new Vector2(0.08, 0.08),
+      normalScale: new Vector2(0.12, 0.12),
     }),
     graphite: texturedMetal(maps.powder, {
       color: "#303431",

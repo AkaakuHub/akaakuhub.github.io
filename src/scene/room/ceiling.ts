@@ -11,10 +11,6 @@ export function createCeiling(materials: ArchitectureMaterials, metals: MetalMat
   for (const x of [-1.3, 1.3]) {
     box(ceiling, [0.105, 0.12, 5.2], [x, 2.85, 0], beams);
   }
-  const seam = metals.ivory;
-  for (let z = -1.95; z < 2.6; z += 0.65) {
-    box(ceiling, [5.2, 0.012, 0.012], [0, 2.893, z], seam);
-  }
   const frame = metals.ivory;
   ceiling.add(createFluorescentFixtures(metals));
   box(ceiling, [0.018, 0.018, 4.8], [0.23, 2.88, 0], frame);

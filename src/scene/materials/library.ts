@@ -36,6 +36,7 @@ export function loadMaterials(rendererReady: Promise<Renderer>, assets: RoomAsse
   const materials = {
     floor: loadSet(materialDefinitions.floor),
     plaster: loadSet(materialDefinitions.plaster),
+    ceiling: loadSet(materialDefinitions.ceiling),
     ash: loadSet(materialDefinitions.ash),
     walnut: loadSet(materialDefinitions.walnut),
     fabric: loadSet(materialDefinitions.fabric),
