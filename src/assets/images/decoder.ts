@@ -35,7 +35,11 @@ export function createImageDecoder() {
     decode(bytes: Uint8Array, options: ImageBitmapOptions): Promise<ImageBitmap> {
       return scheduleBrowserArtifactPreparation(4 * 1024 * 1024, async () => {
         if (failure) throw failure;
-        const blob = new Blob([Uint8Array.from(bytes)], { type: "image/webp" });
+        if (!(bytes.buffer instanceof ArrayBuffer))
+          throw new Error("画像のバイト列が転送可能なバッファーではありません。");
+        const blob = new Blob([new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength)], {
+          type: "image/webp",
+        });
         const id = nextId++;
         return await new Promise<ImageBitmap>((resolve, reject) => {
           pending.set(id, { resolve, reject });

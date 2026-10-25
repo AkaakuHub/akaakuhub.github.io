@@ -11,7 +11,11 @@ export async function loadAreaLightTables(
   const values = await assets.load(areaLightAssetId, async (bytes) => {
     if (bytes.byteLength !== 2 * 64 * 64 * 4 * Uint16Array.BYTES_PER_ELEMENT)
       throw new Error("矩形光源の参照データのサイズが不正です。");
-    return new Uint16Array(Uint8Array.from(bytes).buffer);
+    return new Uint16Array(
+      bytes.buffer,
+      bytes.byteOffset,
+      bytes.byteLength / Uint16Array.BYTES_PER_ELEMENT,
+    );
   });
   const renderer = await rendererReady;
   function table(offset: number): DataTexture {
