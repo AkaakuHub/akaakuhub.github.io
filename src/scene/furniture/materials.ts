@@ -13,7 +13,7 @@ export function createFurnitureMaterials(
     ash: scannedSurface(maps.ash, {
       roughnessMap: null,
       roughness: 0.76,
-      normalScale: new Vector2(0.22, 0.22),
+      normalScale: new Vector2(0.4, 0.4),
     }),
     ivory: metals.ivory,
     enamel: metals.enamel,

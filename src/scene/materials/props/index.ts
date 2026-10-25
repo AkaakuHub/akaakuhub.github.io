@@ -16,7 +16,7 @@ export function createPropMaterials(maps: MaterialLibrary) {
       color,
       roughnessMap: null,
       roughness: 0.9,
-      normalScale: new Vector2(0.12, 0.12),
+      normalScale: new Vector2(0.45, 0.45),
     });
   const plastic = (color: string, roughness: number) =>
     physicalSurface(maps.plastic, {
