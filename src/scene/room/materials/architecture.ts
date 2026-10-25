@@ -27,9 +27,9 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
       roughness: 0.62,
       normalScale: new Vector2(0.18, 0.18),
     }),
-    frame: scannedSurface(maps.plaster, {
+    frame: scannedSurface(maps.paint, {
       color: "#d8d8ce",
-      roughness: 0.9,
+      roughness: 0.6,
       normalScale: new Vector2(0.1, 0.1),
     }),
     sill: scannedSurface(maps.walnut, {

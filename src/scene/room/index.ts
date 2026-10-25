@@ -33,13 +33,15 @@ export function createRoom(
   const boards = materials.boards;
   const trim = materials.trim;
   for (const z of [-2.586, 2.586]) {
-    box(room, [5.2, 0.84, 0.025], [0, 0.42, z], boards);
+    for (let panel = 0; panel < 8; panel++)
+      box(room, [0.6485, 0.84, 0.025], [-2.275 + panel * 0.65, 0.42, z], boards);
     box(room, [5.2, 0.07, 0.05], [0, 0.043, z - Math.sign(z) * 0.015], trim);
     box(room, [5.2, 0.038, 0.065], [0, 0.862, z - Math.sign(z) * 0.017], trim);
     box(room, [5.2, 0.058, 0.045], [0, 2.724, z - Math.sign(z) * 0.012], trim);
   }
   for (const x of [-2.586, 2.586]) {
-    box(room, [0.025, 0.84, 5.2], [x, 0.42, 0], boards);
+    for (let panel = 0; panel < 8; panel++)
+      box(room, [0.025, 0.84, 0.6485], [x, 0.42, -2.275 + panel * 0.65], boards);
     box(room, [0.05, 0.07, 5.2], [x - Math.sign(x) * 0.015, 0.043, 0], trim);
     box(room, [0.065, 0.038, 5.2], [x - Math.sign(x) * 0.017, 0.862, 0], trim);
     box(room, [0.045, 0.058, 5.2], [x - Math.sign(x) * 0.012, 2.724, 0], trim);
