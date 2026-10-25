@@ -23,7 +23,11 @@ export function createWeatherAudio() {
     listenerParameters.forEach((parameter, index) => {
       const value = pose[index];
       if (value === undefined || value === applied[index]) return;
-      parameter.setTargetAtTime(value, now, 0.04);
+      if (Number.isNaN(applied[index])) parameter.setValueAtTime(value, now);
+      else {
+        parameter.cancelAndHoldAtTime(now);
+        parameter.linearRampToValueAtTime(value, now + 0.05);
+      }
       applied[index] = value;
     });
   }
@@ -37,7 +41,7 @@ export function createWeatherAudio() {
     if (disposed || muted) return;
     clearTimeout(suspendTimer);
     if (!context) {
-      context = new AudioContext({ latencyHint: "playback" });
+      context = new AudioContext({ latencyHint: "interactive" });
       mixer = createWeatherMixer(context);
       const listener = context.listener;
       listenerParameters = [
