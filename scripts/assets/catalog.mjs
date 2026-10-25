@@ -4,10 +4,9 @@ import { join, relative } from "node:path";
 
 const root = "src/assets";
 const entries = [];
-const directory = join(root, "materials");
-for (const name of await readdir(directory, { recursive: true })) {
-  if (!name.endsWith(".webp")) continue;
-  const path = join(directory, name);
+for (const name of await readdir(root, { recursive: true })) {
+  if (!name.endsWith(".webp") && !name.endsWith(".bin")) continue;
+  const path = join(root, name);
   const bytes = await readFile(path);
   entries.push({
     id: relative(root, path).replaceAll("\\", "/"),

@@ -1,11 +1,9 @@
 import { Box3, RectAreaLight, Vector3 } from "three";
 import type { Color, Scene } from "three";
-import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { fixtureHeight, fixturePositions, fluorescentColor, tubeLength } from "./fixtures";
 import { photometry } from "./photometry";
 
 export function createRoomLights(scene: Scene) {
-  RectAreaLightUniformsLib.init();
   const width = 0.22;
   const intensity = (2 * photometry.tubeLumens * photometry.scale) / (Math.PI * width * tubeLength);
   const lights = fixturePositions.map((z) => {

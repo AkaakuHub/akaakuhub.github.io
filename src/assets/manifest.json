@@ -1,5 +1,10 @@
 [
   {
+    "id": "lighting/ltc.bin",
+    "bytes": 131072,
+    "sha256": "8e897cb72bfa6a20f7737d21bc9e9d6d47bb1405c2cb067aabe4b02a8ba68263"
+  },
+  {
     "id": "materials/ash_veneer/arm.webp",
     "bytes": 75310,
     "sha256": "33fdf02c3ffaebcacf75fb4545b8414c1607256c9ddd4d698665ad2543561d40"

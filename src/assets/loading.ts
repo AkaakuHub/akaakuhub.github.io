@@ -9,6 +9,7 @@ import type { ArtifactLoadSummary } from "unified-asset-loader/domain/artifactLo
 import { loadBinaryAsset } from "unified-asset-loader/browser/loadBinaryAsset";
 import { asset } from "./catalog";
 import { materialAssetIds } from "./materials";
+import { areaLightAssetId } from "./lighting";
 
 export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) => void) {
   if (!isSecureContext || !crossOriginIsolated || !navigator.storage.getDirectory)
@@ -16,11 +17,11 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   const controller = new AbortController();
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
-    materialAssetIds.map((id) => [
+    [...materialAssetIds, areaLightAssetId].map((id) => [
       id,
       {
         identity: `akaakuhub:${id}`,
-        assetType: "image",
+        assetType: id === areaLightAssetId ? "binary" : "image",
         label: id,
       },
     ]),

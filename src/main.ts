@@ -6,7 +6,6 @@ import { bindRoomControls } from "./interface/controls";
 import { assembleClubroom } from "./scene/clubroom";
 import { illuminate } from "./scene/lighting";
 import { createRoomAssetLoader } from "./assets/loading";
-import { streamMaterials } from "./scene/materials/stream";
 import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
@@ -14,6 +13,7 @@ import { observeViewport } from "./scene/viewport";
 import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
 import { weatherAt } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
+import { loadAreaLightTables } from "./scene/lighting/area-tables";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -37,6 +37,7 @@ const assets = createRoomAssetLoader((summary) => {
   else loading.progress("素材を準備中", summary.succeeded, summary.total);
 });
 const materialLoading = loadMaterials(renderer, assets);
+const lightTablesReady = loadAreaLightTables(renderer, assets);
 const { materials } = materialLoading;
 const [initialWeather] = await Promise.all([weatherReady, materialLoading.paperReady]);
 loading.stage("部屋を組み立て中");
@@ -45,6 +46,7 @@ const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materia
 const weatherStatus = board.weather;
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+await Promise.all([materialLoading.ready, lightTablesReady]);
 const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));
 const weather = observeTokyoWeather(
   initialWeather,
@@ -56,7 +58,10 @@ const weather = observeTokyoWeather(
     if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
     invalidate();
   },
-  weatherStatus.fail,
+  () => {
+    weatherStatus.fail();
+    invalidate();
+  },
 );
 const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
 const noticeList = [...board.notices.values()];
@@ -113,7 +118,7 @@ window.addEventListener("pageshow", updateTime);
 
 function render(time: number) {
   frame = 0;
-  if (document.hidden) return;
+  if (document.hidden || !prepared) return;
   const frameDuration = compact.matches ? 1000 / 30 : 1000 / 60;
   if (time - lastRendered < frameDuration - 0.5) {
     frame = requestAnimationFrame(render);
@@ -123,43 +128,32 @@ function render(time: number) {
   ui.setMoving(moving);
   previous = time;
   lastRendered = time;
-  if (prepared) roomSwitch.update(view.state.mode === "room" && !view.moving);
+  roomSwitch.update(view.state.mode === "room" && !view.moving);
   frameMetrics?.begin(moving);
-  rendering.render(moving || !prepared);
+  rendering.render(moving);
   frameMetrics?.end(moving);
-  if (!ready && prepared) {
+  if (!ready) {
     loading.complete();
     ready = true;
   }
-  if (moving || (prepared && rendering.weather.active)) frame = requestAnimationFrame(render);
+  if (moving || rendering.weather.active) frame = requestAnimationFrame(render);
 }
 function invalidate() {
   rendering.invalidate();
+  requestFrame();
+}
+function requestFrame() {
   if (frame || document.hidden) return;
   previous = performance.now() - 16;
   frame = requestAnimationFrame(render);
 }
-const streamed = streamMaterials(
-  scene,
-  materialLoading.pending,
-  renderer,
-  camera,
-  (completed, total) => {
-    loading.rendering(completed, total);
-    invalidate();
-  },
-);
 updateTime();
-await new Promise<void>((resolve) =>
-  requestAnimationFrame(() => {
-    rendering.render(true);
-    resolve();
-  }),
-);
-await Promise.all([materialLoading.ready, streamed]);
+loading.rendering(0, 2);
+await renderer.compileAsync(scene, camera);
+loading.rendering(1, 2);
 lighting.update(new Date(), weatherAt(weather.current, Date.now()));
 await renderer.compileAsync(scene, camera);
-rendering.render(true);
+loading.rendering(2, 2);
 rendering.render();
 bindRoomControls(root, ui, view, camera, scene, board.notices, computer.object);
 const roomSwitch = bindRoomSwitch(
@@ -172,4 +166,4 @@ const roomSwitch = bindRoomSwitch(
 );
 roomSwitch.update();
 prepared = true;
-invalidate();
+requestFrame();

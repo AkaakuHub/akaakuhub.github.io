@@ -51,7 +51,7 @@ export function loadMaterials(renderer: WebGLRenderer, assets: RoomAssetLoader) 
       loader.pending.get(map),
     ),
   );
-  return { materials, ready, paperReady, pending: loader.pending };
+  return { materials, ready, paperReady };
 }
 
 export type MaterialLibrary = ReturnType<typeof loadMaterials>["materials"];
