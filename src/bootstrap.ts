@@ -1,7 +1,6 @@
 import { createLoading } from "./interface/loading";
 import { prepareRecovery } from "./interface/recovery";
 import { loadSiteContent } from "./content/client";
-import { populateEntry } from "./interface/entry-content";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -13,10 +12,7 @@ window.addEventListener("unhandledrejection", (event) => loading.fail(event.reas
 
 try {
   await prepareRecovery();
-  const contentReady = loadSiteContent().then((content) => {
-    populateEntry(root, content);
-    return content;
-  });
+  const contentReady = loadSiteContent();
   const [room, content] = await Promise.all([import("./main"), contentReady]);
   await room.startRoom(root, content, loading);
 } catch (error) {

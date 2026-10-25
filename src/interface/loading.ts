@@ -46,6 +46,7 @@ export function createLoading(root: HTMLElement) {
     if (failed) return;
     const value = materials * 0.75 + rendering * 0.2;
     progress.value = value;
+    panel.style.setProperty("--load-progress", String(value));
     percent.textContent = `${Math.round(value * 100)
       .toString()
       .padStart(2, "0")}%`;
@@ -53,6 +54,7 @@ export function createLoading(root: HTMLElement) {
   return {
     stage(text: string): void {
       if (!failed) label.textContent = text;
+      panel.dataset.phase = materials < 0.75 ? "space" : "light";
     },
     progress(completed: number, total: number): void {
       if (
