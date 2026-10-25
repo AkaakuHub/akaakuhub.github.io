@@ -18,7 +18,8 @@ fn integrateScattering(sceneDepth: texture_depth_2d, lightDepth: texture_depth_2
     var visibility = 0.0;
     if (all(shadow >= vec3f(0.0)) && all(shadow <= vec3f(1.0))) {
       let size = vec2f(textureDimensions(lightDepth));
-      let pixel = vec2i(clamp(shadow.xy * size, vec2f(0.0), size - 1.0));
+      let shadowUv = vec2f(shadow.x, 1.0 - shadow.y);
+      let pixel = vec2i(clamp(shadowUv * size, vec2f(0.0), size - 1.0));
       visibility = select(0.0, 1.0, shadow.z + bias <= textureLoad(lightDepth, pixel, 0));
     }
     let path = roomInterval(world, lightDirection).y;
