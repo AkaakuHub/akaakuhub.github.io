@@ -17,14 +17,13 @@ import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
-import { prepareBoardFont } from "./assets/typography";
-import { createContributionDisplay } from "./scene/board/contribution-display";
+import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 
 export async function startRoom(root: HTMLElement, loading: Loading) {
   const ui = createInterface(root);
   const weatherReady = loadTokyoWeather();
-  const fontsReady = prepareBoardFont("");
+  const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
   await new Promise<void>((resolve) => {
     requestAnimationFrame(() => setTimeout(resolve, 0));
   });
@@ -67,7 +66,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     },
   );
   const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
-  const contributions = createContributionDisplay(board.profilePaper, invalidate);
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice]) => ({
     object,
@@ -143,8 +141,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     lastRendered = time;
     if (!moving) computerInterface.update();
     frameMetrics?.begin(moving);
-    const animation = contributions.update(camera, time);
-    if (animation.changed) rendering.invalidate();
     rendering.render(moving);
     frameMetrics?.end(moving);
     if (!ready) {
@@ -152,8 +148,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
-    if (moving || rendering.weather.active || animation.active)
-      frame = requestAnimationFrame(render);
+    if (moving || rendering.weather.active) frame = requestAnimationFrame(render);
   }
   function invalidate() {
     rendering.invalidate();

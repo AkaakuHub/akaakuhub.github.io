@@ -14,6 +14,7 @@ try {
   const [room] = await Promise.all([
     import("./main"),
     import("./assets/fonts/zen-maru-gothic.css"),
+    import("./assets/fonts/yomogi.css"),
   ]);
   await room.startRoom(root, loading);
 } catch (error) {

@@ -4,7 +4,8 @@
     "src/tailwind.css",
     "scripts/assets/catalog.mjs",
     "scripts/assets/lighting.mjs",
-    "scripts/assets/fonts.mjs"
+    "scripts/assets/fonts.mjs",
+    "scripts/assets/board-font.mjs"
   ],
   "project": ["src/**/*.{ts,css}", "scripts/**/*.mjs", "worker/**/*.ts"]
 }

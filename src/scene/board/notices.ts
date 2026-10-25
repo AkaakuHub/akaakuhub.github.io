@@ -1,4 +1,3 @@
-import { profile } from "../../content/profile";
 import type { SiteContent } from "../../content/schema";
 
 export interface Notice {
@@ -12,7 +11,6 @@ export type BoardState =
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
 export interface BoardNotice extends Notice {
-  kind: "profile" | "repository" | "article";
   eyebrow: string;
   position: readonly [number, number];
   angle: number;
@@ -23,43 +21,7 @@ export interface BoardNotice extends Notice {
 }
 
 export function boardNotices(state: BoardState): BoardNotice[] {
-  const notices: BoardNotice[] = [
-    {
-      kind: "profile",
-      eyebrow: "プロフィール",
-      title: profile.name,
-      link: { label: "GitHubプロフィール", href: profile.github },
-      size: [1.08, 0.52],
-      position: [-0.62, 2.05],
-      angle: 0.012,
-      ink: "#253b31",
-      stock: "#f3eee0",
-      lines: [`@${profile.handle}`, profile.description],
-      thumbnail: null,
-    },
-  ];
-  for (let index = 0; index < 3; index++) {
-    const repository = state.status === "ready" ? state.content.repositories[index] : undefined;
-    notices.push({
-      kind: "repository",
-      eyebrow: repository ? `GitHub / ${repository.stars} stars` : "GitHub",
-      title: repository
-        ? repository.name
-        : state.status === "loading"
-          ? "読み込み中"
-          : state.status === "error"
-            ? "掲示を読み直す"
-            : "公開リポジトリはありません",
-      link: repository ? { label: "リポジトリを開く", href: repository.url } : null,
-      size: [1.08, 0.13],
-      position: [-0.62, 1.68 - index * 0.19],
-      angle: index % 2 ? -0.008 : 0.008,
-      ink: "#253b31",
-      stock: "#f3eee0",
-      lines: state.status === "error" ? ["クリックして再取得"] : [],
-      thumbnail: null,
-    });
-  }
+  const notices: BoardNotice[] = [];
   const date = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
     year: "numeric",
@@ -75,7 +37,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       thumbnail = image;
     }
     notices.push({
-      kind: "article",
       eyebrow: article ? date.format(article.publishedAt) : "最近の記事",
       title: article
         ? article.title
@@ -86,7 +47,7 @@ export function boardNotices(state: BoardState): BoardNotice[] {
             : "公開記事はありません",
       link: article ? { label: "この記事を読む", href: article.url } : null,
       size: [1.08, 0.48],
-      position: [0.62, 2.065 - index * 0.55],
+      position: [0.62, 1.93 - index * 0.55],
       angle: index % 2 ? 0.012 : -0.01,
       ink: "#65442a",
       stock: "#f8f4e8",

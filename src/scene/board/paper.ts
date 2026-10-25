@@ -57,14 +57,13 @@ function printedPaper(
   context.fillRect(0, 0, width, height);
   context.globalCompositeOperation = "source-over";
   context.fillStyle = print.ink;
-  const compact = print.kind === "repository";
-  const headingSize = width * (compact ? 0.031 : print.kind === "profile" ? 0.05 : 0.034);
+  const headingSize = width * 0.034;
   context.font = `${width * 0.019}px ${siteFont}`;
-  context.fillText(print.eyebrow, margin, compact ? 26 : 100);
+  context.fillText(print.eyebrow, margin, 100);
   context.font = `500 ${headingSize}px ${siteFont}`;
   const textX = print.thumbnail ? width * 0.54 : margin;
   const lines = wrapText(context, print.title, width - margin - textX);
-  const headingY = compact ? 65 : 180;
+  const headingY = 180;
   const lineHeight = headingSize * 1.4;
   if (print.thumbnail) {
     const imageWidth = width * 0.43;
@@ -73,11 +72,7 @@ function printedPaper(
   lines.forEach((line, index) => context.fillText(line, textX, headingY + index * lineHeight));
   context.font = `${width * 0.028}px ${siteFont}`;
   let y = headingY + lines.length * lineHeight + 22;
-  for (const [index, line] of print.lines.filter(Boolean).entries()) {
-    if (print.kind === "profile") {
-      context.fillText(line, index === 0 ? width * 0.43 : margin, index === 0 ? headingY : 215);
-      continue;
-    }
+  for (const line of print.lines.filter(Boolean)) {
     for (const wrapped of wrapText(context, line, width - margin * 2)) {
       context.fillText(wrapped, margin, y);
       y += width * 0.04;

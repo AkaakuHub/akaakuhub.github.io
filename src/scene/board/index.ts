@@ -8,6 +8,7 @@ import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
 import type { BoardState, Notice } from "./notices";
 import { createPaper, updatePaper } from "./paper";
+import { createBoardHeading } from "./heading";
 
 export type { Notice } from "./notices";
 
@@ -18,7 +19,6 @@ export function createBoard(
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
-  profilePaper: Object3D;
   setState: (state: BoardState) => void;
 } {
   const group = createFrame(metals, props);
@@ -26,6 +26,7 @@ export function createBoard(
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
   const papers: ReturnType<typeof createPaper>[] = [];
+  group.add(createBoardHeading());
   for (const notice of boardNotices({ status: "loading" })) {
     const [width, height] = notice.size;
     const sheet = new Group();
@@ -49,8 +50,7 @@ export function createBoard(
       ],
       32,
     );
-    const magnets =
-      notice.kind === "repository" ? [width / 2 - 0.035] : [-width * 0.34, width * 0.34];
+    const magnets = [-width * 0.34, width * 0.34];
     for (const x of magnets) {
       const magnet = new Mesh(magnetGeometry, magnetMaterial);
       magnet.rotation.x = Math.PI / 2;
@@ -63,12 +63,9 @@ export function createBoard(
     notices.set(paper, { title: notice.title, size: notice.size, link: notice.link });
     papers.push(paper);
   }
-  const profilePaper = papers[0];
-  if (!profilePaper) throw new Error("プロフィールの掲示がありません。");
   return {
     group,
     notices,
-    profilePaper,
     setState(state): void {
       boardNotices(state).forEach((notice, index) => {
         const paper = papers[index];
