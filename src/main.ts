@@ -12,7 +12,6 @@ import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
 import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
-import { createWeatherStatus } from "./interface/weather";
 import { weatherAt } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 
@@ -20,7 +19,6 @@ const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
 const ui = createInterface(root);
 const loading = createLoading(root);
-const weatherStatus = createWeatherStatus(root);
 const weatherReady = loadTokyoWeather();
 await new Promise<void>((resolve) => {
   requestAnimationFrame(() => setTimeout(resolve, 0));
@@ -44,6 +42,7 @@ const [initialWeather] = await Promise.all([weatherReady, materialLoading.paperR
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials);
+const weatherStatus = board.weather;
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));

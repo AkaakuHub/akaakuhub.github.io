@@ -8,6 +8,7 @@ import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
 import type { Notice } from "./notices";
 import { createPaper } from "./paper";
+import { createWeatherNotice } from "./weather";
 
 export type { Notice } from "./notices";
 
@@ -18,6 +19,7 @@ export function createBoard(
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
+  weather: ReturnType<typeof createWeatherNotice>;
 } {
   const group = createFrame(metals, props);
   group.name = "notice-board";
@@ -57,5 +59,8 @@ export function createBoard(
     group.add(sheet);
     notices.set(paper, { title: notice.title, size: notice.size, link: notice.link });
   }
-  return { group, notices };
+  const weather = createWeatherNotice();
+  group.add(weather.object);
+  notices.set(weather.object, weather.notice);
+  return { group, notices, weather };
 }
