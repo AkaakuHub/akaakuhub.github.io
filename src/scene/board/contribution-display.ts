@@ -1,7 +1,6 @@
 import type { Object3D, PerspectiveCamera } from "three";
 import { Scene } from "three";
 import { CSS3DObject, CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
-import type { ContributionState } from "../../content/contributions";
 import type { ViewState } from "../view";
 
 export function createContributionDisplay(
@@ -17,10 +16,14 @@ export function createContributionDisplay(
   });
   renderer.domElement.setAttribute("aria-hidden", "true");
   container.append(renderer.domElement);
-  const image = new Image();
-  image.alt = "";
-  const object = new CSS3DObject(image);
-  Object.assign(image.style, { pointerEvents: "none", backfaceVisibility: "hidden" });
+  const element = document.createElement("div");
+  const object = new CSS3DObject(element);
+  Object.assign(element.style, {
+    pointerEvents: "none",
+    backfaceVisibility: "hidden",
+    width: "844px",
+    height: "300px",
+  });
   object.scale.setScalar(1 / 1200);
   object.position.set(0, -0.045, 0.006);
   object.visible = false;
@@ -29,22 +32,16 @@ export function createContributionDisplay(
   object.matrixWorldAutoUpdate = false;
   const scene = new Scene();
   scene.add(object);
-  let state: ContributionState = { status: "loading" };
   let view: "board" | "profile" | null = null;
-  let url: string | undefined;
+  let started = false;
 
   function reset() {
     object.visible = false;
-    image.removeAttribute("src");
-    if (url) URL.revokeObjectURL(url);
-    url = undefined;
+    element.replaceChildren();
+    started = false;
   }
 
   return {
-    setState(next: ContributionState) {
-      reset();
-      state = next;
-    },
     setView(next: ViewState) {
       const visible =
         next.mode === "room" && next.direction === 0
@@ -60,13 +57,15 @@ export function createContributionDisplay(
       renderer.setSize(width, height);
     },
     render(moving: boolean) {
-      if (view && state.status === "ready" && !url && !moving) {
-        const width = Math.min(1080, (300 * state.image.width) / state.image.height);
-        image.width = Math.round(width);
-        image.height = Math.round((width * state.image.height) / state.image.width);
+      if (view && !started && !moving) {
+        const image = new Image(844, 300);
+        image.alt = "";
+        image.crossOrigin = "anonymous";
+        image.src =
+          "https://raw.githubusercontent.com/AkaakuHub/github-grass/refs/heads/main/github-glass.svg";
+        element.replaceChildren(image);
         object.visible = true;
-        url = URL.createObjectURL(state.image.source);
-        image.src = url;
+        started = true;
       }
       paper.updateWorldMatrix(true, false);
       object.matrixWorld.multiplyMatrices(paper.matrixWorld, object.matrix);

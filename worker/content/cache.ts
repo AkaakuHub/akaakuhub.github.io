@@ -1,7 +1,6 @@
 import { fetchArticles, fetchRepositories, readArticles, readRepositories } from "./source";
 import { parseSiteContent } from "../../src/content/schema";
 import type { SiteContent } from "../../src/content/schema";
-import { contributionImage, fetchContributions } from "./contributions";
 
 interface Cached<Value> {
   value: Value;
@@ -11,20 +10,8 @@ interface Cached<Value> {
 export class SiteContentCache implements DurableObject {
   constructor(private readonly ctx: DurableObjectState) {}
 
-  async fetch(request: Request): Promise<Response> {
+  async fetch(): Promise<Response> {
     return this.ctx.blockConcurrencyWhile(async () => {
-      if (new URL(request.url).pathname === "/api/contributions") {
-        try {
-          const source = await this.resource("contributions:raw", 86_400_000, fetchContributions);
-          return contributionImage(source.value);
-        } catch (error) {
-          console.error(error);
-          return Response.json(
-            { error: "GitHubの記録を取得できませんでした。" },
-            { status: 503, headers: { "Cache-Control": "no-store" } },
-          );
-        }
-      }
       const results = await Promise.allSettled([
         this.resource("repositories:raw", 86_400_000, fetchRepositories),
         this.resource("articles:raw", 86_400_000, fetchArticles),
