@@ -54,7 +54,7 @@
           "file": "src/assets/materials/painted_plaster_wall/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
           "sourceHash": "15ba8c1f63a5ab412b1eabe31728540a",
-          "sha256": "1ce94459ebef7d46e47fbb07db3e4714a39c6cc589784fe58bdeab844424e243",
+          "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95",
           "dimensions": [1024, 1024],
           "encoding": "WebP quality 85, smart chroma subsampling"
         },
@@ -457,7 +457,7 @@
       "creationMethod": "PBRProcedural",
       "appliedSizeMeters": [0.8, 0.8],
       "scaleNote": "配布元に実寸指定がないため、塗装金具の擦り傷を表す大きさとして設定。",
-      "processing": "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。R=255、G=粗さ、B=金属度で格納。",
+      "processing": "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。粗さを半光沢の塗装に調整。R=255、G=粗さ、B=金属度で格納。",
       "maps": {
         "color": {
           "file": "src/assets/materials/PaintedMetal001/color.webp",
@@ -492,7 +492,7 @@
             "Roughness": "c0166ff9364ae9d83878066b2a788f66bc5bcc5748a78a47cc51c940a8491e41",
             "Metalness": "c8e278ad680208abde1af0158a2657031c93e25274276076d57623214fecf2ab"
           },
-          "sha256": "38b867390e59dbdfca4460b193e75b1483346fff1fd1d61e6c8c32b0251f278d",
+          "sha256": "e058764ea394817ab679f129838b03cf7d4e86122113b8cd575c7dc4f0e12633",
           "dimensions": [256, 256],
           "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
         }

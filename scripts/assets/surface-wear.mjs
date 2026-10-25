@@ -58,7 +58,9 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
   const packed = Buffer.alloc(256 * 256 * 3);
   for (let pixel = 0; pixel < 256 * 256; pixel++) {
     packed[pixel * 3] = 255;
-    packed[pixel * 3 + 1] = channels[0][pixel];
+    packed[pixel * 3 + 1] = painted
+      ? Math.round(120 + channels[0][pixel] * 0.5)
+      : channels[0][pixel];
     packed[pixel * 3 + 2] = channels[1][pixel];
   }
   await save(
@@ -74,7 +76,7 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
     Object.assign(asset.maps, maps);
     if (painted)
       asset.processing =
-        "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。R=255、G=粗さ、B=金属度で格納。";
+        "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。粗さを半光沢の塗装に調整。R=255、G=粗さ、B=金属度で格納。";
   } else {
     attribution.assets.push({
       id,
