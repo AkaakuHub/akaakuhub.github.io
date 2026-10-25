@@ -17,6 +17,14 @@ export function createLoading(root: HTMLElement) {
   const retry = root.querySelector<HTMLButtonElement>("[data-loading-retry]");
   if (!panel || !label || !progress || !percent || !errorPanel || !retry)
     throw new Error("読み込み状態の表示先が見つかりません。");
+  const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
+  if (digits.length !== 3) throw new Error("進捗の桁が揃っていません。");
+  function setPercent(value: number): void {
+    const text = String(value).padStart(2, "0").padStart(3, " ");
+    digits.forEach((digit, index) => {
+      digit.textContent = text.charAt(index);
+    });
+  }
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
   if (isRecovering()) label.textContent = "もう一度、部室に接続しています";
@@ -64,9 +72,7 @@ export function createLoading(root: HTMLElement) {
     const value = materials * 0.75 + rendering * 0.2;
     progress.value = value;
     panel.style.setProperty("--load-progress", String(value));
-    percent.textContent = `${Math.round(value * 100)
-      .toString()
-      .padStart(2, "0")}%`;
+    setPercent(Math.round(value * 100));
   };
   return {
     stage(text: string): void {
@@ -93,7 +99,7 @@ export function createLoading(root: HTMLElement) {
       finishRecovery();
       root.setAttribute("aria-busy", "false");
       progress.value = 1;
-      percent.textContent = "100%";
+      setPercent(100);
       delete root.dataset.loading;
       panel.classList.add("loading-complete");
       panel.addEventListener(
