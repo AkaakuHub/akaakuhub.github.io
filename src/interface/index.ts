@@ -37,8 +37,7 @@ export function createInterface(root: HTMLElement) {
         if (!notice) throw new Error("掲示の情報が見つかりません。");
         announcement = `${notice.title}を表示しています`;
       } else {
-        announcement =
-          state.mode === "monitor" ? "リポジトリ一覧を表示しています" : "PCを表示しています";
+        announcement = "PCを表示しています";
       }
       status.textContent = announcement;
     },

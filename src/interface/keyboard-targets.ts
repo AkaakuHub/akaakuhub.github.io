@@ -17,13 +17,11 @@ export function bindKeyboardTargets(
   const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-notice-index]")];
   const light = root.querySelector<HTMLButtonElement>("[data-room-light]");
   const power = root.querySelector<HTMLButtonElement>("[data-computer-power]");
-  const monitor = root.querySelector<HTMLButtonElement>("[data-computer-monitor]");
   const navigation = root.querySelector<HTMLElement>(".room-keyboard");
-  if (buttons.length !== 4 || notices.length !== 4 || !light || !power || !monitor || !navigation)
+  if (buttons.length !== 4 || notices.length !== 4 || !light || !power || !navigation)
     throw new Error("キーボード操作の対象が揃っていません。");
   const lightButton: HTMLButtonElement = light;
   const powerButton: HTMLButtonElement = power;
-  const monitorButton: HTMLButtonElement = monitor;
   const canvas = ui.canvas;
   canvas.addEventListener("keydown", (event) => {
     if (event.key !== "Tab" || !event.shiftKey) return;
@@ -83,26 +81,9 @@ export function bindKeyboardTargets(
   function togglePower(): void {
     const on = computer.togglePower();
     powerButton.setAttribute("aria-pressed", String(on));
-    monitorButton.disabled = !on;
     ui.announce(on ? "PCの電源を入れました" : "PCの電源を切りました");
   }
   powerButton.addEventListener("click", togglePower);
-  monitorButton.addEventListener("focus", () => {
-    view.inspectMonitor();
-    const selected = computer.select(0);
-    if (selected) ui.announce(selected);
-  });
-  monitorButton.addEventListener("click", () => computer.activateSelection());
-  monitorButton.addEventListener("keydown", (event) => {
-    if (!["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const step = event.key === "PageUp" || event.key === "PageDown" ? 3 : 1;
-    const selected = computer.select(
-      event.key === "ArrowUp" || event.key === "PageUp" ? -step : step,
-    );
-    if (selected) ui.announce(selected);
-  });
   navigation.addEventListener("keydown", (event) => {
     if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key))
       event.stopPropagation();

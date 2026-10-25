@@ -1,4 +1,5 @@
 import type { SiteContent } from "../../content/schema";
+import { profile } from "../../content/profile";
 
 export interface Notice {
   title: string;
@@ -32,7 +33,7 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       ink: "#253b31",
       stock: "#f3eee0",
       thumbnail: null,
-      link: { label: "GitHubを開く", href: "https://github.com/AkaakuHub" },
+      link: { label: "GitHubを開く", href: profile.github },
     },
     {
       kind: "skills",
@@ -46,7 +47,7 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       thumbnail: null,
       link: {
         label: "GitHubの制作物を見る",
-        href: "https://github.com/AkaakuHub?tab=repositories",
+        href: `${profile.github}?tab=repositories`,
       },
     },
   ];

@@ -3,9 +3,7 @@ import type { Object3D, PerspectiveCamera, Scene } from "three";
 
 interface ComputerTargets {
   object: Object3D;
-  monitor: Object3D;
   power: Object3D;
-  isPowered: () => boolean;
 }
 
 export function createPicker(
@@ -48,7 +46,6 @@ export function createPicker(
       }
     }
     const targets = [...papers, computer.power, lightSwitch];
-    if (computer.isPowered()) targets.push(computer.monitor);
     let candidate = raycaster.intersectObjects(targets, true)[0];
     let target: Object3D | undefined;
     if (candidate) {
@@ -62,10 +59,7 @@ export function createPicker(
     const tower = raycaster.intersectObject(computer.object, false)[0];
     if (
       tower &&
-      (!candidate ||
-        (tower.distance < candidate.distance &&
-          target !== computer.power &&
-          target !== computer.monitor))
+      (!candidate || (tower.distance < candidate.distance && target !== computer.power))
     ) {
       candidate = tower;
       target = computer.object;
@@ -84,7 +78,6 @@ export function createPicker(
     if (target === lightSwitch) return { type: "light" as const };
     if (target === computer.object) return { type: "computer" as const };
     if (target === computer.power) return { type: "power" as const };
-    if (target === computer.monitor) return { type: "monitor" as const, uv: candidate.uv };
     if (!target) return;
     const index = papers.indexOf(target);
     if (index >= 0) return { type: "notice" as const, index, uv: candidate.uv };

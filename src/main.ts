@@ -107,17 +107,6 @@ export async function startRoom(
     camera,
     inspections,
     computer,
-    {
-      object: computer.monitor,
-      get width() {
-        return computer.monitor.geometry.parameters.width;
-      },
-      get height() {
-        return computer.monitor.geometry.parameters.height;
-      },
-      depth: 0.001,
-      topAligned: false,
-    },
     (state) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
@@ -131,7 +120,6 @@ export async function startRoom(
     invalidate,
     requestFrame,
     lighting.setMonitorPower,
-    ui.announce,
   );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   let controls: ReturnType<typeof bindRoomControls>;
@@ -140,7 +128,7 @@ export async function startRoom(
     controls.syncNotices();
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
-  }, computerInterface.setState);
+  });
   let frame = 0;
   let previous = performance.now();
   let lastRendered = 0;
@@ -150,7 +138,7 @@ export async function startRoom(
   const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
     if (computer.orientDisplay(camera.aspect < 1)) {
       computer.resizeInspection();
-      lighting.setMonitorPower(computerInterface.targets.isPowered());
+      lighting.setMonitorPower(computerInterface.isPowered());
       lighting.invalidateShadows();
     }
     view.resize();
@@ -191,7 +179,7 @@ export async function startRoom(
     ui.setMoving(moving);
     previous = time;
     lastRendered = time;
-    const scrolling = computerInterface.update(seconds, time);
+    computerInterface.update(time);
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
     rendering.render(moving);
@@ -205,7 +193,7 @@ export async function startRoom(
       void boardLoader.refresh(false);
       prewarmRoomViews(renderer, scene, camera, () => view.moving, loading.fail);
     }
-    if (!frame && (moving || rendering.weather.active || scrolling || animation))
+    if (!frame && (moving || rendering.weather.active || animation))
       frame = requestAnimationFrame(render);
   }
   function invalidate() {

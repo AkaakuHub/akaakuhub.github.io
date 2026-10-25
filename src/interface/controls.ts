@@ -51,25 +51,12 @@ export function bindRoomControls(
     if (document.activeElement !== ui.canvas && document.activeElement !== document.body) return;
     if ((event.key === "Enter" || event.key === " ") && view.state.mode !== "room") {
       event.preventDefault();
-      if (view.state.mode === "monitor") computer.activateSelection();
-      else if (view.state.mode === "notice") {
+      if (view.state.mode === "notice") {
         const notice = entries[view.state.index]?.[1];
         if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
         if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
         else refreshBoard();
       }
-      return;
-    }
-    if (
-      view.state.mode === "monitor" &&
-      ["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)
-    ) {
-      event.preventDefault();
-      const step = event.key === "PageUp" || event.key === "PageDown" ? 3 : 1;
-      const selected = computer.select(
-        event.key === "ArrowUp" || event.key === "PageUp" ? -step : step,
-      );
-      if (selected) ui.announce(selected);
       return;
     }
     if (view.state.mode !== "room" && ["+", "=", "-", "0"].includes(event.key)) {
@@ -96,7 +83,6 @@ export function bindRoomControls(
   let start: { id: number; x: number; y: number } | undefined;
   let pinchDistance = 0;
   let pinched = false;
-  let monitorV: number | undefined;
   function distance(): number {
     const points = [...pointers.values()];
     const first = points[0];
@@ -116,8 +102,6 @@ export function bindRoomControls(
     if (pointers.size === 1) {
       start = { id: event.pointerId, x: event.clientX, y: event.clientY };
       pinched = false;
-      const hit = view.state.mode === "monitor" ? pick(event, false) : undefined;
-      monitorV = hit?.type === "monitor" ? hit.uv?.y : undefined;
     } else {
       start = undefined;
       pinched = true;
@@ -132,17 +116,9 @@ export function bindRoomControls(
     }
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (pointers.size === 2) {
-      monitorV = undefined;
       const nextDistance = distance();
       if (pinchDistance > 0) zoom(nextDistance / pinchDistance, false);
       pinchDistance = nextDistance;
-    } else if (start && view.state.mode === "monitor" && !pinched) {
-      const hit = pick(event, false);
-      if (hit?.type === "monitor" && hit.uv) {
-        if (monitorV !== undefined)
-          computer.scroll((hit.uv.y - monitorV) * computer.screenHeight, true);
-        monitorV = hit.uv.y;
-      }
     } else if (start && view.state.mode !== "room" && view.zoomFactor > 1 && !pinched) {
       view.pan(
         (event.clientX - previous.x) / ui.canvas.clientWidth,
@@ -161,7 +137,6 @@ export function bindRoomControls(
     if (!origin || origin.id !== event.pointerId || pinched || pointers.size > 0) return;
     const dx = event.clientX - origin.x;
     const dy = event.clientY - origin.y;
-    if (view.state.mode === "monitor" && Math.hypot(dx, dy) >= 10) return;
     const threshold = Math.min(72, Math.max(36, ui.canvas.clientWidth * 0.1));
     if (view.state.mode !== "room" && view.zoomFactor > 1) {
       if (Math.hypot(dx, dy) >= 10) return;
@@ -192,11 +167,6 @@ export function bindRoomControls(
       keyboard.toggleLight();
       return;
     }
-    if (hit.type === "monitor") {
-      if (view.state.mode === "monitor" && hit.uv) computer.click(hit.uv);
-      else view.inspectMonitor();
-      return;
-    }
     const notice = entries[hit.index]?.[1];
     if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
     if (view.state.mode === "notice" && view.state.index === hit.index) {
@@ -208,7 +178,6 @@ export function bindRoomControls(
     pointers.delete(event.pointerId);
     if (start?.id === event.pointerId) start = undefined;
     pinchDistance = 0;
-    monitorV = undefined;
     cursor(false, false);
   };
   ui.canvas.addEventListener("pointercancel", cancel);
@@ -219,10 +188,6 @@ export function bindRoomControls(
       if (view.state.mode === "room") return;
       event.preventDefault();
       const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 540 : 1;
-      if (view.state.mode === "monitor") {
-        computer.scroll(event.deltaY * unit);
-        return;
-      }
       zoom(Math.exp(-MathUtils.clamp(event.deltaY * unit, -200, 200) * 0.003), true);
     },
     { passive: false },

@@ -11,7 +11,6 @@ export function roomMarkup(): string {
         <button type="button" data-notice-index="3">最新記事2</button>
         <button type="button" data-room-light aria-pressed="true">部屋の電気</button>
         <button type="button" data-computer-power aria-pressed="false">PCの電源</button>
-        <button type="button" data-computer-monitor aria-keyshortcuts="ArrowUp ArrowDown Enter" disabled>モニターのリポジトリ</button>
       </nav>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>
     </main>`;

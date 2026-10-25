@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "fast-xml-parser": "^5.11.2",
-    "marked": "^18.1.1",
     "suncalc": "^2.1.1",
     "three": "^0.186.1",
     "unified-asset-loader": "0.1.1"
