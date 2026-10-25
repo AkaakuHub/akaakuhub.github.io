@@ -11,6 +11,7 @@ import {
   Minimize,
   Monitor,
   Presentation,
+  RefreshCw,
   ScanSearch,
   Undo2,
   ZoomIn,
@@ -40,6 +41,7 @@ export function createInterface(root: HTMLElement) {
       Maximize,
       Monitor,
       Presentation,
+      RefreshCw,
       ScanSearch,
       Undo2,
       ZoomIn,
@@ -123,7 +125,7 @@ export function createInterface(root: HTMLElement) {
         insetX:
           Math.max(
             back.getBoundingClientRect().left - viewport.left,
-            ...right.map((rect) => viewport.right - rect.right),
+            right.length > 0 ? Math.min(...right.map((rect) => viewport.right - rect.right)) : 0,
           ) + 12,
         insetY:
           Math.max(
@@ -148,7 +150,9 @@ export function createInterface(root: HTMLElement) {
       header.hidden = inspecting;
       action.hidden = state.mode !== "room" || state.direction !== 0;
       computerAction.hidden = state.mode !== "room" || state.direction !== 1;
-      link.hidden = state.mode !== "notice";
+      link.hidden = state.mode !== "notice" || !notice?.link;
+      const refresh = root.querySelector<HTMLButtonElement>(".refresh-notices");
+      if (refresh) refresh.hidden = state.mode !== "notice";
       inspection
         .querySelectorAll<HTMLElement>(".previous-notice, .next-notice")
         .forEach((button) => {
@@ -165,9 +169,11 @@ export function createInterface(root: HTMLElement) {
       } else if (state.mode === "notice") {
         if (!notice) throw new Error("掲示用紙の情報が見つかりません。");
         announcement = `${notice.title}を表示しています`;
-        link.href = notice.link.href;
-        link.setAttribute("aria-label", notice.link.label);
-        link.setAttribute("title", notice.link.label);
+        if (notice.link) {
+          link.href = notice.link.href;
+          link.setAttribute("aria-label", notice.link.label);
+          link.setAttribute("title", notice.link.label);
+        }
         setZoom(1);
       } else {
         announcement = "PCを表示しています";

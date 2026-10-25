@@ -9,6 +9,7 @@ export interface Article {
   title: string;
   url: string;
   publishedAt: number;
+  thumbnail: string;
 }
 
 export interface SiteContent {
@@ -63,6 +64,7 @@ export function parseArticles(value: unknown): Article[] {
       title: contentText(article.title),
       url: link(article.url, "https://blog.akaaku.net", "/posts/"),
       publishedAt,
+      thumbnail: link(article.thumbnail, "https://blog.akaaku.net", "/og/posts/"),
     };
   });
 }

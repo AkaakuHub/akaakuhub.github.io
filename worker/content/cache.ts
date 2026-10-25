@@ -1,4 +1,4 @@
-import { fetchArticles, fetchRepositories } from "./source";
+import { fetchArticles, fetchRepositories, readArticles, readRepositories } from "./source";
 import { parseSiteContent } from "../../src/content/schema";
 import type { SiteContent } from "../../src/content/schema";
 
@@ -13,8 +13,8 @@ export class SiteContentCache implements DurableObject {
   async fetch(): Promise<Response> {
     return this.ctx.blockConcurrencyWhile(async () => {
       const results = await Promise.allSettled([
-        this.resource("repositories", 86_400_000, fetchRepositories),
-        this.resource("articles", 86_400_000, fetchArticles),
+        this.resource("repositories:raw", 86_400_000, fetchRepositories),
+        this.resource("articles:raw", 86_400_000, fetchArticles),
       ]);
       const [repositories, articles] = results;
       const failures = results.filter((result) => result.status === "rejected");
@@ -27,15 +27,13 @@ export class SiteContentCache implements DurableObject {
           { status: 503, headers: { "Cache-Control": "no-store" } },
         );
       }
-      const expiresAt = Math.min(repositories.value.expiresAt, articles.value.expiresAt);
       const content: SiteContent = parseSiteContent({
-        repositories: repositories.value.value,
-        articles: articles.value.value,
+        repositories: readRepositories(repositories.value.value),
+        articles: readArticles(articles.value.value),
       });
       return Response.json(content, {
         headers: {
-          "Cache-Control": `public, max-age=${Math.max(0, Math.floor((expiresAt - Date.now()) / 1000))}`,
-          Expires: new Date(expiresAt).toUTCString(),
+          "Cache-Control": "no-store",
         },
       });
     });
@@ -53,7 +51,9 @@ export class SiteContentCache implements DurableObject {
     ]);
     if (cached && now < cached.expiresAt) return cached;
     if (nextAttempt && now < nextAttempt)
-      throw new Error(`${key === "articles" ? "RSS" : "GitHub"}は取得上限のため更新できません。`);
+      throw new Error(
+        `${key.startsWith("articles:") ? "RSS" : "GitHub"}は取得上限のため更新できません。`,
+      );
     const expiresAt = now + ttl;
     await this.ctx.storage.put(`${key}:nextAttempt`, expiresAt);
     const entry = { value: await load(), expiresAt };

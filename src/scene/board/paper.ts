@@ -10,6 +10,7 @@ import {
 } from "three";
 
 import type { BoardNotice } from "./notices";
+import { siteFont } from "../../assets/typography";
 
 function wrapText(context: CanvasRenderingContext2D, text: string, width: number): string[] {
   const lines: string[] = [];
@@ -57,15 +58,20 @@ function printedPaper(
   context.globalCompositeOperation = "source-over";
   context.fillStyle = print.ink;
   const compact = print.kind === "repository";
-  const headingSize = width * (compact ? 0.031 : print.kind === "profile" ? 0.065 : 0.043);
-  context.font = width * 0.019 + "px monospace";
+  const headingSize = width * (compact ? 0.031 : print.kind === "profile" ? 0.065 : 0.034);
+  context.font = `${width * 0.019}px ${siteFont}`;
   context.fillText(print.eyebrow, margin, compact ? 30 : 100);
-  context.font = "600 " + headingSize + "px sans-serif";
-  const lines = wrapText(context, print.title, width - margin * 2);
+  context.font = `500 ${headingSize}px ${siteFont}`;
+  const textX = print.thumbnail ? width * 0.54 : margin;
+  const lines = wrapText(context, print.title, width - margin - textX);
   const headingY = compact ? 77 : 180;
   const lineHeight = headingSize * 1.4;
-  lines.forEach((line, index) => context.fillText(line, margin, headingY + index * lineHeight));
-  context.font = width * 0.028 + "px sans-serif";
+  if (print.thumbnail) {
+    const imageWidth = width * 0.43;
+    context.drawImage(print.thumbnail, margin, 145, imageWidth, imageWidth * 0.525);
+  }
+  lines.forEach((line, index) => context.fillText(line, textX, headingY + index * lineHeight));
+  context.font = `${width * 0.028}px ${siteFont}`;
   let y = headingY + lines.length * lineHeight + 22;
   for (const line of print.lines.filter(Boolean)) {
     for (const wrapped of wrapText(context, line, width - margin * 2)) {
@@ -74,9 +80,11 @@ function printedPaper(
     }
   }
   context.fillStyle = print.ink;
-  context.fillRect(margin, height - 57, width - margin * 2, 1);
-  context.font = width * 0.021 + "px sans-serif";
-  context.fillText(print.link.label + " ↗", margin, height - 23);
+  if (print.link) {
+    context.fillRect(margin, height - 57, width - margin * 2, 1);
+    context.font = `${width * 0.021}px ${siteFont}`;
+    context.fillText(print.link.label + " ↗", margin, height - 23);
+  }
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 8;
@@ -88,7 +96,7 @@ export function createPaper(
   height: number,
   print: BoardNotice,
   maps: PbrMaps,
-): Mesh {
+): Mesh<PlaneGeometry, MeshStandardMaterial> {
   const geometry = new PlaneGeometry(width, height, 20, 24);
   const positions = geometry.getAttribute("position");
   for (let index = 0; index < positions.count; index++) {
@@ -118,4 +126,14 @@ export function createPaper(
   paper.castShadow = true;
   paper.receiveShadow = true;
   return paper;
+}
+
+export function updatePaper(
+  paper: Mesh<PlaneGeometry, MeshStandardMaterial>,
+  print: BoardNotice,
+  maps: PbrMaps,
+): void {
+  const previous = paper.material.map;
+  paper.material.map = printedPaper(print, maps, print.size[0], print.size[1]);
+  previous?.dispose();
 }

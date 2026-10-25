@@ -13,6 +13,7 @@ export function bindRoomControls(
   scene: Scene,
   notices: Map<Object3D, Notice>,
   computer: Object3D,
+  refreshBoard: () => void,
 ): void {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
@@ -30,6 +31,7 @@ export function bindRoomControls(
     zoom(view.zoomFactor > 1 ? 1 / view.zoomFactor : 2.2, true);
   });
   root.querySelector(".inspection-back")?.addEventListener("click", () => view.back());
+  root.querySelector(".refresh-notices")?.addEventListener("click", refreshBoard);
   root.querySelector(".previous-notice")?.addEventListener("click", () => view.next(-1));
   root.querySelector(".next-notice")?.addEventListener("click", () => view.next(1));
   root.querySelector(".inspection-link")?.addEventListener("click", (event) => {
@@ -144,7 +146,8 @@ export function bindRoomControls(
     const notice = entries[hit.index]?.[1];
     if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
     if (view.state.mode === "notice" && view.state.index === hit.index) {
-      window.open(notice.link.href, "_blank", "noopener,noreferrer");
+      if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
+      else refreshBoard();
     } else view.inspect(hit.index);
   });
   const cancel = (event: PointerEvent) => {

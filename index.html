@@ -14,7 +14,7 @@
   <body>
     <div id="app">
       <section class="loading" aria-label="部室を読み込んでいます">
-        <header class="loading-header"><span>AkaakuHub</span><span>CLUBROOM / 01</span></header>
+        <header class="loading-header"><span>AkaakuHub</span></header>
         <div class="loading-center">
           <div class="loading-visual" aria-hidden="true">
             <div class="loading-model">
@@ -23,10 +23,8 @@
               <div class="loading-floor"></div>
               <div class="loading-scan"></div>
             </div>
-            <span class="loading-visual-caption">ASSEMBLING YOUR SPACE</span>
           </div>
           <div class="loading-readout">
-            <p class="loading-eyebrow">OPENING THE ROOM</p>
             <span data-loading-percent class="loading-number">00%</span>
             <h1>部室をひらいています<span class="loading-dots" aria-hidden="true">...</span></h1>
           </div>
@@ -34,8 +32,7 @@
         <footer class="loading-footer">
           <div class="loading-status">
             <span class="loading-live-dot" aria-hidden="true"></span
-            ><span data-loading-label role="status" aria-live="polite">部室に接続しています</span
-            ><span class="loading-status-code" aria-hidden="true">IN PROGRESS</span>
+            ><span data-loading-label role="status" aria-live="polite">部室に接続しています</span>
           </div>
           <progress
             data-loading-progress
@@ -44,17 +41,9 @@
             aria-label="部室の準備"
             class="loading-progress"
           ></progress>
-          <ol class="loading-phases" aria-hidden="true">
-            <li>01 / 接続</li>
-            <li>02 / 空間</li>
-            <li>03 / 明かり</li>
-            <li>04 / 入室</li>
-          </ol>
-          <pre data-loading-recovery class="loading-recovery" hidden></pre>
           <div data-loading-failure class="loading-failure" hidden>
-            <p>読み込みを続けられませんでした。原因はこちらです。</p>
-            <pre data-loading-error role="alert"></pre>
-            <button data-loading-retry type="button">すべて取得し直す ↻</button>
+            <p>少し時間をおいて、もう一度お試しください。</p>
+            <button data-loading-retry type="button">もう一度試す</button>
           </div>
           <noscript><p>3Dの部室を開くにはJavaScriptを有効にしてください。</p></noscript>
         </footer>

@@ -7,12 +7,11 @@ import { createPropMaterials } from "./materials/props";
 import { createRoom } from "./room";
 import { batchStaticMeshes } from "./static-batches";
 import { createComputerInspection } from "./view/computer";
-import type { SiteContent } from "../content/schema";
 
-export function assembleClubroom(scene: Scene, materials: MaterialLibrary, content: SiteContent) {
+export function assembleClubroom(scene: Scene, materials: MaterialLibrary) {
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
-  const board = createBoard(metals, materials.paper, props, content);
+  const board = createBoard(metals, materials.paper, props);
   scene.add(
     createRoom(materials, metals, props),
     createFurniture(materials, metals, props),

@@ -3,6 +3,7 @@ import type { TokyoWeather } from "../../weather/schema";
 import { tokyo } from "../../weather/schema";
 import type { Notice } from "./notices";
 import { weatherDescription, windDescription } from "../../weather/description";
+import { siteFont } from "../../assets/typography";
 
 export function createWeatherNotice() {
   const canvas = document.createElement("canvas");
@@ -35,9 +36,9 @@ export function createWeatherNotice() {
     context.fillStyle = "#f3f0e5";
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "#294037";
-    context.font = "30px sans-serif";
+    context.font = `30px ${siteFont}`;
     lines.forEach((line, index) => context.fillText(line, 36, 46 + index * 43));
-    context.font = "24px sans-serif";
+    context.font = `24px ${siteFont}`;
     context.fillText("Weather data by Open-Meteo ↗", 1760, 87);
     texture.needsUpdate = true;
   }

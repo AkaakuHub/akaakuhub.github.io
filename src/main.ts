@@ -2,7 +2,6 @@ import "./tailwind.css";
 import { Color, PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { createInterface } from "./interface";
 import type { Loading } from "./interface/loading";
-import type { SiteContent } from "./content/schema";
 import { bindRoomSwitch } from "./interface/room-switch";
 import { bindRoomControls } from "./interface/controls";
 import { assembleClubroom } from "./scene/clubroom";
@@ -17,10 +16,13 @@ import { weatherAt } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
+import { createBoardLoader } from "./scene/board/loading";
+import { prepareBoardFont } from "./assets/typography";
 
-export async function startRoom(root: HTMLElement, content: SiteContent, loading: Loading) {
+export async function startRoom(root: HTMLElement, loading: Loading) {
   const ui = createInterface(root);
   const weatherReady = loadTokyoWeather();
+  const fontsReady = prepareBoardFont("");
   await new Promise<void>((resolve) => {
     requestAnimationFrame(() => setTimeout(resolve, 0));
   });
@@ -39,10 +41,14 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
   const materialLoading = loadMaterials(renderer, assets);
   const lightTablesReady = loadAreaLightTables(renderer, assets);
   const { materials } = materialLoading;
-  const [initialWeather] = await Promise.all([weatherReady, materialLoading.paperReady]);
+  const [initialWeather] = await Promise.all([
+    weatherReady,
+    materialLoading.paperReady,
+    fontsReady,
+  ]);
   loading.stage("室内の形を組み立てています");
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-  const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials, content);
+  const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials);
   const weatherStatus = board.weather;
   loading.stage("部室の明かりを整えています");
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
@@ -83,6 +89,11 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
     invalidate,
     () => ui.inspectionViewport(),
   );
+  const boardLoader = createBoardLoader((state) => {
+    board.setState(state);
+    if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
+    invalidate();
+  });
   let frame = 0;
   let previous = performance.now();
   let lastRendered = 0;
@@ -135,6 +146,7 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
     frameMetrics?.end(moving);
     if (!ready) {
       loading.complete();
+      if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
     if (moving || rendering.weather.active) frame = requestAnimationFrame(render);
@@ -156,7 +168,16 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
   await renderer.compileAsync(scene, camera);
   loading.rendering(2, 2);
   rendering.render();
-  bindRoomControls(root, ui, view, camera, scene, board.notices, computer.object);
+  bindRoomControls(
+    root,
+    ui,
+    view,
+    camera,
+    scene,
+    board.notices,
+    computer.object,
+    () => void boardLoader.refresh(true),
+  );
   const roomSwitch = bindRoomSwitch(
     root,
     lightSwitch,
@@ -168,4 +189,5 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
   roomSwitch.update();
   prepared = true;
   requestFrame();
+  void boardLoader.refresh(false);
 }

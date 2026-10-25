@@ -1,11 +1,11 @@
 import { nextTokyoDay, parseWeatherDay } from "./schema";
 import type { WeatherDay } from "./schema";
-import { recoveryReason } from "../interface/recovery";
+import { isRecovering } from "../interface/recovery";
 
 export async function loadTokyoWeather(): Promise<WeatherDay> {
   const response = await fetch("/api/weather", {
     signal: AbortSignal.timeout(10_000),
-    cache: recoveryReason() ? "reload" : "default",
+    cache: isRecovering() ? "reload" : "default",
   });
   if (!response.ok) throw new Error("本日の東京の天気予報を取得できませんでした。");
   const value: unknown = await response.json();

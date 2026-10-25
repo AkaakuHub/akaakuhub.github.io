@@ -26,7 +26,7 @@ body {
   padding: clamp(24px, 5vw, 72px);
   color: var(--ink);
   background: #edf0e5;
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+  font-family: "Zen Maru Gothic", sans-serif;
   transition: opacity 0.65s ease;
 }
 .loading *,
@@ -44,15 +44,9 @@ body {
 }
 .loading-header span:first-child {
   font:
-    26px Georgia,
-    serif;
+    26px "Zen Maru Gothic",
+    sans-serif;
   letter-spacing: -0.055em;
-}
-.loading-header span:last-child {
-  font:
-    10px ui-monospace,
-    monospace;
-  letter-spacing: 0.12em;
 }
 .loading-center {
   display: grid;
@@ -112,27 +106,11 @@ body {
   transform: translateZ(0);
   animation: room-scan 2.5s ease-in-out infinite;
 }
-.loading-visual-caption {
-  position: absolute;
-  bottom: 4px;
-  font:
-    9px ui-monospace,
-    monospace;
-  letter-spacing: 0.16em;
-  color: #687b6e;
-}
-.loading-eyebrow {
-  margin: 0 0 12px;
-  font:
-    10px ui-monospace,
-    monospace;
-  letter-spacing: 0.15em;
-}
 .loading-number {
   display: block;
   font:
-    clamp(80px, 11vw, 154px)/1 ui-monospace,
-    monospace;
+    clamp(80px, 11vw, 154px)/1 "Zen Maru Gothic",
+    sans-serif;
   letter-spacing: -0.09em;
   font-variant-numeric: tabular-nums;
 }
@@ -159,14 +137,6 @@ body {
   margin-bottom: 14px;
   font-size: 11px;
 }
-.loading-status-code {
-  margin-left: auto;
-  color: #687b6e;
-  font:
-    10px ui-monospace,
-    monospace;
-  letter-spacing: 0.12em;
-}
 .loading-live-dot {
   width: 6px;
   height: 6px;
@@ -192,23 +162,6 @@ body {
 .loading-progress::-moz-progress-bar {
   background: #183b31;
 }
-.loading-phases {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0;
-  margin: 17px 0 0;
-  list-style: none;
-  color: #687b6e;
-  font:
-    10px ui-monospace,
-    monospace;
-}
-.loading-phases li:first-child,
-.loading[data-phase="space"] .loading-phases li:nth-child(2),
-.loading[data-phase="light"] .loading-phases li:nth-child(-n + 3) {
-  color: #183b31;
-}
 .loading-complete {
   opacity: 0;
   pointer-events: none;
@@ -231,8 +184,8 @@ body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font:
-    11px/1.7 ui-monospace,
-    monospace;
+    11px/1.7 "Zen Maru Gothic",
+    sans-serif;
 }
 .loading-recovery {
   padding: 12px;
@@ -266,13 +219,6 @@ body {
 }
 .loading-error .loading-footer {
   overflow: auto;
-}
-.loading-error .loading-phases,
-.loading-error .loading-status-code {
-  display: none;
-}
-.loading-error .loading-live-dot {
-  animation: none;
 }
 #app[data-loading] .room-header,
 #app[data-loading] .navigation,
@@ -317,9 +263,6 @@ body {
   .loading-header span:first-child {
     font-size: 23px;
   }
-  .loading-header span:last-child {
-    font-size: 8px;
-  }
   .loading-center {
     grid-template-columns: 1fr;
     grid-template-rows: minmax(0, 1fr) auto;
@@ -334,9 +277,6 @@ body {
   .loading-model {
     scale: 0.72;
   }
-  .loading-visual-caption {
-    display: none;
-  }
   .loading-number {
     font-size: clamp(72px, 20vw, 100px);
   }
@@ -344,22 +284,10 @@ body {
     margin-top: 18px;
     font-size: 11px;
   }
-  .loading-eyebrow {
-    font-size: 9px;
-  }
-  .loading-status-code {
-    display: none;
-  }
-  .loading-phases {
-    font-size: 9px;
-  }
 }
 @media (max-height: 540px) {
   .loading-model {
     scale: 0.55;
-  }
-  .loading-visual-caption {
-    display: none;
   }
   .loading-readout h1 {
     margin-top: 12px;

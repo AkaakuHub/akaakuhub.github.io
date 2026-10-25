@@ -1,4 +1,10 @@
-import { errorDetails, finishRecovery, recoveryReason, reloadEverything } from "./recovery";
+import {
+  finishRecovery,
+  isRecovering,
+  reloadEverything,
+  retryAvailableAt,
+  retryDelay,
+} from "./recovery";
 
 export type Loading = ReturnType<typeof createLoading>;
 
@@ -8,39 +14,50 @@ export function createLoading(root: HTMLElement) {
   const progress = root.querySelector<HTMLProgressElement>("[data-loading-progress]");
   const percent = root.querySelector<HTMLElement>("[data-loading-percent]");
   const errorPanel = root.querySelector<HTMLElement>("[data-loading-failure]");
-  const details = root.querySelector<HTMLElement>("[data-loading-error]");
-  const recovery = root.querySelector<HTMLElement>("[data-loading-recovery]");
   const retry = root.querySelector<HTMLButtonElement>("[data-loading-retry]");
-  if (!panel || !label || !progress || !percent || !errorPanel || !details || !retry || !recovery)
+  if (!panel || !label || !progress || !percent || !errorPanel || !retry)
     throw new Error("読み込み状態の表示先が見つかりません。");
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
-  const previous = recoveryReason();
-  if (previous) {
-    recovery.hidden = false;
-    recovery.textContent = `前回のエラーを受け、すべて取得し直しています。\n${previous}`;
-  }
+  if (isRecovering()) label.textContent = "もう一度、部室に接続しています";
   let failed = false;
   let materials = 0;
   let rendering = 0;
   let reloadTimer: ReturnType<typeof setTimeout> | undefined;
   let restarting = false;
-  const restart = async (reason: string): Promise<void> => {
+  const stop = (): void => {
+    root.setAttribute("aria-busy", "false");
+    panel.classList.add("loading-error");
+    errorPanel.hidden = false;
+    label.textContent = "部室を開けませんでした";
+    retry.disabled = false;
+  };
+  const schedule = (): void => {
+    if (retryAvailableAt() > Date.now()) {
+      stop();
+      return;
+    }
+    label.textContent = "もう一度、部室に接続しています";
+    reloadTimer = setTimeout(() => void restart(true), retryDelay());
+  };
+  const restart = async (automatic: boolean): Promise<void> => {
     if (restarting) return;
     restarting = true;
     retry.disabled = true;
     try {
-      await reloadEverything(reason);
+      if (!(await reloadEverything(automatic))) {
+        restarting = false;
+        stop();
+      }
     } catch (error) {
-      details.textContent = `${reason}\n\n再取得を開始できませんでした。\n${errorDetails(error)}`;
-      label.textContent = "接続を確認してから、取得し直してください";
-      retry.disabled = false;
+      console.error(error);
       restarting = false;
+      schedule();
     }
   };
   retry.onclick = () => {
     clearTimeout(reloadTimer);
-    void restart(details.textContent);
+    void restart(false);
   };
   const update = (): void => {
     if (failed) return;
@@ -54,7 +71,6 @@ export function createLoading(root: HTMLElement) {
   return {
     stage(text: string): void {
       if (!failed) label.textContent = text;
-      panel.dataset.phase = materials < 0.75 ? "space" : "light";
     },
     progress(completed: number, total: number): void {
       if (
@@ -90,23 +106,14 @@ export function createLoading(root: HTMLElement) {
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) panel.remove();
     },
     fail(error: unknown): void {
+      console.error(error);
       if (failed) return;
-      const message = errorDetails(error);
-      details.textContent = message;
       failed = true;
-      const repeated = recoveryReason() !== null;
       if (!panel.isConnected) root.append(panel);
       panel.classList.remove("loading-complete");
       root.dataset.loading = "true";
-      root.setAttribute("aria-busy", "false");
-      panel.classList.add("loading-error");
-      errorPanel.hidden = false;
-      progress.hidden = true;
-      percent.hidden = true;
-      label.textContent = repeated
-        ? "再取得しても部室を開けませんでした"
-        : "接続を確認して、すべて取得し直します";
-      if (!repeated) reloadTimer = setTimeout(() => void restart(message), 2500);
+      root.setAttribute("aria-busy", "true");
+      schedule();
     },
   };
 }

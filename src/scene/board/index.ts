@@ -6,10 +6,9 @@ import { latheGeometry } from "../geometry/curves";
 import type { MetalMaterials } from "../materials/metal";
 import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
-import type { Notice } from "./notices";
-import { createPaper } from "./paper";
+import type { BoardState, Notice } from "./notices";
+import { createPaper, updatePaper } from "./paper";
 import { createWeatherNotice } from "./weather";
-import type { SiteContent } from "../../content/schema";
 
 export type { Notice } from "./notices";
 
@@ -17,17 +16,18 @@ export function createBoard(
   metals: MetalMaterials,
   paperMaps: PbrMaps,
   props: PropMaterials,
-  content: SiteContent,
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
   weather: ReturnType<typeof createWeatherNotice>;
+  setState: (state: BoardState) => void;
 } {
   const group = createFrame(metals, props);
   group.name = "notice-board";
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
-  for (const notice of boardNotices(content)) {
+  const papers: ReturnType<typeof createPaper>[] = [];
+  for (const notice of boardNotices({ status: "loading" })) {
     const [width, height] = notice.size;
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
@@ -62,9 +62,25 @@ export function createBoard(
     }
     group.add(sheet);
     notices.set(paper, { title: notice.title, size: notice.size, link: notice.link });
+    papers.push(paper);
   }
   const weather = createWeatherNotice();
   group.add(weather.object);
   notices.set(weather.object, weather.notice);
-  return { group, notices, weather };
+  return {
+    group,
+    notices,
+    weather,
+    setState(state): void {
+      boardNotices(state).forEach((notice, index) => {
+        const paper = papers[index];
+        if (!paper) throw new Error("掲示の表示先がありません。");
+        const metadata = notices.get(paper);
+        if (!metadata) throw new Error("掲示の情報がありません。");
+        metadata.title = notice.title;
+        metadata.link = notice.link;
+        updatePaper(paper, notice, paperMaps);
+      });
+    },
+  };
 }

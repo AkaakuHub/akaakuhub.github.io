@@ -8,7 +8,7 @@ import { resolveArtifactLoadSummary } from "unified-asset-loader/domain/artifact
 import type { ArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
 import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBinaryAsset";
 import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
-import { recoveryReason } from "../interface/recovery";
+import { isRecovering } from "../interface/recovery";
 import { asset } from "./catalog";
 import { materialAssetIds } from "./materials";
 import { areaLightAssetId } from "./lighting";
@@ -19,7 +19,7 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   const controller = new AbortController();
   const { load: loadBinaryAsset } = createBinaryAssetLoader({
     loader: { load: loadBrowserArtifact },
-    fetch: (url, signal) => fetch(url, { signal, cache: recoveryReason() ? "reload" : "default" }),
+    fetch: (url, signal) => fetch(url, { signal, cache: isRecovering() ? "reload" : "default" }),
   });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(

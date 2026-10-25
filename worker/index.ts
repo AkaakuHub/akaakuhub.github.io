@@ -32,7 +32,7 @@ export default {
     if (request.method !== "GET")
       return new Response(null, { status: 405, headers: { Allow: "GET" } });
     if (url.search) return new Response(null, { status: 400 });
-    if (url.pathname === "/api/content") return serveContent(request, env, ctx);
+    if (url.pathname === "/api/content") return serveContent(request, env);
     const now = Date.now();
     const key = new Request(`${url.origin}/api/weather/${tokyoDay(now)}`);
     const cache = caches.default;
