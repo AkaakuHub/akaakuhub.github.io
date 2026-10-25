@@ -8,7 +8,8 @@ export function createBoardHeading(text: string, x: number, y: number) {
   if (!context) throw new Error("ホワイトボードの見出しを描画できませんでした。");
   context.font = '400 176px "Yomogi"';
   context.fillStyle = "#284a40";
-  context.fillText(text, 36, 190);
+  const metrics = context.measureText(text);
+  context.fillText(text, 36, 160 - metrics.actualBoundingBoxDescent);
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 8;
