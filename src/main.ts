@@ -202,9 +202,10 @@ export async function startRoom(
       if (import.meta.env.DEV) console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
       ready = true;
       contributions.load();
+      void boardLoader.refresh(false);
       prewarmRoomViews(renderer, scene, camera, () => view.moving, loading.fail);
     }
-    if (moving || rendering.weather.active || scrolling || animation)
+    if (!frame && (moving || rendering.weather.active || scrolling || animation))
       frame = requestAnimationFrame(render);
   }
   function invalidate() {
@@ -236,5 +237,4 @@ export async function startRoom(
   prepared = true;
   observeSize();
   requestFrame();
-  void boardLoader.refresh(false);
 }
