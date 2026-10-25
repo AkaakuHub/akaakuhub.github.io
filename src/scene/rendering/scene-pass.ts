@@ -32,13 +32,16 @@ export class ScenePass {
   invalidate(): void {
     this.dirty = true;
   }
-  compile(renderer: Renderer): ReturnType<Renderer["compileAsync"]> {
+  compile(
+    renderer: Renderer,
+    onProgress: (event: ProgressEvent) => void,
+  ): ReturnType<Renderer["compileAsync"]> {
     const previous = renderer.getRenderTarget();
     const layers = this.camera.layers.mask;
     try {
       renderer.setRenderTarget(this.target);
       this.camera.layers.enable(1);
-      return renderer.compileAsync(this.scene, this.camera);
+      return renderer.compileAsync(this.scene, this.camera, null, onProgress);
     } finally {
       this.camera.layers.mask = layers;
       renderer.setRenderTarget(previous);

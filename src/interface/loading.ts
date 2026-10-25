@@ -10,7 +10,7 @@ export function createLoading(root: HTMLElement) {
   const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
   if (digits.length !== 3) throw new Error("進捗の桁が揃っていません。");
   function setPercent(value: number): void {
-    const text = String(value).padStart(2, "0").padStart(3, " ");
+    const text = String(value).padStart(3, " ");
     digits.forEach((digit, index) => {
       digit.textContent = text.charAt(index);
     });

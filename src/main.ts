@@ -144,7 +144,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   let ready = false;
   let prepared = false;
 
-  observeViewport(ui.canvas, camera, renderer, rendering, () => {
+  const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
     if (computer.orientDisplay(camera.aspect < 1)) {
       computer.resizeInspection();
       lighting.setMonitorPower(computerInterface.targets.isPowered());
@@ -213,10 +213,10 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   }
   updateTime();
   loading.rendering(0, 2);
-  await rendering.compile();
+  await rendering.compile(({ loaded, total }) => loading.rendering(loaded / total, 2));
   loading.rendering(1, 2);
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
-  await rendering.compile();
+  await rendering.compile(({ loaded, total }) => loading.rendering(1 + loaded / total, 2));
   loading.rendering(2, 2);
   rendering.render();
   controls = bindRoomControls(
@@ -231,6 +231,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     () => void boardLoader.refresh(true),
   );
   prepared = true;
+  observeSize();
   requestFrame();
   void boardLoader.refresh(false);
 }

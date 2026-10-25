@@ -9,7 +9,7 @@ export function observeViewport(
   renderer: Renderer,
   composer: ReturnType<typeof createRendering>,
   onResize: () => void,
-): void {
+): () => void {
   const container = canvas.parentElement;
   if (!container) throw new Error("部屋の表示領域が見つかりません。");
   const compact = window.matchMedia("(pointer: coarse)");
@@ -41,8 +41,12 @@ export function observeViewport(
   function scheduleResize() {
     if (!pending) pending = requestAnimationFrame(resize);
   }
-  const observer = new ResizeObserver(scheduleResize);
-  observer.observe(container);
-  compact.addEventListener("change", scheduleResize);
-  window.addEventListener("resize", scheduleResize);
+  resize();
+  return () => {
+    const observer = new ResizeObserver(scheduleResize);
+    observer.observe(container);
+    compact.addEventListener("change", scheduleResize);
+    window.addEventListener("resize", scheduleResize);
+    scheduleResize();
+  };
 }
