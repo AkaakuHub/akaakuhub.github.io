@@ -114,7 +114,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       topAligned: false,
     },
     (state) => {
-      rendering.beginTransition();
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
     },
@@ -197,7 +196,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
-    if (moving || rendering.transitioning || rendering.weather.active || scrolling || animation)
+    if (moving || rendering.weather.active || scrolling || animation)
       frame = requestAnimationFrame(render);
   }
   function invalidate() {

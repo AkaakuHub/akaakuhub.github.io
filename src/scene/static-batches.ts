@@ -1,4 +1,4 @@
-import { Mesh, MeshPhysicalMaterial, Vector3 } from "three";
+import { Group, Mesh, MeshPhysicalMaterial, Vector3 } from "three";
 import type { BufferGeometry, Material, Object3D, Scene } from "three";
 import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 
@@ -73,8 +73,12 @@ export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>
     for (const mesh of meshes) mesh.removeFromParent();
   }
   for (const geometry of indexed.values()) geometry.dispose();
+  const groups: Group[] = [];
   scene.traverse((object) => {
+    if (object instanceof Group) groups.push(object);
     if (!preserved.has(object)) object.matrixAutoUpdate = false;
   });
+  for (const group of groups.reverse())
+    if (group.children.length === 0 && !preserved.has(group)) group.removeFromParent();
   scene.updateMatrixWorld(true);
 }

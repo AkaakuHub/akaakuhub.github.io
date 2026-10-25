@@ -52,10 +52,6 @@ export function createRendering(
   let pixelRatio = 1;
   return {
     weather,
-    beginTransition: () => surfaces.beginTransition(),
-    get transitioning(): boolean {
-      return surfaces.transitioning;
-    },
     invalidate: () => surfaces.invalidate(),
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;
@@ -66,6 +62,7 @@ export function createRendering(
       composer.setSize(pixelWidth, pixelHeight);
     },
     render(moving = false) {
+      surfaces.moving = moving;
       scattering.enabled = !moving && celestialLight.intensity > 0;
       composer.render();
     },

@@ -53,10 +53,10 @@ export function createView(
     camera.fov = result.fov;
     camera.updateProjectionMatrix();
   }
-  function transition(next: ViewState): void {
+  function transition(next: ViewState, seconds: number): void {
     state = next;
     onChange(state, framing.zoom);
-    move(0);
+    move(seconds);
   }
   function move(seconds: number): void {
     start = {
@@ -75,7 +75,7 @@ export function createView(
     if (state.mode === "room" && state.direction === index) return;
     roomDirection = index;
     if (index < 4) heading = index;
-    transition({ mode: "room", direction: index });
+    transition({ mode: "room", direction: index }, 0.32);
   }
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
@@ -83,7 +83,7 @@ export function createView(
     if (state.mode === "room") framing.zoom = 1;
     framing.panX = 0;
     framing.panY = 0;
-    transition({ mode: "notice", index });
+    transition({ mode: "notice", index }, 0.36);
   }
   apply(target);
   onChange(state, framing.zoom);
@@ -104,14 +104,14 @@ export function createView(
       if (state.mode === "room") framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
-      transition({ mode: "computer" });
+      transition({ mode: "computer" }, 0.36);
     },
     inspectMonitor() {
       if (state.mode === "monitor") return;
       framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
-      transition({ mode: "monitor" });
+      transition({ mode: "monitor" }, 0.36);
     },
     zoom(factor: number, animated: boolean) {
       if (state.mode === "room") return;
@@ -143,7 +143,7 @@ export function createView(
       else if (step < 0 && state.direction === 4) select(heading);
     },
     back() {
-      if (state.mode !== "room") transition({ mode: "room", direction: roomDirection });
+      if (state.mode !== "room") transition({ mode: "room", direction: roomDirection }, 0.32);
     },
     resize() {
       target = pose();
@@ -151,12 +151,16 @@ export function createView(
       apply(target);
     },
     update(delta: number) {
+      if (elapsed >= duration) return false;
       elapsed = motion.matches ? duration : Math.min(duration, elapsed + delta);
       const t = duration === 0 ? 1 : MathUtils.smootherstep(elapsed / duration, 0, 1);
       camera.position.lerpVectors(start.position, target.position, t);
       camera.quaternion.slerpQuaternions(start.quaternion, target.quaternion, t);
-      camera.fov = MathUtils.lerp(start.fov, target.fov, t);
-      camera.updateProjectionMatrix();
+      const fov = MathUtils.lerp(start.fov, target.fov, t);
+      if (camera.fov !== fov) {
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+      }
       return elapsed < duration;
     },
   };
