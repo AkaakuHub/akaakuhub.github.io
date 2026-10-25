@@ -34,18 +34,19 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
     };
   }
   const painted = id === "PaintedMetal001";
-  let color = sharp(input("Color")).resize(512, 512);
-  if (painted) color = color.grayscale().linear(0.35, 165).toColourspace("srgb");
-  await save("color", await color.webp({ quality: 78 }).toBuffer(), ["Color"], 512);
+  const colorSize = painted ? 1024 : 512;
+  let color = sharp(input("Color")).resize(colorSize, colorSize);
+  if (painted) color = color.grayscale().linear(0.16, 212).toColourspace("srgb");
+  await save("color", await color.webp({ quality: 85 }).toBuffer(), ["Color"], colorSize);
   if (painted) {
     await save(
       "normal",
       await sharp(input("NormalGL"))
-        .resize(256, 256)
+        .resize(512, 512)
         .webp({ quality: 90, smartSubsample: true })
         .toBuffer(),
       ["NormalGL"],
-      256,
+      512,
     );
     maps.normal.encoding = "WebP quality 90, smart chroma subsampling";
   }
@@ -69,8 +70,12 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
     256,
   );
   const asset = attribution.assets.find((asset) => asset.id === id);
-  if (asset) Object.assign(asset.maps, maps);
-  else {
+  if (asset) {
+    Object.assign(asset.maps, maps);
+    if (painted)
+      asset.processing =
+        "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。R=255、G=粗さ、B=金属度で格納。";
+  } else {
     attribution.assets.push({
       id,
       name: id,
@@ -89,5 +94,21 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
   }
   console.log(`${id}: ${Object.keys(maps).join(", ")}`);
 }
+const plaster = attribution.assets.find((asset) => asset.id === "painted_plaster_wall");
+for (const name of ["color", "normal"]) {
+  const map = plaster.maps[name];
+  const response = await fetch(map.url);
+  if (!response.ok) throw new Error(`${map.url}: ${response.status}`);
+  const size = name === "color" ? 1024 : 512;
+  let image = sharp(new Uint8Array(await response.arrayBuffer())).resize(size, size);
+  if (name === "color") image = image.linear(0.24, 194);
+  const bytes = await image.webp({ quality: 90, smartSubsample: true }).toBuffer();
+  await writeFile(map.file, bytes);
+  map.dimensions = [size, size];
+  map.sha256 = hash(bytes);
+  if (name === "normal") map.encoding = "WebP quality 90, smart chroma subsampling";
+}
+plaster.appliedSizeMeters = [3.2, 3.2];
+plaster.processing = "写真の色の変化を24%に抑え、汚れのコントラストを弱める。";
 await writeFile(attributionFile, JSON.stringify(attribution, null, 2) + "\n");
 await import("./catalog.mjs");

@@ -1,6 +1,7 @@
 import type { BufferGeometry, CylinderGeometry, TorusGeometry } from "three";
 
 export function metricBoxUv(geometry: BufferGeometry): void {
+  geometry.userData.metricUv = true;
   const positions = geometry.getAttribute("position");
   const uv = geometry.getAttribute("uv");
   for (const group of geometry.groups) {
@@ -36,6 +37,7 @@ export function metricBoxUv(geometry: BufferGeometry): void {
 }
 
 export function metricCylinderUv(geometry: CylinderGeometry): void {
+  geometry.userData.metricUv = true;
   const uv = geometry.getAttribute("uv");
   const positions = geometry.getAttribute("position");
   const originalUv = uv.clone();
@@ -59,6 +61,7 @@ export function metricCylinderUv(geometry: CylinderGeometry): void {
 }
 
 export function metricTorusUv(geometry: TorusGeometry): void {
+  geometry.userData.metricUv = true;
   const uv = geometry.getAttribute("uv");
   for (let index = 0; index < uv.count; index++) {
     uv.setXY(

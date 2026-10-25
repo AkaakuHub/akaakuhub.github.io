@@ -1,6 +1,7 @@
 import { Group, Mesh, MeshPhysicalMaterial, Vector3 } from "three";
 import type { BufferGeometry, Material, Object3D, Scene } from "three";
 import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { offsetSurfaceUv } from "./materials/surface-uv";
 
 export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>): void {
   scene.updateMatrixWorld(true);
@@ -43,7 +44,14 @@ export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>
   });
   for (const meshes of batches.values()) {
     const first = meshes[0];
-    if (!first || meshes.length < 2) continue;
+    if (!first) continue;
+    if (meshes.length === 1) {
+      if (first.geometry.userData.metricUv === true) {
+        first.geometry = first.geometry.clone();
+        offsetSurfaceUv(first.geometry, first.matrixWorld);
+      }
+      continue;
+    }
     const parts = meshes.map((mesh) => {
       let source = mesh.geometry;
       if (!source.index) {
@@ -55,7 +63,9 @@ export function batchStaticMeshes(scene: Scene, preserved: ReadonlySet<Object3D>
           source = welded;
         }
       }
-      return source.clone().applyMatrix4(mesh.matrixWorld);
+      const part = source.clone();
+      offsetSurfaceUv(part, mesh.matrixWorld);
+      return part.applyMatrix4(mesh.matrixWorld);
     });
     const geometry = mergeGeometries(parts);
     for (const part of parts) part.dispose();

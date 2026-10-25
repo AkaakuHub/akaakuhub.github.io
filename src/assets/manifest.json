@@ -76,8 +76,8 @@
   },
   {
     "id": "materials/Metal050B/color.webp",
-    "bytes": 1720,
-    "sha256": "edb6b62f9f5984ac9a5af9217adafa67fcfe066b15ff19866001ba1ab6ce943b"
+    "bytes": 2696,
+    "sha256": "0cc7b5c128d583280b1a27bfc0d6676bbc7296717260ae8ded438f599565e021"
   },
   {
     "id": "materials/Metal050B/normal.webp",
@@ -91,13 +91,13 @@
   },
   {
     "id": "materials/painted_plaster_wall/color.webp",
-    "bytes": 29958,
-    "sha256": "a4b40dd2d7c64add236ea1370ed2db65af240b49ef2e01cc08dc4a02da7c4ec0"
+    "bytes": 21704,
+    "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95"
   },
   {
     "id": "materials/painted_plaster_wall/normal.webp",
-    "bytes": 4428,
-    "sha256": "48bb92840b0720db034965114a5f496f646d403ec3935446f82e9103e75fbb27"
+    "bytes": 48892,
+    "sha256": "d537579144c0cd41322c392ecab000317779798817eedc3a8301dd52e670b3b9"
   },
   {
     "id": "materials/PaintedMetal001/arm.webp",
@@ -106,13 +106,13 @@
   },
   {
     "id": "materials/PaintedMetal001/color.webp",
-    "bytes": 6676,
-    "sha256": "550b7c262c2bcf944a8dc43839437a1969cd956145fdeb4be2ff2b332f5122e2"
+    "bytes": 13162,
+    "sha256": "2fb90ddedebbb85ca6f28c662ba36eff517ec67053625e823aa9d16e9c5605dc"
   },
   {
     "id": "materials/PaintedMetal001/normal.webp",
-    "bytes": 5880,
-    "sha256": "bb908ff0be7c04798a7efe3a0197e1ff397b80a3c53a28aa332f622893014a27"
+    "bytes": 45956,
+    "sha256": "e2970a84c94ad191fa87445dee4f2d2bc645b37cf0041624f618663d3aa1449c"
   },
   {
     "id": "materials/Paper001/color.webp",

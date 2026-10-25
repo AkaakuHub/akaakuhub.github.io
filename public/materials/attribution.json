@@ -52,15 +52,15 @@
           "file": "src/assets/materials/painted_plaster_wall/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
           "sourceHash": "15ba8c1f63a5ab412b1eabe31728540a",
-          "sha256": "a4b40dd2d7c64add236ea1370ed2db65af240b49ef2e01cc08dc4a02da7c4ec0",
-          "dimensions": [512, 512]
+          "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95",
+          "dimensions": [1024, 1024]
         },
         "normal": {
           "file": "src/assets/materials/painted_plaster_wall/normal.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_nor_gl_1k.jpg",
           "sourceHash": "43fff290583dbdfc9bfa088a2750e840",
-          "sha256": "48bb92840b0720db034965114a5f496f646d403ec3935446f82e9103e75fbb27",
-          "dimensions": [256, 256],
+          "sha256": "d537579144c0cd41322c392ecab000317779798817eedc3a8301dd52e670b3b9",
+          "dimensions": [512, 512],
           "encoding": "WebP quality 90, smart chroma subsampling"
         },
         "arm": {
@@ -71,7 +71,9 @@
           "dimensions": [256, 256]
         }
       },
-      "provider": "Poly Haven"
+      "provider": "Poly Haven",
+      "appliedSizeMeters": [3.2, 3.2],
+      "processing": "写真の色の変化を24%に抑え、汚れのコントラストを弱める。"
     },
     {
       "id": "ash_veneer",
@@ -212,7 +214,7 @@
           "sourceHashes": {
             "Color": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d"
           },
-          "sha256": "edb6b62f9f5984ac9a5af9217adafa67fcfe066b15ff19866001ba1ab6ce943b",
+          "sha256": "0cc7b5c128d583280b1a27bfc0d6676bbc7296717260ae8ded438f599565e021",
           "dimensions": [512, 512]
         },
         "arm": {
@@ -441,7 +443,7 @@
       "creationMethod": "PBRProcedural",
       "appliedSizeMeters": [0.8, 0.8],
       "scaleNote": "配布元に実寸指定がないため、塗装金具の擦り傷を表す大きさとして設定。",
-      "processing": "黄色の塗装色を無彩色化して明度差を圧縮し、金具ごとの塗装色を乗算。R=255、G=粗さ、B=金属度で格納。",
+      "processing": "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。R=255、G=粗さ、B=金属度で格納。",
       "maps": {
         "color": {
           "file": "src/assets/materials/PaintedMetal001/color.webp",
@@ -450,8 +452,8 @@
           "sourceHashes": {
             "Color": "55e84662a1eca23d73ef851a5ad99857c388adde627f4264b861d9fe5e8cc84f"
           },
-          "sha256": "550b7c262c2bcf944a8dc43839437a1969cd956145fdeb4be2ff2b332f5122e2",
-          "dimensions": [512, 512]
+          "sha256": "2fb90ddedebbb85ca6f28c662ba36eff517ec67053625e823aa9d16e9c5605dc",
+          "dimensions": [1024, 1024]
         },
         "normal": {
           "file": "src/assets/materials/PaintedMetal001/normal.webp",
@@ -460,8 +462,8 @@
           "sourceHashes": {
             "NormalGL": "3bc4900f42e2716bd71d8ccbaea4224c24012abbe99aee806d13439aee9a398d"
           },
-          "sha256": "bb908ff0be7c04798a7efe3a0197e1ff397b80a3c53a28aa332f622893014a27",
-          "dimensions": [256, 256],
+          "sha256": "e2970a84c94ad191fa87445dee4f2d2bc645b37cf0041624f618663d3aa1449c",
+          "dimensions": [512, 512],
           "encoding": "WebP quality 90, smart chroma subsampling"
         },
         "arm": {
