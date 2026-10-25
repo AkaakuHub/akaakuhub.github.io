@@ -84,7 +84,11 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     pending.set(id, result);
     return result;
   }
-  for (const id of initialIds) void fetchBytes(id).catch(abort);
+  const acquisitionOrder = [
+    ...initialIds,
+    ...[...descriptors.keys()].filter((id) => !initialIds.includes(id)),
+  ];
+  for (const id of acquisitionOrder) void fetchBytes(id).catch(abort);
   async function load<Value>(
     id: string,
     decode: (bytes: Uint8Array) => Promise<Value>,
