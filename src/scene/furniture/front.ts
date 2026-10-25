@@ -34,14 +34,10 @@ function readingCart(materials: FurnitureMaterials): Group {
     cart.add(book);
   }
   for (let index = 0; index < 3; index++) {
-    const stack = roundBox(
-      cart,
-      [0.36, 0.043, 0.25],
-      [-0.05, 0.604 + index * 0.043, 0.015],
-      materials.paper,
-      0.003,
-    );
+    const stack = closedNotebook(0.36, 0.043, 0.25, covers[index]!, materials, index + 4);
+    stack.position.set(-0.05, 0.5825 + index * 0.043, 0.015);
     stack.rotation.y = (index - 1) * 0.04;
+    cart.add(stack);
   }
   const cup = ceramicMug(materials.porcelain, 0.075, 0.043);
   cup.position.set(-0.12, 0.9205, 0.02);

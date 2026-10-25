@@ -49,7 +49,7 @@ function tallCabinet(materials: FurnitureMaterials): Group {
   for (const y of [0.087, 2.033])
     roundBox(cabinet, [width, 0.035, 0.48], [0, y, 0], materials.enamel, 0.009);
   for (const y of [0.17, 0.63, 1.03, 1.45, 1.92])
-    box(cabinet, [0.94, 0.022, 0.45], [0, y, 0], materials.ash);
+    roundBox(cabinet, [0.94, 0.022, 0.45], [0, y, 0], materials.ash, 0.002);
   cabinetContents(cabinet, materials);
   for (const x of [-0.25, 0.25]) {
     for (const edge of [-0.215, 0.215])

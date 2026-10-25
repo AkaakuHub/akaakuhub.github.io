@@ -63,7 +63,7 @@ function printedPaper(
 }
 
 function paperGeometry(width: number, height: number): PlaneGeometry {
-  const geometry = new PlaneGeometry(width, height, 20, 24);
+  const geometry = new PlaneGeometry(width, height, 12, 16);
   const positions = geometry.getAttribute("position");
   for (let index = 0; index < positions.count; index++) {
     const u = positions.getX(index) / width + 0.5;
@@ -87,14 +87,13 @@ export function createPaper(
   maps: PbrMaps,
   skillAtlas: ImageBitmap,
 ): Mesh<PlaneGeometry, MeshStandardMaterial> {
-  const normalMap = maps.normalMap.clone();
-  normalMap.channel = 1;
   const paper = new Mesh(
     paperGeometry(width, height),
     new MeshStandardMaterial({
       map: printedPaper(print, maps, width, height, skillAtlas),
-      normalMap,
-      normalScale: new Vector2(0.04, 0.04),
+      normalMap: maps.normalMap,
+      roughnessMap: maps.roughnessMap,
+      normalScale: new Vector2(0.1, 0.1),
       roughness: 1,
       side: DoubleSide,
     }),

@@ -7,10 +7,10 @@ export function createPropMaterials(maps: MaterialLibrary) {
   const cloth = (color: string) =>
     physicalSurface(maps.fabric, {
       color,
-      sheen: 0.8,
+      sheen: 0.3,
       sheenColor: color,
       sheenRoughness: 0.9,
-      normalScale: new Vector2(0.35, 0.35),
+      normalScale: new Vector2(0.22, 0.22),
     });
   const plastic = (color: string, roughness: number) =>
     physicalSurface(maps.plastic, {

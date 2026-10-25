@@ -4,10 +4,13 @@ import type { Curve, Vector2, Vector3 } from "three";
 export function latheGeometry(profile: Vector2[], segments: number): LatheGeometry {
   const geometry = new LatheGeometry(profile, segments);
   const positions = geometry.getAttribute("position");
+  const normals = geometry.getAttribute("normal");
   const uv = geometry.getAttribute("uv");
   for (let index = 0; index < uv.count; index++) {
     const radius = Math.hypot(positions.getX(index), positions.getZ(index));
-    uv.setXY(index, uv.getX(index) * Math.PI * 2 * radius, positions.getY(index));
+    if (Math.abs(normals.getY(index)) > 0.9)
+      uv.setXY(index, positions.getX(index), positions.getZ(index));
+    else uv.setXY(index, uv.getX(index) * Math.PI * 2 * radius, positions.getY(index));
   }
   return geometry;
 }

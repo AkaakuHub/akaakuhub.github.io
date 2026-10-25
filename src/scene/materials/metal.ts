@@ -23,10 +23,11 @@ export function createMetalMaterials(maps: MaterialLibrary) {
       normalScale: new Vector2(0.08, 0.08),
     }),
     steel: texturedMetal(maps.steel, { color: "#c8cbd0", roughness: 0.42 }),
-    brass: texturedMetal(maps.brass, { color: "#dbdcc9", roughness: 0.4 }),
+    brass: texturedMetal(maps.brass, { color: "#d8b477", roughness: 0.34 }),
     enamel: physicalSurface(maps.paint, {
       color: "#d5ddd2",
       metalness: 0,
+      roughness: 0.62,
       clearcoat: 0.3,
       clearcoatRoughness: 0.42,
       normalScale: new Vector2(0.16, 0.16),
@@ -34,6 +35,7 @@ export function createMetalMaterials(maps: MaterialLibrary) {
     deepGreen: physicalSurface(maps.paint, {
       color: "#334d43",
       metalness: 0,
+      roughness: 0.72,
       clearcoat: 0.2,
       clearcoatRoughness: 0.5,
       normalScale: new Vector2(0.14, 0.14),
@@ -41,7 +43,7 @@ export function createMetalMaterials(maps: MaterialLibrary) {
     ivory: physicalSurface(maps.paint, {
       color: "#e9e9df",
       metalness: 0,
-      roughness: 1,
+      roughness: 0.68,
       clearcoat: 0.22,
       clearcoatRoughness: 0.5,
       normalScale: new Vector2(0.12, 0.12),
@@ -49,6 +51,7 @@ export function createMetalMaterials(maps: MaterialLibrary) {
     graphite: texturedMetal(maps.powder, {
       color: "#303431",
       metalness: 0,
+      roughness: 0.78,
       normalScale: new Vector2(0.12, 0.12),
     }),
     rubber: texturedMetal(maps.powder, {

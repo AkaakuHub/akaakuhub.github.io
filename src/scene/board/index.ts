@@ -1,14 +1,14 @@
 import type { PbrMaps } from "../materials/library";
-import { Group, Mesh, Vector2 } from "three";
+import { Group } from "three";
 import type { Object3D } from "three";
 import type { PropMaterials } from "../materials/props";
-import { latheGeometry } from "../geometry/curves";
 import type { MetalMaterials } from "../materials/metal";
 import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
 import type { BoardState, Notice } from "./notices";
 import { createPaper, updatePaper } from "./paper";
 import { createBoardCredit, createBoardHeading } from "./heading";
+import { addMagnets } from "./magnets";
 
 export type { Notice } from "./notices";
 
@@ -27,6 +27,13 @@ export function createBoard(
   group.name = "notice-board";
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
+  const paperSurface = {
+    ...paperMaps,
+    normalMap: paperMaps.normalMap.clone(),
+    roughnessMap: paperMaps.roughnessMap.clone(),
+  };
+  paperSurface.normalMap.channel = 1;
+  paperSurface.roughnessMap.channel = 1;
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
   group.add(
@@ -40,35 +47,11 @@ export function createBoard(
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
-    const paper = createPaper(width, height, notice, paperMaps, skillAtlas);
+    const paper = createPaper(width, height, notice, paperSurface, skillAtlas);
     if (notice.kind === "github") contributions = paper;
     sheet.add(paper);
-    const magnetMaterial = props.plasticGraphite.clone();
-    magnetMaterial.color.set(notice.ink);
-    magnetMaterial.roughness = 0.5;
-    const magnetGeometry = latheGeometry(
-      [
-        new Vector2(0, -0.007),
-        new Vector2(0.019, -0.007),
-        new Vector2(0.021, -0.005),
-        new Vector2(0.022, -0.003),
-        new Vector2(0.022, 0.003),
-        new Vector2(0.021, 0.006),
-        new Vector2(0.019, 0.007),
-        new Vector2(0, 0.007),
-      ],
-      32,
-    );
     const magnetOffset = width * (notice.kind === "skills" ? 0.34 : 0.46);
-    const magnets = [-magnetOffset, magnetOffset];
-    for (const x of magnets) {
-      const magnet = new Mesh(magnetGeometry, magnetMaterial);
-      magnet.rotation.x = Math.PI / 2;
-      magnet.position.set(x, height / 2 - 0.035, 0.0073);
-      magnet.castShadow = true;
-      magnet.receiveShadow = true;
-      sheet.add(magnet);
-    }
+    addMagnets(sheet, magnetOffset, height, notice.ink, props);
     group.add(sheet);
     const metadata = { title: notice.title, size: notice.size, link: notice.link };
     notices.set(paper, metadata);

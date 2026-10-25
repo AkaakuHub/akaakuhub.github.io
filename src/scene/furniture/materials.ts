@@ -1,4 +1,5 @@
 import type { MaterialLibrary } from "../materials/library";
+import { Vector2 } from "three";
 import { scannedSurface } from "../materials/surface";
 import type { MetalMaterials } from "../materials/metal";
 import type { PropMaterials } from "../materials/props";
@@ -9,7 +10,10 @@ export function createFurnitureMaterials(
   props: PropMaterials,
 ) {
   return {
-    ash: scannedSurface(maps.ash),
+    ash: scannedSurface(maps.ash, {
+      roughness: 0.64,
+      normalScale: new Vector2(0.22, 0.22),
+    }),
     ivory: metals.ivory,
     enamel: metals.enamel,
     deepGreen: metals.deepGreen,
