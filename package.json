@@ -9,12 +9,13 @@
     "lint": "oxlint --deny-warnings",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip",
     "fix": "oxfmt . && oxlint --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p worker/tsconfig.json",
     "knip": "knip",
     "prepare": "lefthook install",
     "preinstall": "only-allow pnpm",
     "preview": "vp preview",
-    "format:check": "oxfmt --check ."
+    "format:check": "oxfmt --check .",
+    "dev:weather": "wrangler dev --local"
   },
   "dependencies": {
     "lucide": "^1.61.0",
@@ -23,6 +24,7 @@
     "unified-asset-loader": "0.1.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261025.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",
     "@types/three": "^0.186.0",
@@ -33,6 +35,7 @@
     "oxlint": "^1.89.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite-plus": "^1.4.0"
+    "vite-plus": "^1.4.0",
+    "wrangler": "^4.152.0"
   }
 }
