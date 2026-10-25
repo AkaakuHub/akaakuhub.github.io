@@ -1,5 +1,15 @@
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
+  --loading-background: #edf0e5;
+  --loading-ink: #183b31;
+  --loading-accent: #b2663d;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --loading-background: #141c19;
+    --loading-ink: #c5d9cb;
+    --loading-accent: #dda478;
+  }
 }
 html,
 body {
@@ -7,14 +17,13 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #edf0e5;
+  background: var(--loading-background);
 }
 #app {
   width: 100%;
   height: 100dvh;
 }
 .loading {
-  --ink: #183b31;
   --load-progress: 0;
   position: fixed;
   inset: 0;
@@ -24,8 +33,8 @@ body {
   grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
   padding: clamp(24px, 5vw, 72px);
-  color: var(--ink);
-  background: #edf0e5;
+  color: var(--loading-ink);
+  background: var(--loading-background);
   font-family: "Zen Maru Gothic Board", sans-serif;
   transition: opacity 0.18s ease;
 }
@@ -61,10 +70,20 @@ body {
 .loading-model > div {
   position: absolute;
   inset: 0;
-  border: 1px solid #183b3180;
+  border: 1px solid color-mix(in srgb, var(--loading-ink) 50%, transparent);
   background:
-    repeating-linear-gradient(0deg, transparent, transparent 37px, #183b3114 38px),
-    repeating-linear-gradient(90deg, transparent, transparent 37px, #183b3114 38px);
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 37px,
+      color-mix(in srgb, var(--loading-ink) 8%, transparent) 38px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 37px,
+      color-mix(in srgb, var(--loading-ink) 8%, transparent) 38px
+    );
   backface-visibility: visible;
 }
 .loading-wall-back {
@@ -80,15 +99,18 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: #306e4f29;
+  background: color-mix(in srgb, var(--loading-ink) 16%, transparent);
   transform: scaleX(var(--load-progress));
   transform-origin: left;
   transition: transform 0.4s ease;
 }
 .loading-model .loading-scan {
   border: 0;
-  border-top: 1px solid #b2663d;
-  background: linear-gradient(#b2663d18, transparent 36%);
+  border-top: 1px solid var(--loading-accent);
+  background: linear-gradient(
+    color-mix(in srgb, var(--loading-accent) 10%, transparent),
+    transparent 36%
+  );
   transform: translateZ(0);
   animation: room-scan 2.5s ease-in-out infinite;
 }
@@ -114,18 +136,18 @@ body {
   width: 100%;
   height: 3px;
   border: 0;
-  background: #183b3122;
-  accent-color: #183b31;
+  background: color-mix(in srgb, var(--loading-ink) 13%, transparent);
+  accent-color: var(--loading-ink);
 }
 .loading-progress::-webkit-progress-bar {
-  background: #183b3122;
+  background: color-mix(in srgb, var(--loading-ink) 13%, transparent);
 }
 .loading-progress::-webkit-progress-value {
-  background: #183b31;
+  background: var(--loading-ink);
   transition: width 0.35s ease;
 }
 .loading-progress::-moz-progress-bar {
-  background: #183b31;
+  background: var(--loading-ink);
 }
 .loading-complete {
   opacity: 0;
