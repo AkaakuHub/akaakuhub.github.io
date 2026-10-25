@@ -9,8 +9,8 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
       normalScale: new Vector2(0.12, 0.12),
     }),
     wall: scannedSurface(maps.plaster, {
-      color: "#f0eee5",
-      normalScale: new Vector2(0.3, 0.3),
+      color: "#faf9f6",
+      normalScale: new Vector2(0.18, 0.18),
     }),
     ceiling: scannedSurface(maps.ceiling, {
       name: "room-ceiling",
@@ -18,9 +18,9 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
       normalScale: new Vector2(0.5, 0.5),
     }),
     boards: scannedSurface(maps.ash, {
-      color: "#d8cbb5",
-      roughness: 0.72,
-      normalScale: new Vector2(0.22, 0.22),
+      color: "#f4eee3",
+      roughness: 0.85,
+      normalScale: new Vector2(0.1, 0.1),
     }),
     trim: scannedSurface(maps.walnut, {
       color: "#d5cebb",
