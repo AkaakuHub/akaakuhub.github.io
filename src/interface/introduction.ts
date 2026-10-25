@@ -1,4 +1,5 @@
 import "./introduction.css";
+import { ArrowUpRight, createElement } from "lucide";
 import type { ViewState } from "../scene/view";
 
 export function createIntroduction(root: HTMLElement, leavePaper: () => void) {
@@ -7,10 +8,13 @@ export function createIntroduction(root: HTMLElement, leavePaper: () => void) {
   guide.className = "room-introduction";
   guide.tabIndex = -1;
   guide.hidden = true;
-  const arrow = document.createElement("span");
-  arrow.className = "room-introduction__arrow";
-  arrow.textContent = "↗";
-  arrow.setAttribute("aria-hidden", "true");
+  const arrow = createElement(ArrowUpRight, {
+    width: 40,
+    height: 40,
+    "stroke-width": 1.6,
+    class: "room-introduction__arrow",
+    "aria-hidden": "true",
+  });
   const message = document.createElement("span");
   message.textContent = window.matchMedia("(pointer: coarse)").matches
     ? "紙の外をタップしてみてください"

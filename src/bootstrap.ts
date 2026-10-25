@@ -3,10 +3,12 @@ import { prepareRecovery } from "./interface/recovery";
 import { loadTokyoWeather } from "./weather/client";
 import { createRoomAssetLoader } from "./assets/loading";
 import type { RoomAssetLoader } from "./assets/loading";
+import { createWeatherAudio } from "./scene/audio";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
 const loading = createLoading(root);
+const audio = createWeatherAudio();
 window.addEventListener("error", (event) =>
   loading.fail(event.error ? event.error : event.message),
 );
@@ -22,7 +24,7 @@ try {
     import("./assets/fonts/board-text.css"),
     import("./assets/fonts/yomogi.css"),
   ]);
-  await room.startRoom(root, loading, weatherReady, assets);
+  await room.startRoom(root, loading, weatherReady, assets, audio);
 } catch (error) {
   assets?.abort(error);
   loading.fail(error);

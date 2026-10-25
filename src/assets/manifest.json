@@ -1,5 +1,25 @@
 [
   {
+    "id": "audio/gutter.opus",
+    "bytes": 106829,
+    "sha256": "0aead3414a559b0cb897275c07cda61e23de93bf50da8d837afa4b6969197b4d"
+  },
+  {
+    "id": "audio/rain.opus",
+    "bytes": 170394,
+    "sha256": "ff5455d076cfbe10cd1dd258bf02a0d98bb5a17b9ff274a70399730819febb4e"
+  },
+  {
+    "id": "audio/wind.opus",
+    "bytes": 130170,
+    "sha256": "f58df18ca4bd3d07fbb3df7d6e2924ff3529fbb1f1e9077d5dacb12bb1a824e3"
+  },
+  {
+    "id": "audio/window.opus",
+    "bytes": 69016,
+    "sha256": "d956a1f63adfb0d0b5613aa751d11c4ccce475b766cf8ff28664d6a04f686122"
+  },
+  {
     "id": "lighting/ltc.bin",
     "bytes": 65536,
     "sha256": "de13346ddf530f99127993fc850985997dcdadbdf5b3ea820072eb78b4c7c428"

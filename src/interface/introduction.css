@@ -24,8 +24,7 @@
   display: none;
 }
 .room-introduction__arrow {
-  font-size: 42px;
-  line-height: 1;
+  filter: drop-shadow(0 1px 3px #000b);
 }
 @keyframes introduction-appear {
   from {

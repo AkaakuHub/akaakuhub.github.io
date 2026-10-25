@@ -27,13 +27,16 @@ import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
 import { loadSkillAtlas } from "./assets/skills";
 import { createIntroduction } from "./interface/introduction";
-import { createCornerControls } from "./interface/corners";
+import { createDirectionControls } from "./interface/directions";
+import type { WeatherAudio } from "./scene/audio";
+import { bindSoundControl } from "./interface/sound";
 
 export async function startRoom(
   root: HTMLElement,
   loading: Loading,
   weatherReady: Promise<WeatherDay>,
   assets: RoomAssetLoader,
+  audio: WeatherAudio,
 ) {
   const ui = createInterface(root);
   const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
@@ -69,10 +72,12 @@ export async function startRoom(
     weatherAt(initialWeather, Date.now()),
     computer.monitor,
   );
+  audio.updateWeather(weatherAt(initialWeather, Date.now()));
   const weather = observeTokyoWeather(
     initialWeather,
     (current) => {
       const sample = weatherAt(current, Date.now());
+      audio.updateWeather(sample);
       lighting.update(new Date(), sample, prepared && !view.moving);
       if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
       invalidate();
@@ -106,7 +111,7 @@ export async function startRoom(
     topAligned: index === 0 || index === 2,
   }));
   let introduction: ReturnType<typeof createIntroduction> | undefined;
-  let updateCorners: ReturnType<typeof createCornerControls> | undefined;
+  let updateDirections: ReturnType<typeof createDirectionControls> | undefined;
   const view = createView(
     camera,
     inspections,
@@ -115,14 +120,15 @@ export async function startRoom(
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
       introduction?.update(state);
-      updateCorners?.(state);
+      updateDirections?.(state);
     },
     invalidate,
     () => ui.inspectionViewport(),
   );
   introduction = createIntroduction(root, () => view.back());
-  updateCorners = createCornerControls(root, view);
-  updateCorners(view.state);
+  updateDirections = createDirectionControls(root, view);
+  updateDirections(view.state);
+  bindSoundControl(root, audio);
   const computerInterface = createComputerInterface(
     computer,
     view,
@@ -161,6 +167,7 @@ export async function startRoom(
       return;
     }
     const sample = weatherAt(weather.current, Date.now());
+    audio.updateWeather(sample);
     lighting.update(new Date(), sample, prepared && !view.moving);
     if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
     lighting.invalidateShadows();
@@ -185,6 +192,7 @@ export async function startRoom(
     }
     const seconds = (time - previous) / 1000;
     const moving = view.update(seconds);
+    audio.updateCamera(camera);
     ui.setMoving(moving);
     previous = time;
     lastRendered = time;
@@ -198,6 +206,7 @@ export async function startRoom(
       const measurement = performance.measure("room-first-frame", { start: 0 });
       if (import.meta.env.DEV) console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
       ready = true;
+      audio.start();
       introduction?.start();
       contributions.load();
       void boardLoader.refresh(false);

@@ -5,7 +5,7 @@ import { join, relative } from "node:path";
 const root = "src/assets";
 const entries = [];
 for (const name of await readdir(root, { recursive: true })) {
-  if (!name.endsWith(".webp") && !name.endsWith(".bin")) continue;
+  if (!name.endsWith(".webp") && !name.endsWith(".bin") && !name.endsWith(".opus")) continue;
   const path = join(root, name);
   const bytes = await readFile(path);
   entries.push({

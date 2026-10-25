@@ -1,7 +1,8 @@
-import "./corners.css";
+import "./directions.css";
+import { ChevronRight, createElement } from "lucide";
 import type { createView, ViewState } from "../scene/view";
 
-export function createCornerControls(root: HTMLElement, view: ReturnType<typeof createView>) {
+export function createDirectionControls(root: HTMLElement, view: ReturnType<typeof createView>) {
   const navigation = root.querySelector(".room-keyboard");
   if (!navigation) throw new Error("視点操作の配置先が見つかりません。");
   const actions = [
@@ -13,9 +14,16 @@ export function createCornerControls(root: HTMLElement, view: ReturnType<typeof 
   const buttons = actions.map((action) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.dataset.viewCorner = action.corner;
-    button.className = "room-corner";
-    button.textContent = ">";
+    button.dataset.viewDirection = action.corner;
+    button.className = "room-direction";
+    button.append(
+      createElement(ChevronRight, {
+        width: 30,
+        height: 30,
+        "stroke-width": 1.6,
+        "aria-hidden": "true",
+      }),
+    );
     button.setAttribute("aria-label", action.label);
     button.addEventListener("click", action.run);
     navigation.append(button);
@@ -23,8 +31,8 @@ export function createCornerControls(root: HTMLElement, view: ReturnType<typeof 
   });
   return (state: ViewState): void => {
     for (const { button, corner } of buttons) {
-      button.hidden = state.mode !== "room";
-      button.disabled = corner === "down" && (state.mode !== "room" || state.direction !== 4);
+      button.hidden =
+        state.mode !== "room" || (state.direction === 4 ? corner !== "down" : corner === "down");
     }
   };
 }

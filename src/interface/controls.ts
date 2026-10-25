@@ -43,7 +43,9 @@ export function bindRoomControls(
   }
   function nextNotice(step: number): void {
     if (view.state.mode !== "notice" || view.moving) return;
-    view.inspect(MathUtils.clamp(view.state.index + step, 0, papers.length - 1));
+    const next = view.state.index + step;
+    if (next >= papers.length) view.back();
+    else view.inspect(Math.max(0, next));
   }
   window.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;

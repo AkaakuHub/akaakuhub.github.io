@@ -1,5 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignoreBinaries": ["ffmpeg"],
   "entry": [
     "src/tailwind.css",
     "scripts/assets/catalog.mjs",
@@ -10,7 +11,8 @@
     "scripts/assets/surface-wear.mjs",
     "scripts/assets/texture-encoding.mjs",
     "scripts/assets/board-text-font.mjs",
-    "scripts/assets/packed-surfaces.mjs"
+    "scripts/assets/packed-surfaces.mjs",
+    "scripts/assets/weather-audio.mjs"
   ],
   "project": ["src/**/*.{ts,css}", "scripts/**/*.mjs", "worker/**/*.ts"]
 }

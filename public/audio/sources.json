@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rain",
+    "author": "Ylmir",
+    "source": "https://opengameart.org/content/rain-loopable",
+    "download": "https://opengameart.org/sites/default/files/Rain%20MP3.zip",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",
+    "archiveMember": "1.mp3",
+    "sourceDurationSeconds": 24
+  },
+  {
+    "id": "window",
+    "author": "alxl",
+    "source": "https://opengameart.org/content/rain-on-window-loop",
+    "download": "https://opengameart.org/sites/default/files/rain_on_window_loop.wav",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",
+    "sourceDurationSeconds": 10.8
+  },
+  {
+    "id": "gutter",
+    "author": "Ogrebane",
+    "source": "https://opengameart.org/content/rain-gutter-loop",
+    "download": "https://opengameart.org/sites/default/files/rain-gutter-loop_0.mp3",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",
+    "sourceDurationSeconds": 20
+  },
+  {
+    "id": "wind",
+    "author": "Thimras",
+    "source": "https://opengameart.org/content/park-ambiences",
+    "download": "https://opengameart.org/sites/default/files/park_ambience_wind.wav",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",
+    "startSeconds": 25,
+    "sourceDurationSeconds": 24
+  }
+]
