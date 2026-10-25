@@ -25,7 +25,7 @@ import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
-import { loadSkillAtlas } from "./assets/skills";
+import { loadProfileAvatar } from "./content/avatar";
 import { createIntroduction } from "./interface/introduction";
 import { createDirectionControls } from "./interface/directions";
 import type { WeatherAudio } from "./scene/audio";
@@ -52,13 +52,13 @@ export async function startRoom(
   camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
   const materialLoading = loadMaterials(rendererReady, assets);
-  const skillAtlasReady = loadSkillAtlas(assets);
+  const avatarReady = loadProfileAvatar();
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
-  const [renderer, initialWeather, skillAtlas] = await Promise.all([
+  const [renderer, initialWeather, avatar] = await Promise.all([
     rendererReady,
     weatherReady,
-    skillAtlasReady,
+    avatarReady,
     materialLoading.paperReady,
     fontsReady,
   ]);
@@ -66,7 +66,7 @@ export async function startRoom(
   const { board, lightSwitch, rocker, computer } = await assembleClubroom(
     scene,
     materials,
-    skillAtlas,
+    avatar,
     batchStaticMeshes,
   );
   loading.rendering(1, 4);
@@ -112,10 +112,10 @@ export async function startRoom(
       return notice.size[0] + 0.04;
     },
     get height() {
-      return notice.size[1] + (index < 3 ? 0.16 : 0.04);
+      return notice.size[1] + (index === 1 || index === 2 ? 0.16 : 0.04);
     },
     depth: 0,
-    offsetY: index < 3 ? 0.06 : 0,
+    offsetY: index === 1 || index === 2 ? 0.06 : 0,
     topAligned: false,
   }));
   let introduction: ReturnType<typeof createIntroduction> | undefined;

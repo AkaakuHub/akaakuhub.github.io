@@ -12,7 +12,6 @@ import { isRecovering } from "../interface/recovery";
 import { asset } from "./catalog";
 import { materialAssetIds, materialDefinitions } from "./materials";
 import { areaLightAssetId } from "./lighting";
-import { skillAtlasAssetId } from "./skills";
 import { createImageDecoder } from "./images/decoder";
 
 export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) => void) {
@@ -23,7 +22,6 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   const initialIds = [
     ...materialAssetIds.filter((id) => id.startsWith(`materials/${materialDefinitions.paper.id}/`)),
     areaLightAssetId,
-    skillAtlasAssetId,
   ];
   const initialUrls = new Set(initialIds.map((id) => new URL(asset(id).url, location.href).href));
   const { load: loadBinaryAsset } = createBinaryAssetLoader({
@@ -37,7 +35,7 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
-    [...materialAssetIds, areaLightAssetId, skillAtlasAssetId].map((id) => [
+    [...materialAssetIds, areaLightAssetId].map((id) => [
       id,
       {
         identity: `akaakuhub:${id}`,

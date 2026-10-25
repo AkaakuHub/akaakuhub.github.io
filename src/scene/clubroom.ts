@@ -20,12 +20,12 @@ function isMonitor(object: Object3D | undefined): object is Mesh<PlaneGeometry, 
 export async function assembleClubroom(
   scene: Scene,
   materials: MaterialLibrary,
-  skillAtlas: ImageBitmap,
+  avatar: ImageBitmap,
   batchStaticMeshes: (scene: Scene, preserved: ReadonlySet<Object3D>) => Promise<void>,
 ) {
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
-  const board = createBoard(metals, materials.paper, props, skillAtlas);
+  const board = createBoard(metals, materials.paper, props, avatar);
   scene.add(
     createRoom(materials, metals, props),
     createFurniture(materials, metals, props),

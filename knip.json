@@ -8,7 +8,6 @@
     "scripts/assets/lighting.mjs",
     "scripts/assets/fonts.mjs",
     "scripts/assets/board-font.mjs",
-    "scripts/assets/skill-logos.mjs",
     "scripts/assets/surface-wear.mjs",
     "scripts/assets/oak.mjs",
     "scripts/assets/texture-encoding.mjs",

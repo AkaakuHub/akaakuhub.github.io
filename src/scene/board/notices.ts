@@ -12,7 +12,7 @@ export type BoardState =
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
 export interface BoardNotice extends Notice {
-  kind: "github" | "skills" | "article";
+  kind: "profile" | "github" | "article";
   eyebrow: string;
   position: readonly [number, number];
   angle: number;
@@ -24,11 +24,11 @@ export interface BoardNotice extends Notice {
 export function boardNotices(state: BoardState): BoardNotice[] {
   const notices: BoardNotice[] = [
     {
-      kind: "github",
-      title: "GitHubの記録",
+      kind: "profile",
+      title: profile.name,
       eyebrow: "",
-      size: [1.08, 0.47],
-      position: [-0.56, 2],
+      size: [1.08, 0.91],
+      position: [-0.56, 1.8],
       angle: 0.012,
       ink: "#253b31",
       stock: "#f3eee0",
@@ -36,19 +36,16 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       link: { label: "GitHubを開く", href: profile.github },
     },
     {
-      kind: "skills",
-      title: "制作分野と言語",
+      kind: "github",
+      title: "GitHubの記録",
       eyebrow: "",
-      size: [1.08, 0.97],
-      position: [-0.56, 1.155],
+      size: [1.08, 0.47],
+      position: [-0.56, 0.94],
       angle: -0.009,
       ink: "#294536",
       stock: "#f0f0e2",
       thumbnail: null,
-      link: {
-        label: "GitHubの制作物を見る",
-        href: `${profile.github}?tab=repositories`,
-      },
+      link: { label: "GitHubを開く", href: profile.github },
     },
   ];
   const date = new Intl.DateTimeFormat("ja-JP", {

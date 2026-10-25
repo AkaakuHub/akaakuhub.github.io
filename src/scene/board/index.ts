@@ -16,7 +16,7 @@ export function createBoard(
   metals: MetalMaterials,
   paperMaps: PbrMaps,
   props: PropMaterials,
-  skillAtlas: ImageBitmap,
+  avatar: ImageBitmap,
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
@@ -37,8 +37,7 @@ export function createBoard(
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
   group.add(
-    createBoardHeading("GitHub", -0.79, 2.275),
-    createBoardHeading("Skills", -0.79, 1.69),
+    createBoardHeading("GitHub", -0.79, 1.26),
     createBoardHeading("最新記事", 0.33, 2.275),
     createBoardCredit(),
   );
@@ -47,10 +46,10 @@ export function createBoard(
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
-    const paper = createPaper(width, height, notice, paperSurface, skillAtlas);
+    const paper = createPaper(width, height, notice, paperSurface, avatar);
     if (notice.kind === "github") contributions = paper;
     sheet.add(paper);
-    const magnetOffset = width * (notice.kind === "skills" ? 0.34 : 0.46);
+    const magnetOffset = width * (notice.kind === "profile" ? 0.34 : 0.46);
     addMagnets(sheet, magnetOffset, height, notice.ink, props);
     group.add(sheet);
     const metadata = { title: notice.title, size: notice.size, link: notice.link };
@@ -70,7 +69,7 @@ export function createBoard(
         if (!metadata) throw new Error("掲示の情報がありません。");
         metadata.title = notice.title;
         metadata.link = notice.link;
-        if (notice.kind === "article") updatePaper(paper, notice, paperMaps, skillAtlas);
+        if (notice.kind === "article") updatePaper(paper, notice, paperMaps, avatar);
       });
     },
   };

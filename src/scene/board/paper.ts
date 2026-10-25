@@ -12,14 +12,14 @@ import {
 import type { BoardNotice } from "./notices";
 import { siteFont } from "../../assets/typography";
 import { paintArticle } from "./print/article";
-import { paintSkills } from "./print/skills";
+import { paintProfile } from "./print/profile";
 
 function printedPaper(
   print: BoardNotice,
   maps: PbrMaps,
   sheetWidth: number,
   sheetHeight: number,
-  skillAtlas: ImageBitmap,
+  avatar: ImageBitmap,
 ): CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(sheetWidth * 1200);
@@ -48,7 +48,7 @@ function printedPaper(
   if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
-    if (print.kind === "skills") paintSkills(context, skillAtlas, width);
+    if (print.kind === "profile") paintProfile(context, avatar, width);
     context.fillStyle = print.ink;
     if (print.link) {
       context.fillRect(margin, height - width * 0.085, width - margin * 2, 1);
@@ -85,12 +85,12 @@ export function createPaper(
   height: number,
   print: BoardNotice,
   maps: PbrMaps,
-  skillAtlas: ImageBitmap,
+  avatar: ImageBitmap,
 ): Mesh<PlaneGeometry, MeshStandardMaterial> {
   const paper = new Mesh(
     paperGeometry(width, height),
     new MeshStandardMaterial({
-      map: printedPaper(print, maps, width, height, skillAtlas),
+      map: printedPaper(print, maps, width, height, avatar),
       normalMap: maps.normalMap,
       roughnessMap: maps.roughnessMap,
       normalScale: new Vector2(0.1, 0.1),
@@ -107,9 +107,9 @@ export function updatePaper(
   paper: Mesh<PlaneGeometry, MeshStandardMaterial>,
   print: BoardNotice,
   maps: PbrMaps,
-  skillAtlas: ImageBitmap,
+  avatar: ImageBitmap,
 ): void {
   const previous = paper.material.map;
-  paper.material.map = printedPaper(print, maps, print.size[0], print.size[1], skillAtlas);
+  paper.material.map = printedPaper(print, maps, print.size[0], print.size[1], avatar);
   previous?.dispose();
 }

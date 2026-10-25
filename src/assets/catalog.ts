@@ -1,7 +1,7 @@
 import manifest from "./manifest.json";
 
 const sources = import.meta.glob<string>(
-  ["./materials/**/*.webp", "./lighting/*.bin", "./skills/*.webp", "./audio/*.opus"],
+  ["./materials/**/*.webp", "./lighting/*.bin", "./audio/*.opus"],
   {
     eager: true,
     query: "?url",

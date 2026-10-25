@@ -213,10 +213,5 @@
     "id": "materials/walnut_veneer/normal.webp",
     "bytes": 11340,
     "sha256": "8cf2383ba473aca8df3b9f384ab03ae56c210a6cce0ea616c372afde9f1816af"
-  },
-  {
-    "id": "skills/logos.webp",
-    "bytes": 47442,
-    "sha256": "8ff3a519e61cb724c287683dcd2cbe2a84a12a7db3ed8d3ae7537aeba33e82c7"
   }
 ]
