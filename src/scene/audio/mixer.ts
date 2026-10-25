@@ -8,7 +8,7 @@ import { createRoomReverb } from "./reverb";
 export function createWeatherMixer(context: AudioContext) {
   const controller = new AbortController();
   const master = context.createGain();
-  master.gain.value = 0.7;
+  master.gain.value = 1;
   const compressor = context.createDynamicsCompressor();
   compressor.threshold.value = -8;
   compressor.ratio.value = 4;
@@ -84,7 +84,7 @@ export function createWeatherMixer(context: AudioContext) {
     },
     sync,
     mute(muted: boolean): void {
-      master.gain.setTargetAtTime(muted ? 0 : 0.7, context.currentTime, 0.03);
+      master.gain.setTargetAtTime(muted ? 0 : 1, context.currentTime, 0.03);
     },
     dispose(): void {
       controller.abort();

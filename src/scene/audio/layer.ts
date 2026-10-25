@@ -6,7 +6,7 @@ const locations = {
   gutter: [-2.7, 2.5, -0.6],
   wind: [-4, 2.2, 1.5],
 } satisfies Record<SoundName, readonly [number, number, number]>;
-const cutoffs = { rain: 2600, window: 4800, gutter: 3200, wind: 1500 };
+const cutoffs = { rain: 10000, window: 14000, gutter: 10000, wind: 8000 };
 
 export function createSoundLayer(
   context: AudioContext,
@@ -28,8 +28,8 @@ export function createSoundLayer(
   const panner = new PannerNode(context, {
     panningModel: "HRTF",
     distanceModel: "inverse",
-    refDistance: name === "wind" ? 2.8 : 1.5,
-    rolloffFactor: 0.7,
+    refDistance: 3,
+    rolloffFactor: 0.25,
     maxDistance: 20,
     positionX: x,
     positionY: y,

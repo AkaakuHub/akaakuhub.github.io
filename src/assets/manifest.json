@@ -1,23 +1,23 @@
 [
   {
     "id": "audio/gutter.opus",
-    "bytes": 106829,
-    "sha256": "0aead3414a559b0cb897275c07cda61e23de93bf50da8d837afa4b6969197b4d"
+    "bytes": 446245,
+    "sha256": "dffda3239807be88ad0d488d7c6845ef2c635495a1f40d4593ffe412cb105fb2"
   },
   {
     "id": "audio/rain.opus",
-    "bytes": 170394,
-    "sha256": "ff5455d076cfbe10cd1dd258bf02a0d98bb5a17b9ff274a70399730819febb4e"
+    "bytes": 531637,
+    "sha256": "4bfc0711cc2dc08c3ad61d844b45536a5446e13ae4a4c79c641f31c56592114c"
   },
   {
     "id": "audio/wind.opus",
-    "bytes": 130170,
-    "sha256": "f58df18ca4bd3d07fbb3df7d6e2924ff3529fbb1f1e9077d5dacb12bb1a824e3"
+    "bytes": 528030,
+    "sha256": "864bb7b2558d5af28ec172fbf2b187ceee48a7db6feb9333f0bff7e867ad1acf"
   },
   {
     "id": "audio/window.opus",
-    "bytes": 69016,
-    "sha256": "d956a1f63adfb0d0b5613aa751d11c4ccce475b766cf8ff28664d6a04f686122"
+    "bytes": 249377,
+    "sha256": "f6d0ca1976f6f7764163e87dbceacd548792dcce0245870e89b2543dcf756fbf"
   },
   {
     "id": "lighting/ltc.bin",
