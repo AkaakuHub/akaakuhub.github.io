@@ -76,7 +76,7 @@ export function boardNotices(state: BoardState): BoardNotice[] {
             : "公開記事はありません",
       link: article ? { label: "この記事を読む", href: article.url } : null,
       size: [1.08, 0.51],
-      position: [0.56, 1.915 - index * 0.55],
+      position: [0.56, 1.915 - index * 0.485],
       angle: index % 2 ? 0.012 : -0.01,
       ink: "#65442a",
       stock: "#f8f4e8",

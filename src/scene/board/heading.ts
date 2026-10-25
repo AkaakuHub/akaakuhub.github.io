@@ -45,7 +45,7 @@ export function createBoardCredit() {
     new PlaneGeometry(0.56, 0.07),
     new MeshStandardMaterial({ map: texture, transparent: true, depthWrite: false, roughness: 1 }),
   );
-  credit.position.set(1.19, 1.41, 0.046);
-  credit.rotation.z = Math.PI / 2;
+  credit.scale.set(1.15, 0.72, 1);
+  credit.position.set(0.9, 1.115, 0.046);
   return credit;
 }
