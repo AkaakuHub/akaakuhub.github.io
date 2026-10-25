@@ -10,7 +10,7 @@ import {
 import { PMREMGenerator } from "three/webgpu";
 import type { Renderer } from "three/webgpu";
 import type { Object3D, Scene } from "three";
-import { pmremTexture } from "three/tsl";
+import { pmremTexture, vec3 } from "three/tsl";
 
 export function createRoomReflection(scene: Scene, renderer: Renderer) {
   const generator = new PMREMGenerator(renderer);
@@ -24,6 +24,7 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
   });
   direct.texture.mapping = CubeUVReflectionMapping;
   const environmentNode = pmremTexture(direct.texture);
+  const captureEnvironment = vec3(0);
   scene.environmentNode = environmentNode;
   const target = renderer.getRenderTarget();
   const clearColor = renderer.getClearColor(new Color());
@@ -41,19 +42,19 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
     if (object.name === "world-sky") sources.push(object);
   });
   let reflection: RenderTarget | undefined;
-  let spare: RenderTarget | undefined;
   let capturedAt: number | undefined;
 
   return (date: Date, force = false): void => {
     const timestamp = date.getTime();
     if (!force && capturedAt !== undefined && Math.abs(timestamp - capturedAt) < 300_000) return;
     const environment = scene.environment;
-    const previousEnvironment = environmentNode.value;
+    const previousEnvironment = scene.environmentNode;
     const intensity = scene.environmentIntensity;
     const background = scene.background;
     const visibility = sources.map((object) => ({ object, visible: object.visible }));
     for (const { object } of visibility) object.visible = false;
-    environmentNode.value = direct.texture;
+    scene.environment = null;
+    scene.environmentNode = captureEnvironment;
     scene.environmentIntensity = 0;
     scene.background = unlit;
     scene.traverse((object) => {
@@ -64,19 +65,18 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
       next = generator.fromScene(scene, 0, 0.05, 24, {
         position,
         size: 128,
-        renderTarget: spare,
+        renderTarget: reflection,
       });
     } finally {
       scene.environment = environment;
       scene.environmentIntensity = intensity;
-      environmentNode.value = previousEnvironment;
+      scene.environmentNode = previousEnvironment;
       scene.background = background;
       for (const { object, visible } of visibility) object.visible = visible;
     }
     scene.environment = next.texture;
     environmentNode.value = next.texture;
     scene.environmentIntensity = 1;
-    spare = reflection;
     reflection = next;
     capturedAt = timestamp;
   };
