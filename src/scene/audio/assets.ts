@@ -2,6 +2,7 @@ import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBi
 import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
 import { asset } from "../../assets/catalog";
 import { isRecovering } from "../../interface/recovery";
+import { prepareAudioLoop } from "./loop";
 
 export const soundNames = ["rain", "window", "gutter", "wind"] as const;
 export type SoundName = (typeof soundNames)[number];
@@ -26,7 +27,8 @@ export async function loadSound(
       size: entry.bytes,
     },
     signal: AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
-    decode: (bytes) => context.decodeAudioData(Uint8Array.from(bytes).buffer),
+    decode: async (bytes) =>
+      prepareAudioLoop(context, await context.decodeAudioData(Uint8Array.from(bytes).buffer)),
   });
   return result.value;
 }
