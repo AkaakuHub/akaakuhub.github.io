@@ -38,8 +38,7 @@ export function bindRoomControls(
   window.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.key === "Escape") {
-      if (view.state.mode !== "room" && view.zoomFactor > 1) zoom(1 / view.zoomFactor, true);
-      else view.back();
+      view.back();
     }
     if (view.state.mode !== "room" && ["+", "=", "-", "0"].includes(event.key)) {
       event.preventDefault();
@@ -127,7 +126,17 @@ export function bindRoomControls(
     }
     if (Math.hypot(dx, dy) >= 10 || view.moving) return;
     const hit = pick(event, true);
-    if (!hit) return;
+    if (!hit) {
+      view.back();
+      return;
+    }
+    if (
+      (view.state.mode === "computer" && hit.type !== "computer") ||
+      (view.state.mode === "notice" && (hit.type !== "notice" || hit.index !== view.state.index))
+    ) {
+      view.back();
+      return;
+    }
     if (hit.type === "computer") {
       view.inspectComputer();
       return;
