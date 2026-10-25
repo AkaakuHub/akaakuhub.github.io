@@ -14,6 +14,7 @@ export function createComputerInterface(
   view: ReturnType<typeof createView>,
   invalidate: () => void,
   requestFrame: () => void,
+  setMonitorPower: (on: boolean) => void,
 ) {
   const screen = createComputerScreen(computer.monitor.material);
   const readmes = new Map<string, ReadmeState>();
@@ -68,7 +69,9 @@ export function createComputerInterface(
     lastFanTime = performance.now();
     if (!powered) clearTimeout(fanTimer);
     if (!powered) fanTimer = undefined;
-    dirty = true;
+    screen.draw(powered, state, scroll.position, compact.matches, readmes);
+    dirty = false;
+    setMonitorPower(powered);
     if (!powered && view.state.mode === "monitor") view.inspectComputer();
     invalidate();
   };

@@ -4,12 +4,19 @@ import { roomCelestialLighting } from "./daylight/celestial";
 import { cameraExposure, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
 import { createRoomLights } from "./lighting/room-lights";
+import { createMonitorLight, setMonitorLight } from "./lighting/monitor";
 import type { TokyoWeather } from "../weather/schema";
 import { renderingProfile } from "./quality";
 
-export function illuminate(scene: Scene, renderer: WebGLRenderer, weather: TokyoWeather) {
+export function illuminate(
+  scene: Scene,
+  renderer: WebGLRenderer,
+  weather: TokyoWeather,
+  monitor: Mesh,
+) {
   renderer.toneMappingExposure = cameraExposure;
   const fixtures = createRoomLights(scene);
+  const monitorLight = createMonitorLight(monitor);
   const celestialLight = new DirectionalLight();
   celestialLight.target.position.set(0, 1.2, 0);
   celestialLight.castShadow = true;
@@ -63,6 +70,10 @@ export function illuminate(scene: Scene, renderer: WebGLRenderer, weather: Tokyo
     for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
     updateReflection(new Date(), true);
   }
+  function setMonitorPower(on: boolean): void {
+    setMonitorLight(monitorLight, on);
+    updateReflection(new Date(), true);
+  }
   update(new Date(), weather, false);
-  return { celestialLight, update, setRoomLights };
+  return { celestialLight, update, setRoomLights, setMonitorPower };
 }

@@ -56,7 +56,12 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials, skillAtlas);
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await Promise.all([materialLoading.ready, lightTablesReady]);
-  const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));
+  const lighting = illuminate(
+    scene,
+    renderer,
+    weatherAt(initialWeather, Date.now()),
+    computer.monitor,
+  );
   const weather = observeTokyoWeather(
     initialWeather,
     (current) => {
@@ -98,7 +103,13 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     invalidate,
     () => ui.inspectionViewport(),
   );
-  const computerInterface = createComputerInterface(computer, view, invalidate, requestFrame);
+  const computerInterface = createComputerInterface(
+    computer,
+    view,
+    invalidate,
+    requestFrame,
+    lighting.setMonitorPower,
+  );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   const boardLoader = createBoardLoader((state) => {
     board.setState(state);
