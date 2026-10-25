@@ -2,7 +2,7 @@ import { Mesh, Raycaster, Vector2, Vector3 } from "three";
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 
 interface ComputerTargets {
-  object: Object3D;
+  surfaces: readonly Object3D[];
   power: Object3D;
 }
 
@@ -18,6 +18,7 @@ export function createPicker(
   const pointer = new Vector2();
   const powerPoint = new Vector3();
   const projectedPower = new Vector3();
+  const computerSurfaces = [...computer.surfaces];
   return (event: PointerEvent, occlusion: boolean) => {
     const rect = canvas.getBoundingClientRect();
     pointer.set(
@@ -56,19 +57,19 @@ export function createPicker(
         }
       }
     }
-    const tower = raycaster.intersectObject(computer.object, false)[0];
+    const tower = raycaster.intersectObjects(computerSurfaces, false)[0];
     if (
       tower &&
       (!candidate || (tower.distance < candidate.distance && target !== computer.power))
     ) {
       candidate = tower;
-      target = computer.object;
+      target = tower.object;
     }
     if (!candidate) return;
     if (occlusion) {
       raycaster.far = candidate.distance - 0.0001;
       const blocked = raycaster.intersectObjects(scene.children, true).some(({ object }) => {
-        if (!(object instanceof Mesh) || object === computer.object) return false;
+        if (!(object instanceof Mesh) || !object.visible) return false;
         for (let owner: Object3D | null = object; owner; owner = owner.parent)
           if (owner === target) return false;
         return true;
@@ -76,7 +77,7 @@ export function createPicker(
       if (blocked) return;
     }
     if (target === lightSwitch) return { type: "light" as const };
-    if (target === computer.object) return { type: "computer" as const };
+    if (target && computer.surfaces.includes(target)) return { type: "computer" as const };
     if (target === computer.power) return { type: "power" as const };
     if (!target) return;
     const index = papers.indexOf(target);

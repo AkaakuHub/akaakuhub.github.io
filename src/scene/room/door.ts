@@ -1,6 +1,14 @@
 import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
-import { BoxGeometry, CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from "three";
+import {
+  BoxGeometry,
+  CatmullRomCurve3,
+  Group,
+  Mesh,
+  MeshStandardMaterial,
+  TubeGeometry,
+  Vector3,
+} from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { hinge } from "../details/hinge";
@@ -84,6 +92,17 @@ export function createDoor(
   const rocker = box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], metals.ivory);
   rocker.name = "room-light-switch-rocker";
   rocker.rotation.z = -0.16;
+  const tape = new MeshStandardMaterial({
+    color: "#bfd59a",
+    roughness: 0.92,
+    emissive: "#8edd78",
+    emissiveIntensity: 0.025,
+  });
+  for (const z of [-0.027, 0.027]) {
+    const strip = box(switchPlate, [0.0006, 0.078, 0.006], [-0.0129, 0, z], tape);
+    strip.name = "switch-phosphorescent-tape";
+    strip.castShadow = false;
+  }
   for (const y of [1.116, 1.204]) hardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
   hardware.finish(door);
   door.traverse((object) => {

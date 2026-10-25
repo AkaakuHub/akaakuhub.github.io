@@ -19,7 +19,7 @@ export function createComputerInterface(
   let lastFanTime = 0;
   let fanStartedAt = 0;
   return {
-    targets: { object: computer.object, power: computer.power },
+    targets: { surfaces: computer.surfaces, power: computer.power },
     togglePower(): boolean {
       powered = !powered;
       computer.power.material.emissiveIntensity = powered ? 1 : 0;

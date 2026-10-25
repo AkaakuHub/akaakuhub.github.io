@@ -57,9 +57,11 @@ export function assembleClubroom(
     lightSwitch,
     rocker,
     computer.object,
+    ...computer.surfaces,
     power,
     monitor,
   ]);
+  lightSwitch.traverse((object) => preserved.add(object));
   head.traverse((object) => preserved.add(object));
   for (const fan of fans)
     fan.traverse((object) => {
