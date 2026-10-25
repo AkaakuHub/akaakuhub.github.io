@@ -13,11 +13,11 @@ export function paintArticle(
   if (print.thumbnail) {
     const image = thumbnailBounds(print.thumbnail.width, print.thumbnail.height, width, height);
     context.drawImage(print.thumbnail, image.x, image.y, image.width, image.height);
-    context.font = `500 ${width * 0.02}px ${siteFont}`;
-    context.fillText(print.eyebrow, margin, height - 22);
+    context.font = `500 ${width * 0.042}px ${siteFont}`;
+    context.fillText(print.eyebrow, margin, height - width * 0.028);
     if (print.link) {
       context.textAlign = "right";
-      context.fillText(print.link.label + " ↗", width - margin, height - 22);
+      context.fillText(print.link.label + " ↗", width - margin, height - width * 0.028);
       context.textAlign = "left";
     }
   } else {

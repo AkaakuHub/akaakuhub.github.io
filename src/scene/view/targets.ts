@@ -56,8 +56,8 @@ export function inspectionBounds(
   const heightFraction = Math.max(1, viewport.height - viewport.insetY * 2) / viewport.height;
   const distance =
     Math.max(
-      target.width / (2 * halfAngle * aspect * 0.82),
-      target.height / (2 * halfAngle * 0.78),
+      target.width / (2 * halfAngle * aspect * 0.94),
+      target.height / (2 * halfAngle * 0.9),
       target.width / (2 * halfAngle * aspect * widthFraction),
       target.height / (2 * halfAngle * heightFraction),
     ) / zoom;

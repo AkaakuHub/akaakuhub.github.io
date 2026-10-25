@@ -48,12 +48,20 @@ function printedPaper(
   if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
-    if (print.kind === "skills") paintSkills(context, skillAtlas, width);
+    if (print.kind === "skills") paintSkills(context, skillAtlas, width, height);
+    if (print.kind === "github" && height > width * 0.6) {
+      context.font = '400 104px "Yomogi"';
+      context.fillStyle = print.ink;
+      context.textAlign = "center";
+      context.fillText("GitHub", width / 2, 140);
+      context.textAlign = "left";
+    }
     context.fillStyle = print.ink;
     if (print.link) {
-      context.fillRect(margin, height - 57, width - margin * 2, 1);
-      context.font = `500 ${width * 0.021}px ${siteFont}`;
-      context.fillText(print.link.label + " ↗", margin, height - 23);
+      const enlarged = height > width * 0.6;
+      context.fillRect(margin, height - (enlarged ? width * 0.085 : 57), width - margin * 2, 1);
+      context.font = `500 ${width * (enlarged ? 0.042 : 0.021)}px ${siteFont}`;
+      context.fillText(print.link.label + " ↗", margin, height - (enlarged ? width * 0.028 : 23));
     }
   }
   const texture = new CanvasTexture(canvas);
@@ -62,13 +70,7 @@ function printedPaper(
   return texture;
 }
 
-export function createPaper(
-  width: number,
-  height: number,
-  print: BoardNotice,
-  maps: PbrMaps,
-  skillAtlas: ImageBitmap,
-): Mesh<PlaneGeometry, MeshStandardMaterial> {
+function paperGeometry(width: number, height: number): PlaneGeometry {
   const geometry = new PlaneGeometry(width, height, 20, 24);
   const positions = geometry.getAttribute("position");
   for (let index = 0; index < positions.count; index++) {
@@ -83,10 +85,20 @@ export function createPaper(
   for (let index = 0; index < surfaceUv.count; index++)
     surfaceUv.setXY(index, surfaceUv.getX(index) * width, surfaceUv.getY(index) * height);
   geometry.setAttribute("uv1", surfaceUv);
+  return geometry;
+}
+
+export function createPaper(
+  width: number,
+  height: number,
+  print: BoardNotice,
+  maps: PbrMaps,
+  skillAtlas: ImageBitmap,
+): Mesh<PlaneGeometry, MeshStandardMaterial> {
   const normalMap = maps.normalMap.clone();
   normalMap.channel = 1;
   const paper = new Mesh(
-    geometry,
+    paperGeometry(width, height),
     new MeshStandardMaterial({
       map: printedPaper(print, maps, width, height, skillAtlas),
       normalMap,
@@ -106,6 +118,11 @@ export function updatePaper(
   maps: PbrMaps,
   skillAtlas: ImageBitmap,
 ): void {
+  const [width, height] = print.size;
+  if (paper.geometry.parameters.width !== width || paper.geometry.parameters.height !== height) {
+    paper.geometry.dispose();
+    paper.geometry = paperGeometry(width, height);
+  }
   const previous = paper.material.map;
   paper.material.map = printedPaper(print, maps, print.size[0], print.size[1], skillAtlas);
   previous?.dispose();

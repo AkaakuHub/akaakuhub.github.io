@@ -1,16 +1,22 @@
 import {
   BufferAttribute,
   Frustum,
+  Group,
   Matrix4,
   Mesh,
   MeshStandardMaterial,
   PlaneGeometry,
 } from "three";
-import type { Object3D, PerspectiveCamera } from "three";
+import type { PerspectiveCamera } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { loadContributionSource } from "./contribution-source";
 
-export function createContributionDisplay(mount: Object3D, invalidate: () => void) {
+export function createContributionDisplay(
+  mount: Mesh<PlaneGeometry, MeshStandardMaterial>,
+  invalidate: () => void,
+) {
+  const artwork = new Group();
+  mount.add(artwork);
   const time = { value: 0 };
   const frustum = new Frustum();
   const projection = new Matrix4();
@@ -91,7 +97,7 @@ export function createContributionDisplay(mount: Object3D, invalidate: () => voi
         logo.position.set(0, 0.015, 0.0061);
         logo.receiveShadow = true;
         logo.renderOrder = 2;
-        mount.add(surface, logo);
+        artwork.add(surface, logo);
         invalidate();
         return;
       } catch (error) {
@@ -106,6 +112,7 @@ export function createContributionDisplay(mount: Object3D, invalidate: () => voi
   return {
     update(camera: PerspectiveCamera, now: number): { active: boolean; changed: boolean } {
       if (!surface) return { active: false, changed: false };
+      artwork.scale.setScalar(mount.geometry.parameters.height > 0.6 ? 1.35 : 1);
       if (startedAt === undefined) {
         camera.updateMatrixWorld();
         surface.updateWorldMatrix(true, false);

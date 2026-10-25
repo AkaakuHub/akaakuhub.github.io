@@ -42,6 +42,7 @@ export function assembleClubroom(
   const fanSurfaces: Mesh[] = [];
   const preserved = new Set<Object3D>([
     ...board.notices.keys(),
+    ...board.dynamicObjects,
     lightSwitch,
     rocker,
     computer.object,
