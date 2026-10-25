@@ -56,6 +56,7 @@ export class DynamicSurfacePass extends Pass {
       copy.matrixWorld.copy(source.matrixWorld);
       copy.color.copy(source.color);
       copy.intensity = source.intensity;
+      copy.visible = source.visible;
     }
     const autoClear = renderer.autoClear;
     renderer.autoClear = false;

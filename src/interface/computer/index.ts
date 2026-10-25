@@ -31,6 +31,7 @@ export function createComputerInterface(
   let settleTimer: ReturnType<typeof setTimeout> | undefined;
   let fanTimer: ReturnType<typeof setTimeout> | undefined;
   let lastFanTime = performance.now();
+  let fanStartedAt = 0;
   screen.draw(false, state, 0, compact.matches, readmes, selectedRepository);
 
   function redraw(name?: string) {
@@ -68,6 +69,7 @@ export function createComputerInterface(
     powered = !powered;
     computer.power.material.emissiveIntensity = powered ? 1 : 0;
     lastFanTime = performance.now();
+    if (powered) fanStartedAt = lastFanTime;
     if (!powered) clearTimeout(fanTimer);
     if (!powered) fanTimer = undefined;
     if (!powered) selectedRepository = null;
@@ -162,8 +164,8 @@ export function createComputerInterface(
         (view.state.mode === "computer" ||
           (view.state.mode === "room" && view.state.direction === 1));
       if (fansVisible && now - lastFanTime >= fanFrameMs) {
-        const delta = Math.min((now - lastFanTime) / 1000, 0.1);
-        for (const fan of computer.fans) fan.rotation.z += delta * Math.PI * 5;
+        const angle = (((now - fanStartedAt) / 1000) * Math.PI * 5) % (Math.PI * 2);
+        for (const fan of computer.fans) fan.rotation.z = angle;
         lastFanTime = now;
       }
       if (fansVisible && fanTimer === undefined)

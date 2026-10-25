@@ -17,7 +17,7 @@ export function desktopComputer(): Group {
   const graphite = new MeshStandardMaterial({ color: "#232827", roughness: 0.74 });
   const display = new MeshBasicMaterial({ color: "#080b0a" });
   roundBox(computer, [0.22, 0.012, 0.18], [0, 0.006, -0.15], white, 0.008);
-  roundBox(computer, [0.045, 0.17, 0.035], [0, 0.095, -0.225], white, 0.006);
+  roundBox(computer, [0.045, 0.17, 0.035], [0, 0.095, -0.22], white, 0.006);
   roundBox(computer, [0.61, 0.358, 0.026], [0, 0.33, -0.19], white, 0.008);
   const screen = new Mesh(new PlaneGeometry(0.589, 0.331), display);
   screen.position.set(0, 0.333, -0.1755);

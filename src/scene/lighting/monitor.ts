@@ -10,10 +10,12 @@ export function createMonitorLight(monitor: Mesh): RectAreaLight {
   light.position.z += 0.004;
   light.rotation.copy(monitor.rotation);
   light.rotateY(Math.PI);
+  light.visible = false;
   parent.add(light);
   return light;
 }
 
 export function setMonitorLight(light: RectAreaLight, on: boolean): void {
+  light.visible = on;
   light.intensity = on ? photometry.monitorNits * photometry.scale : 0;
 }
