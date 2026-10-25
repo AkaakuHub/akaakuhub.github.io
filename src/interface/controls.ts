@@ -139,7 +139,8 @@ export function bindRoomControls(
     } else if (start && view.state.mode === "monitor" && !pinched) {
       const hit = pick(event, false);
       if (hit?.type === "monitor" && hit.uv) {
-        if (monitorV !== undefined) computer.scroll((hit.uv.y - monitorV) * 675, true);
+        if (monitorV !== undefined)
+          computer.scroll((hit.uv.y - monitorV) * computer.screenHeight, true);
         monitorV = hit.uv.y;
       }
     } else if (start && view.state.mode !== "room" && view.zoomFactor > 1 && !pinched) {

@@ -48,6 +48,7 @@ export class DynamicSurfacePass extends Pass {
     this.scene.environmentIntensity = this.room.environmentIntensity;
     for (const { source, copy } of this.surfaces) {
       source.updateWorldMatrix(true, false);
+      copy.geometry = source.geometry;
       copy.matrixWorld.copy(source.matrixWorld);
       copy.visible = source.visible;
     }
@@ -56,6 +57,8 @@ export class DynamicSurfacePass extends Pass {
       copy.matrixWorld.copy(source.matrixWorld);
       copy.color.copy(source.color);
       copy.intensity = source.intensity;
+      copy.width = source.width;
+      copy.height = source.height;
       copy.visible = source.visible;
     }
     const autoClear = renderer.autoClear;

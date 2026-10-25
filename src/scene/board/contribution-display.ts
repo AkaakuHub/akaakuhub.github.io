@@ -25,12 +25,12 @@ export function createContributionDisplay(
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const source = await loadContributionSource();
-        const scale = 0.25 / source.height;
+        const scale = 0.97 / source.width;
         const geometries = source.cells.map((cell) => {
           const geometry = new PlaneGeometry(cell.width * scale, cell.height * scale);
           geometry.translate(
             (cell.x + cell.width / 2 - source.width / 2) * scale,
-            (source.height / 2 - cell.y - cell.height / 2) * scale + 0.015,
+            (source.height / 2 - cell.y - cell.height / 2) * scale + 0.043,
             0.006,
           );
           const uv = geometry.getAttribute("uv");
@@ -91,7 +91,7 @@ export function createContributionDisplay(
             roughness: 1,
           }),
         );
-        logo.position.set(0, 0.015, 0.0061);
+        logo.position.set(0, 0.043, 0.0061);
         logo.receiveShadow = true;
         logo.renderOrder = 2;
         mount.add(surface, logo);

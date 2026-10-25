@@ -12,31 +12,35 @@ export function drawScreen(
   powered: boolean,
   state: ContentState,
   offset: number,
-  compact: boolean,
+  portrait: boolean,
   readmes: ReadonlyMap<string, ReadmeState>,
   cards: Map<string, CachedCard>,
   selectedIndex: number | null,
 ): ScreenRegion[] {
-  context.fillStyle = powered ? "#f2f5f1" : "#080b0a";
-  context.fillRect(0, 0, 1200, 675);
-  if (!powered) return [];
   const repositories = state.status === "ready" ? state.content.repositories : [];
-  const layout = screenLayout(repositories.length, offset, compact);
+  const layout = screenLayout(repositories.length, offset, portrait);
+  const { width, height } = layout.viewport;
+  const { margin } = layout;
+  context.fillStyle = powered ? "#f2f5f1" : "#080b0a";
+  context.fillRect(0, 0, width, height);
+  if (!powered) return [];
   const regions: ScreenRegion[] = [];
   context.save();
   context.translate(0, -layout.offset);
   context.fillStyle = "#536b5b";
-  context.font = `500 25px ${siteFont}`;
-  context.fillText("GitHubで見る ↗", 930, 52);
+  context.font = `500 27px ${siteFont}`;
+  context.textAlign = "right";
+  context.fillText("GitHubで見る ↗", width - margin, 44);
+  context.textAlign = "left";
   context.fillStyle = "#203d30";
-  context.font = `500 50px ${siteFont}`;
-  context.fillText("リポジトリ", 52, 126);
-  context.font = `500 24px ${siteFont}`;
+  context.font = `500 ${portrait ? 44 : 50}px ${siteFont}`;
+  context.fillText("リポジトリ", margin, portrait ? 100 : 126);
+  context.font = `500 27px ${siteFont}`;
   context.fillStyle = "#748579";
-  context.fillText("AkaakuHub / 更新順", 55, 169);
+  context.fillText("AkaakuHub / 更新順", margin, portrait ? 143 : 169);
   regions.push({
-    x: 900,
-    y: 12 - layout.offset,
+    x: width - margin - 260,
+    y: -layout.offset,
     width: 260,
     height: 65,
     action: { type: "github" },
@@ -45,7 +49,7 @@ export function drawScreen(
     context.font = `500 30px ${siteFont}`;
     context.fillText(
       state.status === "loading" ? "読み込み中" : "一覧を取得できませんでした",
-      52,
+      margin,
       260,
     );
   } else {
@@ -58,13 +62,13 @@ export function drawScreen(
         !cached ||
         cached.repository !== repository ||
         cached.readme !== readme ||
-        cached.compact !== compact
+        cached.portrait !== portrait
       ) {
         cached = {
           repository,
           readme,
-          compact,
-          canvas: drawRepositoryCard(repository, readme, compact, layout.height),
+          portrait,
+          canvas: drawRepositoryCard(repository, readme, layout.height, layout.cardWidth),
         };
         cards.set(repository.name, cached);
         if (cards.size > 12) {
@@ -73,16 +77,16 @@ export function drawScreen(
         }
       }
       const y = layout.top + index * layout.height;
-      context.drawImage(cached.canvas, 52, y);
+      context.drawImage(cached.canvas, margin, y);
       if (index === selectedIndex) {
         context.strokeStyle = "#245f49";
         context.lineWidth = 5;
-        context.strokeRect(54.5, y + 2.5, 1091, layout.height - 25);
+        context.strokeRect(margin + 2.5, y + 2.5, layout.cardWidth - 5, layout.height - 25);
       }
       regions.push({
-        x: 52,
+        x: margin,
         y: y - layout.offset,
-        width: 1096,
+        width: layout.cardWidth,
         height: layout.height - 20,
         action: { type: "repository", repository },
       });
@@ -90,11 +94,12 @@ export function drawScreen(
   }
   context.restore();
   if (layout.maximum > 0) {
-    const thumb = Math.max(36, (647 * 675) / layout.contentHeight);
-    const top = 14 + ((647 - thumb) * layout.offset) / layout.maximum;
+    const trackHeight = height - 28;
+    const thumb = Math.max(36, (trackHeight * height) / layout.contentHeight);
+    const top = 14 + ((trackHeight - thumb) * layout.offset) / layout.maximum;
     context.fillStyle = "#8ba09355";
     context.beginPath();
-    context.roundRect(1176, top, 6, thumb, 3);
+    context.roundRect(width - 16, top, 6, thumb, 3);
     context.fill();
   }
   return regions;

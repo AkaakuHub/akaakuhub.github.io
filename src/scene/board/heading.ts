@@ -24,7 +24,7 @@ export function createBoardHeading(text: string, x: number, y: number) {
       polygonOffsetUnits: -1,
     }),
   );
-  heading.position.set(x, y, 0.0455);
+  heading.position.set(x, y, 0.0451);
   heading.rotation.z = -0.012;
   heading.receiveShadow = true;
   return heading;
@@ -46,6 +46,6 @@ export function createBoardCredit() {
     new MeshStandardMaterial({ map: texture, transparent: true, depthWrite: false, roughness: 1 }),
   );
   credit.scale.set(1.15, 0.72, 1);
-  credit.position.set(0.9, 0.7, 0.046);
+  credit.position.set(0.9, 0.7, 0.0451);
   return credit;
 }

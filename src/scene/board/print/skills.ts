@@ -29,10 +29,10 @@ export function paintSkills(
     const y = 84 + Math.floor(index / 2) * 122;
     icon(skill, x, y, 80);
     context.fillStyle = "#294536";
-    context.font = `500 56px ${siteFont}`;
+    context.font = `500 64px ${siteFont}`;
     context.fillText(skill.label, x + 94, y + 30, columnWidth - 104);
     context.fillStyle = "#3f5748";
-    context.font = `500 50px ${siteFont}`;
+    context.font = `500 58px ${siteFont}`;
     context.fillText(skill.detail, x + 94, y + 82, columnWidth - 104);
   });
   context.fillStyle = "#bdc6b7";
@@ -45,7 +45,7 @@ export function paintSkills(
     const y = 684 + Math.floor(index / 2) * 94;
     icon(skill, x, y, 70);
     context.fillStyle = "#294536";
-    context.font = `500 52px ${siteFont}`;
+    context.font = `500 60px ${siteFont}`;
     context.fillText(skill.label, x + 94, y + 49, columnWidth - 104);
   });
 }

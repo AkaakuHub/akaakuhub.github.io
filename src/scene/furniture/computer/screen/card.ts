@@ -5,7 +5,7 @@ import type { ReadmeState } from "../../../../content/readme";
 export interface CachedCard {
   repository: Repository;
   readme: ReadmeState | undefined;
-  compact: boolean;
+  portrait: boolean;
   canvas: HTMLCanvasElement;
 }
 
@@ -47,11 +47,11 @@ function textLines(
 export function drawRepositoryCard(
   repository: Repository,
   readme: ReadmeState | undefined,
-  compact: boolean,
   height: number,
+  width: number,
 ): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
-  canvas.width = 1096;
+  canvas.width = width;
   canvas.height = height - 20;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("リポジトリを描画できませんでした。");
@@ -62,25 +62,25 @@ export function drawRepositoryCard(
   context.strokeStyle = "#e0e7e2";
   context.stroke();
   context.fillStyle = "#203d30";
-  context.font = `500 ${compact ? 43 : 36}px ${siteFont}`;
-  context.fillText(repository.name, 28, 48, 990);
-  context.font = `500 ${compact ? 28 : 22}px ${siteFont}`;
+  context.font = `500 38px ${siteFont}`;
+  const headingHeight = textLines(context, repository.name, 50, width - 90, 46, 2);
+  context.font = `500 27px ${siteFont}`;
   context.fillStyle = "#748579";
-  context.fillText(`更新 ${date.format(repository.updatedAt)}`, 28, 85);
-  context.fillText("↗", 1034, 49);
-  let y = compact ? 132 : 125;
+  context.fillText(`更新 ${date.format(repository.updatedAt)}`, 28, 50 + headingHeight);
+  context.fillText("↗", width - 52, 50);
+  let y = 102 + headingHeight;
   if (repository.description) {
-    context.font = `500 ${compact ? 35 : 27}px ${siteFont}`;
+    context.font = `500 31px ${siteFont}`;
     context.fillStyle = "#3f5548";
-    y += textLines(context, repository.description, y, 1040, compact ? 44 : 34, 2) + 10;
+    y += textLines(context, repository.description, y, width - 56, 42, 2) + 18;
   }
   context.fillStyle = "#87948b";
-  context.font = `500 ${compact ? 25 : 20}px ${siteFont}`;
+  context.font = `500 27px ${siteFont}`;
   context.fillText("README", 28, y);
   if (readme?.status === "ready" && readme.text) {
     context.fillStyle = "#576b5d";
-    context.font = `500 ${compact ? 32 : 25}px ${siteFont}`;
-    textLines(context, readme.text, y + (compact ? 39 : 32), 1040, compact ? 42 : 32, 3);
+    context.font = `500 31px ${siteFont}`;
+    textLines(context, readme.text, y + 42, width - 56, 42, 3);
   }
   return canvas;
 }

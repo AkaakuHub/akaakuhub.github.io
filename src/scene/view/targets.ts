@@ -12,6 +12,7 @@ export interface InspectionTarget {
   width: number;
   height: number;
   depth: number;
+  topAligned: boolean;
 }
 export interface InspectionViewport {
   width: number;
@@ -36,12 +37,12 @@ export function isRoomDirection(index: number): index is RoomDirection {
 
 export function roomPose(direction: RoomDirection, heading: number, aspect: number): CameraPose {
   const yaw = ((direction < 4 ? direction : heading) * Math.PI) / 2;
-  const pitch = direction === 4 ? Math.PI / 2 : MathUtils.degToRad(-8);
+  const pitch = direction === 4 ? Math.PI / 2 : MathUtils.degToRad(direction === 1 ? -11 : -8);
   const fittingFov = MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(34)) / aspect));
   return {
     position: new Vector3(0, 1.55, aspect < 0.7 && direction === 0 ? 0.9 : 0.45),
     quaternion: new Quaternion().setFromEuler(new Euler(pitch, yaw, 0, "YXZ")),
-    fov: MathUtils.clamp(fittingFov, 62, 88),
+    fov: MathUtils.clamp(fittingFov, 62, direction === 1 ? 70 : 88),
   };
 }
 
@@ -84,7 +85,10 @@ export function inspectionPose(
   position.add(
     new Vector3(
       MathUtils.clamp(framing.panX, -bounds.maxX, bounds.maxX),
-      MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY),
+      MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY) -
+        (target.topAligned && viewport.height > viewport.width
+          ? Math.max(0, bounds.visibleHeight - target.height) * 0.36
+          : 0),
       bounds.distance + target.depth / 2,
     ).applyQuaternion(quaternion),
   );

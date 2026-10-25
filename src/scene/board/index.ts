@@ -30,9 +30,9 @@ export function createBoard(
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
   group.add(
-    createBoardHeading("GitHub", -0.79, 2.37),
-    createBoardHeading("Skills", -0.79, 1.79),
-    createBoardHeading("最新記事", 0.33, 2.37),
+    createBoardHeading("GitHub", -0.79, 2.275),
+    createBoardHeading("Skills", -0.79, 1.69),
+    createBoardHeading("最新記事", 0.33, 2.275),
     createBoardCredit(),
   );
   for (const notice of boardNotices({ status: "loading" })) {
@@ -59,7 +59,7 @@ export function createBoard(
       ],
       32,
     );
-    const magnetOffset = width * (notice.kind === "article" ? 0.46 : 0.34);
+    const magnetOffset = width * (notice.kind === "skills" ? 0.34 : 0.46);
     const magnets = [-magnetOffset, magnetOffset];
     for (const x of magnets) {
       const magnet = new Mesh(magnetGeometry, magnetMaterial);

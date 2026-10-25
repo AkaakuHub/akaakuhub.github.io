@@ -4,7 +4,7 @@ import type { ContentState } from "../../../content/schema";
 import type { ReadmeState } from "../../../content/readme";
 import { drawScreen } from "./screen/draw";
 import type { CachedCard } from "./screen/card";
-import { screenHit } from "./screen/layout";
+import { screenHit, screenSize } from "./screen/layout";
 import type { ScreenRegion } from "./screen/layout";
 
 export function createComputerScreen(material: MeshBasicMaterial) {
@@ -20,20 +20,37 @@ export function createComputerScreen(material: MeshBasicMaterial) {
   material.needsUpdate = true;
   let regions: ScreenRegion[] = [];
   const cards = new Map<string, CachedCard>();
+  let portrait = false;
   return {
     draw(
       powered: boolean,
       state: ContentState,
       offset: number,
-      compact: boolean,
+      vertical: boolean,
       readmes: ReadonlyMap<string, ReadmeState>,
       selectedIndex: number | null,
     ): void {
-      regions = drawScreen(context, powered, state, offset, compact, readmes, cards, selectedIndex);
+      portrait = vertical;
+      const size = screenSize(portrait);
+      if (canvas.width !== size.width || canvas.height !== size.height) {
+        canvas.width = size.width;
+        canvas.height = size.height;
+        cards.clear();
+      }
+      regions = drawScreen(
+        context,
+        powered,
+        state,
+        offset,
+        portrait,
+        readmes,
+        cards,
+        selectedIndex,
+      );
       texture.needsUpdate = true;
     },
     hit(u: number, v: number) {
-      return screenHit(regions, u, v);
+      return screenHit(regions, u, v, portrait);
     },
     clear(name?: string) {
       if (name === undefined) cards.clear();

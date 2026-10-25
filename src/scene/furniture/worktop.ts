@@ -9,7 +9,7 @@ export function createWorktopObjects(
   surfaceY: number,
 ): void {
   const computer = desktopComputer();
-  computer.position.set(0.04, surfaceY, 0.57);
+  computer.position.set(0.04, surfaceY, 0);
   computer.rotation.y = Math.PI / 2;
   parent.add(computer);
   const cup = ceramicMug(materials.porcelain, 0.09, 0.042);

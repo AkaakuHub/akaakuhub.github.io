@@ -61,7 +61,7 @@ export const skillDomains: readonly Skill[] = [
   },
   {
     label: "Audio",
-    detail: "音源分離・音量制御",
+    detail: "音源分離 / 音量",
     icon: "pytorch",
     evidence: [
       {

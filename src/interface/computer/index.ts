@@ -20,7 +20,7 @@ export function createComputerInterface(
   const screen = createComputerScreen(computer.monitor.material);
   const readmes = new Map<string, ReadmeState>();
   const preparedText = new Set<string>();
-  const compact = window.matchMedia("(max-width: 640px)");
+  const compact = window.matchMedia("(orientation: portrait)");
   const fanFrameMs = window.matchMedia("(pointer: coarse)").matches ? 80 : 40;
   const scroll = createScreenScroll();
   let powered = false;
@@ -100,6 +100,9 @@ export function createComputerInterface(
     return powered;
   };
   return {
+    get screenHeight(): number {
+      return compact.matches ? 1200 : 675;
+    },
     targets: {
       object: computer.object,
       monitor: computer.monitor,
@@ -118,9 +121,13 @@ export function createComputerInterface(
       const top = layout.top + selectedRepository * layout.height;
       const bottom = top + layout.height - 20;
       const visibleTop = scroll.position + 20;
-      const visibleBottom = scroll.position + 655;
+      const visibleBottom = scroll.position + layout.viewport.height - 20;
       const target =
-        top < visibleTop ? top - 20 : bottom > visibleBottom ? bottom - 655 : scroll.position;
+        top < visibleTop
+          ? top - 20
+          : bottom > visibleBottom
+            ? bottom - layout.viewport.height + 20
+            : scroll.position;
       scroll.move(target - scroll.position, true);
       dirty = true;
       requestFrame();

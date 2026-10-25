@@ -86,7 +86,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   );
   const noticeList = [...board.notices.values()];
   const contributions = createContributionDisplay(board.contributions, invalidate);
-  const inspections = [...board.notices].map(([object, notice]) => ({
+  const inspections = [...board.notices].map(([object, notice], index) => ({
     object,
     get width() {
       return notice.size[0];
@@ -95,12 +95,23 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       return notice.size[1];
     },
     depth: 0,
+    topAligned: index === 0 || index === 2,
   }));
   const view = createView(
     camera,
     inspections,
     computer,
-    { object: computer.monitor, width: 0.589, height: 0.331, depth: 0.001 },
+    {
+      object: computer.monitor,
+      get width() {
+        return computer.monitor.geometry.parameters.width;
+      },
+      get height() {
+        return computer.monitor.geometry.parameters.height;
+      },
+      depth: 0.001,
+      topAligned: false,
+    },
     (state) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
@@ -131,6 +142,11 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   let prepared = false;
 
   observeViewport(ui.canvas, camera, renderer, rendering, () => {
+    if (computer.orientDisplay(camera.aspect < 1)) {
+      computer.resizeInspection();
+      lighting.setMonitorPower(computerInterface.targets.isPowered());
+      renderer.shadowMap.needsUpdate = true;
+    }
     view.resize();
     invalidate();
   });

@@ -31,7 +31,7 @@ function createStool(materials: FurnitureMaterials): Group {
       materials.deepGreen,
     );
   }
-  stool.position.set(-1.04, 0, -0.35);
+  stool.position.set(-1.04, 0, 0.45);
   return stool;
 }
 
@@ -101,7 +101,7 @@ export function createWorkbench(materials: FurnitureMaterials): Group {
   const surfaceY = 0.796;
   createWorktopObjects(workbench, materials, surfaceY);
   workbench.add(createDeskLamp(materials, surfaceY));
-  workbench.position.set(-1.94, 0, -0.36);
+  workbench.position.set(-1.94, 0, 0.45);
   group.add(workbench, createStool(materials));
   return group;
 }
