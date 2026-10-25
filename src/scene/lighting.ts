@@ -44,8 +44,7 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   });
   const background = new Color();
   scene.background = background;
-  const reflection = createRoomReflection(scene, renderer);
-  let reflectionEnabled = false;
+  const updateReflection = createRoomReflection(scene, renderer);
 
   function update(date: Date, currentWeather: TokyoWeather, captureReflection = true): void {
     const state = roomCelestialLighting(date, currentWeather);
@@ -60,26 +59,22 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     fixtures.updateSky(sky, state.skyIntensity / Math.PI);
     background.copy(state.exterior).multiplyScalar(1 / cameraExposure);
     for (const material of skyMaterials) material.color.copy(background);
-    if (reflectionEnabled && captureReflection) reflection.capture(date);
+    if (captureReflection) updateReflection(date);
   }
 
   function setRoomLights(on: boolean): void {
     fixtures.setRoomLights(on);
     for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
-    if (reflectionEnabled) reflection.capture(new Date(), true);
+    updateReflection(new Date(), true);
   }
   function setMonitorPower(on: boolean): void {
     setMonitorLight(monitorLight, on);
-    if (reflectionEnabled) reflection.capture(new Date(), true);
+    updateReflection(new Date(), true);
   }
   update(new Date(), weather, false);
   return {
     celestialLight,
     update,
-    enableReflection: async () => {
-      await reflection.prepare();
-      reflectionEnabled = true;
-    },
     setRoomLights,
     setMonitorPower,
     invalidateShadows: () => {

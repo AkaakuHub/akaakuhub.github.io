@@ -77,7 +77,7 @@ export async function startRoom(
     (current) => {
       const sample = weatherAt(current, Date.now());
       audio.updateWeather(sample);
-      lighting.update(new Date(), sample, roomReady && !view.moving);
+      lighting.update(new Date(), sample, prepared && !view.moving);
       if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
       invalidate();
     },
@@ -149,7 +149,6 @@ export async function startRoom(
   let lastRendered = 0;
   let ready = false;
   let prepared = false;
-  let roomReady = false;
   let preparingView = false;
 
   const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
@@ -170,7 +169,7 @@ export async function startRoom(
     }
     const sample = weatherAt(weather.current, Date.now());
     audio.updateWeather(sample);
-    lighting.update(new Date(), sample, roomReady && !view.moving);
+    lighting.update(new Date(), sample, prepared && !view.moving);
     if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
     lighting.invalidateShadows();
     invalidate();
@@ -232,12 +231,7 @@ export async function startRoom(
     requestFrame();
   }
   async function prepareRemainingRoom(): Promise<void> {
-    await materialLoading.loadRemaining();
     await prepareRoomShaders(renderer, scene, camera, () => {}, false);
-    await lighting.enableReflection();
-    roomReady = true;
-    lighting.update(new Date(), weatherAt(weather.current, Date.now()));
-    invalidate();
   }
   function requestFrame() {
     if (frame || document.hidden) return;
@@ -249,6 +243,8 @@ export async function startRoom(
   await prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
     loading.rendering(2 + loaded / total, 4);
   });
+  await materialLoading.loadRemaining();
+  lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   controls = bindRoomControls(
     root,
     ui,
