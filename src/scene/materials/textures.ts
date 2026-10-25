@@ -10,7 +10,7 @@ import type { Renderer } from "three/webgpu";
 import type { RoomAssetLoader } from "../../assets/loading";
 import { renderingProfile } from "../quality";
 
-export function createTextureLoader(renderer: Renderer, assets: RoomAssetLoader) {
+export function createTextureLoader(rendererReady: Promise<Renderer>, assets: RoomAssetLoader) {
   const textures = new Map<string, Texture<ImageBitmap | null>>();
   const pending = new Map<Texture<ImageBitmap | null>, Promise<void>>();
   const anisotropy = renderingProfile().anisotropy;
@@ -40,7 +40,7 @@ export function createTextureLoader(renderer: Renderer, assets: RoomAssetLoader)
         );
         result.image = bitmap;
         result.needsUpdate = true;
-        renderer.initTexture(result);
+        (await rendererReady).initTexture(result);
       }),
     );
     return result;

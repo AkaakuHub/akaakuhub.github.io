@@ -13,8 +13,9 @@ import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
-import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
+import { observeTokyoWeather } from "./weather/client";
 import { weatherAt } from "./weather/schema";
+import type { WeatherDay } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
@@ -24,20 +25,20 @@ import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
 import { loadSkillAtlas } from "./assets/skills";
-import { skillText } from "./content/skills";
 
-export async function startRoom(root: HTMLElement, loading: Loading) {
+export async function startRoom(
+  root: HTMLElement,
+  loading: Loading,
+  weatherReady: Promise<WeatherDay>,
+) {
   const ui = createInterface(root);
-  const weatherReady = loadTokyoWeather();
-  const fontsReady = Promise.all([prepareBoardFont(skillText), prepareBoardHeadingFont()]);
-  await new Promise<void>((resolve) => {
-    requestAnimationFrame(() => setTimeout(resolve, 0));
+  const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
+  const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
+    bindRenderingErrors(renderer, loading.fail);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFShadowMap;
+    return renderer;
   });
-  const renderer = await createRoomRenderer(ui.canvas);
-  bindRenderingErrors(renderer, loading.fail);
-  const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = PCFShadowMap;
   const scene = new Scene();
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
   camera.coordinateSystem = WebGPUCoordinateSystem;
@@ -45,18 +46,20 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   const assets = createRoomAssetLoader((summary) => {
     loading.progress(summary.succeeded, summary.total);
   });
-  const materialLoading = loadMaterials(renderer, assets);
+  const materialLoading = loadMaterials(rendererReady, assets);
   const skillAtlasReady = loadSkillAtlas(assets);
-  const lightTablesReady = loadAreaLightTables(renderer, assets);
+  const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
-  const [initialWeather, skillAtlas] = await Promise.all([
+  const [renderer, initialWeather, skillAtlas] = await Promise.all([
+    rendererReady,
     weatherReady,
     skillAtlasReady,
     materialLoading.paperReady,
     fontsReady,
   ]);
-  await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+  const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials, skillAtlas);
+  loading.rendering(1, 3);
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await Promise.all([materialLoading.ready, lightTablesReady]);
   const lighting = illuminate(
@@ -88,6 +91,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     computer.fanSurfaces,
     contributions.object,
   );
+  loading.rendering(2, 3);
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice], index) => ({
     object,
@@ -195,7 +199,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     frameMetrics?.end(moving);
     if (!ready) {
       loading.complete();
-      if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
+      const measurement = performance.measure("room-first-frame", { start: 0 });
+      if (import.meta.env.DEV) console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
       ready = true;
       prewarmRoomViews(renderer, scene, camera, () => view.moving, loading.fail);
     }
@@ -212,13 +217,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     frame = requestAnimationFrame(render);
   }
   updateTime();
-  loading.rendering(0, 2);
-  await rendering.compile(({ loaded, total }) => loading.rendering(loaded / total, 2));
-  loading.rendering(1, 2);
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
-  await rendering.compile(({ loaded, total }) => loading.rendering(1 + loaded / total, 2));
-  loading.rendering(2, 2);
-  rendering.render();
   controls = bindRoomControls(
     root,
     ui,
@@ -230,6 +229,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     roomSwitch,
     () => void boardLoader.refresh(true),
   );
+  loading.rendering(3, 3);
   prepared = true;
   observeSize();
   requestFrame();

@@ -15,8 +15,8 @@ export interface PbrMaps {
 
 export type MetalMaps = Pick<PbrMaps, "normalMap">;
 
-export function loadMaterials(renderer: Renderer, assets: RoomAssetLoader) {
-  const loader = createTextureLoader(renderer, assets);
+export function loadMaterials(rendererReady: Promise<Renderer>, assets: RoomAssetLoader) {
+  const loader = createTextureLoader(rendererReady, assets);
   const { texture } = loader;
   function loadSet({ id, meters, format }: SurfaceDefinition): PbrMaps {
     const packed = format === "arm";

@@ -1,5 +1,6 @@
 import { createLoading } from "./interface/loading";
 import { prepareRecovery } from "./interface/recovery";
+import { loadTokyoWeather } from "./weather/client";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -11,13 +12,14 @@ window.addEventListener("unhandledrejection", (event) => loading.fail(event.reas
 
 try {
   await prepareRecovery();
+  const weatherReady = loadTokyoWeather();
   const [room] = await Promise.all([
     import("./main"),
     import("./assets/fonts/zen-maru-gothic.css"),
     import("./assets/fonts/board-text.css"),
     import("./assets/fonts/yomogi.css"),
   ]);
-  await room.startRoom(root, loading);
+  await room.startRoom(root, loading, weatherReady);
 } catch (error) {
   loading.fail(error);
 }
