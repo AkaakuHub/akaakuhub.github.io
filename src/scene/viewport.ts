@@ -1,11 +1,12 @@
-import type { PerspectiveCamera, WebGLRenderer } from "three";
+import type { PerspectiveCamera } from "three";
+import type { Renderer } from "three/webgpu";
 import type { createRendering } from "./rendering";
 import { renderingProfile } from "./quality";
 
 export function observeViewport(
   canvas: HTMLCanvasElement,
   camera: PerspectiveCamera,
-  renderer: WebGLRenderer,
+  renderer: Renderer,
   composer: ReturnType<typeof createRendering>,
   onResize: () => void,
 ): void {

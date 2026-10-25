@@ -1,6 +1,6 @@
-import type { WebGLRenderer } from "three";
+import type { Renderer } from "three/webgpu";
 
-export function createFrameMetrics(renderer: WebGLRenderer) {
+export function createFrameMetrics(renderer: Renderer) {
   renderer.info.autoReset = false;
   let tracking = false;
   let started = 0;

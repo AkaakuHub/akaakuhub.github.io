@@ -1,5 +1,6 @@
 import { Color, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial } from "three";
-import type { Scene, WebGLRenderer } from "three";
+import type { Scene } from "three";
+import type { Renderer } from "three/webgpu";
 import { roomCelestialLighting } from "./daylight/celestial";
 import { cameraExposure, unitLuminance } from "./lighting/photometry";
 import { createRoomReflection } from "./lighting/room-reflection";
@@ -8,18 +9,14 @@ import { createMonitorLight, setMonitorLight } from "./lighting/monitor";
 import type { TokyoWeather } from "../weather/schema";
 import { renderingProfile } from "./quality";
 
-export function illuminate(
-  scene: Scene,
-  renderer: WebGLRenderer,
-  weather: TokyoWeather,
-  monitor: Mesh,
-) {
+export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeather, monitor: Mesh) {
   renderer.toneMappingExposure = cameraExposure;
   const fixtures = createRoomLights(scene);
   const monitorLight = createMonitorLight(monitor);
   const celestialLight = new DirectionalLight();
   celestialLight.target.position.set(0, 1.2, 0);
   celestialLight.castShadow = true;
+  celestialLight.shadow.autoUpdate = false;
   const shadowSize = renderingProfile().shadowSize;
   celestialLight.shadow.mapSize.set(shadowSize, shadowSize);
   celestialLight.shadow.camera.left = -4.4;
@@ -75,5 +72,13 @@ export function illuminate(
     updateReflection(new Date(), true);
   }
   update(new Date(), weather, false);
-  return { celestialLight, update, setRoomLights, setMonitorPower };
+  return {
+    celestialLight,
+    update,
+    setRoomLights,
+    setMonitorPower,
+    invalidateShadows: () => {
+      celestialLight.shadow.needsUpdate = true;
+    },
+  };
 }

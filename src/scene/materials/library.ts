@@ -1,4 +1,5 @@
-import type { Texture, WebGLRenderer } from "three";
+import type { Texture } from "three";
+import type { Renderer } from "three/webgpu";
 import { materialDefinitions } from "../../assets/materials";
 import type { MetalDefinition, SurfaceDefinition } from "../../assets/materials";
 import { createTextureLoader } from "./textures";
@@ -14,7 +15,7 @@ export interface PbrMaps {
 
 export type MetalMaps = Pick<PbrMaps, "normalMap">;
 
-export function loadMaterials(renderer: WebGLRenderer, assets: RoomAssetLoader) {
+export function loadMaterials(renderer: Renderer, assets: RoomAssetLoader) {
   const loader = createTextureLoader(renderer, assets);
   const { texture } = loader;
   function loadSet({ id, meters, format }: SurfaceDefinition): PbrMaps {

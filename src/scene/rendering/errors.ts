@@ -1,22 +1,14 @@
-import type { WebGLRenderer } from "three";
+import type { Renderer } from "three/webgpu";
 
-export function bindRenderingErrors(
-  renderer: WebGLRenderer,
-  canvas: HTMLCanvasElement,
-  fail: (error: unknown) => void,
-): void {
-  renderer.debug.onShaderError = (gl, program, vertex, fragment) => {
-    const logs = [
-      gl.getProgramInfoLog(program),
-      gl.getShaderInfoLog(vertex),
-      gl.getShaderInfoLog(fragment),
-    ]
-      .filter((log) => log !== null && log.length > 0)
-      .join("\n");
-    throw new Error(`GPUの描画プログラムを準備できませんでした。\n${logs}`);
+export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) => void): void {
+  renderer.onError = (error: unknown) => {
+    fail(
+      error instanceof Error
+        ? error
+        : new Error(typeof error === "string" ? error : JSON.stringify(error)),
+    );
   };
-  canvas.addEventListener("webglcontextlost", (event) => {
-    event.preventDefault();
-    fail(new Error("GPUとの接続が失われたため、描画を続けられません。"));
-  });
+  renderer.onDeviceLost = (info) => {
+    fail(new Error(`GPUとの接続が失われました: ${info.message}`));
+  };
 }

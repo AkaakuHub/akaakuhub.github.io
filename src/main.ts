@@ -1,6 +1,7 @@
 import "./tailwind.css";
 import "./interface/keyboard.css";
-import { Color, PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { Color, PCFShadowMap, PerspectiveCamera, Scene, WebGPUCoordinateSystem } from "three";
+import { createRoomRenderer } from "./scene/rendering/renderer";
 import { createInterface } from "./interface";
 import type { Loading } from "./interface/loading";
 import { bindRoomSwitch } from "./interface/room-switch";
@@ -32,14 +33,14 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   await new Promise<void>((resolve) => {
     requestAnimationFrame(() => setTimeout(resolve, 0));
   });
-  const renderer = new WebGLRenderer({ canvas: ui.canvas, antialias: false });
-  bindRenderingErrors(renderer, ui.canvas, loading.fail);
+  const renderer = await createRoomRenderer(ui.canvas);
+  bindRenderingErrors(renderer, loading.fail);
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFShadowMap;
-  renderer.shadowMap.autoUpdate = false;
   const scene = new Scene();
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
+  camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
   const assets = createRoomAssetLoader((summary) => {
     loading.progress(summary.succeeded, summary.total);
@@ -147,7 +148,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     if (computer.orientDisplay(camera.aspect < 1)) {
       computer.resizeInspection();
       lighting.setMonitorPower(computerInterface.targets.isPowered());
-      renderer.shadowMap.needsUpdate = true;
+      lighting.invalidateShadows();
     }
     view.resize();
     invalidate();
@@ -162,7 +163,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     const sample = weatherAt(weather.current, Date.now());
     lighting.update(new Date(), sample, prepared && !view.moving);
     if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
-    renderer.shadowMap.needsUpdate = true;
+    lighting.invalidateShadows();
     invalidate();
   }
   setInterval(updateTime, 60_000);

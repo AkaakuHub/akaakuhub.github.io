@@ -1,97 +1,35 @@
-import { DirectionalLight, Mesh, RectAreaLight, Scene } from "three";
-import type {
-  BufferGeometry,
-  MeshBasicMaterial,
-  Object3D,
-  PerspectiveCamera,
-  Scene as RoomScene,
-  WebGLRenderer,
-  WebGLRenderTarget,
-} from "three";
-import { Pass } from "three/addons/postprocessing/Pass.js";
+import type { Mesh, Object3D, PerspectiveCamera, RenderTarget, Scene } from "three";
+import type { Renderer } from "three/webgpu";
 
-export class DynamicSurfacePass extends Pass {
-  private readonly scene = new Scene();
-  private readonly surfaces = new Map<Mesh, Mesh>();
-  private readonly lights: { source: RectAreaLight; copy: RectAreaLight }[] = [];
-  private readonly daylight: { source: DirectionalLight; copy: DirectionalLight }[] = [];
-
+export class DynamicSurfacePass {
   constructor(
-    monitor: Mesh<BufferGeometry, MeshBasicMaterial>,
+    monitor: Mesh,
     fanSurfaces: readonly Mesh[],
     private readonly contributions: Object3D,
-    private readonly room: RoomScene,
+    private readonly scene: Scene,
     private readonly camera: PerspectiveCamera,
   ) {
-    super();
-    this.needsSwap = false;
-    for (const source of [monitor, ...fanSurfaces]) this.addSurface(source);
-    room.traverse((object) => {
-      if (object instanceof DirectionalLight) {
-        const copy = object.clone();
-        copy.target = object.target;
-        copy.shadow = object.shadow;
-        copy.matrixAutoUpdate = false;
-        copy.matrixWorldAutoUpdate = false;
-        this.scene.add(copy);
-        this.daylight.push({ source: object, copy });
-      }
-      if (!(object instanceof RectAreaLight)) return;
-      const copy = object.clone();
-      copy.matrixAutoUpdate = false;
-      copy.matrixWorldAutoUpdate = false;
-      this.scene.add(copy);
-      this.lights.push({ source: object, copy });
+    for (const source of [monitor, ...fanSurfaces]) source.layers.enable(1);
+    scene.traverse((object) => {
+      if ("isLight" in object) object.layers.enable(1);
     });
   }
 
-  private addSurface(source: Mesh): void {
-    if (this.surfaces.has(source)) return;
-    const copy = new Mesh(source.geometry, source.material);
-    copy.matrixAutoUpdate = false;
-    copy.matrixWorldAutoUpdate = false;
-    copy.receiveShadow = source.receiveShadow;
-    copy.renderOrder = source.renderOrder;
-    this.scene.add(copy);
-    this.surfaces.set(source, copy);
-  }
-
-  override render(
-    renderer: WebGLRenderer,
-    writeBuffer: WebGLRenderTarget,
-    readBuffer: WebGLRenderTarget,
-  ): void {
-    this.scene.environment = this.room.environment;
-    this.scene.environmentIntensity = this.room.environmentIntensity;
-    this.contributions.traverse((object) => {
-      if (object instanceof Mesh) this.addSurface(object);
-    });
-    for (const [source, copy] of this.surfaces) {
-      source.updateWorldMatrix(true, false);
-      copy.geometry = source.geometry;
-      copy.matrixWorld.copy(source.matrixWorld);
-      copy.visible = source.visible;
-    }
-    for (const { source, copy } of this.lights) {
-      source.updateWorldMatrix(true, false);
-      copy.matrixWorld.copy(source.matrixWorld);
-      copy.color.copy(source.color);
-      copy.intensity = source.intensity;
-      copy.width = source.width;
-      copy.height = source.height;
-      copy.visible = source.visible;
-    }
-    for (const { source, copy } of this.daylight) {
-      source.updateWorldMatrix(true, false);
-      copy.matrixWorld.copy(source.matrixWorld);
-      copy.color.copy(source.color);
-      copy.intensity = source.intensity;
-      copy.visible = source.visible;
-    }
+  render(renderer: Renderer, target: RenderTarget): void {
+    this.contributions.traverse((object) => object.layers.enable(1));
+    const layers = this.camera.layers.mask;
+    const background = this.scene.background;
     const autoClear = renderer.autoClear;
+    this.camera.layers.set(1);
+    this.scene.background = null;
     renderer.autoClear = false;
-    renderer.setRenderTarget(this.renderToScreen ? writeBuffer : readBuffer);
-    renderer.render(this.scene, this.camera);
-    renderer.autoClear = autoClear;
+    renderer.setRenderTarget(target);
+    try {
+      renderer.render(this.scene, this.camera);
+    } finally {
+      renderer.autoClear = autoClear;
+      this.scene.background = background;
+      this.camera.layers.mask = layers;
+    }
   }
 }

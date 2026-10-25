@@ -1,17 +1,9 @@
-import { ACESFilmicToneMapping, DepthTexture, HalfFloatType, WebGLRenderTarget } from "three";
-import type {
-  BufferGeometry,
-  DirectionalLight,
-  Mesh,
-  MeshBasicMaterial,
-  Object3D,
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer,
-} from "three";
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import { AntialiasPass } from "./antialias";
+import { DepthTexture, HalfFloatType, NoToneMapping, RenderTarget } from "three";
+import type { DirectionalLight, Mesh, Object3D, PerspectiveCamera, Scene } from "three";
+import { ConvertNode, MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
+import type { Renderer } from "three/webgpu";
+import { float, texture, uniform, vec4 } from "three/tsl";
+import { fxaa } from "three/addons/tsl/display/FXAANode.js";
 import { VolumetricPass } from "./volumetrics";
 import { renderingProfile } from "./quality";
 import { WeatherPass } from "./weather";
@@ -19,36 +11,50 @@ import { ScenePass } from "./rendering/scene-pass";
 import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 
 export function createRendering(
-  renderer: WebGLRenderer,
+  renderer: Renderer,
   scene: Scene,
   camera: PerspectiveCamera,
   celestialLight: DirectionalLight,
-  monitor: Mesh<BufferGeometry, MeshBasicMaterial>,
+  monitor: Mesh,
   fanSurfaces: readonly Mesh[],
   contributions: Object3D,
 ) {
+  renderer.toneMapping = NoToneMapping;
   const profile = renderingProfile();
-  const weather = new WeatherPass(camera);
-  const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
-  renderer.toneMapping = ACESFilmicToneMapping;
-  const target = new WebGLRenderTarget(1, 1, {
+  const depth = new DepthTexture(1, 1);
+  const frame = new RenderTarget(1, 1, {
     type: HalfFloatType,
-    depthTexture: new DepthTexture(1, 1),
+    depthTexture: depth,
   });
-  const composer = new EffectComposer(renderer, target);
-  composer.setPixelRatio(1);
-  composer.addPass(surfaces);
-  composer.addPass(new DynamicSurfacePass(monitor, fanSurfaces, contributions, scene, camera));
-  composer.addPass(weather);
+  const composite = new RenderTarget(1, 1, { type: HalfFloatType, depthBuffer: false });
+  const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
+  const dynamic = new DynamicSurfacePass(monitor, fanSurfaces, contributions, scene, camera);
+  const weather = new WeatherPass(camera);
   const scattering = new VolumetricPass(
     camera,
     celestialLight,
+    depth,
+    frame.texture,
     profile.scatteringSteps,
     () => surfaces.revision,
   );
-  composer.addPass(scattering);
-  composer.addPass(new OutputPass());
-  composer.addPass(new AntialiasPass());
+  const source = texture(frame.texture);
+  const exposure = uniform(renderer.toneMappingExposure);
+  const display = window.matchMedia("(dynamic-range: high)");
+  const headroom = uniform(display.matches ? 4 : 1);
+  display.addEventListener("change", () => {
+    headroom.value = display.matches ? 4 : 1;
+  });
+  const antialiased = new ConvertNode<"vec4">(fxaa(source), "vec4");
+  const color = antialiased.rgb.mul(exposure).max(0);
+  const mapped = headroom.mul(float(1).sub(color.div(headroom).negate().exp()));
+  const output = new MeshBasicNodeMaterial({
+    depthTest: false,
+    depthWrite: false,
+    toneMapped: false,
+  });
+  output.fragmentNode = vec4(mapped, 1);
+  const quad = new QuadMesh(output);
   let pixelRatio = 1;
   return {
     weather,
@@ -58,14 +64,30 @@ export function createRendering(
       pixelRatio = ratio;
     },
     setSize(width: number, height: number) {
-      const pixelWidth = Math.max(1, Math.floor(width * pixelRatio));
-      const pixelHeight = Math.max(1, Math.floor(height * pixelRatio));
-      composer.setSize(pixelWidth, pixelHeight);
+      const w = Math.max(1, Math.floor(width * pixelRatio));
+      const h = Math.max(1, Math.floor(height * pixelRatio));
+      frame.setSize(w, h);
+      composite.setSize(w, h);
+      surfaces.setSize(w, h);
+      scattering.setSize(w, h);
     },
     render(moving = false) {
-      surfaces.moving = moving;
-      scattering.enabled = !moving && celestialLight.intensity > 0;
-      composer.render();
+      surfaces.render(renderer, frame, moving);
+      dynamic.render(renderer, frame);
+      weather.render(renderer, frame);
+      const autoClear = renderer.autoClear;
+      renderer.autoClear = true;
+      try {
+        if (!moving && celestialLight.intensity > 0) {
+          scattering.render(renderer, composite);
+          source.value = composite.texture;
+        } else source.value = frame.texture;
+        exposure.value = renderer.toneMappingExposure;
+        renderer.setRenderTarget(null);
+        quad.render(renderer);
+      } finally {
+        renderer.autoClear = autoClear;
+      }
     },
   };
 }

@@ -1,7 +1,9 @@
-import { Color, PMREMGenerator, Vector3 } from "three";
-import type { Object3D, Scene, WebGLRenderer, WebGLRenderTarget } from "three";
+import { Color, DirectionalLight, Vector3 } from "three";
+import { PMREMGenerator } from "three/webgpu";
+import type { Renderer } from "three/webgpu";
+import type { Object3D, Scene, RenderTarget } from "three";
 
-export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
+export function createRoomReflection(scene: Scene, renderer: Renderer) {
   const generator = new PMREMGenerator(renderer);
   const position = new Vector3(0, 1.45, 0);
   const unlit = new Color(0);
@@ -9,7 +11,7 @@ export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
   scene.traverse((object) => {
     if (object.name === "world-sky") sources.push(object);
   });
-  let reflection: WebGLRenderTarget | undefined;
+  let reflection: RenderTarget | undefined;
   let capturedAt: number | undefined;
 
   return (date: Date, force = false): void => {
@@ -21,8 +23,10 @@ export function createRoomReflection(scene: Scene, renderer: WebGLRenderer) {
     for (const { object } of visibility) object.visible = false;
     scene.environment = null;
     scene.background = unlit;
-    renderer.shadowMap.needsUpdate = true;
-    let next: WebGLRenderTarget;
+    scene.traverse((object) => {
+      if (object instanceof DirectionalLight) object.shadow.needsUpdate = true;
+    });
+    let next: RenderTarget;
     try {
       next = generator.fromScene(scene, 0, 0.05, 24, { position, size: 128 });
     } finally {

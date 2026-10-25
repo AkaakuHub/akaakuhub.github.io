@@ -8,6 +8,8 @@ import {
   PlaneGeometry,
 } from "three";
 import type { PerspectiveCamera } from "three";
+import { MeshStandardNodeMaterial } from "three/webgpu";
+import { attribute, texture, uniform } from "three/tsl";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { loadContributionSource } from "./contribution-source";
 
@@ -17,7 +19,7 @@ export function createContributionDisplay(
 ) {
   const object = new Group();
   mount.add(object);
-  const time = { value: 0 };
+  const time = uniform(0);
   const frustum = new Frustum();
   const projection = new Matrix4();
   let surface: Mesh | undefined;
@@ -54,34 +56,17 @@ export function createContributionDisplay(
         const geometry = mergeGeometries(geometries);
         geometries.forEach((part) => part.dispose());
         if (!geometry) throw new Error("GitHubの草を組み立てられませんでした。");
-        const material = new MeshStandardMaterial({
-          map: source.animatedMap,
+        const material = new MeshStandardNodeMaterial({
           transparent: true,
           depthWrite: false,
           roughness: 1,
         });
-        material.onBeforeCompile = (shader) => {
-          shader.uniforms.contributionTime = time;
-          shader.vertexShader = shader.vertexShader
-            .replace(
-              "#include <common>",
-              "#include <common>\nattribute vec2 revealTiming;\nvarying vec2 vRevealTiming;",
-            )
-            .replace(
-              "#include <begin_vertex>",
-              "#include <begin_vertex>\nvRevealTiming = revealTiming;",
-            );
-          shader.fragmentShader = shader.fragmentShader
-            .replace(
-              "#include <common>",
-              "#include <common>\nuniform float contributionTime;\nvarying vec2 vRevealTiming;",
-            )
-            .replace(
-              "#include <alphatest_fragment>",
-              "diffuseColor.a *= clamp((contributionTime - vRevealTiming.x) / max(vRevealTiming.y, 0.0001), 0.0, 1.0);\n#include <alphatest_fragment>",
-            );
-        };
-        material.customProgramCacheKey = () => "contribution-reveal";
+        const sample = texture(source.animatedMap);
+        const timing = attribute("revealTiming", "vec2");
+        material.colorNode = sample.rgb;
+        material.opacityNode = sample.a.mul(
+          time.sub(timing.x).div(timing.y.max(0.0001)).clamp(0, 1),
+        );
         surface = new Mesh(geometry, material);
         surface.receiveShadow = true;
         surface.renderOrder = 1;
@@ -116,7 +101,7 @@ export function createContributionDisplay(
       camera.updateMatrixWorld();
       surface.updateWorldMatrix(true, false);
       projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-      frustum.setFromProjectionMatrix(projection);
+      frustum.setFromProjectionMatrix(projection, camera.coordinateSystem);
       const visible = frustum.intersectsObject(surface);
       if (startedAt === undefined) {
         if (!visible) return false;

@@ -11,7 +11,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
-    "types": ["vite-plus/client"]
+    "types": ["vite-plus/client", "@webgpu/types"]
   },
   "include": ["src", "scripts", "vite.config.ts"]
 }

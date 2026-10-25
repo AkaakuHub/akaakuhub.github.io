@@ -1,9 +1,10 @@
-import { HalfFloatType, WebGLRenderTarget } from "three";
-import type { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { DirectionalLight, HalfFloatType, RenderTarget } from "three";
+import type { PerspectiveCamera, Scene } from "three";
+import type { Renderer } from "three/webgpu";
 import { roomPose } from "../view/targets";
 
 export function prewarmRoomViews(
-  renderer: WebGLRenderer,
+  renderer: Renderer,
   scene: Scene,
   camera: PerspectiveCamera,
   isMoving: () => boolean,
@@ -11,7 +12,7 @@ export function prewarmRoomViews(
 ): void {
   const directions = [1, 2, 3, 4] as const;
   const preview = camera.clone();
-  const target = new WebGLRenderTarget(64, 64, { type: HalfFloatType });
+  const target = new RenderTarget(64, 64, { type: HalfFloatType });
   let index = 0;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let busy = false;
@@ -43,7 +44,7 @@ export function prewarmRoomViews(
     preview.quaternion.copy(pose.quaternion);
     preview.updateProjectionMatrix();
     const previousTarget = renderer.getRenderTarget();
-    let compilation: ReturnType<WebGLRenderer["compileAsync"]>;
+    let compilation: ReturnType<Renderer["compileAsync"]>;
     try {
       renderer.setRenderTarget(target);
       compilation = renderer.compileAsync(scene, preview);
@@ -54,16 +55,19 @@ export function prewarmRoomViews(
     if (!idle()) return;
     const activeTarget = renderer.getRenderTarget();
     const autoClear = renderer.autoClear;
-    const updateShadows = renderer.shadowMap.needsUpdate;
+    const shadows = scene
+      .getObjectsByProperty("isDirectionalLight", true)
+      .filter((object): object is DirectionalLight => object instanceof DirectionalLight)
+      .map((light) => ({ shadow: light.shadow, update: light.shadow.needsUpdate }));
     try {
       renderer.autoClear = true;
-      renderer.shadowMap.needsUpdate = false;
+      for (const { shadow } of shadows) shadow.needsUpdate = false;
       renderer.setRenderTarget(target);
       renderer.render(scene, preview);
     } finally {
       renderer.setRenderTarget(activeTarget);
       renderer.autoClear = autoClear;
-      renderer.shadowMap.needsUpdate = updateShadows;
+      for (const { shadow, update } of shadows) shadow.needsUpdate = update;
     }
     index++;
     if (index === directions.length) stop();
