@@ -24,9 +24,12 @@ export function createPicker(
     if (!candidate) return;
     if (occlusion) {
       raycaster.far = candidate.distance - 0.0001;
-      const blocked = raycaster
-        .intersectObjects(scene.children, true)
-        .some(({ object }) => object instanceof Mesh && object !== computer);
+      const blocked = raycaster.intersectObjects(scene.children, true).some(({ object }) => {
+        if (!(object instanceof Mesh)) return false;
+        for (let owner: Object3D | null = object; owner; owner = owner.parent)
+          if (owner === candidate.object) return false;
+        return true;
+      });
       if (blocked) return;
     }
     if (candidate.object === computer) return { type: "computer" as const };
