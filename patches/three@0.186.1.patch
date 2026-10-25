@@ -1,0 +1,176 @@
+diff --git a/build/three.core.js b/build/three.core.js
+index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..51d85730fca5a4da6922a92efc014ed4b70eca55 100644
+--- a/build/three.core.js
++++ b/build/three.core.js
+@@ -2093,20 +2093,28 @@ function warnOnce( ...params ) {
+  *
+  * @return {Promise<void>}
+  */
+-function yieldToMain() {
++let lastYieldTime = 0;
++
++async function yieldToMain() {
++
++	if ( performance.now() - lastYieldTime < 12 ) return;
+ 
+ 	if ( typeof self !== 'undefined' && typeof self.scheduler !== 'undefined' && typeof self.scheduler.yield !== 'undefined' ) {
+ 
+-		return self.scheduler.yield();
++		await self.scheduler.yield();
++		lastYieldTime = performance.now();
++		return;
+ 
+ 	}
+ 
+-	return new Promise( resolve => {
++	await new Promise( resolve => {
+ 
+ 		requestAnimationFrame( resolve );
+ 
+ 	} );
+ 
++	lastYieldTime = performance.now();
++
+ }
+ 
+ /**
+diff --git a/build/three.webgpu.js b/build/three.webgpu.js
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..c913dc637b25537a06cc2936ba16f2277da67892 100644
+--- a/build/three.webgpu.js
++++ b/build/three.webgpu.js
+@@ -62717,6 +62717,7 @@ class Renderer {
+ 		// Yields between objects to keep animation smooth
+ 
+ 		const total = compilationPromises.length;
++		const pendingPipelines = [];
+ 		let loaded = 0;
+ 
+ 		for ( const item of compilationPromises ) {
+@@ -62738,29 +62739,30 @@ class Renderer {
+ 			// Wait for pipeline creation
+ 			const pipelinePromises = [];
+ 			this._pipelines.getForRender( renderObject, pipelinePromises );
+-			if ( pipelinePromises.length > 0 ) {
+-
+-				await Promise.all( pipelinePromises );
+-
+-			}
+ 
+ 			this._isPreCompiling = true;
+ 			this._nodes.updateAfter( renderObject );
+ 			this._isPreCompiling = false;
+ 
+-			loaded ++;
++			pendingPipelines.push( Promise.all( pipelinePromises ).then( () => {
+ 
+-			if ( onProgress !== null ) {
++				loaded ++;
+ 
+-				onProgress( new ProgressEvent( 'progress', { lengthComputable: true, loaded, total } ) );
++				if ( onProgress !== null ) {
+ 
+-			}
++					onProgress( new ProgressEvent( 'progress', { lengthComputable: true, loaded, total } ) );
++
++				}
++
++			} ) );
+ 
+ 			// Yield between objects to allow animation frames
+ 			await yieldToMain();
+ 
+ 		}
+ 
++		await Promise.all( pendingPipelines );
++
+ 	}
+ 
+ 	/**
+diff --git a/src/renderers/common/Renderer.js b/src/renderers/common/Renderer.js
+index c05aa68471f07a0bbbf6203865da1096fea503c1..50a751c87d0b92eceea6abaa90a3472e43f309d7 100644
+--- a/src/renderers/common/Renderer.js
++++ b/src/renderers/common/Renderer.js
+@@ -1056,6 +1056,7 @@ class Renderer {
+ 		// Yields between objects to keep animation smooth
+ 
+ 		const total = compilationPromises.length;
++		const pendingPipelines = [];
+ 		let loaded = 0;
+ 
+ 		for ( const item of compilationPromises ) {
+@@ -1077,29 +1078,30 @@ class Renderer {
+ 			// Wait for pipeline creation
+ 			const pipelinePromises = [];
+ 			this._pipelines.getForRender( renderObject, pipelinePromises );
+-			if ( pipelinePromises.length > 0 ) {
+-
+-				await Promise.all( pipelinePromises );
+-
+-			}
+ 
+ 			this._isPreCompiling = true;
+ 			this._nodes.updateAfter( renderObject );
+ 			this._isPreCompiling = false;
+ 
+-			loaded ++;
++			pendingPipelines.push( Promise.all( pipelinePromises ).then( () => {
+ 
+-			if ( onProgress !== null ) {
++				loaded ++;
+ 
+-				onProgress( new ProgressEvent( 'progress', { lengthComputable: true, loaded, total } ) );
++				if ( onProgress !== null ) {
+ 
+-			}
++					onProgress( new ProgressEvent( 'progress', { lengthComputable: true, loaded, total } ) );
++
++				}
++
++			} ) );
+ 
+ 			// Yield between objects to allow animation frames
+ 			await yieldToMain();
+ 
+ 		}
+ 
++		await Promise.all( pendingPipelines );
++
+ 	}
+ 
+ 	/**
+diff --git a/src/utils.js b/src/utils.js
+index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..9a1e7d07081bc5dc14f1fdcc37036c27ff93354b 100644
+--- a/src/utils.js
++++ b/src/utils.js
+@@ -353,20 +353,28 @@ function warnOnce( ...params ) {
+  *
+  * @return {Promise<void>}
+  */
+-function yieldToMain() {
++let lastYieldTime = 0;
++
++async function yieldToMain() {
++
++	if ( performance.now() - lastYieldTime < 12 ) return;
+ 
+ 	if ( typeof self !== 'undefined' && typeof self.scheduler !== 'undefined' && typeof self.scheduler.yield !== 'undefined' ) {
+ 
+-		return self.scheduler.yield();
++		await self.scheduler.yield();
++		lastYieldTime = performance.now();
++		return;
+ 
+ 	}
+ 
+-	return new Promise( resolve => {
++	await new Promise( resolve => {
+ 
+ 		requestAnimationFrame( resolve );
+ 
+ 	} );
+ 
++	lastYieldTime = performance.now();
++
+ }
+ 
+ /**

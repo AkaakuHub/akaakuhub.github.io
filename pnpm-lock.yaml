@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  three@0.186.1: 4fa758510496ed978d6d2165976e4e368872365205bfc113e9af7592d8dd987d
+
 importers:
 
   .:
@@ -19,7 +22,7 @@ importers:
         version: 2.1.1
       three:
         specifier: ^0.186.1
-        version: 0.186.1
+        version: 0.186.1(patch_hash=4fa758510496ed978d6d2165976e4e368872365205bfc113e9af7592d8dd987d)
       unified-asset-loader:
         specifier: 0.1.1
         version: 0.1.1
@@ -3782,7 +3785,7 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  three@0.186.1: {}
+  three@0.186.1(patch_hash=4fa758510496ed978d6d2165976e4e368872365205bfc113e9af7592d8dd987d): {}
 
   tinybench@6.2.2: {}
 

@@ -20,6 +20,7 @@ import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
 import { prewarmRoomViews } from "./scene/rendering/prewarm";
+import { prepareRoomShaders } from "./scene/rendering/prepare";
 import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
@@ -59,7 +60,7 @@ export async function startRoom(
   ]);
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials, skillAtlas);
-  loading.rendering(1, 3);
+  loading.rendering(1, 4);
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await Promise.all([materialLoading.ready, lightTablesReady]);
   const lighting = illuminate(
@@ -91,7 +92,7 @@ export async function startRoom(
     computer.fanSurfaces,
     contributions.object,
   );
-  loading.rendering(2, 3);
+  loading.rendering(2, 4);
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice], index) => ({
     object,
@@ -202,6 +203,7 @@ export async function startRoom(
       const measurement = performance.measure("room-first-frame", { start: 0 });
       if (import.meta.env.DEV) console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
       ready = true;
+      contributions.load();
       prewarmRoomViews(renderer, scene, camera, () => view.moving, loading.fail);
     }
     if (moving || rendering.weather.active || scrolling || animation)
@@ -217,6 +219,9 @@ export async function startRoom(
     frame = requestAnimationFrame(render);
   }
   updateTime();
+  await prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
+    loading.rendering(2 + loaded / total, 4);
+  });
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   controls = bindRoomControls(
     root,
@@ -229,7 +234,7 @@ export async function startRoom(
     roomSwitch,
     () => void boardLoader.refresh(true),
   );
-  loading.rendering(3, 3);
+  loading.rendering(4, 4);
   prepared = true;
   observeSize();
   requestFrame();

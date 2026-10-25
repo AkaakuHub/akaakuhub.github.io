@@ -1,6 +1,5 @@
 import { loadSiteContent, revokeSiteContent } from "../../content/client";
 import { loadArticleThumbnails } from "../../content/thumbnails";
-import { prepareBoardFont } from "../../assets/typography";
 import type { BoardState } from "./notices";
 import type { ContentState, SiteContent } from "../../content/schema";
 
@@ -25,7 +24,6 @@ export function createBoardLoader(
               content = await loadSiteContent(controller.signal);
               if (!controller.signal.aborted) updateContent({ status: "ready", content });
             }
-            await prepareBoardFont(content.articles.map((entry) => entry.title).join(" "));
             const thumbnails = await loadArticleThumbnails(
               content.articles,
               controller.signal,

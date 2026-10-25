@@ -92,10 +92,9 @@ export function createContributionDisplay(
       }
     }
   }
-  void load();
-
   return {
     object,
+    load: () => void load(),
     update(camera: PerspectiveCamera, now: number): boolean {
       if (!surface) return false;
       camera.updateMatrixWorld();
