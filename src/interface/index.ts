@@ -9,6 +9,7 @@ import {
   Library,
   Maximize,
   Minimize,
+  Monitor,
   Presentation,
   ScanSearch,
   Undo2,
@@ -37,6 +38,7 @@ export function createInterface(root: HTMLElement) {
       ExternalLink,
       Library,
       Maximize,
+      Monitor,
       Presentation,
       ScanSearch,
       Undo2,
@@ -52,7 +54,9 @@ export function createInterface(root: HTMLElement) {
   const inspection = root.querySelector<HTMLElement>(".inspection-navigation");
   const link = root.querySelector<HTMLAnchorElement>(".inspection-link");
   const action = root.querySelector<HTMLButtonElement>(".board-action");
+  const computerAction = root.querySelector<HTMLButtonElement>(".computer-action");
   const zoom = root.querySelector<HTMLButtonElement>(".zoom-notice");
+  const back = root.querySelector<HTMLButtonElement>(".inspection-back");
   if (
     !canvas ||
     !room ||
@@ -62,6 +66,8 @@ export function createInterface(root: HTMLElement) {
     !inspection ||
     !link ||
     !action ||
+    !computerAction ||
+    !back ||
     !zoom
   )
     throw new Error("画面の初期化に失敗しました。");
@@ -88,10 +94,11 @@ export function createInterface(root: HTMLElement) {
   let wasInspecting = false;
   let wasMoving = false;
   let announcement = "ホワイトボードを向いています";
+  let inspectionName = "紙";
   function setZoom(factor: number): void {
     if (!zoom) throw new Error("掲示の拡大操作が見つかりません。");
     const expanded = factor > 1;
-    const label = expanded ? "紙全体を表示" : "紙を拡大";
+    const label = expanded ? `${inspectionName}全体を表示` : `${inspectionName}を拡大`;
     zoom.setAttribute("aria-label", label);
     zoom.setAttribute("title", label);
     zoom.replaceChildren(
@@ -104,10 +111,9 @@ export function createInterface(root: HTMLElement) {
     setZoom,
     inspectionViewport(): InspectionViewport {
       const viewport = canvas.getBoundingClientRect();
-      const controls = [...inspection.querySelectorAll<HTMLElement>("button, a")].map((element) =>
-        element.getBoundingClientRect(),
-      );
-      const left = controls.filter(({ x }) => x < viewport.x + viewport.width / 2);
+      const controls = [...inspection.querySelectorAll<HTMLElement>("button, a")]
+        .filter((element) => !element.hidden)
+        .map((element) => element.getBoundingClientRect());
       const right = controls.filter(({ x }) => x >= viewport.x + viewport.width / 2);
       const top = controls.filter(({ y }) => y < viewport.y + viewport.height / 2);
       const bottom = controls.filter(({ y }) => y >= viewport.y + viewport.height / 2);
@@ -116,8 +122,8 @@ export function createInterface(root: HTMLElement) {
         height: viewport.height,
         insetX:
           Math.max(
-            ...left.map((rect) => rect.right - viewport.left),
-            ...right.map((rect) => viewport.right - rect.left),
+            back.getBoundingClientRect().left - viewport.left,
+            ...right.map((rect) => viewport.right - rect.right),
           ) + 12,
         insetY:
           Math.max(
@@ -135,11 +141,19 @@ export function createInterface(root: HTMLElement) {
       if (!moving) status.textContent = announcement;
     },
     setView(state: ViewState, notice?: Notice) {
-      const inspecting = state.mode === "notice";
+      const inspecting = state.mode !== "room";
+      inspectionName = state.mode === "computer" ? "PC" : "紙";
       navigation.hidden = inspecting;
       inspection.hidden = !inspecting;
       header.hidden = inspecting;
-      action.hidden = inspecting || state.direction !== 0;
+      action.hidden = state.mode !== "room" || state.direction !== 0;
+      computerAction.hidden = state.mode !== "room" || state.direction !== 1;
+      link.hidden = state.mode !== "notice";
+      inspection
+        .querySelectorAll<HTMLElement>(".previous-notice, .next-notice")
+        .forEach((button) => {
+          button.hidden = state.mode !== "notice";
+        });
       if (state.mode === "room") {
         const direction = directions[state.direction];
         announcement = `${direction.name}を向いています`;
@@ -148,12 +162,15 @@ export function createInterface(root: HTMLElement) {
           .forEach((button, index) =>
             button.setAttribute("aria-pressed", String(index === state.direction)),
           );
-      } else {
+      } else if (state.mode === "notice") {
         if (!notice) throw new Error("掲示用紙の情報が見つかりません。");
         announcement = `${notice.title}を表示しています`;
         link.href = notice.link.href;
         link.setAttribute("aria-label", notice.link.label);
         link.setAttribute("title", notice.link.label);
+        setZoom(1);
+      } else {
+        announcement = "PCを表示しています";
         setZoom(1);
       }
       status.textContent = announcement;
@@ -161,6 +178,7 @@ export function createInterface(root: HTMLElement) {
         if (inspecting)
           root.querySelector<HTMLButtonElement>(".inspection-back")?.focus({ preventScroll: true });
         else if (!action.hidden) action.focus({ preventScroll: true });
+        else if (!computerAction.hidden) computerAction.focus({ preventScroll: true });
         else
           root
             .querySelector<HTMLButtonElement>(".direction[aria-pressed=true]")

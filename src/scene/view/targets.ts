@@ -4,11 +4,13 @@ import type { Object3D } from "three";
 export type RoomDirection = 0 | 1 | 2 | 3 | 4 | 5;
 export type ViewState =
   | { readonly mode: "room"; readonly direction: RoomDirection }
-  | { readonly mode: "notice"; readonly index: number };
+  | { readonly mode: "notice"; readonly index: number }
+  | { readonly mode: "computer" };
 export interface InspectionTarget {
   object: Object3D;
   width: number;
   height: number;
+  depth: number;
 }
 export interface InspectionViewport {
   width: number;
@@ -83,7 +85,7 @@ export function inspectionPose(
     new Vector3(
       MathUtils.clamp(framing.panX, -bounds.maxX, bounds.maxX),
       MathUtils.clamp(framing.panY, -bounds.maxY, bounds.maxY),
-      bounds.distance,
+      bounds.distance + target.depth / 2,
     ).applyQuaternion(quaternion),
   );
   return { position, quaternion, fov: 55 };

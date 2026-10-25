@@ -13,7 +13,8 @@
 
 #app[data-loading] .room-header,
 #app[data-loading] .navigation,
-#app[data-loading] .board-action {
+#app[data-loading] .board-action,
+#app[data-loading] .computer-action {
   visibility: hidden;
 }
 

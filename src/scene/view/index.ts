@@ -15,6 +15,7 @@ export type { ViewState } from "./targets";
 export function createView(
   camera: PerspectiveCamera,
   inspections: readonly InspectionTarget[],
+  computer: InspectionTarget,
   onChange: (state: ViewState) => void,
   invalidate: () => void,
   getViewport: () => InspectionViewport,
@@ -33,7 +34,7 @@ export function createView(
 
   function pose(): CameraPose {
     if (state.mode === "room") return roomPose(state.direction, heading, camera.aspect);
-    const inspection = inspections[state.index];
+    const inspection = state.mode === "computer" ? computer : inspections[state.index];
     if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
     const viewport = getViewport();
     const bounds = inspectionBounds(inspection, viewport, framing.zoom);
@@ -94,24 +95,31 @@ export function createView(
     },
     select,
     inspect,
+    inspectComputer() {
+      if (state.mode === "computer") return;
+      framing.zoom = 1;
+      framing.panX = 0;
+      framing.panY = 0;
+      transition({ mode: "computer" }, 0.4);
+    },
     zoom(factor: number, animated: boolean) {
-      if (state.mode !== "notice") return;
+      if (state.mode === "room") return;
       if (navigating && elapsed < duration && !motion.matches) return;
       const zoom = MathUtils.clamp(framing.zoom * factor, 1, 2.8);
       if (zoom === framing.zoom) return;
       framing.zoom = zoom;
       navigating = false;
-      move(animated ? 0.2 : 0);
+      move(animated ? 0.2 : 0.08);
     },
     pan(dx: number, dy: number) {
-      if (state.mode !== "notice" || framing.zoom === 1) return;
+      if (state.mode === "room" || framing.zoom === 1) return;
       if (navigating && elapsed < duration && !motion.matches) return;
-      const inspection = inspections[state.index];
+      const inspection = state.mode === "computer" ? computer : inspections[state.index];
       if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
       const bounds = inspectionBounds(inspection, getViewport(), framing.zoom);
       framing.panX -= dx * bounds.visibleWidth;
       framing.panY += dy * bounds.visibleHeight;
-      move(0);
+      move(0.08);
     },
     turn(step: number) {
       select((((heading + step) % 4) + 4) % 4);
@@ -127,7 +135,7 @@ export function createView(
         inspect((state.index + step + inspections.length) % inspections.length);
     },
     back() {
-      if (state.mode === "notice") transition({ mode: "room", direction: roomDirection }, 0.35);
+      if (state.mode !== "room") transition({ mode: "room", direction: roomDirection }, 0.35);
     },
     resize() {
       target = pose();

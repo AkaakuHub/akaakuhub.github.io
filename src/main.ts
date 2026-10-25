@@ -43,7 +43,7 @@ const { materials } = materialLoading;
 const [initialWeather] = await Promise.all([weatherReady, materialLoading.paperReady]);
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const { board, lightSwitch, rocker } = assembleClubroom(scene, materials);
+const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));
@@ -64,10 +64,12 @@ const inspections = [...board.notices].map(([object, notice]) => ({
   object,
   width: notice.size[0],
   height: notice.size[1],
+  depth: 0,
 }));
 const view = createView(
   camera,
   inspections,
+  computer,
   (state) => {
     ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
     ui.setMoving(true);
@@ -157,7 +159,7 @@ lighting.update(new Date(), weatherAt(weather.current, Date.now()));
 await renderer.compileAsync(scene, camera);
 rendering.render(true);
 rendering.render();
-bindRoomControls(root, ui, view, camera, scene, board.notices);
+bindRoomControls(root, ui, view, camera, scene, board.notices, computer.object);
 const roomSwitch = bindRoomSwitch(
   root,
   lightSwitch,
