@@ -6,17 +6,10 @@ export async function loadSiteContent(signal: AbortSignal): Promise<SiteContent>
     signal: AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
     cache: "no-store",
   });
-  const value: unknown = await response.json();
   if (!response.ok) {
-    if (
-      typeof value === "object" &&
-      value !== null &&
-      "error" in value &&
-      typeof value.error === "string"
-    )
-      throw new Error(value.error);
     throw new Error(`公開情報を取得できませんでした: HTTP ${response.status}`);
   }
+  const value: unknown = await response.json();
   return parseSiteContent(value);
 }
 
