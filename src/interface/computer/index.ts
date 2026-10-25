@@ -4,7 +4,7 @@ import { photometry, unitLuminance } from "../../scene/lighting/photometry";
 import { Color } from "three";
 
 export function createComputerInterface(
-  computer: ReturnType<typeof assembleClubroom>["computer"],
+  computer: Awaited<ReturnType<typeof assembleClubroom>>["computer"],
   view: ReturnType<typeof createView>,
   invalidate: () => void,
   requestFrame: () => void,

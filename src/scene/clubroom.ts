@@ -6,7 +6,6 @@ import type { MaterialLibrary } from "./materials/library";
 import { createMetalMaterials } from "./materials/metal";
 import { createPropMaterials } from "./materials/props";
 import { createRoom } from "./room";
-import { batchStaticMeshes } from "./static-batches";
 import { createComputerInspection } from "./view/computer";
 import { createDisplayOrientation } from "./furniture/computer/orientation";
 
@@ -18,10 +17,11 @@ function isMonitor(object: Object3D | undefined): object is Mesh<PlaneGeometry, 
   );
 }
 
-export function assembleClubroom(
+export async function assembleClubroom(
   scene: Scene,
   materials: MaterialLibrary,
   skillAtlas: ImageBitmap,
+  batchStaticMeshes: (scene: Scene, preserved: ReadonlySet<Object3D>) => Promise<void>,
 ) {
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
@@ -68,7 +68,7 @@ export function assembleClubroom(
       preserved.add(object);
       if (object instanceof Mesh) fanSurfaces.push(object);
     });
-  batchStaticMeshes(scene, preserved);
+  await batchStaticMeshes(scene, preserved);
   return {
     board,
     lightSwitch,

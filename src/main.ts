@@ -7,6 +7,7 @@ import type { Loading } from "./interface/loading";
 import { bindRoomSwitch } from "./interface/room-switch";
 import { bindRoomControls } from "./interface/controls";
 import { assembleClubroom } from "./scene/clubroom";
+import { createStaticBatcher } from "./scene/static-batches";
 import { illuminate } from "./scene/lighting";
 import type { RoomAssetLoader } from "./assets/loading";
 import { loadMaterials } from "./scene/materials/library";
@@ -38,6 +39,7 @@ export async function startRoom(
   audio: WeatherAudio,
 ) {
   const ui = createInterface(root);
+  const batchStaticMeshes = createStaticBatcher();
   const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
     bindRenderingErrors(renderer, loading.fail);
@@ -61,7 +63,12 @@ export async function startRoom(
     fontsReady,
   ]);
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
-  const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials, skillAtlas);
+  const { board, lightSwitch, rocker, computer } = await assembleClubroom(
+    scene,
+    materials,
+    skillAtlas,
+    batchStaticMeshes,
+  );
   loading.rendering(1, 4);
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await lightTablesReady;

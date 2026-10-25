@@ -69,11 +69,8 @@ export function loadMaterials(rendererReady: Promise<Renderer>, assets: RoomAsse
       return Promise.all(entries.map(([, load]) => load())).then(() => {});
     },
     async loadRemaining(): Promise<void> {
-      const remaining = [...loader.pending].filter(([map]) => !map.image).values();
       await Promise.all(
-        Array.from({ length: 4 }, async () => {
-          for (const [, load] of remaining) await load();
-        }),
+        [...loader.pending].filter(([map]) => !map.image).map(([, load]) => load()),
       );
       complete = true;
     },

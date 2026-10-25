@@ -29,19 +29,17 @@ export function createTextureLoader(rendererReady: Promise<Renderer>, assets: Ro
     textures.set(key, result);
     let loading: Promise<void> | undefined;
     pending.set(result, () => {
-      loading ??= assets.load(`materials/${key}.webp`, async (bytes) => {
-        const bitmap = await createImageBitmap(
-          new Blob([Uint8Array.from(bytes)], { type: "image/webp" }),
-          {
-            imageOrientation: "none",
-            premultiplyAlpha: "none",
-            colorSpaceConversion: "none",
-          },
-        );
-        result.image = bitmap;
-        result.needsUpdate = true;
-        (await rendererReady).initTexture(result);
-      });
+      loading ??= assets
+        .loadImage(`materials/${key}.webp`, {
+          imageOrientation: "none",
+          premultiplyAlpha: "none",
+          colorSpaceConversion: "none",
+        })
+        .then(async (bitmap) => {
+          result.image = bitmap;
+          result.needsUpdate = true;
+          (await rendererReady).initTexture(result);
+        });
       return loading;
     });
     return result;
