@@ -8,7 +8,7 @@ import { createDeskLamp } from "./desk-lamp";
 function createStool(materials: FurnitureMaterials): Group {
   const stool = new Group();
   stool.name = "workbench-stool";
-  cylinder(stool, 0.215, 0.055, [0, 0.475, 0], materials.ash);
+  cylinder(stool, 0.215, 0.055, [0, 0.475, 0], materials.oak);
   cylinder(stool, 0.175, 0.025, [0, 0.437, 0], materials.deepGreen);
   for (let leg = 0; leg < 3; leg++) {
     const angle = (leg * Math.PI * 2) / 3;
@@ -39,7 +39,7 @@ export function createWorkbench(materials: FurnitureMaterials): Group {
   const group = new Group();
   const workbench = new Group();
   workbench.name = "workbench";
-  roundBox(workbench, [0.85, 0.052, 1.75], [0, 0.77, 0], materials.ash, 0.018);
+  roundBox(workbench, [0.85, 0.052, 1.75], [0, 0.77, 0], materials.oak, 0.018);
   box(workbench, [0.79, 0.035, 1.66], [0, 0.727, 0], materials.deepGreen);
   for (const x of [-0.32, 0.32]) {
     for (const z of [-0.73, 0.73]) {

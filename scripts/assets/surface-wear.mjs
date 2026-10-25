@@ -36,7 +36,7 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
   const painted = id === "PaintedMetal001";
   const colorSize = painted ? 1024 : 512;
   let color = sharp(input("Color")).resize(colorSize, colorSize);
-  if (painted) color = color.grayscale().linear(0.16, 212).toColourspace("srgb");
+  if (painted) color = color.grayscale().linear(0.55, 100).toColourspace("srgb");
   await save("color", await color.webp({ quality: 85 }).toBuffer(), ["Color"], colorSize);
   if (painted) {
     await save(
@@ -59,7 +59,7 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
   for (let pixel = 0; pixel < 256 * 256; pixel++) {
     packed[pixel * 3] = 255;
     packed[pixel * 3 + 1] = painted
-      ? Math.round(120 + channels[0][pixel] * 0.5)
+      ? Math.round(194 + channels[0][pixel] * 0.2)
       : channels[0][pixel];
     packed[pixel * 3 + 2] = channels[1][pixel];
   }
@@ -76,7 +76,7 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
     Object.assign(asset.maps, maps);
     if (painted)
       asset.processing =
-        "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。粗さを半光沢の塗装に調整。R=255、G=粗さ、B=金属度で格納。";
+        "黄色の塗装色を無彩色化し、明度差を55%保持。粗さを0.76〜0.96の範囲へ変換し、元画像の傷と粗さの位置関係を維持。R=255、G=粗さ、B=金属度で格納。";
   } else {
     attribution.assets.push({
       id,
@@ -102,15 +102,15 @@ for (const name of ["color", "normal"]) {
   const response = await fetch(map.url);
   if (!response.ok) throw new Error(`${map.url}: ${response.status}`);
   const size = name === "color" ? 1024 : 512;
-  let image = sharp(new Uint8Array(await response.arrayBuffer())).resize(size, size);
-  if (name === "color") image = image.linear(0.24, 194);
+  const image = sharp(new Uint8Array(await response.arrayBuffer())).resize(size, size);
   const bytes = await image.webp({ quality: 90, smartSubsample: true }).toBuffer();
   await writeFile(map.file, bytes);
   map.dimensions = [size, size];
   map.sha256 = hash(bytes);
   if (name === "normal") map.encoding = "WebP quality 90, smart chroma subsampling";
 }
-plaster.appliedSizeMeters = [3.2, 3.2];
-plaster.processing = "写真の色の変化を24%に抑え、汚れのコントラストを弱める。";
+plaster.appliedSizeMeters = [2, 2];
+plaster.processing =
+  "元画像の色むらと塗り跡を保持。色の均一化は行わず、色1024px・法線512pxで使用。";
 await writeFile(attributionFile, JSON.stringify(attribution, null, 2) + "\n");
 await import("./catalog.mjs");

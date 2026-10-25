@@ -105,14 +105,5 @@ export function createDoor(
   }
   for (const y of [1.116, 1.204]) hardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
   hardware.finish(door);
-  door.traverse((object) => {
-    if (!(object instanceof Mesh) || object.material !== wood) return;
-    object.geometry = object.geometry.clone();
-    const uv = object.geometry.getAttribute("uv");
-    for (let index = 0; index < uv.count; index++) {
-      const u = uv.getX(index);
-      uv.setXY(index, uv.getY(index), -u);
-    }
-  });
   return door;
 }

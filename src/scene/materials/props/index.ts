@@ -82,7 +82,7 @@ export function createPropMaterials(maps: MaterialLibrary) {
       clearcoatRoughness: 0.5,
       roughness: 0.9,
     }),
-    stem: scannedSurface(maps.ash, { color: "#627844", roughness: 1 }),
+    stem: scannedSurface(maps.oak, { color: "#627844", roughness: 1 }),
   };
 }
 

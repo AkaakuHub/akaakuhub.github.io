@@ -25,14 +25,14 @@ function lowCabinet(materials: FurnitureMaterials): Group {
     }
   }
   for (const height of [0.3, 0.54, 0.78]) {
-    roundBox(cabinet, [0.79, 0.232, 0.028], [-0.405, height, -0.276], materials.ash, 0.005);
+    roundBox(cabinet, [0.79, 0.232, 0.028], [-0.405, height, -0.276], materials.oak, 0.005);
     pull(cabinet, -0.405, height + 0.02, -0.32, materials);
   }
   for (const x of [0.211, 0.61]) {
     roundBox(cabinet, [0.391, 0.712, 0.028], [x, 0.54, -0.276], materials.enamel, 0.005);
     pull(cabinet, x, 0.75, -0.32, materials);
   }
-  roundBox(cabinet, [1.72, 0.048, 0.56], [0, 0.947, 0], materials.ash, 0.003);
+  roundBox(cabinet, [1.72, 0.048, 0.56], [0, 0.947, 0], materials.oak, 0.003);
   tabletopObjects(cabinet, materials);
   cabinet.position.set(-0.73, 0, 2.27);
   return cabinet;
@@ -49,7 +49,7 @@ function tallCabinet(materials: FurnitureMaterials): Group {
   for (const y of [0.087, 2.033])
     roundBox(cabinet, [width, 0.035, 0.48], [0, y, 0], materials.enamel, 0.009);
   for (const y of [0.17, 0.63, 1.03, 1.45, 1.92]) {
-    roundBox(cabinet, [0.94, 0.022, 0.45], [0, y, 0], materials.ash, 0.002);
+    roundBox(cabinet, [0.94, 0.022, 0.45], [0, y, 0], materials.oak, 0.002);
     for (const x of [-0.47, 0.47])
       for (const z of [-0.16, 0.16]) {
         const pin = cylinder(cabinet, 0.003, 0.012, [x, y - 0.014, z], materials.metal);

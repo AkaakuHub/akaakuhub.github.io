@@ -54,7 +54,7 @@
           "file": "src/assets/materials/painted_plaster_wall/color.webp",
           "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg",
           "sourceHash": "15ba8c1f63a5ab412b1eabe31728540a",
-          "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95",
+          "sha256": "8521d5b13106c8d39f67f65fb7c7b84f9a9fab7b5fb8f2453b2f2b16de48332b",
           "dimensions": [1024, 1024],
           "encoding": "WebP quality 85, smart chroma subsampling"
         },
@@ -76,46 +76,8 @@
         }
       },
       "provider": "Poly Haven",
-      "appliedSizeMeters": [3.2, 3.2],
-      "processing": "写真の色の変化を24%に抑え、汚れのコントラストを弱める。"
-    },
-    {
-      "id": "ash_veneer",
-      "name": "Ash Veneer",
-      "authors": {
-        "Jenelle van Heerden": "All"
-      },
-      "source": "https://polyhaven.com/a/ash_veneer",
-      "license": "CC0-1.0",
-      "licenseUrl": "https://polyhaven.com/license",
-      "sizeMeters": [1, 1],
-      "maps": {
-        "color": {
-          "file": "src/assets/materials/ash_veneer/color.webp",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_diff_1k.jpg",
-          "sourceHash": "5be48b4be87620998cfaee5a4281169d",
-          "sha256": "27d4d0f6b18559a863e02ce80b6729ec15635394dd5704e0ccf8c65974dab59b",
-          "dimensions": [1024, 1024],
-          "encoding": "WebP quality 85, smart chroma subsampling"
-        },
-        "normal": {
-          "file": "src/assets/materials/ash_veneer/normal.webp",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_nor_gl_1k.jpg",
-          "sourceHash": "6986a1e827968726d996b76d77f3a2ac",
-          "sha256": "5bbb80a846e7e6991204728bba980ad781825599acb780b74e82f3822c76fbe1",
-          "dimensions": [512, 512],
-          "encoding": "WebP quality 90, smart chroma subsampling"
-        },
-        "arm": {
-          "file": "src/assets/materials/ash_veneer/arm.webp",
-          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/ash_veneer/ash_veneer_arm_1k.jpg",
-          "sourceHash": "ee110cc4704b23e84f8f7d75a954d5ff",
-          "sha256": "b4c9f623199aad09a5c552bd56aee40cae6c3a202edd97725e953d4b4ecb6d75",
-          "dimensions": [256, 256],
-          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
-        }
-      },
-      "provider": "Poly Haven"
+      "appliedSizeMeters": [2, 2],
+      "processing": "元画像の色むらと塗り跡を保持。色の均一化は行わず、色1024px・法線512pxで使用。"
     },
     {
       "id": "walnut_veneer",
@@ -224,9 +186,8 @@
           "sourceHashes": {
             "Color": "ac4937d0170871322160c21f2283822e73c913178b2d7f3f9b5cc4dfc5161d7d"
           },
-          "sha256": "e7e2ad8fba6c80acd036facfd855d7243b34ebae7c163de677f9067e22e2ce7c",
-          "dimensions": [512, 512],
-          "encoding": "WebP quality 85, smart chroma subsampling"
+          "sha256": "0cc7b5c128d583280b1a27bfc0d6676bbc7296717260ae8ded438f599565e021",
+          "dimensions": [512, 512]
         },
         "arm": {
           "file": "src/assets/materials/Metal050B/arm.webp",
@@ -457,7 +418,7 @@
       "creationMethod": "PBRProcedural",
       "appliedSizeMeters": [0.8, 0.8],
       "scaleNote": "配布元に実寸指定がないため、塗装金具の擦り傷を表す大きさとして設定。",
-      "processing": "黄色の塗装色を無彩色化し、明度差を16%に抑えて部材の塗装色を乗算。粗さを半光沢の塗装に調整。R=255、G=粗さ、B=金属度で格納。",
+      "processing": "黄色の塗装色を無彩色化し、明度差を55%保持。粗さを0.76〜0.96の範囲へ変換し、元画像の傷と粗さの位置関係を維持。R=255、G=粗さ、B=金属度で格納。",
       "maps": {
         "color": {
           "file": "src/assets/materials/PaintedMetal001/color.webp",
@@ -466,9 +427,8 @@
           "sourceHashes": {
             "Color": "55e84662a1eca23d73ef851a5ad99857c388adde627f4264b861d9fe5e8cc84f"
           },
-          "sha256": "3a2aed2d8b0a36a8dcfeb6f061a80689f5fb3be9abd6b38e389c89a3b4278cf5",
-          "dimensions": [1024, 1024],
-          "encoding": "WebP quality 85, smart chroma subsampling"
+          "sha256": "0d3f08752dec490a8730286149f051e6e73e4ba61afccae3b6b48950a485fddd",
+          "dimensions": [1024, 1024]
         },
         "normal": {
           "file": "src/assets/materials/PaintedMetal001/normal.webp",
@@ -492,9 +452,8 @@
             "Roughness": "c0166ff9364ae9d83878066b2a788f66bc5bcc5748a78a47cc51c940a8491e41",
             "Metalness": "c8e278ad680208abde1af0158a2657031c93e25274276076d57623214fecf2ab"
           },
-          "sha256": "e058764ea394817ab679f129838b03cf7d4e86122113b8cd575c7dc4f0e12633",
-          "dimensions": [256, 256],
-          "processing": "未使用の青チャンネルを除去。AOと粗さの値は変更しない。"
+          "sha256": "d29bcfd3794770d4198bf0085f72f55d5dbc959e68bd226fa8887f2bd6235829",
+          "dimensions": [256, 256]
         }
       }
     },
@@ -527,6 +486,42 @@
           "file": "src/assets/materials/school_ceiling/roughness.webp",
           "sha256": "d1d1cc7d52246af4877c5bdaf6d2ac61daaf35839f8073c32b01367fc690d06a",
           "dimensions": [128, 128]
+        }
+      }
+    },
+    {
+      "id": "oak_veneer_01",
+      "name": "Oak Veneer 01",
+      "provider": "Poly Haven",
+      "authors": {
+        "Jenelle van Heerden": "All"
+      },
+      "source": "https://polyhaven.com/a/oak_veneer_01",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://polyhaven.com/license",
+      "sizeMeters": [1.8300000429153442, 1.8300000429153442],
+      "processing": "色と木目の形状は元画像を保持。粗さは0.70〜0.94へ変換し、つや消し仕上げとして使用。",
+      "maps": {
+        "normal": {
+          "file": "src/assets/materials/oak_veneer_01/normal.webp",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_01/oak_veneer_01_nor_gl_1k.jpg",
+          "sourceHash": "d05406f5fdaf51f0d7b115b35d9af1b7",
+          "sha256": "c57eb0bebaf1ad084a0618465d54370074b5181fb22961bf57e7e9a99c5ba29b",
+          "dimensions": [512, 512]
+        },
+        "arm": {
+          "file": "src/assets/materials/oak_veneer_01/arm.webp",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_01/oak_veneer_01_arm_1k.jpg",
+          "sourceHash": "dfba0f063663289248f4e887f836bdcc",
+          "sha256": "d8df8bd5022d76fa495c61a4b212cadcf856bc9d06762c9754a6a5eb72be4b6e",
+          "dimensions": [256, 256]
+        },
+        "color": {
+          "file": "src/assets/materials/oak_veneer_01/color.webp",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_01/oak_veneer_01_diff_1k.jpg",
+          "sourceHash": "39a99df4e328d62d74f3122722a64a95",
+          "sha256": "48c3a5c735342fa5e36db95e1b90b532b2e8e0b4787f70342feb5bd602720212",
+          "dimensions": [1024, 1024]
         }
       }
     }

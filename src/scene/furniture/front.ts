@@ -63,7 +63,7 @@ function coatStand(materials: FurnitureMaterials): Group {
       0.013,
       0.036,
       [Math.cos(angle) * 0.205, 1.81, Math.sin(angle) * 0.205],
-      materials.ash,
+      materials.oak,
     );
   }
   stand.position.set(2.08, 0, -1.98);

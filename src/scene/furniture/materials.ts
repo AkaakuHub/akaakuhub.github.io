@@ -10,9 +10,8 @@ export function createFurnitureMaterials(
   props: PropMaterials,
 ) {
   return {
-    ash: scannedSurface(maps.ash, {
-      roughnessMap: null,
-      roughness: 0.76,
+    oak: scannedSurface(maps.oak, {
+      roughness: 1,
       normalScale: new Vector2(0.4, 0.4),
     }),
     ivory: metals.ivory,

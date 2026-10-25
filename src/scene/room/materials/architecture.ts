@@ -18,10 +18,9 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
       color: "#ffffff",
       normalScale: new Vector2(0.5, 0.5),
     }),
-    boards: scannedSurface(maps.ash, {
+    boards: scannedSurface(maps.oak, {
       color: "#f4eee3",
-      roughnessMap: null,
-      roughness: 0.86,
+      roughness: 1,
       normalScale: new Vector2(0.4, 0.4),
     }),
     trim: scannedSurface(maps.walnut, {
@@ -32,8 +31,7 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
     }),
     frame: scannedSurface(maps.paint, {
       color: "#d8d8ce",
-      roughnessMap: null,
-      roughness: 0.82,
+      roughness: 1,
       normalScale: new Vector2(0.35, 0.35),
     }),
     sill: scannedSurface(maps.walnut, {
@@ -41,10 +39,9 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
       roughness: 0.76,
       normalScale: new Vector2(0.4, 0.4),
     }),
-    door: scannedSurface(maps.ash, {
+    door: scannedSurface(maps.oak, {
       color: "#c9b998",
-      roughnessMap: null,
-      roughness: 0.8,
+      roughness: 1,
       normalScale: new Vector2(0.4, 0.4),
     }),
   };

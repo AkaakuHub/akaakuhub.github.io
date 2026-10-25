@@ -27,22 +27,19 @@ export function createMetalMaterials(maps: MaterialLibrary) {
     enamel: physicalSurface(maps.paint, {
       color: "#d5ddd2",
       metalness: 0,
-      roughnessMap: null,
-      roughness: 0.82,
+      roughness: 1,
       normalScale: new Vector2(0.16, 0.16),
     }),
     deepGreen: physicalSurface(maps.paint, {
       color: "#334d43",
       metalness: 0,
-      roughnessMap: null,
-      roughness: 0.86,
+      roughness: 1,
       normalScale: new Vector2(0.14, 0.14),
     }),
     ivory: physicalSurface(maps.paint, {
       color: "#e9e9df",
       metalness: 0,
-      roughnessMap: null,
-      roughness: 0.84,
+      roughness: 1,
       normalScale: new Vector2(0.12, 0.12),
     }),
     graphite: texturedMetal(maps.powder, {

@@ -30,21 +30,6 @@
     "sha256": "de13346ddf530f99127993fc850985997dcdadbdf5b3ea820072eb78b4c7c428"
   },
   {
-    "id": "materials/ash_veneer/arm.webp",
-    "bytes": 58206,
-    "sha256": "b4c9f623199aad09a5c552bd56aee40cae6c3a202edd97725e953d4b4ecb6d75"
-  },
-  {
-    "id": "materials/ash_veneer/color.webp",
-    "bytes": 118714,
-    "sha256": "27d4d0f6b18559a863e02ce80b6729ec15635394dd5704e0ccf8c65974dab59b"
-  },
-  {
-    "id": "materials/ash_veneer/normal.webp",
-    "bytes": 4948,
-    "sha256": "5bbb80a846e7e6991204728bba980ad781825599acb780b74e82f3822c76fbe1"
-  },
-  {
     "id": "materials/herringbone_parquet/arm.webp",
     "bytes": 45536,
     "sha256": "cc235f44fde38d228552e03cf6758fbb1016b8d98138b2b6916871e1fe06e446"
@@ -101,13 +86,28 @@
   },
   {
     "id": "materials/Metal050B/color.webp",
-    "bytes": 2278,
-    "sha256": "e7e2ad8fba6c80acd036facfd855d7243b34ebae7c163de677f9067e22e2ce7c"
+    "bytes": 2696,
+    "sha256": "0cc7b5c128d583280b1a27bfc0d6676bbc7296717260ae8ded438f599565e021"
   },
   {
     "id": "materials/Metal050B/normal.webp",
     "bytes": 286,
     "sha256": "ce00b89be6bdb2597be963d1986ddca7243b6a26359aafbd65a594ccf95d6b92"
+  },
+  {
+    "id": "materials/oak_veneer_01/arm.webp",
+    "bytes": 57870,
+    "sha256": "d8df8bd5022d76fa495c61a4b212cadcf856bc9d06762c9754a6a5eb72be4b6e"
+  },
+  {
+    "id": "materials/oak_veneer_01/color.webp",
+    "bytes": 180460,
+    "sha256": "48c3a5c735342fa5e36db95e1b90b532b2e8e0b4787f70342feb5bd602720212"
+  },
+  {
+    "id": "materials/oak_veneer_01/normal.webp",
+    "bytes": 7546,
+    "sha256": "c57eb0bebaf1ad084a0618465d54370074b5181fb22961bf57e7e9a99c5ba29b"
   },
   {
     "id": "materials/painted_plaster_wall/arm.webp",
@@ -116,8 +116,8 @@
   },
   {
     "id": "materials/painted_plaster_wall/color.webp",
-    "bytes": 21704,
-    "sha256": "6c6fcd2493b42c7f8cbe07096eac01c8021f5f84edb8263840a09d3d081c8e95"
+    "bytes": 258996,
+    "sha256": "8521d5b13106c8d39f67f65fb7c7b84f9a9fab7b5fb8f2453b2f2b16de48332b"
   },
   {
     "id": "materials/painted_plaster_wall/normal.webp",
@@ -126,13 +126,13 @@
   },
   {
     "id": "materials/PaintedMetal001/arm.webp",
-    "bytes": 22866,
-    "sha256": "e058764ea394817ab679f129838b03cf7d4e86122113b8cd575c7dc4f0e12633"
+    "bytes": 51520,
+    "sha256": "d29bcfd3794770d4198bf0085f72f55d5dbc959e68bd226fa8887f2bd6235829"
   },
   {
     "id": "materials/PaintedMetal001/color.webp",
-    "bytes": 11410,
-    "sha256": "3a2aed2d8b0a36a8dcfeb6f061a80689f5fb3be9abd6b38e389c89a3b4278cf5"
+    "bytes": 67562,
+    "sha256": "0d3f08752dec490a8730286149f051e6e73e4ba61afccae3b6b48950a485fddd"
   },
   {
     "id": "materials/PaintedMetal001/normal.webp",

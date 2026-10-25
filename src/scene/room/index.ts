@@ -39,6 +39,7 @@ export function createRoom(
       orientWoodGrain(
         box(room, [0.6485, 0.84, 0.012], [-2.275 + panel * 0.65, 0.42, z], boards),
         "y",
+        "v",
       );
     box(room, [5.2, 0.07, 0.05], [0, 0.043, z - Math.sign(z) * 0.015], trim);
     box(room, [5.2, 0.038, 0.065], [0, 0.862, z - Math.sign(z) * 0.017], trim);
@@ -49,6 +50,7 @@ export function createRoom(
       orientWoodGrain(
         box(room, [0.012, 0.84, 0.6485], [x, 0.42, -2.275 + panel * 0.65], boards),
         "y",
+        "v",
       );
     box(room, [0.05, 0.07, 5.2], [x - Math.sign(x) * 0.015, 0.043, 0], trim);
     box(room, [0.065, 0.038, 5.2], [x - Math.sign(x) * 0.017, 0.862, 0], trim);
@@ -57,7 +59,7 @@ export function createRoom(
   for (const x of [-2.535, 2.535]) {
     for (const z of [-2.535, 2.535]) {
       wallBlock(room, [0.13, 2.9, 0.13], [x, 1.45, z], wall);
-      orientWoodGrain(box(room, [0.145, 0.9, 0.145], [x, 0.45, z], boards), "y");
+      orientWoodGrain(box(room, [0.145, 0.9, 0.145], [x, 0.45, z], boards), "y", "v");
       box(room, [0.155, 0.06, 0.155], [x, 0.87, z], trim);
     }
   }
