@@ -1,16 +1,16 @@
-import type { TokyoWeather } from "../../src/weather/schema";
+import type { WeatherDay } from "../../src/weather/schema";
 import { reserveWeatherRequest, retryAfter } from "./budget";
 import type { WeatherBudget } from "./budget";
 import { fetchTokyoWeather } from "./source";
 
 export class TokyoWeatherCache implements DurableObject {
-  private weather: TokyoWeather | undefined;
+  private weather: WeatherDay | undefined;
   private budget: WeatherBudget | undefined;
 
   constructor(private readonly ctx: DurableObjectState) {
     ctx.blockConcurrencyWhile(async () => {
       [this.weather, this.budget] = await Promise.all([
-        ctx.storage.get<TokyoWeather>("weather"),
+        ctx.storage.get<WeatherDay>("weather"),
         ctx.storage.get<WeatherBudget>("budget"),
       ]);
     });
@@ -39,10 +39,10 @@ export class TokyoWeatherCache implements DurableObject {
     });
   }
 
-  private response(weather: TokyoWeather, now: number): Response {
+  private response(weather: WeatherDay, now: number): Response {
     const ttl = Math.max(1, Math.floor((weather.expiresAt - now) / 1000));
     return Response.json(weather, {
-      headers: { "Cache-Control": `public, max-age=${Math.min(60, ttl)}, s-maxage=${ttl}` },
+      headers: { "Cache-Control": `public, max-age=${ttl}, s-maxage=${ttl}` },
     });
   }
 

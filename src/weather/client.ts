@@ -1,18 +1,18 @@
-import { parseWeather, weatherRefreshMs } from "./schema";
-import type { TokyoWeather } from "./schema";
+import { nextTokyoDay, parseWeatherDay } from "./schema";
+import type { WeatherDay } from "./schema";
 
-export async function loadTokyoWeather(): Promise<TokyoWeather> {
+export async function loadTokyoWeather(): Promise<WeatherDay> {
   const response = await fetch("/api/weather", { signal: AbortSignal.timeout(10_000) });
-  if (!response.ok) throw new Error("東京の天気情報を取得できませんでした。");
+  if (!response.ok) throw new Error("本日の東京の天気予報を取得できませんでした。");
   const value: unknown = await response.json();
-  const weather = parseWeather(value);
-  if (weather.expiresAt <= Date.now()) throw new Error("東京の天気情報の有効期限が切れています。");
+  const weather = parseWeatherDay(value);
+  if (weather.expiresAt <= Date.now()) throw new Error("本日の天気予報が必要です。");
   return weather;
 }
 
 export function observeTokyoWeather(
-  initial: TokyoWeather,
-  update: (weather: TokyoWeather) => void,
+  initial: WeatherDay,
+  update: (weather: WeatherDay) => void,
   fail: () => void,
 ) {
   let current = initial;
@@ -21,7 +21,7 @@ export function observeTokyoWeather(
   async function refresh(): Promise<void> {
     if (document.hidden || pending || Date.now() < nextAttemptAt) return;
     pending = true;
-    nextAttemptAt = Date.now() + weatherRefreshMs;
+    nextAttemptAt = nextTokyoDay(Date.now());
     try {
       current = await loadTokyoWeather();
       nextAttemptAt = current.expiresAt;
@@ -36,8 +36,9 @@ export function observeTokyoWeather(
   document.addEventListener("visibilitychange", refresh);
   window.addEventListener("pageshow", refresh);
   return {
-    get current(): TokyoWeather {
+    get current(): WeatherDay {
       return current;
     },
+    refresh,
   };
 }

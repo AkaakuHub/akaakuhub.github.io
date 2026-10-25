@@ -13,6 +13,7 @@ import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
 import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
 import { createWeatherStatus } from "./interface/weather";
+import { weatherAt } from "./weather/schema";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -43,13 +44,14 @@ await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(reso
 const { board, lightSwitch, rocker } = assembleClubroom(scene, materials);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const lighting = illuminate(scene, renderer, initialWeather);
+const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));
 const weather = observeTokyoWeather(
   initialWeather,
   (current) => {
     weatherStatus.loaded();
-    weatherStatus.update(current, new Date());
-    lighting.update(new Date(), current, prepared);
+    const sample = weatherAt(current, Date.now());
+    weatherStatus.update(sample, new Date());
+    lighting.update(new Date(), sample, prepared);
     invalidate();
   },
   weatherStatus.fail,
@@ -85,8 +87,13 @@ observeViewport(ui.canvas, camera, renderer, rendering, () => {
 
 function updateTime() {
   if (document.hidden) return;
-  weatherStatus.update(weather.current, new Date());
-  lighting.update(new Date(), weather.current, prepared);
+  if (Date.now() >= weather.current.expiresAt) {
+    void weather.refresh();
+    return;
+  }
+  const sample = weatherAt(weather.current, Date.now());
+  weatherStatus.update(sample, new Date());
+  lighting.update(new Date(), sample, prepared);
   renderer.shadowMap.needsUpdate = true;
   invalidate();
 }
@@ -142,7 +149,7 @@ await new Promise<void>((resolve) =>
   }),
 );
 await Promise.all([materialLoading.ready, streamed]);
-lighting.update(new Date(), weather.current);
+lighting.update(new Date(), weatherAt(weather.current, Date.now()));
 await renderer.compileAsync(scene, camera);
 rendering.render(true);
 rendering.render();

@@ -14,8 +14,8 @@ export function createWeatherStatus(root: HTMLElement) {
   return {
     update(weather: TokyoWeather, date: Date): void {
       if (!failed)
-        label.textContent = `東京 ${time.format(date)}・雲${weather.cloudCover}%・降水${weather.precipitation}mm`;
-      label.title = `${time.format(weather.observedAt)}時点の気象モデルによる現在天気`;
+        label.textContent = `東京 ${time.format(date)}・雲${Math.round(weather.cloudCover)}%・降水${weather.precipitation.toFixed(1)}mm`;
+      label.title = `${time.format(weather.fetchedAt)}取得・${time.format(weather.observedAt)}の時間別予報`;
     },
     loaded(): void {
       failed = false;
