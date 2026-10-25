@@ -147,10 +147,6 @@ export function createView(
       if (step > 0) select(4);
       else if (step < 0 && state.direction === 4) select(heading);
     },
-    next(step: number) {
-      if (state.mode === "notice")
-        inspect((state.index + step + inspections.length) % inspections.length);
-    },
     back() {
       if (state.mode !== "room") transition({ mode: "room", direction: roomDirection }, 0.35);
     },

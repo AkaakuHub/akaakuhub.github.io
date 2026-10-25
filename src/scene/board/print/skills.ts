@@ -7,7 +7,7 @@ export function paintSkills(
   atlas: ImageBitmap,
   width: number,
 ): void {
-  const margin = width * 0.06;
+  const margin = width * 0.09;
   function icon(skill: Skill, x: number, y: number, size: number) {
     const index = skillIconNames.indexOf(skill.icon);
     if (index < 0) throw new Error(`スキルのアイコンがありません: ${skill.icon}`);
@@ -28,7 +28,7 @@ export function paintSkills(
     const column = index % 4;
     const row = Math.floor(index / 4);
     const x = margin + column * domainWidth;
-    const y = 30 + row * 72;
+    const y = 85 + row * 72;
     icon(skill, x, y, 43);
     context.textAlign = "left";
     context.fillStyle = "#294536";
@@ -39,17 +39,17 @@ export function paintSkills(
     context.fillText(skill.detail, x + 51, y + 40, domainWidth - 55);
   });
   context.fillStyle = "#bdc6b7";
-  context.fillRect(margin, 184, width - margin * 2, 1);
+  context.fillRect(margin, 236, width - margin * 2, 1);
   context.fillStyle = "#738175";
   context.font = `500 22px ${siteFont}`;
   context.textAlign = "left";
-  context.fillText("Languages", margin, 218);
+  context.fillText("Languages", margin, 270);
   const languageWidth = (width - margin * 2) / 4;
   skillLanguages.forEach((skill, index) => {
     const column = index % 4;
     const row = Math.floor(index / 4);
     const x = margin + column * languageWidth;
-    const y = 234 + row * 92;
+    const y = 290 + row * 92;
     icon(skill, x, y, 45);
     context.fillStyle = "#294536";
     context.font = `500 25px ${siteFont}`;

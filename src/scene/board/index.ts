@@ -30,9 +30,9 @@ export function createBoard(
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
   group.add(
-    createBoardHeading("GitHub", -0.85, 2.265),
-    createBoardHeading("Skills", -0.85, 1.65),
-    createBoardHeading("最新記事", 0.39, 2.265),
+    createBoardHeading("GitHub", -0.79, 2.265),
+    createBoardHeading("Skills", -0.79, 1.65),
+    createBoardHeading("最新記事", 0.33, 2.265),
   );
   for (const notice of boardNotices({ status: "loading" })) {
     const [width, height] = notice.size;

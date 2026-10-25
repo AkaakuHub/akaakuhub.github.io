@@ -26,6 +26,13 @@ export function bindRoomControls(
   function zoom(factor: number, animated: boolean): void {
     view.zoom(factor, animated);
   }
+  function moveNotice(columnStep: number, rowStep: number): void {
+    const state = view.state;
+    if (state.mode !== "notice") return;
+    const column = MathUtils.clamp(Math.floor(state.index / 2) + columnStep, 0, 1);
+    const row = MathUtils.clamp((state.index % 2) + rowStep, 0, 1);
+    view.inspect(column * 2 + row);
+  }
   window.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.key === "Escape") {
@@ -46,14 +53,18 @@ export function bindRoomControls(
     }
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
-    if (view.state.mode !== "room" && view.zoomFactor > 1) {
+    if (view.state.mode === "notice") {
+      moveNotice(
+        event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0,
+        event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0,
+      );
+    } else if (view.state.mode !== "room" && view.zoomFactor > 1) {
       view.pan(
         event.key === "ArrowLeft" ? 0.12 : event.key === "ArrowRight" ? -0.12 : 0,
         event.key === "ArrowUp" ? 0.12 : event.key === "ArrowDown" ? -0.12 : 0,
       );
     } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-      if (view.state.mode === "notice") view.next(event.key === "ArrowRight" ? 1 : -1);
-      else if (view.state.mode === "room") view.turn(event.key === "ArrowLeft" ? 1 : -1);
+      if (view.state.mode === "room") view.turn(event.key === "ArrowLeft" ? 1 : -1);
     } else view.vertical(event.key === "ArrowUp" ? 1 : -1);
   });
   const pointers = new Map<number, { x: number; y: number }>();
@@ -128,11 +139,12 @@ export function bindRoomControls(
     if (view.state.mode !== "room" && view.zoomFactor > 1) {
       if (Math.hypot(dx, dy) >= 10) return;
     } else if (Math.abs(dx) > threshold && Math.abs(dx) > Math.abs(dy) * 1.25) {
-      if (view.state.mode === "notice") view.next(dx < 0 ? 1 : -1);
+      if (view.state.mode === "notice") moveNotice(dx < 0 ? 1 : -1, 0);
       else if (view.state.mode === "room") view.turn(dx > 0 ? 1 : -1);
       return;
     } else if (Math.abs(dy) > threshold && Math.abs(dy) > Math.abs(dx) * 1.25) {
-      view.vertical(dy > 0 ? 1 : -1);
+      if (view.state.mode === "notice") moveNotice(0, dy < 0 ? 1 : -1);
+      else view.vertical(dy > 0 ? 1 : -1);
       return;
     }
     if (Math.hypot(dx, dy) >= 10 || view.moving) return;
