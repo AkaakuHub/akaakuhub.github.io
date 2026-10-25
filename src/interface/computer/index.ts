@@ -1,7 +1,7 @@
 import type { Vector2 } from "three";
 import type { assembleClubroom } from "../../scene/clubroom";
 import type { createView } from "../../scene/view";
-import type { ContentState } from "../../content/schema";
+import type { ContentState, Repository } from "../../content/schema";
 import { createComputerScreen } from "../../scene/furniture/computer/screen";
 import { screenLayout } from "../../scene/furniture/computer/screen/layout";
 import { createScreenScroll } from "../../scene/furniture/computer/screen/scroll";
@@ -15,6 +15,7 @@ export function createComputerInterface(
   invalidate: () => void,
   requestFrame: () => void,
   setMonitorPower: (on: boolean) => void,
+  announce: (message: string) => void,
 ) {
   const screen = createComputerScreen(computer.monitor.material);
   const readmes = new Map<string, ReadmeState>();
@@ -39,6 +40,16 @@ export function createComputerInterface(
     dirty = true;
     requestFrame();
   }
+  function describe(repository: Repository): string {
+    const excerpt = readmes.get(repository.name);
+    return [
+      repository.name,
+      repository.description,
+      excerpt?.status === "ready" ? excerpt.text?.slice(0, 240) : "",
+    ]
+      .filter(Boolean)
+      .join("。 ");
+  }
   function fonts(name: string, text: string) {
     const key = name + text;
     if (preparedText.has(key)) return;
@@ -54,6 +65,14 @@ export function createComputerInterface(
       const text = await loadReadme(name);
       if (current !== revision) return;
       readmes.set(name, { status: "ready", text });
+      if (
+        view.state.mode === "monitor" &&
+        state.status === "ready" &&
+        selectedRepository !== null
+      ) {
+        const selected = state.content.repositories[selectedRepository];
+        if (selected?.name === name) announce(describe(selected));
+      }
     } catch (error) {
       console.error(error);
       if (current !== revision) return;
@@ -105,14 +124,7 @@ export function createComputerInterface(
       scroll.move(target - scroll.position, true);
       dirty = true;
       requestFrame();
-      const excerpt = readmes.get(repository.name);
-      return [
-        repository.name,
-        repository.description,
-        excerpt?.status === "ready" ? excerpt.text?.slice(0, 240) : "",
-      ]
-        .filter(Boolean)
-        .join("。 ");
+      return describe(repository);
     },
     activateSelection(): void {
       if (!powered || state.status !== "ready") return;

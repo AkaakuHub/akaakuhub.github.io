@@ -110,6 +110,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     invalidate,
     requestFrame,
     lighting.setMonitorPower,
+    ui.announce,
   );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   let controls: ReturnType<typeof bindRoomControls>;
