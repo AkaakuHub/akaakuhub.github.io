@@ -1,7 +1,9 @@
 import type { Env } from "./env";
 import { nextTokyoDay, tokyoDay } from "../src/weather/schema";
+import { serveContent } from "./content";
 
 export { TokyoWeatherCache } from "./weather/cache";
+export { SiteContentCache } from "./content/cache";
 
 function browserResponse(response: Response, now: number): Response {
   const result = new Response(response.body, response);
@@ -17,10 +19,12 @@ function browserResponse(response: Response, now: number): Response {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname !== "/api/weather") return env.ASSETS.fetch(request);
+    if (url.pathname !== "/api/weather" && url.pathname !== "/api/content")
+      return env.ASSETS.fetch(request);
     if (request.method !== "GET")
       return new Response(null, { status: 405, headers: { Allow: "GET" } });
     if (url.search) return new Response(null, { status: 400 });
+    if (url.pathname === "/api/content") return serveContent(request, env, ctx);
     const now = Date.now();
     const key = new Request(`${url.origin}/api/weather/${tokyoDay(now)}`);
     const cache = caches.default;

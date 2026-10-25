@@ -25,7 +25,7 @@ export default defineConfig(({ command, mode }) => {
       strictPort: true,
       https,
       headers,
-      proxy: { "/api/weather": "http://127.0.0.1:8787" },
+      proxy: { "/api/": "http://127.0.0.1:8787" },
       watch: { ignored: ["**/worktree/**"] },
     },
     preview: { https, headers },
