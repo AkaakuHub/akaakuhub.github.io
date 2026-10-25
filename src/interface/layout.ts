@@ -39,5 +39,6 @@ export function roomMarkup(): string {
       </nav>
       <button class="room-light-switch absolute z-10 size-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-md border border-transparent bg-transparent hover:border-white/50 focus-visible:outline-2 focus-visible:outline-white [&[hidden]]:hidden" role="switch" aria-label="部屋の照明" aria-checked="true" hidden></button>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>
+      <a class="absolute right-[max(1rem,env(safe-area-inset-right))] bottom-[max(.2rem,env(safe-area-inset-bottom))] text-[10px] text-white/70 no-underline hover:text-white" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a>
     </main>`;
 }

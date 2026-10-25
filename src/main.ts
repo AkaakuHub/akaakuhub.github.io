@@ -50,7 +50,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   loading.stage("室内の形を組み立てています");
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials);
-  const weatherStatus = board.weather;
   loading.stage("部室の明かりを整えています");
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await Promise.all([materialLoading.ready, lightTablesReady]);
@@ -58,15 +57,12 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   const weather = observeTokyoWeather(
     initialWeather,
     (current) => {
-      weatherStatus.loaded();
       const sample = weatherAt(current, Date.now());
-      weatherStatus.update(sample, new Date());
       lighting.update(new Date(), sample, prepared && !view.moving);
       if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
       invalidate();
     },
     (error) => {
-      weatherStatus.fail();
       loading.fail(error);
       invalidate();
     },
@@ -116,7 +112,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       return;
     }
     const sample = weatherAt(weather.current, Date.now());
-    weatherStatus.update(sample, new Date());
     lighting.update(new Date(), sample, prepared && !view.moving);
     if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
     renderer.shadowMap.needsUpdate = true;

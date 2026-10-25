@@ -118,19 +118,6 @@ body {
 .loading-number > span {
   text-align: center;
 }
-.loading-readout h1 {
-  margin: 28px 0 0;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-}
-.loading-dots {
-  display: inline-block;
-  width: 1.6em;
-  overflow: hidden;
-  vertical-align: bottom;
-  animation: room-dots 1.6s steps(4, end) infinite;
-}
 .loading-footer {
   padding-top: 24px;
 }
@@ -251,14 +238,6 @@ body {
     opacity: 0.25;
   }
 }
-@keyframes room-dots {
-  from {
-    width: 0;
-  }
-  to {
-    width: 1.6em;
-  }
-}
 @media (max-width: 640px) {
   .loading {
     padding: max(22px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
@@ -285,17 +264,10 @@ body {
     font-size: clamp(72px, 20vw, 100px);
     justify-content: center;
   }
-  .loading-readout h1 {
-    margin-top: 18px;
-    font-size: 11px;
-  }
 }
 @media (max-height: 540px) {
   .loading-model {
     scale: 0.55;
-  }
-  .loading-readout h1 {
-    margin-top: 12px;
   }
   .loading-center {
     grid-template-columns: 1fr 1fr;
@@ -313,8 +285,7 @@ body {
   }
   .loading-model,
   .loading-scan,
-  .loading-live-dot,
-  .loading-dots {
+  .loading-live-dot {
     animation: none;
   }
 }

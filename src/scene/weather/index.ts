@@ -18,7 +18,7 @@ import type { TokyoWeather } from "../../weather/schema";
 import vertexShader from "./particles.vert.glsl?raw";
 import fragmentShader from "./particles.frag.glsl?raw";
 
-const capacity = 1024;
+const capacity = 4096;
 const bounds = new Box3(new Vector3(-6.7, 0, -3.1), new Vector3(-2.7, 5, 3.1));
 
 function particles(snow: boolean) {
@@ -37,6 +37,7 @@ function particles(snow: boolean) {
   const uniforms = {
     time: new Uniform(0),
     snow: new Uniform(snow ? 1 : 0),
+    strength: new Uniform(0),
     velocity: new Uniform(new Vector3(0, snow ? -1.2 : -8, 0)),
     color: new Uniform(new Color()),
   };
@@ -74,8 +75,11 @@ export class WeatherPass extends Pass {
       [this.rain, weather.rain],
       [this.snow, weather.snowfall],
     ] as const) {
-      layer.geometry.instanceCount = Math.min(capacity, Math.ceil(Math.sqrt(amount) * 240));
+      layer.geometry.instanceCount = Math.min(capacity, Math.ceil(Math.sqrt(amount) * 700));
       layer.mesh.visible = amount > 0;
+      layer.uniforms.strength.value = Math.min(1, Math.sqrt(amount / 20));
+      layer.uniforms.velocity.value.y =
+        layer === this.snow ? -1.2 : -Math.min(14, 6 + Math.sqrt(amount) * 2);
       layer.uniforms.velocity.value.x = x;
       layer.uniforms.velocity.value.z = z;
       layer.uniforms.color.value.copy(sky).lerp(new Color(0.65, 0.7, 0.75), 0.3);

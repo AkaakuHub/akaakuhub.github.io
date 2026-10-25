@@ -1,6 +1,7 @@
 attribute vec3 seed;
 uniform float time;
 uniform float snow;
+uniform float strength;
 uniform vec3 velocity;
 varying vec2 particleUv;
 
@@ -11,9 +12,9 @@ void main() {
   vec4 eye = modelViewMatrix * vec4(center, 1.0);
   vec2 fall = (viewMatrix * vec4(velocity, 0.0)).xy;
   vec2 along = normalize(fall + vec2(0.0, -0.001));
-  vec2 across = vec2(-along.y, along.x);
-  float width = mix(0.004, 0.024, snow);
-  float length = mix(0.16, 0.024, snow);
+  vec2 across = vec2(along.y, -along.x);
+  float width = mix(mix(0.006, 0.012, strength), 0.024, snow);
+  float length = mix(mix(0.1, 0.24, strength), 0.024, snow);
   eye.xy += across * position.x * width + along * position.y * length;
   gl_Position = projectionMatrix * eye;
   particleUv = uv;
