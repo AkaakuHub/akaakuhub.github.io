@@ -241,6 +241,9 @@ export async function startRoom(
       loading.rendering(2 + loaded / total, 4);
     }),
   ]);
+  await lighting.prepareReflection(({ loaded, total }) => {
+    loading.rendering(3 + loaded / total, 4);
+  });
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   controls = bindRoomControls(
     root,
