@@ -71,16 +71,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       invalidate();
     },
   );
-  const container = ui.canvas.parentElement;
-  if (!container) throw new Error("部屋の表示領域が見つかりません。");
-  const contributions = createContributionDisplay(container, board.profilePaper, camera);
-  const rendering = createRendering(
-    renderer,
-    scene,
-    camera,
-    lighting.celestialLight,
-    contributions,
-  );
+  const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
+  const contributions = createContributionDisplay(board.profilePaper, invalidate);
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice]) => ({
     object,
@@ -93,7 +85,6 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     inspections,
     computer,
     (state, zoom) => {
-      contributions.setView(state);
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setZoom(zoom);
       ui.setMoving(true);
@@ -154,6 +145,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     lastRendered = time;
     roomSwitch.update(view.state.mode === "room" && !view.moving);
     frameMetrics?.begin(moving);
+    const animation = contributions.update(camera, time);
+    if (animation.changed) rendering.invalidate();
     rendering.render(moving);
     frameMetrics?.end(moving);
     if (!ready) {
@@ -161,7 +154,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
-    if (moving || rendering.weather.active) frame = requestAnimationFrame(render);
+    if (moving || rendering.weather.active || animation.active)
+      frame = requestAnimationFrame(render);
   }
   function invalidate() {
     rendering.invalidate();

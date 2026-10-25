@@ -7,14 +7,12 @@ import { VolumetricPass } from "./volumetrics";
 import { renderingProfile } from "./quality";
 import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
-import type { createContributionDisplay } from "./board/contribution-display";
 
 export function createRendering(
   renderer: WebGLRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
   celestialLight: DirectionalLight,
-  contributions: ReturnType<typeof createContributionDisplay>,
 ) {
   const profile = renderingProfile();
   const weather = new WeatherPass(camera);
@@ -45,7 +43,6 @@ export function createRendering(
       pixelRatio = ratio;
     },
     setSize(width: number, height: number) {
-      contributions.setSize(width, height);
       const pixelWidth = Math.max(1, Math.floor(width * pixelRatio));
       const pixelHeight = Math.max(1, Math.floor(height * pixelRatio));
       composer.setSize(pixelWidth, pixelHeight);
@@ -54,7 +51,6 @@ export function createRendering(
       scattering.setSteps(moving ? profile.motionScatteringSteps : profile.scatteringSteps);
       scattering.enabled = celestialLight.intensity > 0;
       composer.render();
-      contributions.render(moving);
     },
   };
 }
