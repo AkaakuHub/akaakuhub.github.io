@@ -17,7 +17,9 @@ export async function fetchTokyoWeather(): Promise<WeatherDay> {
   url.search = new URLSearchParams({
     latitude: String(tokyo.latitude),
     longitude: String(tokyo.longitude),
-    hourly: "cloud_cover,precipitation,direct_normal_irradiance_instant,diffuse_radiation_instant",
+    hourly:
+      "weather_code,cloud_cover,precipitation,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,direct_normal_irradiance_instant,diffuse_radiation_instant",
+    wind_speed_unit: "ms",
     timeformat: "unixtime",
     timezone: tokyo.timezone,
     forecast_days: "2",
@@ -29,6 +31,12 @@ export async function fetchTokyoWeather(): Promise<WeatherDay> {
   const times = series(hourly, "time");
   const cloud = series(hourly, "cloud_cover");
   const rain = series(hourly, "precipitation");
+  const code = series(hourly, "weather_code");
+  const rainfall = series(hourly, "rain");
+  const showers = series(hourly, "showers");
+  const snowfall = series(hourly, "snowfall");
+  const windSpeed = series(hourly, "wind_speed_10m");
+  const windDirection = series(hourly, "wind_direction_10m");
   const direct = series(hourly, "direct_normal_irradiance_instant");
   const diffuse = series(hourly, "diffuse_radiation_instant");
   const fetchedAt = Date.now();
@@ -41,6 +49,11 @@ export async function fetchTokyoWeather(): Promise<WeatherDay> {
       precipitation: rain[index],
       directRadiation: direct[index],
       diffuseRadiation: diffuse[index],
+      weatherCode: code[index],
+      rain: Number(rainfall[index]) + Number(showers[index]),
+      snowfall: snowfall[index],
+      windSpeed: windSpeed[index],
+      windDirection: windDirection[index],
     })),
   });
 }

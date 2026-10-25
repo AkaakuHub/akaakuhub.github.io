@@ -6,6 +6,7 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { AntialiasPass } from "./antialias";
 import { VolumetricPass } from "./volumetrics";
 import { renderingProfile } from "./quality";
+import { WeatherPass } from "./weather";
 
 export function createRendering(
   renderer: WebGLRenderer,
@@ -14,6 +15,7 @@ export function createRendering(
   celestialLight: DirectionalLight,
 ) {
   const profile = renderingProfile();
+  const weather = new WeatherPass(camera);
   renderer.toneMapping = ACESFilmicToneMapping;
   function pipeline(steps: number) {
     const target = new WebGLRenderTarget(1, 1, {
@@ -23,6 +25,7 @@ export function createRendering(
     const composer = new EffectComposer(renderer, target);
     composer.setPixelRatio(1);
     composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(weather);
     const scattering = new VolumetricPass(camera, celestialLight, steps);
     composer.addPass(scattering);
     composer.addPass(new OutputPass());
@@ -33,6 +36,7 @@ export function createRendering(
   const motion = pipeline(profile.motionScatteringSteps);
   let pixelRatio = 1;
   return {
+    weather,
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;
     },

@@ -2,6 +2,7 @@ import { CanvasTexture, Mesh, MeshStandardMaterial, PlaneGeometry, SRGBColorSpac
 import type { TokyoWeather } from "../../weather/schema";
 import { tokyo } from "../../weather/schema";
 import type { Notice } from "./notices";
+import { weatherDescription, windDescription } from "../../weather/description";
 
 export function createWeatherNotice() {
   const canvas = document.createElement("canvas");
@@ -53,8 +54,11 @@ export function createWeatherNotice() {
       if (failed) return;
       draw([
         `${clock.format(date)} JST`,
+        weatherDescription(weather),
+        `雨 ${weather.rain.toFixed(1)}mm/h`,
+        `雪 ${weather.snowfall.toFixed(1)}cm/h`,
+        windDescription(weather),
         `雲量 ${Math.round(weather.cloudCover)}%`,
-        `降水 ${weather.precipitation.toFixed(1)}mm/h`,
         `${clock.format(weather.fetchedAt)}取得`,
       ]);
     },

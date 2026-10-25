@@ -1,4 +1,4 @@
-import { PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { Color, PCFShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { createInterface } from "./interface";
 import { createLoading } from "./interface/loading";
 import { bindRoomSwitch } from "./interface/room-switch";
@@ -53,6 +53,7 @@ const weather = observeTokyoWeather(
     const sample = weatherAt(current, Date.now());
     weatherStatus.update(sample, new Date());
     lighting.update(new Date(), sample, prepared && !view.moving);
+    if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
     invalidate();
   },
   weatherStatus.fail,
@@ -97,6 +98,7 @@ function updateTime() {
   const sample = weatherAt(weather.current, Date.now());
   weatherStatus.update(sample, new Date());
   lighting.update(new Date(), sample, prepared && !view.moving);
+  if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
   renderer.shadowMap.needsUpdate = true;
   invalidate();
 }
@@ -129,7 +131,7 @@ function render(time: number) {
     loading.complete();
     ready = true;
   }
-  if (moving) frame = requestAnimationFrame(render);
+  if (moving || (prepared && rendering.weather.active)) frame = requestAnimationFrame(render);
 }
 function invalidate() {
   if (frame || document.hidden) return;
