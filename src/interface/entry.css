@@ -287,7 +287,9 @@ body {
 .loading-progress::-webkit-progress-bar {
   background: #183b3122;
 }
-.loading-progress::-webkit-progress-value,
+.loading-progress::-webkit-progress-value {
+  background: #183b31;
+}
 .loading-progress::-moz-progress-bar {
   background: #183b31;
 }
@@ -332,6 +334,10 @@ body {
   font: inherit;
   font-size: 12px;
   cursor: pointer;
+}
+.loading-failure button:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 .loading-error .entry-live-dot {
   animation: none;

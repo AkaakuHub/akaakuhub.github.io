@@ -17,7 +17,7 @@ export async function loadTokyoWeather(): Promise<WeatherDay> {
 export function observeTokyoWeather(
   initial: WeatherDay,
   update: (weather: WeatherDay) => void,
-  fail: () => void,
+  fail: (error: unknown) => void,
 ) {
   let current = initial;
   let nextAttemptAt = initial.expiresAt;
@@ -30,8 +30,8 @@ export function observeTokyoWeather(
       current = await loadTokyoWeather();
       nextAttemptAt = current.expiresAt;
       update(current);
-    } catch {
-      fail();
+    } catch (error) {
+      fail(error);
     } finally {
       pending = false;
     }

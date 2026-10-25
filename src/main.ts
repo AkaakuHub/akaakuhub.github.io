@@ -16,6 +16,7 @@ import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
 import { weatherAt } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
+import { bindRenderingErrors } from "./scene/rendering/errors";
 
 export async function startRoom(root: HTMLElement, content: SiteContent, loading: Loading) {
   const ui = createInterface(root);
@@ -24,6 +25,7 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
     requestAnimationFrame(() => setTimeout(resolve, 0));
   });
   const renderer = new WebGLRenderer({ canvas: ui.canvas, antialias: false });
+  bindRenderingErrors(renderer, ui.canvas, loading.fail);
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFShadowMap;
@@ -56,8 +58,9 @@ export async function startRoom(root: HTMLElement, content: SiteContent, loading
       if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
       invalidate();
     },
-    () => {
+    (error) => {
       weatherStatus.fail();
+      loading.fail(error);
       invalidate();
     },
   );

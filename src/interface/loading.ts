@@ -24,12 +24,18 @@ export function createLoading(root: HTMLElement) {
   let materials = 0;
   let rendering = 0;
   let reloadTimer: ReturnType<typeof setTimeout> | undefined;
+  let restarting = false;
   const restart = async (reason: string): Promise<void> => {
+    if (restarting) return;
+    restarting = true;
+    retry.disabled = true;
     try {
       await reloadEverything(reason);
     } catch (error) {
       details.textContent = `${reason}\n\n再取得を開始できませんでした。\n${errorDetails(error)}`;
       label.textContent = "接続を確認してから、取得し直してください";
+      retry.disabled = false;
+      restarting = false;
     }
   };
   retry.onclick = () => {
