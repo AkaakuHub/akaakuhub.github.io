@@ -19,6 +19,14 @@ function browserResponse(response: Response, now: number): Response {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === "/api/reload") {
+      if (request.method !== "POST")
+        return new Response(null, { status: 405, headers: { Allow: "POST" } });
+      return new Response(null, {
+        status: 204,
+        headers: { "Clear-Site-Data": '"cache"', "Cache-Control": "no-store" },
+      });
+    }
     if (url.pathname !== "/api/weather" && url.pathname !== "/api/content")
       return env.ASSETS.fetch(request);
     if (request.method !== "GET")

@@ -9,28 +9,36 @@ import {
   Vector2,
 } from "three";
 
-interface PaperPrint {
-  title: string;
-  lines: readonly string[];
-  ink: string;
-  stock: string;
-  link: { label: string; href: string };
+import type { BoardNotice } from "./notices";
+
+function wrapText(context: CanvasRenderingContext2D, text: string, width: number): string[] {
+  const lines: string[] = [];
+  let line = "";
+  for (const character of text) {
+    const next = line + character;
+    if (line && context.measureText(next).width > width) {
+      lines.push(line);
+      line = character;
+    } else line = next;
+  }
+  if (line) lines.push(line);
+  return lines;
 }
 
 function printedPaper(
-  print: PaperPrint,
+  print: BoardNotice,
   maps: PbrMaps,
   sheetWidth: number,
   sheetHeight: number,
 ): CanvasTexture {
   const canvas = document.createElement("canvas");
-  canvas.width = 960;
-  canvas.height = 1344;
+  canvas.width = Math.round(sheetWidth * 1200);
+  canvas.height = Math.round(sheetHeight * 1200);
   const context = canvas.getContext("2d");
   if (!context) throw new Error("掲示用紙を描画できませんでした。");
-  context.scale(1.5, 1.5);
-  const width = 640;
-  const height = 896;
+  const width = canvas.width;
+  const height = canvas.height;
+  const margin = width * 0.06;
   const stock = maps.map.image;
   if (!stock) throw new Error("掲示用紙の画像が準備されていません。");
   const pattern = context.createPattern(stock, "repeat");
@@ -47,43 +55,40 @@ function printedPaper(
   context.fillStyle = print.stock;
   context.fillRect(0, 0, width, height);
   context.globalCompositeOperation = "source-over";
-  const margin = 60;
-  const headingY = 220;
   context.fillStyle = print.ink;
-  context.fillRect(margin, 78, 17, 17);
-  context.font = "600 56px sans-serif";
-  context.fillText(print.title, margin, headingY);
-  context.strokeStyle = print.ink;
-  context.lineWidth = 1.2;
-  context.beginPath();
-  context.moveTo(margin, headingY + 42);
-  context.lineTo(width - margin, headingY + 42);
-  context.stroke();
-  context.fillStyle = "#111b15";
-  const firstLine = headingY + 155;
-  for (const [index, line] of print.lines.entries()) {
-    context.font = index === 0 ? "32px sans-serif" : "25px monospace";
-    context.fillText(line, margin, firstLine + index * 65);
+  const compact = print.kind === "repository";
+  const headingSize = width * (compact ? 0.031 : print.kind === "profile" ? 0.065 : 0.043);
+  context.font = width * 0.019 + "px monospace";
+  context.fillText(print.eyebrow, margin, compact ? 30 : 100);
+  context.font = "600 " + headingSize + "px sans-serif";
+  const lines = wrapText(context, print.title, width - margin * 2);
+  const headingY = compact ? 77 : 180;
+  const lineHeight = headingSize * 1.4;
+  lines.forEach((line, index) => context.fillText(line, margin, headingY + index * lineHeight));
+  context.font = width * 0.028 + "px sans-serif";
+  let y = headingY + lines.length * lineHeight + 22;
+  for (const line of print.lines.filter(Boolean)) {
+    for (const wrapped of wrapText(context, line, width - margin * 2)) {
+      context.fillText(wrapped, margin, y);
+      y += width * 0.04;
+    }
   }
   context.fillStyle = print.ink;
-  context.font = "600 29px sans-serif";
-  context.fillText(`${print.link.label} →`, margin, height - 142);
-  context.fillRect(margin, height - 128, width - margin * 2, 1);
-  context.fillStyle = "#28382f";
-  context.font = "20px monospace";
-  context.fillText(print.link.href.replace("https://", ""), margin, height - 86);
-  const fold = context.createLinearGradient(width - 45, height - 80, width, height);
-  fold.addColorStop(0, "rgba(102,91,66,0)");
-  fold.addColorStop(1, "rgba(102,91,66,0.06)");
-  context.fillStyle = fold;
-  context.fillRect(width - 60, height - 90, 60, 90);
+  context.fillRect(margin, height - 57, width - margin * 2, 1);
+  context.font = width * 0.021 + "px sans-serif";
+  context.fillText(print.link.label + " ↗", margin, height - 23);
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 8;
   return texture;
 }
 
-export function createPaper(width: number, height: number, print: PaperPrint, maps: PbrMaps): Mesh {
+export function createPaper(
+  width: number,
+  height: number,
+  print: BoardNotice,
+  maps: PbrMaps,
+): Mesh {
   const geometry = new PlaneGeometry(width, height, 20, 24);
   const positions = geometry.getAttribute("position");
   for (let index = 0; index < positions.count; index++) {

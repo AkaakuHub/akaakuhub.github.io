@@ -6,7 +6,9 @@ import type {
 } from "unified-asset-loader/domain/artifactLoadEntryState";
 import { resolveArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
 import type { ArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
-import { loadBinaryAsset } from "unified-asset-loader/browser/loadBinaryAsset";
+import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBinaryAsset";
+import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
+import { recoveryReason } from "../interface/recovery";
 import { asset } from "./catalog";
 import { materialAssetIds } from "./materials";
 import { areaLightAssetId } from "./lighting";
@@ -15,6 +17,10 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   if (!isSecureContext || !crossOriginIsolated || !navigator.storage.getDirectory)
     throw new Error("HTTPSとクロスオリジン分離、OPFSが必要です。");
   const controller = new AbortController();
+  const { load: loadBinaryAsset } = createBinaryAssetLoader({
+    loader: { load: loadBrowserArtifact },
+    fetch: (url, signal) => fetch(url, { signal, cache: recoveryReason() ? "reload" : "default" }),
+  });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
     [...materialAssetIds, areaLightAssetId].map((id) => [
@@ -48,7 +54,7 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
                 identity: entry.sha256,
                 size: entry.bytes,
               },
-              signal: controller.signal,
+              signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
               decode,
               reportProgress,
               reportCacheWriteFailure,

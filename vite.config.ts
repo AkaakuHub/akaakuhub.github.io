@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import type { ServerOptions } from "node:https";
 import { defineConfig, loadEnv } from "vite-plus";
 import tailwindcss from "@tailwindcss/vite";
+import { profile } from "./src/content/profile";
 
 export default defineConfig(({ command, mode }) => {
   const headers = {
@@ -17,7 +18,30 @@ export default defineConfig(({ command, mode }) => {
     https = { cert: readFileSync(cert), key: readFileSync(key) };
   }
   return {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: "entry-document",
+        transformIndexHtml: {
+          order: "pre",
+          handler(html) {
+            let document = html.replace(
+              "<!-- entry-styles -->",
+              `<style>${readFileSync(new URL("./src/interface/entry.css", import.meta.url), "utf8")}</style>`,
+            );
+            for (const [key, value] of Object.entries(profile)) {
+              const text = value
+                .replaceAll("&", "&amp;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;");
+              document = document.replaceAll(`{{profile.${key}}}`, text);
+            }
+            return document;
+          },
+        },
+      },
+    ],
     optimizeDeps: { exclude: ["unified-asset-loader"] },
     server: {
       host: "0.0.0.0",

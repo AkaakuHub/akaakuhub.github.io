@@ -144,8 +144,7 @@ export function bindRoomControls(
     const notice = entries[hit.index]?.[1];
     if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
     if (view.state.mode === "notice" && view.state.index === hit.index) {
-      if (hit.uv && hit.uv.y < 0.24 && hit.uv.y > 0.04)
-        window.open(notice.link.href, "_blank", "noopener,noreferrer");
+      window.open(notice.link.href, "_blank", "noopener,noreferrer");
     } else view.inspect(hit.index);
   });
   const cancel = (event: PointerEvent) => {

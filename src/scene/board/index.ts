@@ -9,6 +9,7 @@ import { boardNotices } from "./notices";
 import type { Notice } from "./notices";
 import { createPaper } from "./paper";
 import { createWeatherNotice } from "./weather";
+import type { SiteContent } from "../../content/schema";
 
 export type { Notice } from "./notices";
 
@@ -16,6 +17,7 @@ export function createBoard(
   metals: MetalMaterials,
   paperMaps: PbrMaps,
   props: PropMaterials,
+  content: SiteContent,
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
@@ -25,7 +27,7 @@ export function createBoard(
   group.name = "notice-board";
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
-  for (const notice of boardNotices) {
+  for (const notice of boardNotices(content)) {
     const [width, height] = notice.size;
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
@@ -48,7 +50,9 @@ export function createBoard(
       ],
       32,
     );
-    for (const x of [-width * 0.34, width * 0.34]) {
+    const magnets =
+      notice.kind === "repository" ? [width / 2 - 0.035] : [-width * 0.34, width * 0.34];
+    for (const x of magnets) {
       const magnet = new Mesh(magnetGeometry, magnetMaterial);
       magnet.rotation.x = Math.PI / 2;
       magnet.position.set(x, height / 2 - 0.035, 0.0073);
