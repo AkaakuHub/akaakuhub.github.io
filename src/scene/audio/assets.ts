@@ -4,7 +4,7 @@ import { asset } from "../../assets/catalog";
 import { isRecovering } from "../../interface/recovery";
 import { prepareAudioLoop } from "./loop";
 
-export const soundNames = ["rain", "window", "gutter", "wind"] as const;
+export const soundNames = ["rain", "window", "gutter", "wind", "dayRain"] as const;
 export type SoundName = (typeof soundNames)[number];
 
 const loader = createBinaryAssetLoader({

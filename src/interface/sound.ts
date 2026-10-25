@@ -9,9 +9,10 @@ export function bindSoundControl(root: HTMLElement, audio: WeatherAudio): void {
   button.className = "room-sound";
   button.type = "button";
   button.setAttribute("aria-keyshortcuts", "M");
+  button.setAttribute("aria-label", "天気の音");
   audio.bindMute((muted) => {
-    button.setAttribute("aria-pressed", String(muted));
-    button.setAttribute("aria-label", muted ? "天気の音を再生" : "天気の音を消す");
+    button.setAttribute("aria-pressed", String(!muted));
+    button.title = muted ? "天気の音を再生(M)" : "天気の音を消す(M)";
     button.replaceChildren(
       createElement(muted ? VolumeX : Volume2, { width: 22, height: 22, "aria-hidden": "true" }),
     );

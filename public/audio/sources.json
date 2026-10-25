@@ -1,6 +1,17 @@
 [
   {
     "id": "rain",
+    "author": "Kresiek The Furry",
+    "source": "https://opengameart.org/content/amb-rain-loop-2",
+    "download": "https://opengameart.org/sites/default/files/amb_rain2.flac",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",
+    "startSeconds": 505,
+    "sourceDurationSeconds": 32
+  },
+  {
+    "id": "dayRain",
     "author": "Joseph SARDIN",
     "source": "https://bigsoundbank.com/summer-rain-on-terrace-s1019.html",
     "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1019.wav",
@@ -32,9 +43,9 @@
   },
   {
     "id": "wind",
-    "author": "Thimras",
-    "source": "https://opengameart.org/content/park-ambiences",
-    "download": "https://opengameart.org/sites/default/files/park_ambience_wind.wav",
+    "author": "Joseph SARDIN",
+    "source": "https://bigsoundbank.com/wind-from-inside-1-s1714.html",
+    "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1714.wav",
     "license": "CC0-1.0",
     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
     "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",

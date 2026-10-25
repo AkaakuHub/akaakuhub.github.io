@@ -8,10 +8,13 @@ import { createRoomReverb } from "./reverb";
 export function createWeatherMixer(context: AudioContext) {
   const controller = new AbortController();
   const master = context.createGain();
-  master.gain.value = 1;
+  master.gain.value = 2;
   const compressor = context.createDynamicsCompressor();
-  compressor.threshold.value = -8;
-  compressor.ratio.value = 4;
+  compressor.threshold.value = -4;
+  compressor.knee.value = 4;
+  compressor.ratio.value = 12;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.15;
   master.connect(compressor).connect(context.destination);
   const bus = context.createGain();
   bus.connect(master);
@@ -48,7 +51,7 @@ export function createWeatherMixer(context: AudioContext) {
   }
   function sync(): void {
     if (!weather || controller.signal.aborted || context.state !== "running") return;
-    const mix = weatherMix(weather);
+    const mix = weatherMix(weather, new Date());
     for (const name of soundNames) {
       let layer = layers.get(name);
       if (mix[name] > 0) {
@@ -84,7 +87,7 @@ export function createWeatherMixer(context: AudioContext) {
     },
     sync,
     mute(muted: boolean): void {
-      master.gain.setTargetAtTime(muted ? 0 : 1, context.currentTime, 0.03);
+      master.gain.setTargetAtTime(muted ? 0 : 2, context.currentTime, 0.03);
     },
     dispose(): void {
       controller.abort();

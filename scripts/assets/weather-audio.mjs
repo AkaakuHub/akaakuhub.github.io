@@ -5,6 +5,15 @@ const root = "https://opengameart.org/sites/default/files/";
 const definitions = [
   {
     id: "rain",
+    file: root + "amb_rain2.flac",
+    seconds: 32,
+    seek: 505,
+    bitrate: "192k",
+    author: "Kresiek The Furry",
+    page: "https://opengameart.org/content/amb-rain-loop-2",
+  },
+  {
+    id: "dayRain",
     file: "https://bigsoundbank.com/UPLOAD/bwf-en/1019.wav",
     seconds: 32,
     seek: 20,
@@ -30,12 +39,12 @@ const definitions = [
   },
   {
     id: "wind",
-    file: root + "park_ambience_wind.wav",
+    file: "https://bigsoundbank.com/UPLOAD/bwf-en/1714.wav",
     seconds: 24,
     seek: 25,
     bitrate: "192k",
-    author: "Thimras",
-    page: "https://opengameart.org/content/park-ambiences",
+    author: "Joseph SARDIN",
+    page: "https://bigsoundbank.com/wind-from-inside-1-s1714.html",
   },
 ];
 await mkdir("src/assets/audio", { recursive: true });

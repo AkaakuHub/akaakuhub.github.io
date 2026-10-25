@@ -5,8 +5,9 @@ const locations = {
   window: [-2.6, 1.9, 0.3],
   gutter: [-2.7, 2.5, -0.6],
   wind: [-4, 2.2, 1.5],
+  dayRain: [-4, 2.5, -1],
 } satisfies Record<SoundName, readonly [number, number, number]>;
-const cutoffs = { rain: 10000, window: 14000, gutter: 10000, wind: 8000 };
+const cutoffs = { rain: 10000, window: 14000, gutter: 10000, wind: 8000, dayRain: 10000 };
 
 export function createSoundLayer(
   context: AudioContext,
