@@ -174,10 +174,8 @@ export function createInterface(root: HTMLElement) {
           link.setAttribute("aria-label", notice.link.label);
           link.setAttribute("title", notice.link.label);
         }
-        setZoom(1);
       } else {
         announcement = "PCを表示しています";
-        setZoom(1);
       }
       status.textContent = announcement;
       if (wasInspecting !== inspecting) {

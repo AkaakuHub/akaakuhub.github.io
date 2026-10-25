@@ -16,7 +16,7 @@ export function createView(
   camera: PerspectiveCamera,
   inspections: readonly InspectionTarget[],
   computer: InspectionTarget,
-  onChange: (state: ViewState) => void,
+  onChange: (state: ViewState, zoom: number) => void,
   invalidate: () => void,
   getViewport: () => InspectionViewport,
 ) {
@@ -51,7 +51,7 @@ export function createView(
   function transition(next: ViewState, seconds: number): void {
     state = next;
     navigating = true;
-    onChange(state);
+    onChange(state, framing.zoom);
     move(seconds);
   }
   function move(seconds: number): void {
@@ -76,13 +76,13 @@ export function createView(
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
     if (state.mode === "notice" && state.index === index) return;
-    framing.zoom = 1;
+    if (state.mode === "room") framing.zoom = 1;
     framing.panX = 0;
     framing.panY = 0;
     transition({ mode: "notice", index }, 0.4);
   }
   apply(target);
-  onChange(state);
+  onChange(state, framing.zoom);
   return {
     get state(): ViewState {
       return state;
@@ -97,7 +97,7 @@ export function createView(
     inspect,
     inspectComputer() {
       if (state.mode === "computer") return;
-      framing.zoom = 1;
+      if (state.mode === "room") framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
       transition({ mode: "computer" }, 0.4);

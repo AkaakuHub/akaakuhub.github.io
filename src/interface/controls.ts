@@ -132,13 +132,6 @@ export function bindRoomControls(
       view.back();
       return;
     }
-    if (
-      (view.state.mode === "computer" && hit.type !== "computer") ||
-      (view.state.mode === "notice" && (hit.type !== "notice" || hit.index !== view.state.index))
-    ) {
-      view.back();
-      return;
-    }
     if (hit.type === "computer") {
       view.inspectComputer();
       return;
