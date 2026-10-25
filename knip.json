@@ -5,7 +5,8 @@
     "scripts/assets/catalog.mjs",
     "scripts/assets/lighting.mjs",
     "scripts/assets/fonts.mjs",
-    "scripts/assets/board-font.mjs"
+    "scripts/assets/board-font.mjs",
+    "scripts/assets/skill-logos.mjs"
   ],
   "project": ["src/**/*.{ts,css}", "scripts/**/*.mjs", "worker/**/*.ts"]
 }

@@ -9,10 +9,14 @@ import { createRoom } from "./room";
 import { batchStaticMeshes } from "./static-batches";
 import { createComputerInspection } from "./view/computer";
 
-export function assembleClubroom(scene: Scene, materials: MaterialLibrary) {
+export function assembleClubroom(
+  scene: Scene,
+  materials: MaterialLibrary,
+  skillAtlas: ImageBitmap,
+) {
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
-  const board = createBoard(metals, materials.paper, props);
+  const board = createBoard(metals, materials.paper, props, skillAtlas);
   scene.add(
     createRoom(materials, metals, props),
     createFurniture(materials, metals, props),

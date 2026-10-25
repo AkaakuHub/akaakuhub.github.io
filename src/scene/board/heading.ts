@@ -1,6 +1,6 @@
 import { CanvasTexture, Mesh, MeshStandardMaterial, PlaneGeometry, SRGBColorSpace } from "three";
 
-export function createBoardHeading(text: string, x: number) {
+export function createBoardHeading(text: string, x: number, y: number) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 256;
@@ -24,7 +24,7 @@ export function createBoardHeading(text: string, x: number) {
       polygonOffsetUnits: -1,
     }),
   );
-  heading.position.set(x, 2.265, 0.0455);
+  heading.position.set(x, y, 0.0455);
   heading.rotation.z = -0.012;
   heading.receiveShadow = true;
   return heading;

@@ -12,6 +12,7 @@ import { isRecovering } from "../interface/recovery";
 import { asset } from "./catalog";
 import { materialAssetIds } from "./materials";
 import { areaLightAssetId } from "./lighting";
+import { skillAtlasAssetId } from "./skills";
 
 export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) => void) {
   if (!isSecureContext || !crossOriginIsolated || !navigator.storage.getDirectory)
@@ -23,7 +24,7 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
   });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
-    [...materialAssetIds, areaLightAssetId].map((id) => [
+    [...materialAssetIds, areaLightAssetId, skillAtlasAssetId].map((id) => [
       id,
       {
         identity: `akaakuhub:${id}`,

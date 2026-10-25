@@ -11,26 +11,15 @@ import {
 
 import type { BoardNotice } from "./notices";
 import { siteFont } from "../../assets/typography";
-
-function wrapText(context: CanvasRenderingContext2D, text: string, width: number): string[] {
-  const lines: string[] = [];
-  let line = "";
-  for (const character of text) {
-    const next = line + character;
-    if (line && context.measureText(next).width > width) {
-      lines.push(line);
-      line = character;
-    } else line = next;
-  }
-  if (line) lines.push(line);
-  return lines;
-}
+import { paintArticle } from "./print/article";
+import { paintSkills } from "./print/skills";
 
 function printedPaper(
   print: BoardNotice,
   maps: PbrMaps,
   sheetWidth: number,
   sheetHeight: number,
+  skillAtlas: ImageBitmap,
 ): CanvasTexture {
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(sheetWidth * 1200);
@@ -56,34 +45,16 @@ function printedPaper(
   context.fillStyle = print.stock;
   context.fillRect(0, 0, width, height);
   context.globalCompositeOperation = "source-over";
-  context.fillStyle = print.ink;
-  const headingSize = width * 0.034;
-  context.font = `${width * 0.019}px ${siteFont}`;
-  context.fillText(print.eyebrow, margin, 100);
-  context.font = `500 ${headingSize}px ${siteFont}`;
-  const textX = print.thumbnail ? width * 0.54 : margin;
-  const lines =
-    print.kind === "github" ? [] : wrapText(context, print.title, width - margin - textX);
-  const headingY = 180;
-  const lineHeight = headingSize * 1.4;
-  if (print.thumbnail) {
-    const imageWidth = width * 0.43;
-    context.drawImage(print.thumbnail, margin, 145, imageWidth, imageWidth * 0.525);
-  }
-  lines.forEach((line, index) => context.fillText(line, textX, headingY + index * lineHeight));
-  context.font = `${width * 0.028}px ${siteFont}`;
-  let y = headingY + lines.length * lineHeight + 22;
-  for (const line of print.lines.filter(Boolean)) {
-    for (const wrapped of wrapText(context, line, width - margin * 2)) {
-      context.fillText(wrapped, margin, y);
-      y += width * 0.04;
+  if (print.kind === "article") {
+    paintArticle(context, print, width, height);
+  } else {
+    if (print.kind === "skills") paintSkills(context, skillAtlas, width);
+    context.fillStyle = print.ink;
+    if (print.link) {
+      context.fillRect(margin, height - 57, width - margin * 2, 1);
+      context.font = `500 ${width * 0.021}px ${siteFont}`;
+      context.fillText(print.link.label + " ↗", margin, height - 23);
     }
-  }
-  context.fillStyle = print.ink;
-  if (print.link) {
-    context.fillRect(margin, height - 57, width - margin * 2, 1);
-    context.font = `${width * 0.021}px ${siteFont}`;
-    context.fillText(print.link.label + " ↗", margin, height - 23);
   }
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
@@ -96,6 +67,7 @@ export function createPaper(
   height: number,
   print: BoardNotice,
   maps: PbrMaps,
+  skillAtlas: ImageBitmap,
 ): Mesh<PlaneGeometry, MeshStandardMaterial> {
   const geometry = new PlaneGeometry(width, height, 20, 24);
   const positions = geometry.getAttribute("position");
@@ -116,7 +88,7 @@ export function createPaper(
   const paper = new Mesh(
     geometry,
     new MeshStandardMaterial({
-      map: printedPaper(print, maps, width, height),
+      map: printedPaper(print, maps, width, height, skillAtlas),
       normalMap,
       normalScale: new Vector2(0.04, 0.04),
       roughness: 1,
@@ -132,8 +104,9 @@ export function updatePaper(
   paper: Mesh<PlaneGeometry, MeshStandardMaterial>,
   print: BoardNotice,
   maps: PbrMaps,
+  skillAtlas: ImageBitmap,
 ): void {
   const previous = paper.material.map;
-  paper.material.map = printedPaper(print, maps, print.size[0], print.size[1]);
+  paper.material.map = printedPaper(print, maps, print.size[0], print.size[1], skillAtlas);
   previous?.dispose();
 }

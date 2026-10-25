@@ -16,6 +16,7 @@ export function createBoard(
   metals: MetalMaterials,
   paperMaps: PbrMaps,
   props: PropMaterials,
+  skillAtlas: ImageBitmap,
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
@@ -28,13 +29,17 @@ export function createBoard(
   const notices = new Map<Object3D, Notice>();
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
-  group.add(createBoardHeading("GitHub", -0.85), createBoardHeading("最新記事", 0.39));
+  group.add(
+    createBoardHeading("GitHub", -0.85, 2.265),
+    createBoardHeading("Skills", -0.85, 1.65),
+    createBoardHeading("最新記事", 0.39, 2.265),
+  );
   for (const notice of boardNotices({ status: "loading" })) {
     const [width, height] = notice.size;
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
-    const paper = createPaper(width, height, notice, paperMaps);
+    const paper = createPaper(width, height, notice, paperMaps, skillAtlas);
     if (notice.kind === "github") contributions = paper;
     sheet.add(paper);
     const magnetMaterial = props.plasticGraphite.clone();
@@ -53,7 +58,8 @@ export function createBoard(
       ],
       32,
     );
-    const magnets = [-width * 0.34, width * 0.34];
+    const magnetOffset = width * (notice.kind === "article" ? 0.46 : 0.34);
+    const magnets = [-magnetOffset, magnetOffset];
     for (const x of magnets) {
       const magnet = new Mesh(magnetGeometry, magnetMaterial);
       magnet.rotation.x = Math.PI / 2;
@@ -79,7 +85,7 @@ export function createBoard(
         if (!metadata) throw new Error("掲示の情報がありません。");
         metadata.title = notice.title;
         metadata.link = notice.link;
-        updatePaper(paper, notice, paperMaps);
+        if (notice.kind === "article") updatePaper(paper, notice, paperMaps, skillAtlas);
       });
     },
   };

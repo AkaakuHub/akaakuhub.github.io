@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 const url = new URL("https://fonts.googleapis.com/css2");
 url.search = new URLSearchParams({
   family: "Yomogi",
-  text: "最新記事GitHub",
+  text: "最新記事GitHubSkills",
   display: "swap",
 }).toString();
 const response = await fetch(url, {

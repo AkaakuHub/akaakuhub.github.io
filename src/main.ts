@@ -20,11 +20,13 @@ import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
+import { loadSkillAtlas } from "./assets/skills";
+import { skillText } from "./content/skills";
 
 export async function startRoom(root: HTMLElement, loading: Loading) {
   const ui = createInterface(root);
   const weatherReady = loadTokyoWeather();
-  const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
+  const fontsReady = Promise.all([prepareBoardFont(skillText), prepareBoardHeadingFont()]);
   await new Promise<void>((resolve) => {
     requestAnimationFrame(() => setTimeout(resolve, 0));
   });
@@ -41,15 +43,17 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     loading.progress(summary.succeeded, summary.total);
   });
   const materialLoading = loadMaterials(renderer, assets);
+  const skillAtlasReady = loadSkillAtlas(assets);
   const lightTablesReady = loadAreaLightTables(renderer, assets);
   const { materials } = materialLoading;
-  const [initialWeather] = await Promise.all([
+  const [initialWeather, skillAtlas] = await Promise.all([
     weatherReady,
+    skillAtlasReady,
     materialLoading.paperReady,
     fontsReady,
   ]);
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-  const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials);
+  const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials, skillAtlas);
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await Promise.all([materialLoading.ready, lightTablesReady]);
   const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));

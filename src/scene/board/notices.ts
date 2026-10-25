@@ -11,13 +11,12 @@ export type BoardState =
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
 export interface BoardNotice extends Notice {
-  kind: "github" | "article";
+  kind: "github" | "skills" | "article";
   eyebrow: string;
   position: readonly [number, number];
   angle: number;
   ink: string;
   stock: string;
-  lines: readonly string[];
   thumbnail: ImageBitmap | null;
 }
 
@@ -32,9 +31,23 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       angle: 0.012,
       ink: "#253b31",
       stock: "#f3eee0",
-      lines: [],
       thumbnail: null,
       link: { label: "GitHubを開く", href: "https://github.com/AkaakuHub" },
+    },
+    {
+      kind: "skills",
+      title: "制作分野と言語",
+      eyebrow: "",
+      size: [1.08, 0.43],
+      position: [-0.62, 1.345],
+      angle: -0.009,
+      ink: "#294536",
+      stock: "#f0f0e2",
+      thumbnail: null,
+      link: {
+        label: "GitHubの制作物を見る",
+        href: "https://github.com/AkaakuHub?tab=repositories",
+      },
     },
   ];
   const date = new Intl.DateTimeFormat("ja-JP", {
@@ -62,12 +75,11 @@ export function boardNotices(state: BoardState): BoardNotice[] {
             ? "掲示を読み直す"
             : "公開記事はありません",
       link: article ? { label: "この記事を読む", href: article.url } : null,
-      size: [1.08, 0.48],
-      position: [0.62, 1.93 - index * 0.55],
+      size: [1.08, 0.51],
+      position: [0.62, 1.915 - index * 0.55],
       angle: index % 2 ? 0.012 : -0.01,
       ink: "#65442a",
       stock: "#f8f4e8",
-      lines: state.status === "error" ? ["クリックして再取得"] : [],
       thumbnail,
     });
   }
