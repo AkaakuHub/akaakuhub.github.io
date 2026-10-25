@@ -9,7 +9,7 @@ export function createWeatherAudio() {
   let mixer: ReturnType<typeof createWeatherMixer> | undefined;
   let weather: SoundWeather | undefined;
   let ready = false;
-  let muted = false;
+  let muted = localStorage.getItem("akaakuhub:audio-muted") === "true";
   let disposed = false;
   let onMute: ((muted: boolean) => void) | undefined;
   let suspendTimer: ReturnType<typeof setTimeout> | undefined;
@@ -64,6 +64,7 @@ export function createWeatherAudio() {
   }
   function toggleMuted(): void {
     muted = !muted;
+    localStorage.setItem("akaakuhub:audio-muted", String(muted));
     onMute?.(muted);
     clearTimeout(suspendTimer);
     if (muted) {
