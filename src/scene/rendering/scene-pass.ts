@@ -53,6 +53,16 @@ export class ScenePass extends Pass {
     this.dirty = true;
   }
 
+  compile(renderer: WebGLRenderer): ReturnType<WebGLRenderer["compileAsync"]> {
+    const previous = renderer.getRenderTarget();
+    try {
+      renderer.setRenderTarget(this.target);
+      return renderer.compileAsync(this.scene, this.camera);
+    } finally {
+      renderer.setRenderTarget(previous);
+    }
+  }
+
   override setSize(width: number, height: number): void {
     this.target.setSize(width, height);
     this.dirty = true;

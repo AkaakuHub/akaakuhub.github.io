@@ -17,6 +17,7 @@ import { weatherAt } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
+import { prewarmRoomViews } from "./scene/rendering/prewarm";
 import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
@@ -195,6 +196,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       loading.complete();
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
+      prewarmRoomViews(renderer, scene, camera, () => view.moving, loading.fail);
     }
     if (moving || rendering.weather.active || scrolling || animation)
       frame = requestAnimationFrame(render);
@@ -210,10 +212,10 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
   }
   updateTime();
   loading.rendering(0, 2);
-  await renderer.compileAsync(scene, camera);
+  await rendering.compile();
   loading.rendering(1, 2);
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
-  await renderer.compileAsync(scene, camera);
+  await rendering.compile();
   loading.rendering(2, 2);
   rendering.render();
   controls = bindRoomControls(

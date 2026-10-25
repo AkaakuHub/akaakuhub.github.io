@@ -1,6 +1,5 @@
-.room__canvas:focus-visible {
-  outline: 3px solid #d1e9d8;
-  outline-offset: -3px;
+.room__canvas:focus {
+  outline: none;
 }
 
 .room-keyboard {

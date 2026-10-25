@@ -52,6 +52,7 @@ export function createRendering(
   let pixelRatio = 1;
   return {
     weather,
+    compile: () => surfaces.compile(renderer),
     invalidate: () => surfaces.invalidate(),
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;
