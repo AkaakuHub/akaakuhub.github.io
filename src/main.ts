@@ -11,11 +11,15 @@ import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
 import { observeViewport } from "./scene/viewport";
+import { loadTokyoWeather, observeTokyoWeather } from "./weather/client";
+import { createWeatherStatus } from "./interface/weather";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
 const ui = createInterface(root);
 const loading = createLoading(root);
+const weatherStatus = createWeatherStatus(root);
+const weatherReady = loadTokyoWeather();
 await new Promise<void>((resolve) => {
   requestAnimationFrame(() => setTimeout(resolve, 0));
 });
@@ -33,13 +37,23 @@ const assets = createRoomAssetLoader((summary) => {
 });
 const materialLoading = loadMaterials(renderer, assets);
 const { materials } = materialLoading;
-await materialLoading.paperReady;
+const [initialWeather] = await Promise.all([weatherReady, materialLoading.paperReady]);
 loading.stage("部屋を組み立て中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
 const { board, lightSwitch, rocker } = assembleClubroom(scene, materials);
 loading.stage("描画を準備中");
 await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-const lighting = illuminate(scene, renderer);
+const lighting = illuminate(scene, renderer, initialWeather);
+const weather = observeTokyoWeather(
+  initialWeather,
+  (current) => {
+    weatherStatus.loaded();
+    weatherStatus.update(current, new Date());
+    lighting.update(new Date(), current, prepared);
+    invalidate();
+  },
+  weatherStatus.fail,
+);
 const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
 const noticeList = [...board.notices.values()];
 const inspections = [...board.notices].map(([object, notice]) => ({
@@ -71,7 +85,8 @@ observeViewport(ui.canvas, camera, renderer, rendering, () => {
 
 function updateTime() {
   if (document.hidden) return;
-  lighting.update(new Date(), prepared);
+  weatherStatus.update(weather.current, new Date());
+  lighting.update(new Date(), weather.current, prepared);
   renderer.shadowMap.needsUpdate = true;
   invalidate();
 }
@@ -127,7 +142,7 @@ await new Promise<void>((resolve) =>
   }),
 );
 await Promise.all([materialLoading.ready, streamed]);
-lighting.update(new Date());
+lighting.update(new Date(), weather.current);
 await renderer.compileAsync(scene, camera);
 rendering.render(true);
 rendering.render();

@@ -21,7 +21,10 @@ export function roomMarkup(): string {
     <main class="room relative h-dvh w-full overflow-hidden" aria-label="AkaakuHubの部室">
       <canvas class="room__canvas block size-full touch-none" aria-label="6方向を見回して掲示用紙へ近づける3Dの部室"></canvas>
       <header class="room-header pointer-events-none absolute ${topClass} ${rightClass} ${leftClass} flex items-center justify-between [&[hidden]]:hidden">
-        <a class="pointer-events-auto flex min-h-11 items-center rounded-sm px-1 text-[17px] font-medium tracking-tight text-[#f5f3e9] no-underline drop-shadow-[0_1px_5px_#000] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#f5f3e9]" href="/" aria-label="AkaakuHubのトップ">AkaakuHub</a>
+        <div class="min-w-0 text-[#f5f3e9] drop-shadow-[0_1px_4px_#000]">
+          <a class="pointer-events-auto inline-flex min-h-11 items-center rounded-sm px-1 text-[17px] font-medium tracking-tight no-underline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#f5f3e9]" href="/" aria-label="AkaakuHubのトップ">AkaakuHub</a>
+          <p class="px-1 text-[10px] leading-4"><span class="weather-status">東京の天気を取得中</span><br><a class="pointer-events-auto underline underline-offset-2" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a></p>
+        </div>
         <button class="fullscreen ${controlClass} pointer-events-auto size-11" aria-label="全画面表示" title="全画面表示"><i data-lucide="maximize"></i></button>
       </header>
       <nav class="navigation absolute ${bottomClass} ${leftClass} grid grid-cols-3 gap-1 [@media(min-width:520px)]:flex [&[hidden]]:hidden" aria-label="部屋の向き">

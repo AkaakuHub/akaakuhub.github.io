@@ -2,8 +2,7 @@ import type { Color } from "three";
 
 export const photometry = {
   scale: 1 / 1000,
-  solarIlluminance: 120_000,
-  skyIlluminance: 18_000,
+  radiationScale: 0.12,
   tubeLumens: 3350,
   ev100: 10,
 } as const;
