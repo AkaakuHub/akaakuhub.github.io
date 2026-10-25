@@ -1,5 +1,6 @@
 import { CylinderGeometry, ExtrudeGeometry, Group, Mesh, RingGeometry, Shape } from "three";
 import type { Material } from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { box } from "../../primitives";
 
 const outline = new Shape();
@@ -15,6 +16,12 @@ const bladeGeometry = new ExtrudeGeometry(outline, {
 });
 const ringGeometry = new RingGeometry(0.049, 0.053, 24);
 const hubGeometry = new CylinderGeometry(0.016, 0.016, 0.016, 16);
+const bladeParts = Array.from({ length: 7 }, (_, index) =>
+  bladeGeometry.clone().rotateZ((index * Math.PI * 2) / 7),
+);
+const rotorGeometry = mergeGeometries(bladeParts);
+bladeParts.forEach((part) => part.dispose());
+if (!rotorGeometry) throw new Error("PCファンの羽根を組み立てられませんでした。");
 
 export function caseFan(frame: Material, blades: Material): Group {
   const fan = new Group();
@@ -24,13 +31,12 @@ export function caseFan(frame: Material, blades: Material): Group {
     box(fan, [0.012, 0.1, 0.003], [side * 0.028, 0, -0.008], frame);
   }
   fan.add(new Mesh(ringGeometry, frame));
-  for (let index = 0; index < 7; index++) {
-    const blade = new Mesh(bladeGeometry, blades);
-    blade.rotation.z = (index * Math.PI * 2) / 7;
-    fan.add(blade);
-  }
+  const rotor = new Group();
+  rotor.name = "computer-fan-rotor";
+  rotor.add(new Mesh(rotorGeometry, blades));
   const hub = new Mesh(hubGeometry, frame);
   hub.rotation.x = Math.PI / 2;
-  fan.add(hub);
+  rotor.add(hub);
+  fan.add(rotor);
   return fan;
 }

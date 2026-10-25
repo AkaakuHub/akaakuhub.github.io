@@ -19,6 +19,7 @@ export function createComputerInterface(
   const readmes = new Map<string, ReadmeState>();
   const preparedText = new Set<string>();
   const compact = window.matchMedia("(max-width: 640px)");
+  const fanFrameMs = window.matchMedia("(pointer: coarse)").matches ? 80 : 40;
   const scroll = createScreenScroll();
   let powered = false;
   let state: ContentState = { status: "loading" };
@@ -26,6 +27,8 @@ export function createComputerInterface(
   let revision = 0;
   let interactedAt = 0;
   let settleTimer: ReturnType<typeof setTimeout> | undefined;
+  let fanTimer: ReturnType<typeof setTimeout> | undefined;
+  let lastFanTime = performance.now();
   screen.draw(false, state, 0, compact.matches, readmes);
 
   function redraw(name?: string) {
@@ -62,6 +65,9 @@ export function createComputerInterface(
   const togglePower = () => {
     powered = !powered;
     computer.power.material.emissiveIntensity = powered ? 1 : 0;
+    lastFanTime = performance.now();
+    if (!powered) clearTimeout(fanTimer);
+    if (!powered) fanTimer = undefined;
     dirty = true;
     if (!powered && view.state.mode === "monitor") view.inspectComputer();
     invalidate();
@@ -109,6 +115,24 @@ export function createComputerInterface(
       redraw();
     },
     update(seconds: number, now: number): boolean {
+      const fansVisible =
+        powered &&
+        (view.state.mode === "computer" ||
+          (view.state.mode === "room" && view.state.direction === 1));
+      if (fansVisible && now - lastFanTime >= fanFrameMs) {
+        const delta = Math.min((now - lastFanTime) / 1000, 0.1);
+        for (const fan of computer.fans) fan.rotation.z += delta * Math.PI * 5;
+        lastFanTime = now;
+      }
+      if (fansVisible && fanTimer === undefined)
+        fanTimer = setTimeout(() => {
+          fanTimer = undefined;
+          requestFrame();
+        }, fanFrameMs);
+      if (!fansVisible && fanTimer !== undefined) {
+        clearTimeout(fanTimer);
+        fanTimer = undefined;
+      }
       const repositories = state.status === "ready" ? state.content.repositories : [];
       scroll.setMaximum(
         screenLayout(repositories.length, scroll.position, compact.matches).maximum,

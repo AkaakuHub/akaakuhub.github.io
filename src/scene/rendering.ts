@@ -15,7 +15,7 @@ import { VolumetricPass } from "./volumetrics";
 import { renderingProfile } from "./quality";
 import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
-import { MonitorPass } from "./rendering/monitor-pass";
+import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 
 export function createRendering(
   renderer: WebGLRenderer,
@@ -23,10 +23,11 @@ export function createRendering(
   camera: PerspectiveCamera,
   celestialLight: DirectionalLight,
   monitor: Mesh<BufferGeometry, MeshBasicMaterial>,
+  fanSurfaces: readonly Mesh[],
 ) {
   const profile = renderingProfile();
   const weather = new WeatherPass(camera);
-  const surfaces = new ScenePass(scene, camera, monitor);
+  const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces]);
   renderer.toneMapping = ACESFilmicToneMapping;
   const target = new WebGLRenderTarget(1, 1, {
     type: HalfFloatType,
@@ -35,7 +36,7 @@ export function createRendering(
   const composer = new EffectComposer(renderer, target);
   composer.setPixelRatio(1);
   composer.addPass(surfaces);
-  composer.addPass(new MonitorPass(monitor, camera));
+  composer.addPass(new DynamicSurfacePass(monitor, fanSurfaces, scene, camera));
   composer.addPass(weather);
   const scattering = new VolumetricPass(
     camera,

@@ -42,7 +42,7 @@ export class ScenePass extends Pass {
   constructor(
     private readonly scene: Scene,
     private readonly camera: PerspectiveCamera,
-    private readonly monitor: Object3D,
+    private readonly dynamicSurfaces: readonly Object3D[],
   ) {
     super();
     this.needsSwap = false;
@@ -71,12 +71,15 @@ export class ScenePass extends Pass {
       !this.projection.equals(this.camera.projectionMatrix)
     ) {
       renderer.setRenderTarget(this.target);
-      const visible = this.monitor.visible;
-      this.monitor.visible = false;
+      const visibility = this.dynamicSurfaces.map((object) => ({
+        object,
+        visible: object.visible,
+      }));
+      for (const { object } of visibility) object.visible = false;
       try {
         renderer.render(this.scene, this.camera);
       } finally {
-        this.monitor.visible = visible;
+        for (const { object, visible } of visibility) object.visible = visible;
       }
       this.world.copy(this.camera.matrixWorld);
       this.projection.copy(this.camera.projectionMatrix);

@@ -76,6 +76,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     camera,
     lighting.celestialLight,
     computer.monitor,
+    computer.fanSurfaces,
   );
   const noticeList = [...board.notices.values()];
   const contributions = createContributionDisplay(board.contributions, invalidate);
