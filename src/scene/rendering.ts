@@ -1,5 +1,13 @@
 import { ACESFilmicToneMapping, DepthTexture, HalfFloatType, WebGLRenderTarget } from "three";
-import type { DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import type {
+  BufferGeometry,
+  DirectionalLight,
+  Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Scene,
+  WebGLRenderer,
+} from "three";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { AntialiasPass } from "./antialias";
@@ -7,16 +15,18 @@ import { VolumetricPass } from "./volumetrics";
 import { renderingProfile } from "./quality";
 import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
+import { MonitorPass } from "./rendering/monitor-pass";
 
 export function createRendering(
   renderer: WebGLRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
   celestialLight: DirectionalLight,
+  monitor: Mesh<BufferGeometry, MeshBasicMaterial>,
 ) {
   const profile = renderingProfile();
   const weather = new WeatherPass(camera);
-  const surfaces = new ScenePass(scene, camera);
+  const surfaces = new ScenePass(scene, camera, monitor);
   renderer.toneMapping = ACESFilmicToneMapping;
   const target = new WebGLRenderTarget(1, 1, {
     type: HalfFloatType,
@@ -25,6 +35,7 @@ export function createRendering(
   const composer = new EffectComposer(renderer, target);
   composer.setPixelRatio(1);
   composer.addPass(surfaces);
+  composer.addPass(new MonitorPass(monitor, camera));
   composer.addPass(weather);
   const scattering = new VolumetricPass(
     camera,

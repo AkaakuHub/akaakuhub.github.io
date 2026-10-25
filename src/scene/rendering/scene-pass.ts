@@ -7,7 +7,7 @@ import {
   Uniform,
   WebGLRenderTarget,
 } from "three";
-import type { PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import type { Object3D, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { FullScreenQuad, Pass } from "three/addons/postprocessing/Pass.js";
 
 export class ScenePass extends Pass {
@@ -42,6 +42,7 @@ export class ScenePass extends Pass {
   constructor(
     private readonly scene: Scene,
     private readonly camera: PerspectiveCamera,
+    private readonly monitor: Object3D,
   ) {
     super();
     this.needsSwap = false;
@@ -70,7 +71,13 @@ export class ScenePass extends Pass {
       !this.projection.equals(this.camera.projectionMatrix)
     ) {
       renderer.setRenderTarget(this.target);
-      renderer.render(this.scene, this.camera);
+      const visible = this.monitor.visible;
+      this.monitor.visible = false;
+      try {
+        renderer.render(this.scene, this.camera);
+      } finally {
+        this.monitor.visible = visible;
+      }
       this.world.copy(this.camera.matrixWorld);
       this.projection.copy(this.camera.projectionMatrix);
       this.dirty = false;

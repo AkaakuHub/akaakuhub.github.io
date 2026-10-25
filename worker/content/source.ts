@@ -11,7 +11,7 @@ export async function fetchRepositories() {
   const url = new URL("https://api.github.com/search/repositories");
   url.search = new URLSearchParams({
     q: `user:${profile.handle} fork:true`,
-    sort: "stars",
+    sort: "updated",
     order: "desc",
     per_page: "100",
   }).toString();
@@ -30,7 +30,7 @@ export async function fetchRepositories() {
         name: repository.name,
         html_url: repository.html_url,
         description: repository.description,
-        stargazers_count: repository.stargazers_count,
+        updated_at: repository.updated_at,
       };
     }),
   });
@@ -50,10 +50,10 @@ export function readRepositories(source: string) {
         name: repository.name,
         url: repository.html_url,
         description: repository.description === "" ? null : repository.description,
-        stars: repository.stargazers_count,
+        updatedAt: Date.parse(contentText(repository.updated_at)),
       };
     }),
-  );
+  ).sort((first, second) => second.updatedAt - first.updatedAt);
 }
 
 export function readArticles(xml: string) {

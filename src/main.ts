@@ -65,7 +65,13 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       invalidate();
     },
   );
-  const rendering = createRendering(renderer, scene, camera, lighting.celestialLight);
+  const rendering = createRendering(
+    renderer,
+    scene,
+    camera,
+    lighting.celestialLight,
+    computer.monitor,
+  );
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice]) => ({
     object,
@@ -86,14 +92,13 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     invalidate,
     () => ui.inspectionViewport(),
   );
-  const computerInterface = createComputerInterface(computer, view, invalidate);
+  const computerInterface = createComputerInterface(computer, view, invalidate, requestFrame);
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   const boardLoader = createBoardLoader((state) => {
     board.setState(state);
-    computerInterface.setState(state);
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
-  });
+  }, computerInterface.setState);
   let frame = 0;
   let previous = performance.now();
   let lastRendered = 0;
@@ -135,11 +140,12 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       frame = requestAnimationFrame(render);
       return;
     }
-    const moving = view.update((time - previous) / 1000);
+    const seconds = (time - previous) / 1000;
+    const moving = view.update(seconds);
     ui.setMoving(moving);
     previous = time;
     lastRendered = time;
-    if (!moving) computerInterface.update();
+    const scrolling = computerInterface.update(seconds, time);
     frameMetrics?.begin(moving);
     rendering.render(moving);
     frameMetrics?.end(moving);
@@ -148,7 +154,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
-    if (moving || rendering.weather.active) frame = requestAnimationFrame(render);
+    if (moving || rendering.weather.active || scrolling) frame = requestAnimationFrame(render);
   }
   function invalidate() {
     rendering.invalidate();

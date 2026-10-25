@@ -2,8 +2,6 @@ import type { Repository } from "../../../../content/schema";
 
 export type ScreenAction =
   | { type: "back" }
-  | { type: "previous" }
-  | { type: "next" }
   | { type: "github" }
   | { type: "repository"; repository: Repository };
 export interface ScreenRegion {
@@ -30,9 +28,19 @@ export function screenHit(
   )?.action;
 }
 
-export function screenPage(page: number, count: number, compact: boolean) {
-  const size = compact ? 1 : 2;
-  const pages = Math.max(1, Math.ceil(count / size));
-  const current = Math.max(0, Math.min(pages - 1, page));
-  return { page: current, pages, start: current * size, size };
+export function screenLayout(count: number, offset: number, compact: boolean) {
+  const top = 205;
+  const height = compact ? 408 : 330;
+  const contentHeight = top + count * height + 40;
+  const maximum = Math.max(0, contentHeight - 675);
+  const scroll = Math.max(0, Math.min(maximum, offset));
+  return {
+    top,
+    height,
+    contentHeight,
+    maximum,
+    offset: scroll,
+    start: Math.max(0, Math.min(count, Math.floor((scroll - top) / height))),
+    end: Math.max(0, Math.min(count, Math.ceil((scroll + 675 - top) / height))),
+  };
 }

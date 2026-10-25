@@ -2,7 +2,7 @@ export interface Repository {
   name: string;
   url: string;
   description: string | null;
-  stars: number;
+  updatedAt: number;
 }
 
 export interface Article {
@@ -16,6 +16,10 @@ export interface SiteContent {
   repositories: readonly Repository[];
   articles: readonly Article[];
 }
+
+export type ContentState =
+  | { status: "loading" | "error" }
+  | { status: "ready"; content: SiteContent };
 
 export function contentRecord(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value))
@@ -41,14 +45,14 @@ export function parseRepositories(value: unknown): Repository[] {
     throw new Error("GitHubリポジトリの件数が不正です。");
   return value.map((entry: unknown) => {
     const repository = contentRecord(entry);
-    const stars = repository.stars;
-    if (typeof stars !== "number" || !Number.isSafeInteger(stars) || stars < 0)
-      throw new Error("GitHubのスター数が不正です。");
+    const updatedAt = repository.updatedAt;
+    if (typeof updatedAt !== "number" || !Number.isSafeInteger(updatedAt) || updatedAt < 0)
+      throw new Error("GitHubの更新日時が不正です。");
     return {
       name: contentText(repository.name),
       url: link(repository.url, "https://github.com", "/AkaakuHub/"),
       description: repository.description === null ? null : contentText(repository.description),
-      stars,
+      updatedAt,
     };
   });
 }

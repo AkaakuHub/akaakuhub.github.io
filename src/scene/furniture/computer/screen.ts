@@ -1,8 +1,9 @@
 import { CanvasTexture, SRGBColorSpace } from "three";
 import type { MeshBasicMaterial } from "three";
-import type { BoardState } from "../../board/notices";
+import type { ContentState } from "../../../content/schema";
 import type { ReadmeState } from "../../../content/readme";
 import { drawScreen } from "./screen/draw";
+import type { CachedCard } from "./screen/card";
 import { screenHit } from "./screen/layout";
 import type { ScreenRegion } from "./screen/layout";
 
@@ -18,19 +19,24 @@ export function createComputerScreen(material: MeshBasicMaterial) {
   material.color.set("#bfc7c0");
   material.needsUpdate = true;
   let regions: ScreenRegion[] = [];
+  const cards = new Map<string, CachedCard>();
   return {
     draw(
       powered: boolean,
-      state: BoardState,
-      page: number,
+      state: ContentState,
+      offset: number,
       compact: boolean,
       readmes: ReadonlyMap<string, ReadmeState>,
     ): void {
-      regions = drawScreen(context, powered, state, page, compact, readmes);
+      regions = drawScreen(context, powered, state, offset, compact, readmes, cards);
       texture.needsUpdate = true;
     },
     hit(u: number, v: number) {
       return screenHit(regions, u, v);
+    },
+    clear(name?: string) {
+      if (name === undefined) cards.clear();
+      else cards.delete(name);
     },
   };
 }
