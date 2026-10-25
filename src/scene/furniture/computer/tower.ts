@@ -1,5 +1,6 @@
 import {
   DoubleSide,
+  CylinderGeometry,
   Group,
   Mesh,
   MeshPhysicalMaterial,
@@ -29,6 +30,19 @@ export function desktopTower(): Group {
   for (const x of [-0.11, 0.11])
     for (const z of [-0.209, 0.209]) box(tower, [0.01, 0.438, 0.012], [x, 0.247, z], white);
   box(tower, [0.218, 0.063, 0.414], [0, 0.063, 0], white);
+  const power = new Mesh(
+    new CylinderGeometry(0.012, 0.012, 0.004, 24),
+    new MeshStandardMaterial({
+      color: "#303b36",
+      emissive: "#8dc7ac",
+      emissiveIntensity: 0,
+      roughness: 0.45,
+    }),
+  );
+  power.name = "computer-power-button";
+  power.rotation.x = Math.PI / 2;
+  power.position.set(0, 0.063, 0.219);
+  tower.add(power);
   for (const y of [0.159, 0.283, 0.407]) {
     const fan = caseFan(white, white);
     fan.position.set(0, y, 0.201);

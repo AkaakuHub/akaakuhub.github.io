@@ -16,6 +16,7 @@ import {
   Undo2,
   ZoomIn,
   ZoomOut,
+  X,
   createElement,
   createIcons,
 } from "lucide";
@@ -45,6 +46,7 @@ export function createInterface(root: HTMLElement) {
       ScanSearch,
       Undo2,
       ZoomIn,
+      X,
     },
     attrs: { "aria-hidden": "true" },
   });
@@ -144,7 +146,9 @@ export function createInterface(root: HTMLElement) {
     },
     setView(state: ViewState, notice?: Notice) {
       const inspecting = state.mode !== "room";
-      inspectionName = state.mode === "computer" ? "PC" : "紙";
+      inspectionName =
+        state.mode === "computer" ? "PC" : state.mode === "monitor" ? "モニター" : "紙";
+      zoom.hidden = state.mode === "monitor";
       navigation.hidden = inspecting;
       inspection.hidden = !inspecting;
       header.hidden = inspecting;
@@ -152,7 +156,7 @@ export function createInterface(root: HTMLElement) {
       computerAction.hidden = state.mode !== "room" || state.direction !== 1;
       link.hidden = state.mode !== "notice" || !notice?.link;
       const refresh = root.querySelector<HTMLButtonElement>(".refresh-notices");
-      if (refresh) refresh.hidden = state.mode !== "notice";
+      if (refresh) refresh.hidden = state.mode !== "notice" && state.mode !== "monitor";
       inspection
         .querySelectorAll<HTMLElement>(".previous-notice, .next-notice")
         .forEach((button) => {
@@ -175,7 +179,8 @@ export function createInterface(root: HTMLElement) {
           link.setAttribute("title", notice.link.label);
         }
       } else {
-        announcement = "PCを表示しています";
+        announcement =
+          state.mode === "monitor" ? "リポジトリ一覧を表示しています" : "PCを表示しています";
       }
       status.textContent = announcement;
       if (wasInspecting !== inspecting) {

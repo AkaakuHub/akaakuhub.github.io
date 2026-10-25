@@ -37,7 +37,7 @@ function link(value: unknown, origin: string, prefix: string): string {
 }
 
 export function parseRepositories(value: unknown): Repository[] {
-  if (!Array.isArray(value) || value.length > 3)
+  if (!Array.isArray(value) || value.length > 100)
     throw new Error("GitHubリポジトリの件数が不正です。");
   return value.map((entry: unknown) => {
     const repository = contentRecord(entry);

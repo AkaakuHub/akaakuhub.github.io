@@ -19,6 +19,7 @@ import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont } from "./assets/typography";
 import { createContributionDisplay } from "./scene/board/contribution-display";
+import { createComputerInterface } from "./interface/computer";
 
 export async function startRoom(root: HTMLElement, loading: Loading) {
   const ui = createInterface(root);
@@ -80,6 +81,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     camera,
     inspections,
     computer,
+    { object: computer.monitor, width: 0.589, height: 0.331, depth: 0.001 },
     (state, zoom) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setZoom(zoom);
@@ -88,8 +90,10 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     invalidate,
     () => ui.inspectionViewport(),
   );
+  const computerInterface = createComputerInterface(root, computer, view, invalidate);
   const boardLoader = createBoardLoader((state) => {
     board.setState(state);
+    computerInterface.setState(state);
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
   });
@@ -139,6 +143,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     previous = time;
     lastRendered = time;
     roomSwitch.update(view.state.mode === "room" && !view.moving);
+    computerInterface.update(camera, moving);
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
     if (animation.changed) rendering.invalidate();
@@ -176,7 +181,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     camera,
     scene,
     board.notices,
-    computer.object,
+    computerInterface,
     () => void boardLoader.refresh(true),
   );
   const roomSwitch = bindRoomSwitch(

@@ -1,16 +1,22 @@
 import { Mesh, Raycaster, Vector2 } from "three";
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 
+interface ComputerTargets {
+  object: Object3D;
+  monitor: Object3D;
+  power: Object3D;
+  isPowered: () => boolean;
+}
+
 export function createPicker(
   canvas: HTMLCanvasElement,
   camera: PerspectiveCamera,
   scene: Scene,
   papers: readonly Object3D[],
-  computer: Object3D,
+  computer: ComputerTargets,
 ) {
   const raycaster = new Raycaster();
   const pointer = new Vector2();
-  const targets = [...papers, computer];
   return (event: PointerEvent, occlusion: boolean) => {
     const rect = canvas.getBoundingClientRect();
     pointer.set(
@@ -20,19 +26,23 @@ export function createPicker(
     camera.updateMatrixWorld();
     raycaster.setFromCamera(pointer, camera);
     raycaster.far = Infinity;
+    const targets = [...papers, computer.object, computer.power];
+    if (computer.isPowered()) targets.push(computer.monitor);
     const candidate = raycaster.intersectObjects(targets, false)[0];
     if (!candidate) return;
     if (occlusion) {
       raycaster.far = candidate.distance - 0.0001;
       const blocked = raycaster.intersectObjects(scene.children, true).some(({ object }) => {
-        if (!(object instanceof Mesh)) return false;
+        if (!(object instanceof Mesh) || object === computer.object) return false;
         for (let owner: Object3D | null = object; owner; owner = owner.parent)
           if (owner === candidate.object) return false;
         return true;
       });
       if (blocked) return;
     }
-    if (candidate.object === computer) return { type: "computer" as const };
+    if (candidate.object === computer.object) return { type: "computer" as const };
+    if (candidate.object === computer.power) return { type: "power" as const };
+    if (candidate.object === computer.monitor) return { type: "monitor" as const };
     const index = papers.indexOf(candidate.object);
     if (index >= 0) return { type: "notice" as const, index, uv: candidate.uv };
   };

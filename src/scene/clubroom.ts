@@ -1,3 +1,4 @@
+import { Mesh, MeshBasicMaterial, MeshStandardMaterial } from "three";
 import type { Scene } from "three";
 import { createBoard } from "./board";
 import { createFurniture } from "./furniture";
@@ -21,9 +22,18 @@ export function assembleClubroom(scene: Scene, materials: MaterialLibrary) {
   const rocker = scene.getObjectByName("room-light-switch-rocker");
   if (!lightSwitch || !rocker) throw new Error("部屋の照明スイッチが見つかりません。");
   const computer = createComputerInspection(scene);
+  const power = scene.getObjectByName("computer-power-button");
+  const monitor = scene.getObjectByName("computer-monitor");
+  if (
+    !(power instanceof Mesh) ||
+    !(power.material instanceof MeshStandardMaterial) ||
+    !(monitor instanceof Mesh) ||
+    !(monitor.material instanceof MeshBasicMaterial)
+  )
+    throw new Error("PCの電源とモニターが見つかりません。");
   batchStaticMeshes(
     scene,
-    new Set([...board.notices.keys(), lightSwitch, rocker, computer.object]),
+    new Set([...board.notices.keys(), lightSwitch, rocker, computer.object, power, monitor]),
   );
-  return { board, lightSwitch, rocker, computer };
+  return { board, lightSwitch, rocker, computer: { ...computer, power, monitor } };
 }

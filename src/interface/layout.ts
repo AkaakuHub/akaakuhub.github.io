@@ -38,6 +38,14 @@ export function roomMarkup(): string {
         <button class="next-notice ${controlClass} pointer-events-auto absolute ${bottomClass} ${rightClass} size-11" aria-label="次の紙を見る" title="次の紙を見る"><i data-lucide="chevron-right"></i></button>
       </nav>
       <button class="room-light-switch absolute z-10 size-11 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-md border border-transparent bg-transparent hover:border-white/50 focus-visible:outline-2 focus-visible:outline-white [&[hidden]]:hidden" role="switch" aria-label="部屋の照明" aria-checked="true" hidden></button>
+      <button class="computer-power ${controlClass} absolute z-10 size-11 -translate-x-1/2 -translate-y-1/2 [&[hidden]]:hidden" aria-label="PCの電源を入れる" title="PCの電源を入れる" aria-pressed="false" hidden></button>
+      <section class="computer-screen" aria-labelledby="computer-screen-title" hidden>
+        <header class="computer-screen-header">
+          <div><h2 id="computer-screen-title">AkaakuHub</h2><p>公開リポジトリ · スター順 · <a href="https://github.com/AkaakuHub?tab=repositories" target="_blank" rel="noopener noreferrer">GitHubで見る</a></p></div>
+          <button class="computer-screen-close" aria-label="PCに戻る" title="PCに戻る"><i data-lucide="x"></i></button>
+        </header>
+        <div class="repository-list"></div>
+      </section>
       <p class="view-status sr-only" aria-live="polite">ホワイトボードを向いています</p>
       <a class="absolute right-[max(1rem,env(safe-area-inset-right))] bottom-[max(.2rem,env(safe-area-inset-bottom))] text-[10px] text-white/70 no-underline hover:text-white" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a>
     </main>`;

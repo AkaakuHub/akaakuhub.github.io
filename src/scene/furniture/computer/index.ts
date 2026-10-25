@@ -1,5 +1,11 @@
-import { Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, SphereGeometry } from "three";
-import { box } from "../../primitives";
+import {
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  PlaneGeometry,
+  SphereGeometry,
+} from "three";
 import { cylinder, roundBox } from "../geometry";
 import { desktopTower } from "./tower";
 import { mechanicalKeyboard } from "./keyboard";
@@ -9,11 +15,14 @@ export function desktopComputer(): Group {
   computer.name = "desktop-computer";
   const white = new MeshStandardMaterial({ color: "#e5e7e6", roughness: 0.62 });
   const graphite = new MeshStandardMaterial({ color: "#232827", roughness: 0.74 });
-  const display = new MeshBasicMaterial({ color: "#111b18" });
+  const display = new MeshBasicMaterial({ color: "#080b0a" });
   roundBox(computer, [0.22, 0.012, 0.18], [0, 0.006, -0.15], white, 0.008);
   roundBox(computer, [0.045, 0.17, 0.035], [0, 0.095, -0.19], white, 0.006);
   roundBox(computer, [0.61, 0.358, 0.026], [0, 0.33, -0.19], white, 0.008);
-  box(computer, [0.589, 0.331, 0.001], [0, 0.333, -0.176], display);
+  const screen = new Mesh(new PlaneGeometry(0.589, 0.331), display);
+  screen.position.set(0, 0.333, -0.1755);
+  screen.name = "computer-monitor";
+  computer.add(screen);
   const keyboard = mechanicalKeyboard();
   keyboard.position.set(0, 0, 0.173);
   computer.add(keyboard);

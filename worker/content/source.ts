@@ -13,14 +13,27 @@ export async function fetchRepositories() {
     q: `user:${profile.handle} fork:true`,
     sort: "stars",
     order: "desc",
-    per_page: "3",
+    per_page: "100",
   }).toString();
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10_000),
     headers: { "User-Agent": "AkaakuHub-site", Accept: "application/vnd.github+json" },
   });
   if (!response.ok) throw new Error(`GitHubの取得に失敗しました: HTTP ${response.status}`);
-  const source = await response.text();
+  const result = contentRecord(await response.json());
+  if (!Array.isArray(result.items)) throw new Error("GitHubの検索結果を取得できませんでした。");
+  const source = JSON.stringify({
+    incomplete_results: result.incomplete_results,
+    items: result.items.map((entry: unknown) => {
+      const repository = contentRecord(entry);
+      return {
+        name: repository.name,
+        html_url: repository.html_url,
+        description: repository.description,
+        stargazers_count: repository.stargazers_count,
+      };
+    }),
+  });
   readRepositories(source);
   return source;
 }
@@ -36,7 +49,7 @@ export function readRepositories(source: string) {
       return {
         name: repository.name,
         url: repository.html_url,
-        description: repository.description,
+        description: repository.description === "" ? null : repository.description,
         stars: repository.stargazers_count,
       };
     }),

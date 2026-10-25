@@ -18,7 +18,9 @@ export function createBoardLoader(update: (state: BoardState) => void) {
             const content = await loadSiteContent(controller.signal);
             await prepareBoardFont(
               [
-                ...content.repositories.map((entry) => entry.name),
+                ...content.repositories
+                  .slice(0, 3)
+                  .flatMap((entry) => [entry.name, entry.description ?? ""]),
                 ...content.articles.map((entry) => entry.title),
               ].join(" "),
             );

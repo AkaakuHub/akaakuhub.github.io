@@ -4,6 +4,7 @@ import type { createInterface } from ".";
 import type { Notice } from "../scene/board";
 import type { createView } from "../scene/view";
 import { createPicker } from "./picking";
+import type { createComputerInterface } from "./computer";
 
 export function bindRoomControls(
   root: HTMLElement,
@@ -12,12 +13,12 @@ export function bindRoomControls(
   camera: PerspectiveCamera,
   scene: Scene,
   notices: Map<Object3D, Notice>,
-  computer: Object3D,
+  computer: ReturnType<typeof createComputerInterface>,
   refreshBoard: () => void,
 ): void {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
-  const pick = createPicker(ui.canvas, camera, scene, papers, computer);
+  const pick = createPicker(ui.canvas, camera, scene, papers, computer.targets);
   root.querySelectorAll<HTMLButtonElement>(".direction").forEach((button) => {
     button.addEventListener("click", () => view.select(Number(button.dataset.direction)));
   });
@@ -134,6 +135,14 @@ export function bindRoomControls(
     }
     if (hit.type === "computer") {
       view.inspectComputer();
+      return;
+    }
+    if (hit.type === "power") {
+      computer.togglePower();
+      return;
+    }
+    if (hit.type === "monitor") {
+      view.inspectMonitor();
       return;
     }
     const notice = entries[hit.index]?.[1];
