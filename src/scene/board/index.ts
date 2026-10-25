@@ -9,8 +9,6 @@ import { boardNotices } from "./notices";
 import type { BoardState, Notice } from "./notices";
 import { createPaper, updatePaper } from "./paper";
 import { createBoardCredit, createBoardHeading } from "./heading";
-import { createBoardFocus } from "./focus";
-import type { BoardSheet } from "./focus";
 
 export type { Notice } from "./notices";
 
@@ -23,8 +21,6 @@ export function createBoard(
   group: Group;
   notices: Map<Object3D, Notice>;
   contributions: ReturnType<typeof createPaper>;
-  dynamicObjects: readonly Object3D[];
-  setFocus: (index: number | null, aspect: number) => boolean;
   setState: (state: BoardState) => void;
 } {
   const group = createFrame(metals, props);
@@ -33,11 +29,10 @@ export function createBoard(
   const notices = new Map<Object3D, Notice>();
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
-  const sheets: BoardSheet[] = [];
   group.add(
-    createBoardHeading("GitHub", -0.79, 2.265),
-    createBoardHeading("Skills", -0.79, 1.65),
-    createBoardHeading("最新記事", 0.33, 2.265),
+    createBoardHeading("GitHub", -0.79, 2.37),
+    createBoardHeading("Skills", -0.79, 1.79),
+    createBoardHeading("最新記事", 0.33, 2.37),
     createBoardCredit(),
   );
   for (const notice of boardNotices({ status: "loading" })) {
@@ -66,7 +61,6 @@ export function createBoard(
     );
     const magnetOffset = width * (notice.kind === "article" ? 0.46 : 0.34);
     const magnets = [-magnetOffset, magnetOffset];
-    const sheetMagnets: Mesh[] = [];
     for (const x of magnets) {
       const magnet = new Mesh(magnetGeometry, magnetMaterial);
       magnet.rotation.x = Math.PI / 2;
@@ -74,12 +68,10 @@ export function createBoard(
       magnet.castShadow = true;
       magnet.receiveShadow = true;
       sheet.add(magnet);
-      sheetMagnets.push(magnet);
     }
     group.add(sheet);
     const metadata = { title: notice.title, size: notice.size, link: notice.link };
     notices.set(paper, metadata);
-    sheets.push({ sheet, paper, magnets: sheetMagnets, notice: metadata });
     papers.push(paper);
   }
   if (!contributions) throw new Error("GitHubの掲示用紙がありません。");
@@ -87,8 +79,6 @@ export function createBoard(
     group,
     notices,
     contributions,
-    dynamicObjects: sheets.flatMap(({ sheet, magnets }) => [sheet, ...magnets]),
-    setFocus: createBoardFocus(sheets, paperMaps, skillAtlas),
     setState(state): void {
       boardNotices(state).forEach((notice, index) => {
         const paper = papers[index];

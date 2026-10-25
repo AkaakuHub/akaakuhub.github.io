@@ -1,7 +1,6 @@
 import {
   BufferAttribute,
   Frustum,
-  Group,
   Matrix4,
   Mesh,
   MeshStandardMaterial,
@@ -15,8 +14,6 @@ export function createContributionDisplay(
   mount: Mesh<PlaneGeometry, MeshStandardMaterial>,
   invalidate: () => void,
 ) {
-  const artwork = new Group();
-  mount.add(artwork);
   const time = { value: 0 };
   const frustum = new Frustum();
   const projection = new Matrix4();
@@ -97,7 +94,7 @@ export function createContributionDisplay(
         logo.position.set(0, 0.015, 0.0061);
         logo.receiveShadow = true;
         logo.renderOrder = 2;
-        artwork.add(surface, logo);
+        mount.add(surface, logo);
         invalidate();
         return;
       } catch (error) {
@@ -112,7 +109,6 @@ export function createContributionDisplay(
   return {
     update(camera: PerspectiveCamera, now: number): { active: boolean; changed: boolean } {
       if (!surface) return { active: false, changed: false };
-      artwork.scale.setScalar(mount.geometry.parameters.height > 0.6 ? 1.35 : 1);
       if (startedAt === undefined) {
         camera.updateMatrixWorld();
         surface.updateWorldMatrix(true, false);

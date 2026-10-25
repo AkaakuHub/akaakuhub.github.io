@@ -63,9 +63,9 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
   ceramic.normalScale.set(0.08, 0.08);
   ceramic.clearcoat = 0.58;
   ceramic.clearcoatRoughness = 0.3;
-  roundBox(frame, [2.64, 1.36, 0.075], [0, 1.72, 0], aluminum, 0.026);
-  roundBox(frame, [2.56, 1.28, 0.012], [0, 1.72, 0.039], ceramic, 0.014);
-  box(frame, [2.5, 1.22, 0.015], [0, 1.72, -0.045], backing);
+  roundBox(frame, [2.64, 1.8, 0.075], [0, 1.5, 0], aluminum, 0.026);
+  roundBox(frame, [2.56, 1.72, 0.012], [0, 1.5, 0.039], ceramic, 0.014);
+  box(frame, [2.5, 1.66, 0.015], [0, 1.5, -0.045], backing);
   for (const x of [-1.32, 1.32]) {
     roundBox(frame, [0.052, 1.67, 0.065], [x, 0.99, -0.012], coating, 0.012);
     roundBox(frame, [0.066, 0.056, 0.68], [x, 0.153, 0], coating, 0.014);
@@ -81,11 +81,11 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
     knob.computeVertexNormals();
     const pivot = new Mesh(knob, coating);
     pivot.rotation.z = Math.PI / 2;
-    pivot.position.set(x, 1.72, 0);
+    pivot.position.set(x, 1.5, 0);
     pivot.castShadow = true;
     frame.add(pivot);
     const side = Math.sign(x);
-    hardware.bolt(aluminum, [x + side * 0.034, 1.72, 0], [0, (side * Math.PI) / 2, 0]);
+    hardware.bolt(aluminum, [x + side * 0.034, 1.5, 0], [0, (side * Math.PI) / 2, 0]);
     for (const y of [0.24, 0.42, 1.18]) hardware.bolt(aluminum, [x, y, 0.022]);
     for (const z of [-0.338, 0.338])
       roundBox(frame, [0.069, 0.058, 0.014], [x, 0.153, z], rubber, 0.005);
@@ -95,13 +95,13 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
     brace.rotation.x = 0.3;
   }
   box(frame, [2.56, 0.035, 0.035], [0, 0.42, -0.06], coating);
-  roundBox(frame, [1.78, 0.025, 0.13], [0.15, 1.025, 0.08], aluminum, 0.008);
-  box(frame, [1.78, 0.035, 0.012], [0.15, 1.035, 0.142], coating);
-  for (const x of [-0.61, 0.91]) hardware.screw(aluminum, [x, 1.023, 0.149]);
+  roundBox(frame, [1.78, 0.025, 0.13], [0.15, 0.585, 0.08], aluminum, 0.008);
+  box(frame, [1.78, 0.035, 0.012], [0.15, 0.595, 0.142], coating);
+  for (const x of [-0.61, 0.91]) hardware.screw(aluminum, [x, 0.583, 0.149]);
   for (const x of [-1.302, 1.302])
-    for (const y of [1.1, 2.34]) hardware.screw(aluminum, [x, y, 0.0385]);
+    for (const y of [0.66, 2.34]) hardware.screw(aluminum, [x, y, 0.0385]);
   const eraser = new Group();
-  eraser.position.set(0.76, 1.0375, 0.075);
+  eraser.position.set(0.76, 0.5975, 0.075);
   eraser.rotation.y = -0.12;
   roundBox(eraser, [0.145, 0.009, 0.067], [0, 0.0045, 0], props.felt, 0.002);
   roundBox(eraser, [0.145, 0.026, 0.067], [0, 0.022, 0], props.plasticGraphite, 0.006);
@@ -111,12 +111,12 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
   for (const [index, color] of ["#6c4036", "#314c55"].entries()) {
     const marker = new Mesh(metricCylinderGeometry(0.009, 0.145, 12), props.plasticIvory);
     marker.rotation.z = Math.PI / 2;
-    marker.position.set(0.41 - index * 0.22, 1.048, 0.08);
+    marker.position.set(0.41 - index * 0.22, 0.608, 0.08);
     marker.castShadow = true;
     frame.add(marker);
     const cap = props.plasticIvory.clone();
     cap.color.set(color);
-    box(frame, [0.035, 0.019, 0.019], [marker.position.x + 0.058, 1.048, 0.08], cap);
+    box(frame, [0.035, 0.019, 0.019], [marker.position.x + 0.058, 0.608, 0.08], cap);
   }
   hardware.finish(frame);
   return frame;

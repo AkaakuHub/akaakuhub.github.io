@@ -48,20 +48,12 @@ function printedPaper(
   if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
-    if (print.kind === "skills") paintSkills(context, skillAtlas, width, height);
-    if (print.kind === "github" && height > width * 0.6) {
-      context.font = '400 104px "Yomogi"';
-      context.fillStyle = print.ink;
-      context.textAlign = "center";
-      context.fillText("GitHub", width / 2, 140);
-      context.textAlign = "left";
-    }
+    if (print.kind === "skills") paintSkills(context, skillAtlas, width);
     context.fillStyle = print.ink;
     if (print.link) {
-      const enlarged = height > width * 0.6;
-      context.fillRect(margin, height - (enlarged ? width * 0.085 : 57), width - margin * 2, 1);
-      context.font = `500 ${width * (enlarged ? 0.042 : 0.021)}px ${siteFont}`;
-      context.fillText(print.link.label + " ↗", margin, height - (enlarged ? width * 0.028 : 23));
+      context.fillRect(margin, height - width * 0.085, width - margin * 2, 1);
+      context.font = `500 ${width * 0.042}px ${siteFont}`;
+      context.fillText(print.link.label + " ↗", margin, height - width * 0.028);
     }
   }
   const texture = new CanvasTexture(canvas);
@@ -118,11 +110,6 @@ export function updatePaper(
   maps: PbrMaps,
   skillAtlas: ImageBitmap,
 ): void {
-  const [width, height] = print.size;
-  if (paper.geometry.parameters.width !== width || paper.geometry.parameters.height !== height) {
-    paper.geometry.dispose();
-    paper.geometry = paperGeometry(width, height);
-  }
   const previous = paper.material.map;
   paper.material.map = printedPaper(print, maps, print.size[0], print.size[1], skillAtlas);
   previous?.dispose();
