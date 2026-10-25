@@ -96,7 +96,7 @@ export function createDoor(
     color: "#bfd59a",
     roughness: 0.92,
     emissive: "#8edd78",
-    emissiveIntensity: 0.025,
+    emissiveIntensity: 0.06,
   });
   for (const z of [-0.027, 0.027]) {
     const strip = box(switchPlate, [0.0006, 0.078, 0.006], [-0.0129, 0, z], tape);

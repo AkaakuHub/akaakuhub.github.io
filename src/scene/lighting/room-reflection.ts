@@ -41,6 +41,7 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
     if (object.name === "world-sky") sources.push(object);
   });
   let reflection: RenderTarget | undefined;
+  let spare: RenderTarget | undefined;
   let capturedAt: number | undefined;
 
   return (date: Date, force = false): void => {
@@ -63,7 +64,7 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
       next = generator.fromScene(scene, 0, 0.05, 24, {
         position,
         size: 128,
-        renderTarget: reflection,
+        renderTarget: spare,
       });
     } finally {
       scene.environment = environment;
@@ -75,6 +76,7 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
     scene.environment = next.texture;
     environmentNode.value = next.texture;
     scene.environmentIntensity = 1;
+    spare = reflection;
     reflection = next;
     capturedAt = timestamp;
   };
