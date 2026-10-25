@@ -49,6 +49,17 @@ export const skillDomains: readonly Skill[] = [
     ],
   },
   {
+    label: "VR",
+    detail: "Unity / SteamVR",
+    icon: "unity",
+    evidence: [
+      {
+        url: "https://github.com/AkaakuHub/sekaimate",
+        summary: "VR・Desktop向けソーシャル基盤",
+      },
+    ],
+  },
+  {
     label: "Audio",
     detail: "音源分離・音量制御",
     icon: "pytorch",
@@ -60,6 +71,25 @@ export const skillDomains: readonly Skill[] = [
       {
         url: "https://github.com/bitgapp/eqMac/compare/master...AkaakuHub:eqMac:master",
         summary: "Swiftのアプリ別音量制御・AudioTap・XPC処理を追加",
+      },
+    ],
+  },
+  {
+    label: "放送・映像",
+    detail: "MPEG-TS / ARIB",
+    icon: "linux",
+    evidence: [
+      {
+        url: "https://github.com/AkaakuHub/mpegts.js",
+        summary: "ブラウザー向けMPEG-TS再生の改修",
+      },
+      {
+        url: "https://github.com/AkaakuHub/mirakc-arib",
+        summary: "日本の放送番組データを扱うツール群",
+      },
+      {
+        url: "https://github.com/AkaakuHub/ariblib",
+        summary: "ARIB規格の解析ライブラリ",
       },
     ],
   },

@@ -25,18 +25,7 @@ export function bindRoomControls(
   root.querySelector(".computer-action")?.addEventListener("click", () => view.inspectComputer());
   function zoom(factor: number, animated: boolean): void {
     view.zoom(factor, animated);
-    ui.setZoom(view.zoomFactor);
   }
-  root.querySelector(".zoom-notice")?.addEventListener("click", () => {
-    zoom(view.zoomFactor > 1 ? 1 / view.zoomFactor : 2.2, true);
-  });
-  root.querySelector(".inspection-back")?.addEventListener("click", () => view.back());
-  root.querySelector(".refresh-notices")?.addEventListener("click", refreshBoard);
-  root.querySelector(".previous-notice")?.addEventListener("click", () => view.next(-1));
-  root.querySelector(".next-notice")?.addEventListener("click", () => view.next(1));
-  root.querySelector(".inspection-link")?.addEventListener("click", (event) => {
-    if (view.moving) event.preventDefault();
-  });
   window.addEventListener("keydown", (event) => {
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.key === "Escape") {

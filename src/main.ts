@@ -90,9 +90,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     inspections,
     computer,
     { object: computer.monitor, width: 0.589, height: 0.331, depth: 0.001 },
-    (state, zoom) => {
+    (state) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
-      ui.setZoom(zoom);
       ui.setMoving(true);
     },
     invalidate,

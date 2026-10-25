@@ -23,35 +23,36 @@ export function paintSkills(
       size,
     );
   }
-  context.fillStyle = "#738175";
-  context.font = `500 23px ${siteFont}`;
-  context.textAlign = "center";
-  context.fillText("つくるもの", width / 2, 40);
-  context.textAlign = "left";
-  const domainWidth = (width - margin * 2) / 3;
+  const domainWidth = (width - margin * 2) / 4;
   skillDomains.forEach((skill, index) => {
-    const x = margin + (index % 3) * domainWidth;
-    const y = 64 + Math.floor(index / 3) * 81;
-    icon(skill, x, y, 53);
+    const column = index % 4;
+    const row = Math.floor(index / 4);
+    const x = margin + column * domainWidth;
+    const y = 30 + row * 72;
+    icon(skill, x, y, 43);
+    context.textAlign = "left";
     context.fillStyle = "#294536";
-    context.font = `500 30px ${siteFont}`;
-    context.fillText(skill.label, x + 64, y + 25);
+    context.font = `500 26px ${siteFont}`;
+    context.fillText(skill.label, x + 51, y + 19, domainWidth - 55);
     context.fillStyle = "#657566";
-    context.font = `500 20px ${siteFont}`;
-    context.fillText(skill.detail, x + 64, y + 54, domainWidth - 72);
+    context.font = `500 17px ${siteFont}`;
+    context.fillText(skill.detail, x + 51, y + 40, domainWidth - 55);
   });
   context.fillStyle = "#bdc6b7";
-  context.fillRect(margin, 226, width - margin * 2, 1);
+  context.fillRect(margin, 184, width - margin * 2, 1);
   context.fillStyle = "#738175";
-  context.font = `500 23px ${siteFont}`;
-  context.fillText("Languages", margin, 263);
+  context.font = `500 22px ${siteFont}`;
+  context.textAlign = "left";
+  context.fillText("Languages", margin, 218);
   const languageWidth = (width - margin * 2) / 4;
   skillLanguages.forEach((skill, index) => {
-    const x = margin + (index % 4) * languageWidth;
-    const y = 283 + Math.floor(index / 4) * 81;
-    icon(skill, x, y, 53);
+    const column = index % 4;
+    const row = Math.floor(index / 4);
+    const x = margin + column * languageWidth;
+    const y = 234 + row * 92;
+    icon(skill, x, y, 45);
     context.fillStyle = "#294536";
-    context.font = `500 27px ${siteFont}`;
-    context.fillText(skill.label, x + 65, y + 35, languageWidth - 75);
+    context.font = `500 25px ${siteFont}`;
+    context.fillText(skill.label, x + 55, y + 31, languageWidth - 62);
   });
 }
