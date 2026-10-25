@@ -19,7 +19,6 @@ try {
   assets = createRoomAssetLoader((summary) => loading.progress(summary.progressPercent, 100));
   const [room] = await Promise.all([
     import("./main"),
-    import("./assets/fonts/zen-maru-gothic.css"),
     import("./assets/fonts/board-text.css"),
     import("./assets/fonts/yomogi.css"),
   ]);

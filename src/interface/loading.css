@@ -27,7 +27,7 @@ body {
   color: var(--ink);
   background: #edf0e5;
   font-family: "Zen Maru Gothic Board", sans-serif;
-  transition: opacity 0.65s ease;
+  transition: opacity 0.18s ease;
 }
 .loading *,
 .loading *::before,
