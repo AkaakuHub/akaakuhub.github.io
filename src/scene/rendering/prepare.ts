@@ -20,7 +20,6 @@ export async function prepareRoomShaders(
     camera.coordinateSystem,
   );
   const group = new Group();
-  const samples: Mesh[] = [];
   const variants = new Set<string>();
   scene.traverseVisible((object) => {
     if (!isMesh(object)) return;
@@ -42,31 +41,19 @@ export async function prepareRoomShaders(
     sample.matrix.copy(object.matrixWorld);
     sample.matrixAutoUpdate = false;
     sample.frustumCulled = false;
-    samples.push(sample);
+    group.add(sample);
   });
   const target = new RenderTarget(64, 64, { type: HalfFloatType });
   try {
-    for (let index = 0; index < samples.length; index += 4) {
-      await new Promise<void>((resolve) => setTimeout(resolve, 0));
-      group.clear();
-      group.add(...samples.slice(index, index + 4));
-      const previous = renderer.getRenderTarget();
-      let compilation: Promise<void>;
-      try {
-        renderer.setRenderTarget(target);
-        compilation = renderer.compileAsync(group, camera, scene);
-      } finally {
-        renderer.setRenderTarget(previous);
-      }
-      await compilation;
-      onProgress(
-        new ProgressEvent("progress", {
-          lengthComputable: true,
-          loaded: Math.min(index + 4, samples.length),
-          total: samples.length,
-        }),
-      );
+    const previous = renderer.getRenderTarget();
+    let compilation: Promise<void>;
+    try {
+      renderer.setRenderTarget(target);
+      compilation = renderer.compileAsync(group, camera, scene, onProgress);
+    } finally {
+      renderer.setRenderTarget(previous);
     }
+    await compilation;
   } finally {
     target.dispose();
     group.clear();

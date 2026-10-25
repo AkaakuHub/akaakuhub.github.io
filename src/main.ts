@@ -149,7 +149,6 @@ export async function startRoom(
   let lastRendered = 0;
   let ready = false;
   let prepared = false;
-  let preparingView = false;
 
   const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
     if (computer.orientDisplay(camera.aspect < 1)) {
@@ -185,7 +184,7 @@ export async function startRoom(
 
   function render(time: number) {
     frame = 0;
-    if (document.hidden || !prepared || preparingView) return;
+    if (document.hidden || !prepared) return;
     const frameDuration = 1000 / 60;
     if (time - lastRendered < frameDuration - 0.5) {
       frame = requestAnimationFrame(render);
@@ -193,17 +192,6 @@ export async function startRoom(
     }
     const seconds = (time - previous) / 1000;
     const moving = view.update(seconds);
-    const texturesReady = materialLoading.prepareView(scene, camera);
-    if (texturesReady) {
-      preparingView = true;
-      void texturesReady
-        .then(() => {
-          preparingView = false;
-          invalidate();
-        })
-        .catch(loading.fail);
-      return;
-    }
     audio.updateCamera(camera);
     ui.setMoving(moving);
     previous = time;
@@ -240,10 +228,12 @@ export async function startRoom(
   }
   updateTime();
   await materialLoading.prepareView(scene, camera);
-  await prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
-    loading.rendering(2 + loaded / total, 4);
-  });
-  await materialLoading.loadRemaining();
+  await Promise.all([
+    materialLoading.loadRemaining(),
+    prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
+      loading.rendering(2 + loaded / total, 4);
+    }),
+  ]);
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   controls = bindRoomControls(
     root,
