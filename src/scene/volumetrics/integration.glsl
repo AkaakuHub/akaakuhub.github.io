@@ -7,6 +7,7 @@ uniform vec3 eye;
 uniform vec3 lightDirection;
 uniform vec3 lightRadiance;
 uniform float lightShadowBias;
+uniform int scatteringSteps;
 const float extinction = 0.000762 / 0.0254;
 
 vec3 surfaceAt(vec2 screenUv) {
@@ -52,9 +53,10 @@ vec4 integrateScattering(vec2 screenUv) {
   vec2 interval = roomInterval(eye, direction);
   float segment = max(0.0, min(surfaceDistance, interval.y) - interval.x);
   if (segment <= 0.0 || length(lightRadiance) <= 0.0) return vec4(0.0, 0.0, 0.0, surfaceDistance);
-  float stepSize = segment / float(SCATTER_STEPS);
+  float stepSize = segment / float(scatteringSteps);
   float illuminated = 0.0;
   for (int index = 0; index < SCATTER_STEPS; index++) {
+    if (index >= scatteringSteps) break;
     float distanceAlongRay = interval.x + (float(index) + 0.5) * stepSize;
     vec3 world = eye + direction * distanceAlongRay;
     float lightPath = roomInterval(world, lightDirection).y;

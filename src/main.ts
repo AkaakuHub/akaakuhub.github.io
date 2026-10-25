@@ -134,6 +134,7 @@ function render(time: number) {
   if (moving || (prepared && rendering.weather.active)) frame = requestAnimationFrame(render);
 }
 function invalidate() {
+  rendering.invalidate();
   if (frame || document.hidden) return;
   previous = performance.now() - 16;
   frame = requestAnimationFrame(render);

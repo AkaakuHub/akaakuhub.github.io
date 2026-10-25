@@ -35,18 +35,22 @@ export class VolumetricPass extends Pass {
     sceneColor: new Uniform<Texture | null>(null),
     scattering: new Uniform(this.target.texture),
     scatteringSize: new Uniform(new Vector2(1, 1)),
+    scatteringSteps: new Uniform(0),
   };
   private readonly scatteringMaterial: ShaderMaterial;
   private readonly compositeMaterial: ShaderMaterial;
   private readonly quad = new FullScreenQuad();
   private readonly targetPosition = new Vector3();
+  private sampledRevision = -1;
 
   constructor(
     private readonly camera: PerspectiveCamera,
     private readonly light: DirectionalLight,
     steps: number,
+    private readonly revision: () => number,
   ) {
     super();
+    this.uniforms.scatteringSteps.value = steps;
     const options = {
       uniforms: this.uniforms,
       vertexShader,
@@ -72,6 +76,13 @@ export class VolumetricPass extends Pass {
     const scatteringHeight = Math.max(1, Math.ceil(height / 4));
     this.target.setSize(scatteringWidth, scatteringHeight);
     this.uniforms.scatteringSize.value.set(scatteringWidth, scatteringHeight);
+    this.sampledRevision = -1;
+  }
+
+  setSteps(steps: number): void {
+    if (this.uniforms.scatteringSteps.value === steps) return;
+    this.uniforms.scatteringSteps.value = steps;
+    this.sampledRevision = -1;
   }
 
   override render(
@@ -97,9 +108,13 @@ export class VolumetricPass extends Pass {
     this.uniforms.lightRadiance.value
       .set(this.light.color.r, this.light.color.g, this.light.color.b)
       .multiplyScalar(this.light.intensity);
-    this.quad.material = this.scatteringMaterial;
-    renderer.setRenderTarget(this.target);
-    this.quad.render(renderer);
+    const revision = this.revision();
+    if (revision !== this.sampledRevision) {
+      this.quad.material = this.scatteringMaterial;
+      renderer.setRenderTarget(this.target);
+      this.quad.render(renderer);
+      this.sampledRevision = revision;
+    }
     this.uniforms.sceneColor.value = readBuffer.texture;
     this.quad.material = this.compositeMaterial;
     renderer.setRenderTarget(this.renderToScreen ? null : writeBuffer);
