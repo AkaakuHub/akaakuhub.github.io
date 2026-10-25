@@ -1,14 +1,14 @@
 [
   {
     "id": "rain",
-    "author": "Ylmir",
-    "source": "https://opengameart.org/content/rain-loopable",
-    "download": "https://opengameart.org/sites/default/files/Rain%20MP3.zip",
+    "author": "Joseph SARDIN",
+    "source": "https://bigsoundbank.com/summer-rain-on-terrace-s1019.html",
+    "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1019.wav",
     "license": "CC0-1.0",
     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
     "processing": "Mono 48kHz Opus, circular crossfade and loudness normalisation",
-    "archiveMember": "1.mp3",
-    "sourceDurationSeconds": 24
+    "startSeconds": 20,
+    "sourceDurationSeconds": 32
   },
   {
     "id": "window",

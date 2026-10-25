@@ -1,42 +1,41 @@
 import { spawn } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
-import { unzipSync } from "three/addons/libs/fflate.module.js";
 
 const root = "https://opengameart.org/sites/default/files/";
 const definitions = [
   {
     id: "rain",
-    file: "Rain%20MP3.zip",
-    member: "1.mp3",
-    seconds: 24,
+    file: "https://bigsoundbank.com/UPLOAD/bwf-en/1019.wav",
+    seconds: 32,
+    seek: 20,
     bitrate: "192k",
-    author: "Ylmir",
-    page: "rain-loopable",
+    author: "Joseph SARDIN",
+    page: "https://bigsoundbank.com/summer-rain-on-terrace-s1019.html",
   },
   {
     id: "window",
-    file: "rain_on_window_loop.wav",
+    file: root + "rain_on_window_loop.wav",
     seconds: 10.8,
     bitrate: "192k",
     author: "alxl",
-    page: "rain-on-window-loop",
+    page: "https://opengameart.org/content/rain-on-window-loop",
   },
   {
     id: "gutter",
-    file: "rain-gutter-loop_0.mp3",
+    file: root + "rain-gutter-loop_0.mp3",
     seconds: 20,
     bitrate: "192k",
     author: "Ogrebane",
-    page: "rain-gutter-loop",
+    page: "https://opengameart.org/content/rain-gutter-loop",
   },
   {
     id: "wind",
-    file: "park_ambience_wind.wav",
+    file: root + "park_ambience_wind.wav",
     seconds: 24,
     seek: 25,
     bitrate: "192k",
     author: "Thimras",
-    page: "park-ambiences",
+    page: "https://opengameart.org/content/park-ambiences",
   },
 ];
 await mkdir("src/assets/audio", { recursive: true });
@@ -58,23 +57,18 @@ function ffmpeg(args, input) {
   });
 }
 for (const source of definitions) {
+  if (process.argv[2] && source.id !== process.argv[2]) continue;
   let input;
   if (!source.seek) {
-    const response = await fetch(root + source.file);
+    const response = await fetch(source.file);
     if (!response.ok) throw new Error(`Audio: HTTP ${response.status}`);
     input = new Uint8Array(await response.arrayBuffer());
-    if (source.member) {
-      const archive = unzipSync(input);
-      const member = Object.keys(archive).find((name) => name.endsWith(source.member));
-      if (!member) throw new Error(`Audio archive: ${source.member}`);
-      input = archive[member];
-    }
   }
   const args = [];
   if (source.seek) args.push("-ss", String(source.seek));
   args.push(
     "-i",
-    source.seek ? root + source.file : "pipe:0",
+    source.seek ? source.file : "pipe:0",
     "-t",
     String(source.seconds),
     "-af",
@@ -133,12 +127,11 @@ await writeFile(
     definitions.map((source) => ({
       id: source.id,
       author: source.author,
-      source: `https://opengameart.org/content/${source.page}`,
-      download: root + source.file,
+      source: source.page,
+      download: source.file,
       license: "CC0-1.0",
       licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
       processing: "Mono 48kHz Opus, circular crossfade and loudness normalisation",
-      ...(source.member ? { archiveMember: source.member } : {}),
       ...(source.seek ? { startSeconds: source.seek } : {}),
       sourceDurationSeconds: source.seconds,
     })),
