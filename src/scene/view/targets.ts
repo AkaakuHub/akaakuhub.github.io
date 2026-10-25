@@ -1,7 +1,7 @@
 import { Euler, MathUtils, Quaternion, Vector3 } from "three";
 import type { Object3D } from "three";
 
-export type RoomDirection = 0 | 1 | 2 | 3 | 4 | 5;
+export type RoomDirection = 0 | 1 | 2 | 3 | 4;
 export type ViewState =
   | { readonly mode: "room"; readonly direction: RoomDirection }
   | { readonly mode: "notice"; readonly index: number }
@@ -31,13 +31,12 @@ export interface CameraPose {
 }
 
 export function isRoomDirection(index: number): index is RoomDirection {
-  return Number.isInteger(index) && index >= 0 && index < 6;
+  return Number.isInteger(index) && index >= 0 && index < 5;
 }
 
 export function roomPose(direction: RoomDirection, heading: number, aspect: number): CameraPose {
   const yaw = ((direction < 4 ? direction : heading) * Math.PI) / 2;
-  const pitch =
-    direction === 4 ? Math.PI / 2 : direction === 5 ? -Math.PI / 2 : MathUtils.degToRad(-8);
+  const pitch = direction === 4 ? Math.PI / 2 : MathUtils.degToRad(-8);
   const fittingFov = MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(34)) / aspect));
   return {
     position: new Vector3(0, 1.55, 0.45),

@@ -21,9 +21,6 @@ export function bindRoomControls(
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
   const pick = createPicker(ui.canvas, camera, scene, papers, computer.targets, lightSwitch.object);
-  root.querySelectorAll<HTMLButtonElement>(".direction").forEach((button) => {
-    button.addEventListener("click", () => view.select(Number(button.dataset.direction)));
-  });
   root.querySelector(".board-action")?.addEventListener("click", () => view.inspect(0));
   root.querySelector(".computer-action")?.addEventListener("click", () => view.inspectComputer());
   function zoom(factor: number, animated: boolean): void {

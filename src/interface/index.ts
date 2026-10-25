@@ -1,16 +1,8 @@
 import {
-  ArrowDown,
-  ArrowUp,
   ChevronLeft,
   ChevronRight,
-  Columns2,
-  DoorClosed,
   ExternalLink,
-  Library,
-  Maximize,
-  Minimize,
   Monitor,
-  Presentation,
   RefreshCw,
   ScanSearch,
   Undo2,
@@ -30,17 +22,10 @@ export function createInterface(root: HTMLElement) {
   root.innerHTML = roomMarkup();
   createIcons({
     icons: {
-      ArrowDown,
-      ArrowUp,
       ChevronLeft,
       ChevronRight,
-      Columns2,
-      DoorClosed,
       ExternalLink,
-      Library,
-      Maximize,
       Monitor,
-      Presentation,
       RefreshCw,
       ScanSearch,
       Undo2,
@@ -50,9 +35,7 @@ export function createInterface(root: HTMLElement) {
   });
   const canvas = root.querySelector("canvas");
   const room = root.querySelector("main");
-  const header = root.querySelector<HTMLElement>(".room-header");
   const status = root.querySelector(".view-status");
-  const navigation = root.querySelector<HTMLElement>(".navigation");
   const inspection = root.querySelector<HTMLElement>(".inspection-navigation");
   const link = root.querySelector<HTMLAnchorElement>(".inspection-link");
   const action = root.querySelector<HTMLButtonElement>(".board-action");
@@ -62,9 +45,7 @@ export function createInterface(root: HTMLElement) {
   if (
     !canvas ||
     !room ||
-    !header ||
     !status ||
-    !navigation ||
     !inspection ||
     !link ||
     !action ||
@@ -74,25 +55,6 @@ export function createInterface(root: HTMLElement) {
   )
     throw new Error("画面の初期化に失敗しました。");
   room.append(loading);
-  const fullscreen = root.querySelector<HTMLButtonElement>(".fullscreen");
-  fullscreen?.addEventListener("click", async () => {
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else await root.requestFullscreen();
-    } catch {
-      status.textContent = "この環境では全画面表示を利用できません。";
-    }
-  });
-  if (!document.fullscreenEnabled) fullscreen?.remove();
-  document.addEventListener("fullscreenchange", () => {
-    const active = document.fullscreenElement === root;
-    const label = active ? "全画面表示を終了" : "全画面表示";
-    fullscreen?.setAttribute("aria-label", label);
-    fullscreen?.setAttribute("title", label);
-    fullscreen?.replaceChildren(
-      createElement(active ? Minimize : Maximize, { "aria-hidden": "true" }),
-    );
-  });
   let wasInspecting = false;
   let wasMoving = false;
   let announcement = "ホワイトボードを向いています";
@@ -147,9 +109,7 @@ export function createInterface(root: HTMLElement) {
       inspectionName =
         state.mode === "computer" ? "PC" : state.mode === "monitor" ? "モニター" : "紙";
       zoom.hidden = state.mode === "monitor";
-      navigation.hidden = inspecting;
       inspection.hidden = !inspecting;
-      header.hidden = inspecting;
       action.hidden = state.mode !== "room" || state.direction !== 0;
       computerAction.hidden = state.mode !== "room" || state.direction !== 1;
       link.hidden = state.mode !== "notice" || !notice?.link;
@@ -162,12 +122,7 @@ export function createInterface(root: HTMLElement) {
         });
       if (state.mode === "room") {
         const direction = directions[state.direction];
-        announcement = `${direction.name}を向いています`;
-        root
-          .querySelectorAll<HTMLButtonElement>(".direction")
-          .forEach((button, index) =>
-            button.setAttribute("aria-pressed", String(index === state.direction)),
-          );
+        announcement = `${direction}を向いています`;
       } else if (state.mode === "notice") {
         if (!notice) throw new Error("掲示用紙の情報が見つかりません。");
         announcement = `${notice.title}を表示しています`;
@@ -186,10 +141,7 @@ export function createInterface(root: HTMLElement) {
           root.querySelector<HTMLButtonElement>(".inspection-back")?.focus({ preventScroll: true });
         else if (!action.hidden) action.focus({ preventScroll: true });
         else if (!computerAction.hidden) computerAction.focus({ preventScroll: true });
-        else
-          root
-            .querySelector<HTMLButtonElement>(".direction[aria-pressed=true]")
-            ?.focus({ preventScroll: true });
+        else canvas.focus({ preventScroll: true });
       }
       wasInspecting = inspecting;
     },

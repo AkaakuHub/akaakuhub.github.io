@@ -21,7 +21,7 @@ body {
   z-index: 20;
   box-sizing: border-box;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
   padding: clamp(24px, 5vw, 72px);
   color: var(--ink);
@@ -33,20 +33,6 @@ body {
 .loading *::before,
 .loading *::after {
   box-sizing: border-box;
-}
-.loading-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid #183b312b;
-}
-.loading-header span:first-child {
-  font:
-    26px "Zen Maru Gothic",
-    sans-serif;
-  letter-spacing: -0.055em;
 }
 .loading-center {
   display: grid;
@@ -189,7 +175,7 @@ body {
   outline-offset: 6px;
 }
 .loading-error {
-  grid-template-rows: auto 0 minmax(0, 1fr);
+  grid-template-rows: 0 minmax(0, 1fr);
 }
 .loading-error .loading-center {
   visibility: hidden;
@@ -197,8 +183,6 @@ body {
 .loading-error .loading-footer {
   overflow: auto;
 }
-#app[data-loading] .room-header,
-#app[data-loading] .navigation,
 #app[data-loading] .board-action,
 #app[data-loading] .computer-action {
   visibility: hidden;
@@ -223,9 +207,6 @@ body {
   .loading {
     padding: max(22px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
       max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
-  }
-  .loading-header span:first-child {
-    font-size: 23px;
   }
   .loading-center {
     grid-template-columns: 1fr;

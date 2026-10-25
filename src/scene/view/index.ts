@@ -144,9 +144,8 @@ export function createView(
     },
     vertical(step: number) {
       if (state.mode !== "room") return;
-      const level = state.direction === 4 ? 1 : state.direction === 5 ? -1 : 0;
-      const next = MathUtils.clamp(level + step, -1, 1);
-      select(next === 1 ? 4 : next === -1 ? 5 : heading);
+      if (step > 0) select(4);
+      else if (step < 0 && state.direction === 4) select(heading);
     },
     next(step: number) {
       if (state.mode === "notice")
