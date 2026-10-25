@@ -1,6 +1,8 @@
 import { createLoading } from "./interface/loading";
 import { prepareRecovery } from "./interface/recovery";
 import { loadTokyoWeather } from "./weather/client";
+import { createRoomAssetLoader } from "./assets/loading";
+import type { RoomAssetLoader } from "./assets/loading";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -10,16 +12,19 @@ window.addEventListener("error", (event) =>
 );
 window.addEventListener("unhandledrejection", (event) => loading.fail(event.reason));
 
+let assets: RoomAssetLoader | undefined;
 try {
   await prepareRecovery();
   const weatherReady = loadTokyoWeather();
+  assets = createRoomAssetLoader((summary) => loading.progress(summary.progressPercent, 100));
   const [room] = await Promise.all([
     import("./main"),
     import("./assets/fonts/zen-maru-gothic.css"),
     import("./assets/fonts/board-text.css"),
     import("./assets/fonts/yomogi.css"),
   ]);
-  await room.startRoom(root, loading, weatherReady);
+  await room.startRoom(root, loading, weatherReady, assets);
 } catch (error) {
+  assets?.abort(error);
   loading.fail(error);
 }

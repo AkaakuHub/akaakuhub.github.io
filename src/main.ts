@@ -8,7 +8,7 @@ import { bindRoomSwitch } from "./interface/room-switch";
 import { bindRoomControls } from "./interface/controls";
 import { assembleClubroom } from "./scene/clubroom";
 import { illuminate } from "./scene/lighting";
-import { createRoomAssetLoader } from "./assets/loading";
+import type { RoomAssetLoader } from "./assets/loading";
 import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
@@ -31,6 +31,7 @@ export async function startRoom(
   root: HTMLElement,
   loading: Loading,
   weatherReady: Promise<WeatherDay>,
+  assets: RoomAssetLoader,
 ) {
   const ui = createInterface(root);
   const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
@@ -44,9 +45,6 @@ export async function startRoom(
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
   camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
-  const assets = createRoomAssetLoader((summary) => {
-    loading.progress(summary.succeeded, summary.total);
-  });
   const materialLoading = loadMaterials(rendererReady, assets);
   const skillAtlasReady = loadSkillAtlas(assets);
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);

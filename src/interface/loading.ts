@@ -49,8 +49,8 @@ export function createLoading(root: HTMLElement) {
   return {
     progress(completed: number, total: number): void {
       if (
-        !Number.isSafeInteger(completed) ||
-        !Number.isSafeInteger(total) ||
+        !Number.isFinite(completed) ||
+        !Number.isFinite(total) ||
         total < 1 ||
         completed < 0 ||
         completed > total
