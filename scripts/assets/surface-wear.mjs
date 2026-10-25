@@ -40,10 +40,14 @@ for (const id of ["Metal050B", "PaintedMetal001"]) {
   if (painted) {
     await save(
       "normal",
-      await sharp(input("NormalGL")).resize(256, 256).webp({ lossless: true }).toBuffer(),
+      await sharp(input("NormalGL"))
+        .resize(256, 256)
+        .webp({ quality: 90, smartSubsample: true })
+        .toBuffer(),
       ["NormalGL"],
       256,
     );
+    maps.normal.encoding = "WebP quality 90, smart chroma subsampling";
   }
   const channels = await Promise.all(
     ["Roughness", "Metalness"].map((name) =>
