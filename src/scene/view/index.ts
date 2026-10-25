@@ -69,7 +69,7 @@ export function createView(
     if (state.mode === "room" && state.direction === index) return;
     roomDirection = index;
     if (index < 4) heading = index;
-    transition({ mode: "room", direction: index }, 0.32);
+    transition({ mode: "room", direction: index }, 0.6);
   }
   function inspect(index: number): void {
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
