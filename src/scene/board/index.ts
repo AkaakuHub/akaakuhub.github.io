@@ -1,5 +1,5 @@
 import type { PbrMaps } from "../materials/library";
-import { Group, Mesh, Vector2 } from "three";
+import { Group, Mesh, MeshStandardMaterial, PlaneGeometry, Vector2 } from "three";
 import type { Object3D } from "three";
 import type { PropMaterials } from "../materials/props";
 import { latheGeometry } from "../geometry/curves";
@@ -19,12 +19,25 @@ export function createBoard(
 ): {
   group: Group;
   notices: Map<Object3D, Notice>;
+  contributions: Mesh;
   setState: (state: BoardState) => void;
 } {
   const group = createFrame(metals, props);
   group.name = "notice-board";
   group.position.z = -2.12;
   const notices = new Map<Object3D, Notice>();
+  const contributions = new Mesh(
+    new PlaneGeometry(1.08, 0.38),
+    new MeshStandardMaterial({ transparent: true, opacity: 0, depthWrite: false }),
+  );
+  contributions.name = "github-contributions";
+  contributions.position.set(-0.62, 2.1, 0.0455);
+  group.add(contributions);
+  notices.set(contributions, {
+    title: "GitHubの記録",
+    size: [1.08, 0.38],
+    link: { label: "GitHubを開く", href: "https://github.com/AkaakuHub" },
+  });
   const papers: ReturnType<typeof createPaper>[] = [];
   group.add(createBoardHeading());
   for (const notice of boardNotices({ status: "loading" })) {
@@ -66,6 +79,7 @@ export function createBoard(
   return {
     group,
     notices,
+    contributions,
     setState(state): void {
       boardNotices(state).forEach((notice, index) => {
         const paper = papers[index];

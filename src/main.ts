@@ -19,6 +19,7 @@ import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
+import { createContributionDisplay } from "./scene/board/contribution-display";
 
 export async function startRoom(root: HTMLElement, loading: Loading) {
   const ui = createInterface(root);
@@ -73,6 +74,7 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     computer.monitor,
   );
   const noticeList = [...board.notices.values()];
+  const contributions = createContributionDisplay(board.contributions, invalidate);
   const inspections = [...board.notices].map(([object, notice]) => ({
     object,
     width: notice.size[0],
@@ -147,6 +149,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     lastRendered = time;
     const scrolling = computerInterface.update(seconds, time);
     frameMetrics?.begin(moving);
+    const animation = contributions.update(camera, time);
+    if (animation.changed) rendering.invalidate();
     rendering.render(moving);
     frameMetrics?.end(moving);
     if (!ready) {
@@ -154,7 +158,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
       if (import.meta.env.DEV) console.info("部室の初回描画が完了しました。");
       ready = true;
     }
-    if (moving || rendering.weather.active || scrolling) frame = requestAnimationFrame(render);
+    if (moving || rendering.weather.active || scrolling || animation.active)
+      frame = requestAnimationFrame(render);
   }
   function invalidate() {
     rendering.invalidate();

@@ -26,7 +26,6 @@ export function drawScreen(
   context.translate(0, -layout.offset);
   context.fillStyle = "#536b5b";
   context.font = `500 25px ${siteFont}`;
-  context.fillText("← PC", 52, 52);
   context.fillText("GitHubで見る ↗", 930, 52);
   context.fillStyle = "#203d30";
   context.font = `500 50px ${siteFont}`;
@@ -34,10 +33,13 @@ export function drawScreen(
   context.font = `500 24px ${siteFont}`;
   context.fillStyle = "#748579";
   context.fillText("AkaakuHub / 更新順", 55, 169);
-  regions.push(
-    { x: 30, y: 12 - layout.offset, width: 160, height: 65, action: { type: "back" } },
-    { x: 900, y: 12 - layout.offset, width: 260, height: 65, action: { type: "github" } },
-  );
+  regions.push({
+    x: 900,
+    y: 12 - layout.offset,
+    width: 260,
+    height: 65,
+    action: { type: "github" },
+  });
   if (state.status !== "ready") {
     context.font = `500 30px ${siteFont}`;
     context.fillText(

@@ -36,7 +36,7 @@ export function desktopComputer(): Group {
   mouse.position.set(0.29, 0, 0.19);
   computer.add(mouse);
   const tower = desktopTower();
-  tower.position.set(1.11, 0, -0.04);
+  tower.position.set(0.54, 0, -0.04);
   computer.add(tower);
   computer.traverse((object) => {
     if (!(object instanceof Mesh) || Array.isArray(object.material)) return;

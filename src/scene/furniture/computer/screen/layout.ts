@@ -1,9 +1,6 @@
 import type { Repository } from "../../../../content/schema";
 
-export type ScreenAction =
-  | { type: "back" }
-  | { type: "github" }
-  | { type: "repository"; repository: Repository };
+export type ScreenAction = { type: "github" } | { type: "repository"; repository: Repository };
 export interface ScreenRegion {
   x: number;
   y: number;

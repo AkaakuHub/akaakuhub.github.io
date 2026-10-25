@@ -86,8 +86,7 @@ export function createComputerInterface(
     click(uv: Vector2) {
       const action = screen.hit(uv.x, uv.y);
       if (!action) return;
-      if (action.type === "back") view.inspectComputer();
-      else if (action.type === "github")
+      if (action.type === "github")
         window.open(
           "https://github.com/AkaakuHub?tab=repositories",
           "_blank",

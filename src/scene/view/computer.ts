@@ -4,9 +4,10 @@ import type { InspectionTarget } from "./targets";
 
 export function createComputerInspection(scene: Scene): InspectionTarget {
   const tower = scene.getObjectByName("white-desktop-tower");
-  if (!tower) throw new Error("PCのモデルが見つかりません。");
+  const monitor = scene.getObjectByName("computer-monitor");
+  if (!tower || !monitor) throw new Error("PCとモニターのモデルが見つかりません。");
   tower.updateWorldMatrix(true, true);
-  const worldBounds = new Box3().setFromObject(tower);
+  const worldBounds = new Box3().setFromObject(tower).expandByObject(monitor);
   const anchor = new Object3D();
   worldBounds.getCenter(anchor.position).applyMatrix4(tower.matrixWorld.clone().invert());
   anchor.rotation.y = -Math.PI / 6;
