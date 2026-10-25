@@ -1,21 +1,14 @@
-import {
-  finishRecovery,
-  isRecovering,
-  reloadEverything,
-  retryAvailableAt,
-  retryDelay,
-} from "./recovery";
+import { finishRecovery, reloadEverything, retryAvailableAt, retryDelay } from "./recovery";
 
 export type Loading = ReturnType<typeof createLoading>;
 
 export function createLoading(root: HTMLElement) {
   const panel = root.querySelector<HTMLElement>(".loading");
-  const label = root.querySelector<HTMLElement>("[data-loading-label]");
   const progress = root.querySelector<HTMLProgressElement>("[data-loading-progress]");
   const percent = root.querySelector<HTMLElement>("[data-loading-percent]");
   const errorPanel = root.querySelector<HTMLElement>("[data-loading-failure]");
   const retry = root.querySelector<HTMLButtonElement>("[data-loading-retry]");
-  if (!panel || !label || !progress || !percent || !errorPanel || !retry)
+  if (!panel || !progress || !percent || !errorPanel || !retry)
     throw new Error("読み込み状態の表示先が見つかりません。");
   const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
   if (digits.length !== 3) throw new Error("進捗の桁が揃っていません。");
@@ -27,7 +20,6 @@ export function createLoading(root: HTMLElement) {
   }
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
-  if (isRecovering()) label.textContent = "もう一度、部室に接続しています";
   let failed = false;
   let materials = 0;
   let rendering = 0;
@@ -37,7 +29,6 @@ export function createLoading(root: HTMLElement) {
     root.setAttribute("aria-busy", "false");
     panel.classList.add("loading-error");
     errorPanel.hidden = false;
-    label.textContent = "部室を開けませんでした";
     retry.disabled = false;
   };
   const schedule = (): void => {
@@ -45,7 +36,6 @@ export function createLoading(root: HTMLElement) {
       stop();
       return;
     }
-    label.textContent = "もう一度、部室に接続しています";
     reloadTimer = setTimeout(() => void restart(true), retryDelay());
   };
   const restart = async (automatic: boolean): Promise<void> => {
@@ -75,9 +65,6 @@ export function createLoading(root: HTMLElement) {
     setPercent(Math.round(value * 100));
   };
   return {
-    stage(text: string): void {
-      if (!failed) label.textContent = text;
-    },
     progress(completed: number, total: number): void {
       if (
         !Number.isSafeInteger(completed) ||

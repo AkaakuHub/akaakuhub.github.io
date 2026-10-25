@@ -121,20 +121,6 @@ body {
 .loading-footer {
   padding-top: 24px;
 }
-.loading-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-  font-size: 11px;
-}
-.loading-live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #a74d2d;
-  animation: room-pulse 1.4s ease-in-out infinite;
-}
 .loading-progress {
   display: block;
   width: 100%;
@@ -233,11 +219,6 @@ body {
     opacity: 1;
   }
 }
-@keyframes room-pulse {
-  50% {
-    opacity: 0.25;
-  }
-}
 @media (max-width: 640px) {
   .loading {
     padding: max(22px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
@@ -284,8 +265,7 @@ body {
     transition: none;
   }
   .loading-model,
-  .loading-scan,
-  .loading-live-dot {
+  .loading-scan {
     animation: none;
   }
 }

@@ -48,10 +48,8 @@ export async function startRoom(root: HTMLElement, loading: Loading) {
     materialLoading.paperReady,
     fontsReady,
   ]);
-  loading.stage("室内の形を組み立てています");
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   const { board, lightSwitch, rocker, computer } = assembleClubroom(scene, materials);
-  loading.stage("部室の明かりを整えています");
   await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
   await Promise.all([materialLoading.ready, lightTablesReady]);
   const lighting = illuminate(scene, renderer, weatherAt(initialWeather, Date.now()));
