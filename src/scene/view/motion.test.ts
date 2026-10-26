@@ -1,4 +1,4 @@
-import { Object3D, PerspectiveCamera } from "three";
+import { Object3D, PerspectiveCamera, Vector3 } from "three";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { createView } from "./index";
 import { roomPose } from "./targets";
@@ -37,6 +37,18 @@ function settle(view: ReturnType<typeof createView>): void {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("モーションによる視点の移動", () => {
+  it("傾きに対する視点の移動と回転を反対向きに補正する", () => {
+    const { camera, view } = createFixture();
+    const initial = camera.position.clone();
+    view.setMotion(1, 1);
+    settle(view);
+    expect(camera.position.x).toBeLessThan(initial.x);
+    expect(camera.position.y).toBeGreaterThan(initial.y);
+    const direction = camera.getWorldDirection(new Vector3());
+    expect(direction.x).toBeLessThan(0);
+    expect(direction.y).toBeGreaterThan(0);
+  });
+
   it("同じ傾きを保持しても移動が積み重ならない", () => {
     const { camera, view } = createFixture();
     const initial = camera.position.clone();

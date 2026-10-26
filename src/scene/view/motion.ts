@@ -22,12 +22,12 @@ export function createMotionOffset() {
       const previousY = current.y;
       current.lerp(target, 1 - Math.exp(-10 * Math.min(seconds, 0.1)));
       if (current.distanceToSquared(target) < 0.000001) current.copy(target);
-      offset.set(current.x * 0.02, -current.y * 0.015, 0).applyQuaternion(camera.quaternion);
+      offset.set(-current.x * 0.02, current.y * 0.015, 0).applyQuaternion(camera.quaternion);
       camera.position.add(offset);
       angles.set(
-        -current.y * MathUtils.degToRad(3),
-        -current.x * MathUtils.degToRad(4),
-        -current.x * MathUtils.degToRad(1.5),
+        current.y * MathUtils.degToRad(3),
+        current.x * MathUtils.degToRad(4),
+        current.x * MathUtils.degToRad(1.5),
       );
       camera.quaternion.multiply(rotation.setFromEuler(angles));
       return current.x !== previousX || current.y !== previousY;

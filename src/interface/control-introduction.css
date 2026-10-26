@@ -1,6 +1,6 @@
 .room-control-introduction {
   position: fixed;
-  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 54px);
+  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + var(--device-control-size) + 10px);
   left: max(1rem, env(safe-area-inset-left));
   z-index: 11;
   display: grid;
@@ -48,5 +48,5 @@
 }
 
 .room-control-introduction[data-target="motion"] .room-control-introduction__arrow {
-  margin-left: 64px;
+  margin-left: calc(var(--device-control-size) + var(--device-control-gap) + 12px);
 }
