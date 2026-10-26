@@ -13,6 +13,7 @@ import type { BoardNotice } from "./notices";
 import { siteFont } from "../../assets/typography";
 import { paintArticle } from "./print/article";
 import { paintProfile } from "./print/profile";
+import { paintLink } from "./print/link";
 
 function printedPaper(
   print: BoardNotice,
@@ -53,7 +54,7 @@ function printedPaper(
     if (print.link) {
       context.fillRect(margin, height - width * 0.085, width - margin * 2, 1);
       context.font = `500 ${width * 0.042}px ${siteFont}`;
-      context.fillText(print.link.label + " ↗", margin, height - width * 0.028);
+      paintLink(context, print.link.label, margin, height - width * 0.028, width * 0.042);
     }
   }
   const texture = new CanvasTexture(canvas);
