@@ -23,8 +23,8 @@ export function createRoomLights(scene: Scene) {
   sky.rotation.y = -Math.PI / 2;
   scene.add(sky);
   return {
-    setRoomLights(on: boolean): void {
-      for (const light of lights) light.intensity = on ? intensity : 0;
+    setRoomLightLevel(level: number): void {
+      for (const light of lights) light.intensity = intensity * level;
     },
     updateSky(color: Color, intensity: number): void {
       sky.color.copy(color);

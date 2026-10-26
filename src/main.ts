@@ -32,6 +32,7 @@ import { bindSoundControl } from "./interface/sound";
 import { finishFirstFrame } from "./scene/rendering/first-frame";
 import { createControlIntroduction } from "./interface/control-introduction";
 import { bindMotionControl } from "./interface/motion";
+import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animation";
 
 export async function startRoom(
   root: HTMLElement,
@@ -79,6 +80,12 @@ export async function startRoom(
     renderer,
     weatherAt(initialWeather, Date.now()),
     computer.monitor,
+  );
+  const fluorescent = createFluorescentAnimation(
+    scene,
+    camera,
+    lighting.setFluorescentModulation,
+    invalidate,
   );
   audio.updateWeather(weatherAt(initialWeather, Date.now()));
   const weather = observeTokyoWeather(
@@ -218,6 +225,7 @@ export async function startRoom(
       void finishFirstFrame(renderer)
         .then(() => {
           loading.complete();
+          fluorescent.start();
           const measurement = performance.measure("room-first-frame", { start: 0 });
           if (import.meta.env.DEV)
             console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);

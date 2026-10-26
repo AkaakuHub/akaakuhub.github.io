@@ -45,6 +45,14 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   const background = new Color();
   scene.background = background;
   const reflection = createRoomReflection(scene, renderer);
+  let roomLightsOn = true;
+  let modulation = 1;
+
+  function applyRoomLights(): void {
+    const level = roomLightsOn ? modulation : 0;
+    fixtures.setRoomLightLevel(level);
+    for (const [material, intensity] of tubes) material.emissiveIntensity = intensity * level;
+  }
 
   function update(date: Date, currentWeather: TokyoWeather, captureReflection = true): void {
     const state = roomCelestialLighting(date, currentWeather);
@@ -63,8 +71,9 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   }
 
   function setRoomLights(on: boolean): void {
-    fixtures.setRoomLights(on);
-    for (const [material, intensity] of tubes) material.emissiveIntensity = on ? intensity : 0;
+    roomLightsOn = on;
+    modulation = 1;
+    applyRoomLights();
     reflection.update(new Date(), true);
   }
   function setMonitorPower(on: boolean): void {
@@ -77,6 +86,13 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     update,
     prepareReflection: reflection.prepare,
     setRoomLights,
+    setFluorescentModulation(value: number): boolean {
+      if (!roomLightsOn || modulation === value) return false;
+      if (value !== 1 && Math.abs(modulation - value) < 0.00005) return false;
+      modulation = value;
+      applyRoomLights();
+      return true;
+    },
     setMonitorPower,
     invalidateShadows: () => {
       celestialLight.shadow.needsUpdate = true;
