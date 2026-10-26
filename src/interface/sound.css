@@ -1,4 +1,4 @@
-.room-keyboard .room-sound {
+.room-keyboard .room-device-control {
   display: grid;
   place-items: center;
   position: fixed;
@@ -14,11 +14,20 @@
   cursor: pointer;
 }
 
-.room-keyboard .room-sound:hover {
+.room-keyboard .room-device-control:hover {
   background: rgb(12 20 24 / 78%);
 }
 
-.room-keyboard .room-sound:focus-visible {
+.room-keyboard .room-device-control:focus-visible {
   outline: 2px solid white;
   outline-offset: 4px;
+}
+
+.room-keyboard .room-device-control[aria-pressed="true"] {
+  border-color: #b4d8c0;
+  background: rgb(32 76 55 / 85%);
+}
+
+.room-keyboard .room-device-control:disabled {
+  cursor: wait;
 }

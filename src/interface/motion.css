@@ -1,0 +1,7 @@
+.room-keyboard .room-motion {
+  left: calc(max(1rem, env(safe-area-inset-left)) + 52px);
+}
+
+.room-keyboard .room-motion[hidden] {
+  display: none;
+}

@@ -1,0 +1,52 @@
+.room-control-introduction {
+  position: fixed;
+  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 54px);
+  left: max(1rem, env(safe-area-inset-left));
+  z-index: 11;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  align-items: start;
+  max-width: min(360px, calc(100vw - 2rem));
+  color: #fff;
+  text-shadow:
+    0 1px 5px #000,
+    0 2px 16px #000b;
+  font:
+    500 15px/1.7 "Zen Maru Gothic Board",
+    sans-serif;
+}
+
+.room-control-introduction[hidden] {
+  display: none;
+}
+
+.room-control-introduction > span {
+  padding: 8px 12px;
+}
+
+.room-control-introduction button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(12 20 24 / 52%);
+  color: inherit;
+  cursor: pointer;
+}
+
+.room-control-introduction button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.room-control-introduction__arrow {
+  margin-left: 12px;
+  filter: drop-shadow(0 1px 3px #000b);
+}
+
+.room-control-introduction[data-target="motion"] .room-control-introduction__arrow {
+  margin-left: 64px;
+}

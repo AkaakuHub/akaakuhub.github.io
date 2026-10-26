@@ -30,6 +30,8 @@ import { createDirectionControls } from "./interface/directions";
 import type { WeatherAudio } from "./scene/audio";
 import { bindSoundControl } from "./interface/sound";
 import { finishFirstFrame } from "./scene/rendering/first-frame";
+import { createControlIntroduction } from "./interface/control-introduction";
+import { bindMotionControl } from "./interface/motion";
 
 export async function startRoom(
   root: HTMLElement,
@@ -136,7 +138,9 @@ export async function startRoom(
   introduction = createIntroduction(root, () => view.back());
   updateDirections = createDirectionControls(root, view);
   updateDirections(view.state);
-  bindSoundControl(root, audio);
+  const controlIntroduction = createControlIntroduction(root);
+  bindSoundControl(root, audio, controlIntroduction);
+  bindMotionControl(root, view.setMotion, ui.announce, controlIntroduction);
   const computerInterface = createComputerInterface(
     computer,
     view,
@@ -218,6 +222,7 @@ export async function startRoom(
           if (import.meta.env.DEV)
             console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
           audio.start();
+          controlIntroduction.start();
           introduction?.start();
           void boardLoader.refresh(false);
           setTimeout(() => void prepareRemainingRoom().catch(loading.fail), 0);

@@ -1,5 +1,6 @@
 import { MathUtils, Quaternion, Vector3 } from "three";
 import type { PerspectiveCamera } from "three";
+import { createMotionOffset } from "./motion";
 import { inspectionBounds, inspectionPose, isRoomDirection, roomPose } from "./targets";
 import type {
   CameraPose,
@@ -22,6 +23,9 @@ export function createView(
 ) {
   if (inspections.length === 0) throw new Error("掲示用紙が配置されていません。");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const deviceMotion = createMotionOffset();
+  const position = camera.position.clone();
+  const quaternion = camera.quaternion.clone();
   let state: ViewState = { mode: "notice", index: 0 };
   let roomDirection: RoomDirection = 0;
   let heading = 0;
@@ -42,6 +46,8 @@ export function createView(
     return inspectionPose(inspection, viewport, framing);
   }
   function apply(result: CameraPose): void {
+    position.copy(result.position);
+    quaternion.copy(result.quaternion);
     camera.position.copy(result.position);
     camera.quaternion.copy(result.quaternion);
     camera.fov = result.fov;
@@ -54,8 +60,8 @@ export function createView(
   }
   function move(seconds: number): void {
     start = {
-      position: camera.position.clone(),
-      quaternion: camera.quaternion.clone(),
+      position: position.clone(),
+      quaternion: quaternion.clone(),
       fov: camera.fov,
     };
     target = pose();
@@ -94,6 +100,9 @@ export function createView(
     },
     select,
     inspect,
+    setMotion(x: number, y: number): void {
+      if (deviceMotion.setTarget(x, y)) invalidate();
+    },
     inspectComputer() {
       if (state.mode === "computer") return;
       if (state.mode === "room") framing.zoom = 1;
@@ -134,17 +143,21 @@ export function createView(
       apply(target);
     },
     update(delta: number) {
-      if (elapsed >= duration) return false;
-      elapsed = motion.matches ? duration : Math.min(duration, elapsed + delta);
-      const t = duration === 0 ? 1 : MathUtils.smootherstep(elapsed / duration, 0, 1);
-      camera.position.lerpVectors(start.position, target.position, t);
-      camera.quaternion.slerpQuaternions(start.quaternion, target.quaternion, t);
-      const fov = MathUtils.lerp(start.fov, target.fov, t);
-      if (camera.fov !== fov) {
-        camera.fov = fov;
-        camera.updateProjectionMatrix();
+      if (elapsed < duration) {
+        elapsed = motion.matches ? duration : Math.min(duration, elapsed + delta);
+        const t = duration === 0 ? 1 : MathUtils.smootherstep(elapsed / duration, 0, 1);
+        position.lerpVectors(start.position, target.position, t);
+        quaternion.slerpQuaternions(start.quaternion, target.quaternion, t);
+        const fov = MathUtils.lerp(start.fov, target.fov, t);
+        if (camera.fov !== fov) {
+          camera.fov = fov;
+          camera.updateProjectionMatrix();
+        }
       }
-      return elapsed < duration;
+      camera.position.copy(position);
+      camera.quaternion.copy(quaternion);
+      const moving = deviceMotion.apply(camera, delta);
+      return elapsed < duration || moving;
     },
   };
 }
