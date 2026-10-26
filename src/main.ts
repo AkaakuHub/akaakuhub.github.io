@@ -25,11 +25,11 @@ import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
-import { loadProfileAvatar } from "./content/avatar";
 import { createIntroduction } from "./interface/introduction";
 import { createDirectionControls } from "./interface/directions";
 import type { WeatherAudio } from "./scene/audio";
 import { bindSoundControl } from "./interface/sound";
+import { finishFirstFrame } from "./scene/rendering/first-frame";
 
 export async function startRoom(
   root: HTMLElement,
@@ -37,6 +37,7 @@ export async function startRoom(
   weatherReady: Promise<WeatherDay>,
   assets: RoomAssetLoader,
   audio: WeatherAudio,
+  avatarReady: Promise<ImageBitmap>,
 ) {
   const ui = createInterface(root);
   const batchStaticMeshes = createStaticBatcher();
@@ -52,7 +53,6 @@ export async function startRoom(
   camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
   const materialLoading = loadMaterials(rendererReady, assets);
-  const avatarReady = loadProfileAvatar();
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
   const [renderer, initialWeather, avatar] = await Promise.all([
@@ -210,16 +210,21 @@ export async function startRoom(
     rendering.render(moving);
     frameMetrics?.end(moving);
     if (!ready) {
-      loading.complete();
-      const measurement = performance.measure("room-first-frame", { start: 0 });
-      if (import.meta.env.DEV) console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
       ready = true;
-      audio.start();
-      introduction?.start();
-      void boardLoader.refresh(false);
-      setTimeout(() => void prepareRemainingRoom().catch(loading.fail), 0);
+      void finishFirstFrame(renderer)
+        .then(() => {
+          loading.complete();
+          const measurement = performance.measure("room-first-frame", { start: 0 });
+          if (import.meta.env.DEV)
+            console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
+          audio.start();
+          introduction?.start();
+          void boardLoader.refresh(false);
+          setTimeout(() => void prepareRemainingRoom().catch(loading.fail), 0);
+        })
+        .catch(loading.fail);
     }
-    if (!frame && (moving || rendering.weather.active || animation))
+    if (!frame && (moving || rendering.weather.active || animation || rendering.revealing))
       frame = requestAnimationFrame(render);
   }
   function invalidate() {
@@ -236,15 +241,20 @@ export async function startRoom(
   }
   updateTime();
   await materialLoading.prepareView(scene, camera);
+  let viewPreparation = 0;
+  let reflectionPreparation = 0;
   await Promise.all([
-    materialLoading.loadRemaining(),
+    materialLoading.loadRemaining().then(() =>
+      lighting.prepareReflection(({ loaded, total }) => {
+        reflectionPreparation = loaded / total;
+        loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
+      }),
+    ),
     prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
-      loading.rendering(2 + loaded / total, 4);
+      viewPreparation = loaded / total;
+      loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
     }),
   ]);
-  await lighting.prepareReflection(({ loaded, total }) => {
-    loading.rendering(3 + loaded / total, 4);
-  });
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   controls = bindRoomControls(
     root,

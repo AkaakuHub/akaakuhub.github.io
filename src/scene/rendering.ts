@@ -1,4 +1,4 @@
-import { DepthTexture, HalfFloatType, NoToneMapping, RenderTarget } from "three";
+import { DepthTexture, HalfFloatType, MathUtils, NoToneMapping, RenderTarget } from "three";
 import type { DirectionalLight, Mesh, Object3D, PerspectiveCamera, Scene } from "three";
 import { ConvertNode, MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
 import type { Renderer } from "three/webgpu";
@@ -48,16 +48,22 @@ export function createRendering(
   const antialiased = new ConvertNode<"vec4">(fxaa(source), "vec4");
   const color = antialiased.rgb.mul(exposure).max(0);
   const mapped = headroom.mul(float(1).sub(color.div(headroom).negate().exp()));
+  const visibility = uniform(0);
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const output = new MeshBasicNodeMaterial({
     depthTest: false,
     depthWrite: false,
     toneMapped: false,
   });
-  output.fragmentNode = vec4(mapped, 1);
+  output.fragmentNode = vec4(mapped.mul(visibility), 1);
   const quad = new QuadMesh(output);
   let pixelRatio = 1;
+  let startedAt: number | undefined;
   return {
     weather,
+    get revealing() {
+      return visibility.value < 1;
+    },
     invalidate: () => surfaces.invalidate(),
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;
@@ -71,6 +77,9 @@ export function createRendering(
       scattering.setSize(w, h);
     },
     render(moving = false) {
+      const now = performance.now();
+      startedAt ??= now;
+      visibility.value = reducedMotion.matches ? 1 : MathUtils.smoothstep(now - startedAt, 0, 300);
       surfaces.render(renderer, frame, moving);
       dynamic.render(renderer, frame);
       weather.render(renderer, frame);
