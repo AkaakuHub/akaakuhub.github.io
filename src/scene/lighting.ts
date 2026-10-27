@@ -8,6 +8,7 @@ import { createRoomLights } from "./lighting/room-lights";
 import { createMonitorLight, setMonitorLight } from "./lighting/monitor";
 import type { TokyoWeather } from "../weather/schema";
 import { renderingProfile } from "./quality";
+import { fitShadowCamera, shadowCasterBounds } from "./lighting/shadow-camera";
 
 export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeather, monitor: Mesh) {
   renderer.toneMappingExposure = cameraExposure;
@@ -19,16 +20,9 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   celestialLight.shadow.autoUpdate = false;
   const shadowSize = renderingProfile().shadowSize;
   celestialLight.shadow.mapSize.set(shadowSize, shadowSize);
-  celestialLight.shadow.camera.left = -4.4;
-  celestialLight.shadow.camera.right = 4.4;
-  celestialLight.shadow.camera.top = 4.4;
-  celestialLight.shadow.camera.bottom = -4.4;
-  celestialLight.shadow.camera.near = 10;
-  celestialLight.shadow.camera.far = 22;
-  celestialLight.shadow.normalBias = 0.004;
-  celestialLight.shadow.bias = -0.0001;
   celestialLight.shadow.radius = 2;
   scene.add(celestialLight, celestialLight.target);
+  const shadowBounds = shadowCasterBounds(scene);
 
   const skyMaterials = new Set<MeshBasicMaterial>();
   const tubes = new Map<MeshStandardMaterial, number>();
@@ -62,6 +56,7 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
       .add(celestialLight.target.position);
     celestialLight.color.copy(state.color);
     celestialLight.intensity = state.intensity;
+    fitShadowCamera(celestialLight, shadowBounds);
     celestialLight.shadow.needsUpdate = true;
     const sky = unitLuminance(state.sky.clone());
     fixtures.updateSky(sky, state.skyIntensity / Math.PI);

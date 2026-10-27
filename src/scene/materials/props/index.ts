@@ -22,15 +22,15 @@ export function createPropMaterials(maps: MaterialLibrary) {
     physicalSurface(maps.plastic, {
       color,
       roughness,
+      roughnessMap: null,
       normalScale: new Vector2(0.2, 0.2),
-      clearcoat: 0.15,
-      clearcoatRoughness: 0.5,
     });
   return {
     glass: physicalSurface(maps.plastic, {
       map: null,
       color: "#f5faf7",
       roughness: 0.065,
+      roughnessMap: null,
       ior: 1.52,
       transparent: true,
       opacity: 0.14,
@@ -41,6 +41,7 @@ export function createPropMaterials(maps: MaterialLibrary) {
       map: null,
       color: "#bdc6b9",
       roughness: 0.9,
+      roughnessMap: null,
       ior: 1.52,
       normalScale: new Vector2(0.1, 0.1),
     }),
@@ -64,10 +65,9 @@ export function createPropMaterials(maps: MaterialLibrary) {
       clearcoatRoughness: 0.18,
       normalScale: new Vector2(0.08, 0.08),
     }),
-    terracotta: physicalSurface(maps.plaster, {
+    terracotta: scannedSurface(maps.plaster, {
       color: "#bc795a",
       roughness: 1,
-      clearcoat: 0.05,
       normalScale: new Vector2(0.32, 0.32),
     }),
     plasticIvory: plastic("#e4decb", 0.8),

@@ -1,10 +1,10 @@
-import { MeshPhysicalMaterial, Vector2 } from "three";
-import type { MeshPhysicalMaterialParameters } from "three";
+import { MeshStandardMaterial, Vector2 } from "three";
+import type { MeshStandardMaterialParameters } from "three";
 import type { MaterialLibrary, MetalMaps } from "./library";
-import { physicalSurface } from "./surface";
+import { physicalSurface, scannedSurface } from "./surface";
 
-function texturedMetal(maps: MetalMaps, parameters: MeshPhysicalMaterialParameters) {
-  return new MeshPhysicalMaterial({
+function texturedMetal(maps: MetalMaps, parameters: MeshStandardMaterialParameters) {
+  return new MeshStandardMaterial({
     map: null,
     normalMap: maps.normalMap,
     normalScale: new Vector2(0.08, 0.08),
@@ -16,7 +16,7 @@ function texturedMetal(maps: MetalMaps, parameters: MeshPhysicalMaterialParamete
 
 export function createMetalMaterials(maps: MaterialLibrary) {
   return {
-    aluminum: physicalSurface(maps.aluminum, {
+    aluminum: scannedSurface(maps.aluminum, {
       color: "#e6e9e7",
       metalness: 1,
       metalnessMap: maps.aluminum.roughnessMap,
