@@ -36,7 +36,6 @@ export function createRendering(
     depth,
     frame.texture,
     profile.scatteringSteps,
-    () => surfaces.revision,
   );
   const source = texture(frame.texture);
   const exposure = uniform(renderer.toneMappingExposure);
@@ -80,6 +79,7 @@ export function createRendering(
       const now = performance.now();
       startedAt ??= now;
       visibility.value = reducedMotion.matches ? 1 : MathUtils.smoothstep(now - startedAt, 0, 300);
+      if (celestialLight.shadow.needsUpdate) scattering.invalidate();
       surfaces.render(renderer, frame, moving);
       dynamic.render(renderer, frame);
       weather.render(renderer, frame);

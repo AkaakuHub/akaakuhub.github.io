@@ -7,6 +7,7 @@ import roomSource from "./room.wgsl?raw";
 import surfaceSource from "./surface.wgsl?raw";
 import scatteringSource from "./scattering.wgsl?raw";
 import compositeSource from "./composite.wgsl?raw";
+import { ScatteringState } from "./state";
 
 const roomInterval = new FunctionNode(roomSource, [], "wgsl");
 const surfaceAt = new FunctionNode(surfaceSource, [], "wgsl");
@@ -40,7 +41,7 @@ export class VolumetricPass {
     toneMapped: false,
   });
   private readonly quad = new QuadMesh(this.scatteringMaterial);
-  private sampledRevision = -1;
+  private readonly state = new ScatteringState();
 
   constructor(
     private readonly camera: PerspectiveCamera,
@@ -48,7 +49,6 @@ export class VolumetricPass {
     depth: DepthTexture,
     color: Texture,
     steps: number,
-    private readonly revision: () => number,
   ) {
     const sceneDepth = texture(depth);
     this.scatteringMaterial.fragmentNode = integrate({
@@ -76,7 +76,10 @@ export class VolumetricPass {
   }
   setSize(width: number, height: number): void {
     this.target.setSize(Math.max(1, Math.ceil(width / 4)), Math.max(1, Math.ceil(height / 4)));
-    this.sampledRevision = -1;
+    this.state.invalidate();
+  }
+  invalidate(): void {
+    this.state.invalidate();
   }
   render(renderer: Renderer, output: RenderTarget): void {
     const depth = this.light.shadow.map?.depthTexture;
@@ -92,11 +95,10 @@ export class VolumetricPass {
     this.radiance.value
       .set(this.light.color.r, this.light.color.g, this.light.color.b)
       .multiplyScalar(this.light.intensity);
-    if (this.sampledRevision !== this.revision()) {
+    if (this.state.update(this.camera, this.light)) {
       this.quad.material = this.scatteringMaterial;
       renderer.setRenderTarget(this.target);
       this.quad.render(renderer);
-      this.sampledRevision = this.revision();
     }
     this.quad.material = this.compositeMaterial;
     renderer.setRenderTarget(output);

@@ -13,7 +13,6 @@ export class ScenePass {
   private readonly world = new Matrix4();
   private readonly projection = new Matrix4();
   private dirty = true;
-  revision = 0;
   private readonly material = new MeshBasicNodeMaterial({
     depthFunc: AlwaysDepth,
     toneMapped: false,
@@ -61,7 +60,6 @@ export class ScenePass {
       this.world.copy(this.camera.matrixWorld);
       this.projection.copy(this.camera.projectionMatrix);
       this.dirty = moving;
-      this.revision++;
     }
     if (!moving) {
       renderer.setRenderTarget(output);
