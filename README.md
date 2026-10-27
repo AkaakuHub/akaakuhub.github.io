@@ -88,7 +88,9 @@ pnpm dev
 
 ## 天気APIとCloudflare Workers
 
-`wrangler.jsonc`は`dist`の静的配信と`/api/weather`を設定しています。デプロイ時はビルド後にWranglerを使います。静的ファイルのクロスオリジン分離ヘッダーは`public/_headers`に定義しています。
+`wrangler.jsonc`は`dist`の静的配信と`/api/weather`を設定しています。`pnpm exec wrangler deploy`では、デプロイ前に`pnpm build`を自動実行します。生成や圧縮に失敗するとデプロイを停止します。静的ファイルのクロスオリジン分離ヘッダーは`public/_headers`に定義しています。
+
+Cloudflare Workers Buildsを使う場合は、管理画面のBuild commandに`pnpm build`を設定します。このサービスはWranglerのカスタムビルド設定を使用しないためです。[Cloudflareの設定仕様](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)に従い、CIでも同じビルドを実行します。
 
 - 外部の天気APIを呼ぶのはWorkerだけです。ブラウザーは翌日の日本時間0時までキャッシュを使い、非表示の間は更新しません。取得に失敗した場合も、翌日になるまで自動再試行しません。
 - 全アクセスで東京専用のDurable Objectを1つ共有し、同時取得を直列化します。取得開始前に次の取得可能時刻と試行回数を永続化します。
@@ -109,11 +111,9 @@ Google FontsのZen Maru GothicをWOFF2で同梱しています。500の1種類�
 
 ホワイトボードの見出しにはGoogle FontsのYomogiを使います。「最新記事」「GitHub」「Skills」に必要な文字だけをWOFF2で同梱し、実行時にGoogle Fontsへ接続しません。再取得には`node scripts/assets/board-font.mjs`を使います。ライセンスは`public/fonts/yomogi-OFL.txt`に同梱しています。
 
-アセットを追加・更新したときは、マニフェストを再生成します。
+`pnpm build`では、元の材質・照明データから2個の配信ファイルとマニフェストを毎回自動生成します。紙と照明の先行分を分け、画像のバイト列と寸法を維持します。材質の追加は`src/assets/materials.ts`へ登録し、対応する元画像を配置します。元画像の変更後に配信ファイルを手動で再生成する必要はありません。内容が同じ生成ファイルは書き換えません。
 
-```sh
-node scripts/assets/catalog.mjs
-```
+JavaScript・CSSはViteが最小化し、ビルドが確定したファイルからBrotliの圧縮データを自動生成します。3Dコードの先読みURLとアセットのキャッシュ用ハッシュもビルド結果に合わせて更新します。`pnpm preview`は対応するブラウザーへBrotliを配信します。本番のCloudflareでは[配信側の圧縮](https://developers.cloudflare.com/speed/optimization/content/compression/)が適用されます。
 
 ## 検証
 

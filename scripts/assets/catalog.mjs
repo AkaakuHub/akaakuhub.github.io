@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { materialAssetIds, materialDefinitions } from "../../src/assets/materials.ts";
@@ -7,6 +8,11 @@ import { createAssetPack } from "../../src/assets/packing.ts";
 
 const root = "src/assets";
 const entries = [];
+async function writeChanged(path, source) {
+  const bytes = Buffer.from(source);
+  if (existsSync(path) && bytes.equals(await readFile(path))) return;
+  await writeFile(path, bytes);
+}
 function register(id, bytes) {
   entries.push({
     id,
@@ -30,15 +36,15 @@ for (const [name, ids] of [
   );
   const pack = createAssetPack(sources);
   const id = `room/${name}.bin`;
-  await writeFile(join(root, id), pack.bytes);
+  await writeChanged(join(root, id), pack.bytes);
   register(id, pack.bytes);
   members.push(...pack.entries.map((entry) => ({ ...entry, pack: id })));
 }
-await writeFile(join(root, "room-manifest.json"), `${JSON.stringify(members, null, 2)}\n`);
+await writeChanged(join(root, "room-manifest.json"), `${JSON.stringify(members, null, 2)}\n`);
 for (const name of await readdir(join(root, "audio"))) {
   if (!name.endsWith(".opus")) continue;
   const id = `audio/${name}`;
   register(id, await readFile(join(root, id)));
 }
 entries.sort((left, right) => left.id.localeCompare(right.id));
-await writeFile(join(root, "manifest.json"), `${JSON.stringify(entries, null, 2)}\n`);
+await writeChanged(join(root, "manifest.json"), `${JSON.stringify(entries, null, 2)}\n`);
