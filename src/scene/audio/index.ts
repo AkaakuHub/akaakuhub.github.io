@@ -1,5 +1,5 @@
 import type { PerspectiveCamera } from "three";
-import { createWeatherMixer } from "./mixer";
+import type { createWeatherMixer } from "./mixer";
 import type { SoundWeather } from "./mix";
 
 export type WeatherAudio = ReturnType<typeof createWeatherAudio>;
@@ -7,6 +7,7 @@ export type WeatherAudio = ReturnType<typeof createWeatherAudio>;
 export function createWeatherAudio() {
   let context: AudioContext | undefined;
   let mixer: ReturnType<typeof createWeatherMixer> | undefined;
+  let mixerReady: Promise<void> | undefined;
   let weather: SoundWeather | undefined;
   let ready = false;
   let muted = true;
@@ -42,7 +43,6 @@ export function createWeatherAudio() {
     clearTimeout(suspendTimer);
     if (!context) {
       context = new AudioContext({ latencyHint: "interactive" });
-      mixer = createWeatherMixer(context);
       const listener = context.listener;
       listenerParameters = [
         listener.positionX,
@@ -57,6 +57,14 @@ export function createWeatherAudio() {
       ];
       context.addEventListener("statechange", sync);
     }
+    const activeContext = context;
+    mixerReady ??= import("./mixer").then(({ createWeatherMixer }) => {
+      if (disposed) return;
+      mixer = createWeatherMixer(activeContext);
+      mixer.mute(muted);
+      sync();
+    });
+    void mixerReady.catch(console.error);
     mixer?.mute(false);
     void context
       .resume()

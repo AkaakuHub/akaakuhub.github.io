@@ -58,23 +58,18 @@ export async function startRoom(
   const materialLoading = loadMaterials(rendererReady, assets);
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
-  const [renderer, initialWeather, avatar] = await Promise.all([
+  const clubroomReady = Promise.all([avatarReady, materialLoading.paperReady, fontsReady]).then(
+    ([avatar]) => assembleClubroom(scene, materials, avatar, batchStaticMeshes),
+  );
+  const [renderer, initialWeather, { board, lightSwitch, rocker, computer }] = await Promise.all([
     rendererReady,
     weatherReady,
-    avatarReady,
-    materialLoading.paperReady,
-    fontsReady,
+    clubroomReady,
+    materialLoading.loadRemaining(),
+    lightTablesReady,
   ]);
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
-  const { board, lightSwitch, rocker, computer } = await assembleClubroom(
-    scene,
-    materials,
-    avatar,
-    batchStaticMeshes,
-  );
   loading.rendering(1, 4);
-  await new Promise<void>((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
-  await lightTablesReady;
   const lighting = illuminate(
     scene,
     renderer,
@@ -112,7 +107,6 @@ export async function startRoom(
     computer.fanSurfaces,
     contributions.object,
   );
-  contributions.load();
   loading.rendering(2, 4);
   const noticeList = [...board.notices.values()];
   const inspections = [...board.notices].map(([object, notice], index) => ({
@@ -232,8 +226,8 @@ export async function startRoom(
           audio.start();
           controlIntroduction.start();
           introduction?.start();
+          contributions.load();
           void boardLoader.refresh(false);
-          setTimeout(() => void prepareRemainingRoom().catch(loading.fail), 0);
         })
         .catch(loading.fail);
     }
@@ -244,25 +238,19 @@ export async function startRoom(
     rendering.invalidate();
     requestFrame();
   }
-  async function prepareRemainingRoom(): Promise<void> {
-    await prepareRoomShaders(renderer, scene, camera, () => {}, false);
-  }
   function requestFrame() {
     if (frame || document.hidden) return;
     previous = performance.now() - 16;
     frame = requestAnimationFrame(render);
   }
   updateTime();
-  await materialLoading.prepareView(scene, camera);
   let viewPreparation = 0;
   let reflectionPreparation = 0;
   await Promise.all([
-    materialLoading.loadRemaining().then(() =>
-      lighting.prepareReflection(({ loaded, total }) => {
-        reflectionPreparation = loaded / total;
-        loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
-      }),
-    ),
+    lighting.prepareReflection(({ loaded, total }) => {
+      reflectionPreparation = loaded / total;
+      loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
+    }),
     prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
       viewPreparation = loaded / total;
       loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
