@@ -86,7 +86,7 @@ export function createRendering(
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
       try {
-        if (!moving && celestialLight.intensity > 0) {
+        if (celestialLight.intensity > 0) {
           scattering.render(renderer, composite);
           source.value = composite.texture;
         } else source.value = frame.texture;

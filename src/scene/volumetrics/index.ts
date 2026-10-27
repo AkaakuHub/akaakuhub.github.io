@@ -29,6 +29,7 @@ export class VolumetricPass {
   private readonly direction = uniform(new Vector3());
   private readonly radiance = uniform(new Vector3());
   private readonly bias = uniform(0);
+  private readonly extinction = uniform(0.003);
   private readonly targetPosition = new Vector3();
   private readonly scatteringMaterial = new MeshBasicNodeMaterial({
     depthTest: false,
@@ -63,6 +64,7 @@ export class VolumetricPass {
       lightRadiance: this.radiance,
       bias: this.bias,
       steps: uniform(steps, "int"),
+      extinction: this.extinction,
     });
     this.compositeMaterial.fragmentNode = composite({
       sceneColor: texture(color),
@@ -72,6 +74,7 @@ export class VolumetricPass {
       inverseProjection: this.inverseProjection,
       cameraWorld: this.cameraWorld,
       eye: this.eye,
+      extinction: this.extinction,
     });
   }
   setSize(width: number, height: number): void {

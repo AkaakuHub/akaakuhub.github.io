@@ -69,7 +69,7 @@ export function createBoard(
         if (!metadata) throw new Error("掲示の情報がありません。");
         metadata.title = notice.title;
         metadata.link = notice.link;
-        if (notice.kind === "article") updatePaper(paper, notice, paperMaps, avatar);
+        if (notice.kind === "article") updatePaper(paper, notice, paperSurface, avatar);
       });
     },
   };

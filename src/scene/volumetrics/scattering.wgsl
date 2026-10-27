@@ -1,7 +1,7 @@
 fn integrateScattering(sceneDepth: texture_depth_2d, lightDepth: texture_depth_2d,
   uv: vec2f, inverseProjection: mat4x4f, cameraWorld: mat4x4f, lightMatrix: mat4x4f,
-  eye: vec3f, lightDirection: vec3f, lightRadiance: vec3f, bias: f32, steps: i32) -> vec4f {
-  let extinction = 0.000762 / 0.0254;
+  eye: vec3f, lightDirection: vec3f, lightRadiance: vec3f, bias: f32, steps: i32,
+  extinction: f32) -> vec4f {
   let delta = surfaceAt(sceneDepth, uv, inverseProjection, cameraWorld) - eye;
   let distance = length(delta);
   let direction = delta / max(distance, 0.0001);

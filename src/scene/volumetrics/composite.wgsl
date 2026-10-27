@@ -1,7 +1,6 @@
 fn compositeScattering(sceneColor: texture_2d<f32>, scattering: texture_2d<f32>,
   sceneDepth: texture_depth_2d, uv: vec2f, inverseProjection: mat4x4f,
-  cameraWorld: mat4x4f, eye: vec3f) -> vec4f {
-  let extinction = 0.000762 / 0.0254;
+  cameraWorld: mat4x4f, eye: vec3f, extinction: f32) -> vec4f {
   let delta = surfaceAt(sceneDepth, uv, inverseProjection, cameraWorld) - eye;
   let distance = length(delta);
   let size = vec2f(textureDimensions(scattering));

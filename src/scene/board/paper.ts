@@ -23,8 +23,9 @@ function printedPaper(
   avatar: ImageBitmap,
 ): CanvasTexture {
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(sheetWidth * 1200);
-  canvas.height = Math.round(sheetHeight * 1200);
+  const density = 2048 / Math.max(sheetWidth, sheetHeight);
+  canvas.width = Math.round(sheetWidth * density);
+  canvas.height = Math.round(sheetHeight * density);
   const context = canvas.getContext("2d");
   if (!context) throw new Error("掲示用紙を描画できませんでした。");
   const width = canvas.width;
