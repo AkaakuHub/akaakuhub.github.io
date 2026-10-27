@@ -153,6 +153,29 @@ body {
   opacity: 0;
   pointer-events: none;
 }
+.loading-failed .loading-model,
+.loading-failed .loading-scan {
+  animation-play-state: paused;
+}
+.loading-failed .loading-progress {
+  display: none;
+}
+.loading-retry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 20px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
 @keyframes room-orbit {
   50% {
     transform: rotateX(-18deg) rotateY(50deg) translateY(-8px);

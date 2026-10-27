@@ -1,4 +1,4 @@
-import { finishRecovery, reloadEverything, retryAvailableAt, retryDelay } from "./recovery";
+import { RotateCw, createElement } from "lucide";
 import { createLoadingState } from "./loading-state";
 
 export type Loading = ReturnType<typeof createLoading>;
@@ -19,24 +19,25 @@ export function createLoading(root: HTMLElement) {
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
   const state = createLoadingState();
-  let restarting = false;
-  const schedule = (): void => {
-    const delay = Math.max(retryDelay(), retryAvailableAt() - Date.now());
-    setTimeout(() => void restart(), delay);
-  };
-  const restart = async (): Promise<void> => {
-    if (restarting) return;
-    restarting = true;
-    try {
-      if (!(await reloadEverything())) {
-        restarting = false;
-        schedule();
-      }
-    } catch (error) {
-      console.error(error);
-      restarting = false;
-      schedule();
-    }
+  let retry: HTMLButtonElement | undefined;
+  const showFailure = (): void => {
+    if (retry) return;
+    retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "loading-retry";
+    retry.append(createElement(RotateCw, { width: 24, height: 24, "aria-hidden": "true" }));
+    retry.append("再読み込み");
+    retry.addEventListener("click", (event) => {
+      if (event.isTrusted) location.reload();
+    });
+    percent.replaceWith(retry);
+    panel.classList.remove("loading-complete");
+    panel.classList.add("loading-failed");
+    panel.setAttribute("role", "alert");
+    panel.setAttribute("aria-label", "部屋を表示できませんでした");
+    root.setAttribute("aria-busy", "false");
+    delete root.dataset.loading;
+    if (!panel.isConnected) root.append(panel);
   };
   const update = (): void => {
     if (state.status !== "loading") return;
@@ -56,7 +57,6 @@ export function createLoading(root: HTMLElement) {
     },
     complete(): void {
       if (state.status !== "loading") return;
-      finishRecovery();
       state.complete();
       root.setAttribute("aria-busy", "false");
       progress.value = 1;
@@ -74,16 +74,13 @@ export function createLoading(root: HTMLElement) {
     },
     recover(error: unknown): void {
       console.error(error);
-      schedule();
+      state.fail();
+      showFailure();
     },
     fail(error: unknown): void {
       console.error(error);
       if (!state.fail()) return;
-      if (!panel.isConnected) root.append(panel);
-      panel.classList.remove("loading-complete");
-      root.dataset.loading = "true";
-      root.setAttribute("aria-busy", "true");
-      schedule();
+      showFailure();
     },
   };
 }

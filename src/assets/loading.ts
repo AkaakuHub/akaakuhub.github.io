@@ -8,7 +8,6 @@ import { resolveArtifactLoadSummary } from "unified-asset-loader/domain/artifact
 import type { ArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
 import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBinaryAsset";
 import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
-import { isRecovering } from "../interface/recovery";
 import { asset } from "./catalog";
 import members from "./room-manifest.json";
 import { unpackAsset } from "./packing";
@@ -26,7 +25,6 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
       fetch(url, {
         signal,
         priority: url === initialUrl ? "high" : "low",
-        cache: isRecovering() ? "reload" : "default",
       }),
   });
   let state: ArtifactLoadEntryState = new Map();

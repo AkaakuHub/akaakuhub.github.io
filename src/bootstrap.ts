@@ -1,5 +1,4 @@
 import { createLoading } from "./interface/loading";
-import { prepareRecovery } from "./interface/recovery";
 import { loadTokyoWeather } from "./weather/client";
 import { createRoomAssetLoader } from "./assets/loading";
 import type { RoomAssetLoader } from "./assets/loading";
@@ -17,7 +16,6 @@ window.addEventListener("unhandledrejection", (event) => loading.fail(event.reas
 
 let assets: RoomAssetLoader | undefined;
 try {
-  await prepareRecovery();
   const weatherReady = loadTokyoWeather();
   const avatarReady = loadProfileAvatar();
   assets = createRoomAssetLoader((summary) => loading.progress(summary.progressPercent, 100));

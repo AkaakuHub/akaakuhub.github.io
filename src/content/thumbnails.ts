@@ -1,5 +1,4 @@
 import type { Article } from "./schema";
-import { isRecovering } from "../interface/recovery";
 
 export async function loadArticleThumbnails(
   articles: readonly Article[],
@@ -11,7 +10,7 @@ export async function loadArticleThumbnails(
       const response = await fetch(article.thumbnail, {
         mode: "cors",
         signal: AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
-        cache: forceReload || isRecovering() ? "reload" : "default",
+        cache: forceReload ? "reload" : "default",
       });
       if (!response.ok)
         throw new Error(

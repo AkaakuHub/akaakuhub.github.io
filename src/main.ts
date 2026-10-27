@@ -46,8 +46,12 @@ export async function startRoom(
   const ui = createInterface(root);
   const batchStaticMeshes = createStaticBatcher();
   const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
+  let deviceLost = false;
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
-    bindRenderingErrors(renderer, loading.fail, loading.recover);
+    bindRenderingErrors(renderer, loading.fail, (error) => {
+      deviceLost = true;
+      loading.recover(error);
+    });
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFShadowMap;
     performance.mark("room-renderer-ready");
@@ -200,7 +204,7 @@ export async function startRoom(
 
   function render(time: number) {
     frame = 0;
-    if (document.hidden || !prepared) return;
+    if (document.hidden || !prepared || deviceLost) return;
     const frameDuration = 1000 / 60;
     if (time - lastRendered < frameDuration - 0.5) {
       frame = requestAnimationFrame(render);
@@ -242,7 +246,7 @@ export async function startRoom(
     requestFrame();
   }
   function requestFrame() {
-    if (frame || document.hidden) return;
+    if (frame || document.hidden || deviceLost) return;
     previous = performance.now() - 16;
     frame = requestAnimationFrame(render);
   }

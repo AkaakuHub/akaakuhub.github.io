@@ -1,7 +1,6 @@
 import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBinaryAsset";
 import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
 import { asset } from "../../assets/catalog";
-import { isRecovering } from "../../interface/recovery";
 import { prepareAudioLoop } from "./loop";
 
 export const soundNames = ["rain", "window", "gutter", "wind", "dayRain"] as const;
@@ -9,8 +8,7 @@ export type SoundName = (typeof soundNames)[number];
 
 const loader = createBinaryAssetLoader({
   loader: { load: loadBrowserArtifact },
-  fetch: (url, signal) =>
-    fetch(url, { signal, priority: "low", cache: isRecovering() ? "reload" : "default" }),
+  fetch: (url, signal) => fetch(url, { signal, priority: "low" }),
 });
 
 export async function loadSound(
