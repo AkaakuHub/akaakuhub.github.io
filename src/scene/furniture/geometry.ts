@@ -1,9 +1,8 @@
 import { CylinderGeometry, Mesh, Vector3 } from "three";
-import type { BufferGeometry, Material, Object3D } from "three";
-import { metricBoxUv, metricCylinderUv } from "../materials/uv";
-import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import type { Material, Object3D } from "three";
+import { metricCylinderUv } from "../materials/uv";
+import { roundedBoxGeometry } from "../geometry/rounded-box";
 
-const roundedBoxes = new Map<string, BufferGeometry>();
 const cylinders = new Map<string, CylinderGeometry>();
 
 export function roundBox(
@@ -13,14 +12,7 @@ export function roundBox(
   material: Material,
   radius = 0.012,
 ): Mesh {
-  const key = [...size, radius].join(":");
-  let geometry = roundedBoxes.get(key);
-  if (!geometry) {
-    geometry = new RoundedBoxGeometry(...size, 2, radius);
-    metricBoxUv(geometry);
-    roundedBoxes.set(key, geometry);
-  }
-  const mesh = new Mesh(geometry, material);
+  const mesh = new Mesh(roundedBoxGeometry(size, radius), material);
   mesh.position.set(...position);
   mesh.castShadow = mesh.receiveShadow = true;
   parent.add(mesh);

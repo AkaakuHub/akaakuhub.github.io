@@ -1,10 +1,9 @@
 import type { PropMaterials } from "../materials/props";
 import { Group, Mesh } from "three";
 import type { Material } from "three";
-import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { box } from "../primitives";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
-import { metricBoxUv } from "../materials/uv";
+import { roundedBoxGeometry } from "../geometry/rounded-box";
 import type { MetalMaterials } from "../materials/metal";
 
 function roundBox(
@@ -14,9 +13,7 @@ function roundBox(
   material: Material,
   radius: number,
 ): Mesh {
-  const geometry = new RoundedBoxGeometry(...size, 3, radius);
-  metricBoxUv(geometry);
-  const mesh = new Mesh(geometry, material);
+  const mesh = new Mesh(roundedBoxGeometry(size, radius, 3), material);
   mesh.position.set(...position);
   mesh.castShadow = true;
   mesh.receiveShadow = true;

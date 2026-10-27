@@ -11,7 +11,7 @@ import {
   Vector3,
 } from "three";
 import type { BufferGeometry, Material, Object3D } from "three";
-import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { metricCylinderUv } from "../materials/uv";
 
 type Triple = readonly [number, number, number];
@@ -86,8 +86,14 @@ export function metricCylinderGeometry(
   return geometry;
 }
 
-const screw = screwGeometry();
-const washer = washerGeometry();
+function indexedGeometry(source: BufferGeometry): BufferGeometry {
+  const geometry = mergeVertices(source, 0.0000001);
+  source.dispose();
+  return geometry;
+}
+
+const screw = indexedGeometry(screwGeometry());
+const washer = indexedGeometry(washerGeometry());
 const bolt = metricCylinderGeometry(0.0058, 0.004, 6);
 bolt.rotateX(Math.PI / 2);
 bolt.translate(0, 0, 0.0031);
@@ -123,9 +129,12 @@ export class HardwareBatch {
 
   finish(parent: Object3D): void {
     for (const [material, pieces] of this.pieces) {
-      const geometry = mergeGeometries(
-        pieces.map((piece) => (piece.index ? piece.toNonIndexed() : piece)),
+      const indexed = pieces.map((piece) =>
+        piece.index ? piece : mergeVertices(piece, 0.0000001),
       );
+      const geometry = mergeGeometries(indexed);
+      for (let index = 0; index < indexed.length; index++)
+        if (indexed[index] !== pieces[index]) indexed[index]?.dispose();
       for (const piece of pieces) piece.dispose();
       if (!geometry) throw new Error("金具の形状を結合できませんでした。");
       const mesh = new Mesh(geometry, material);
