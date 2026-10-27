@@ -10,8 +10,8 @@ import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBi
 import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
 import { isRecovering } from "../interface/recovery";
 import { asset } from "./catalog";
-import { materialAssetIds, materialDefinitions } from "./materials";
-import { areaLightAssetId } from "./lighting";
+import members from "./room-manifest.json";
+import { unpackAsset } from "./packing";
 import { createImageDecoder } from "./images/decoder";
 
 export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) => void) {
@@ -19,27 +19,23 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     throw new Error("HTTPSとクロスオリジン分離、OPFSが必要です。");
   const controller = new AbortController();
   const images = createImageDecoder();
-  const initialIds = [
-    ...materialAssetIds.filter((id) => id.startsWith(`materials/${materialDefinitions.paper.id}/`)),
-    areaLightAssetId,
-  ];
-  const initialUrls = new Set(initialIds.map((id) => new URL(asset(id).url, location.href).href));
+  const initialUrl = new URL(asset("room/initial.bin").url, location.href).href;
   const { load: loadBinaryAsset } = createBinaryAssetLoader({
     loader: { load: loadBrowserArtifact },
     fetch: (url, signal) =>
       fetch(url, {
         signal,
-        priority: initialUrls.has(url) ? "high" : "low",
+        priority: url === initialUrl ? "high" : "low",
         cache: isRecovering() ? "reload" : "default",
       }),
   });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
-    [...materialAssetIds, areaLightAssetId].map((id) => [
+    [...new Set(members.map((member) => member.pack))].map((id) => [
       id,
       {
         identity: `akaakuhub:${id}`,
-        assetType: id === areaLightAssetId ? "binary" : "image",
+        assetType: "binary",
         label: id,
       },
     ]),
@@ -49,7 +45,8 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     progress(resolveArtifactLoadSummary([...state.values()]));
   }
   for (const descriptor of descriptors.values()) report({ type: "started", ...descriptor });
-  let remaining = descriptors.size;
+  const entries = new Map(members.map((member) => [member.id, member]));
+  let remaining = entries.size;
   const pending = new Map<string, Promise<Uint8Array>>();
   function abort(cause: unknown): void {
     if (controller.signal.aborted) return;
@@ -82,21 +79,18 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     pending.set(id, result);
     return result;
   }
-  const acquisitionOrder = [
-    ...initialIds,
-    ...[...descriptors.keys()].filter((id) => !initialIds.includes(id)),
-  ];
-  for (const id of acquisitionOrder) void fetchBytes(id).catch(abort);
+  for (const id of descriptors.keys()) void fetchBytes(id).catch(abort);
   async function load<Value>(
     id: string,
     decode: (bytes: Uint8Array) => Promise<Value>,
   ): Promise<Value> {
-    const descriptor = descriptors.get(id);
-    if (!descriptor) throw new Error(`読み込み対象が登録されていません: ${id}`);
-    const bytes = fetchBytes(id);
-    descriptors.delete(id);
+    const entry = entries.get(id);
+    if (!entry) throw new Error(`読み込み対象が登録されていません: ${id}`);
+    const descriptor = descriptors.get(entry.pack);
+    if (!descriptor) throw new Error(`アセットの梱包が登録されていません: ${entry.pack}`);
+    entries.delete(id);
     try {
-      return await decode(await bytes);
+      return await decode(unpackAsset(await fetchBytes(entry.pack), entry));
     } catch (cause) {
       report({
         type: "failed",
@@ -106,9 +100,11 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
       abort(cause);
       throw cause;
     } finally {
-      pending.delete(id);
       remaining--;
-      if (remaining === 0) images.dispose(new Error("全画像の復号が完了しました。"));
+      if (remaining === 0) {
+        pending.clear();
+        images.dispose(new Error("全画像の復号が完了しました。"));
+      }
     }
   }
   return {

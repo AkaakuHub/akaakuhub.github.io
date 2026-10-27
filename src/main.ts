@@ -42,6 +42,7 @@ export async function startRoom(
   audio: WeatherAudio,
   avatarReady: Promise<ImageBitmap>,
 ) {
+  performance.mark("room-startup");
   const ui = createInterface(root);
   const batchStaticMeshes = createStaticBatcher();
   const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
@@ -49,6 +50,7 @@ export async function startRoom(
     bindRenderingErrors(renderer, loading.fail);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFShadowMap;
+    performance.mark("room-renderer-ready");
     return renderer;
   });
   const scene = new Scene();
@@ -68,6 +70,7 @@ export async function startRoom(
     materialLoading.loadRemaining(),
     lightTablesReady,
   ]);
+  performance.mark("room-assets-and-geometry-ready");
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   loading.rendering(1, 4);
   const lighting = illuminate(
@@ -257,6 +260,7 @@ export async function startRoom(
     }),
   ]);
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
+  performance.mark("room-lighting-ready");
   controls = bindRoomControls(
     root,
     ui,

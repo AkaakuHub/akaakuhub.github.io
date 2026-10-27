@@ -1,13 +1,10 @@
 import manifest from "./manifest.json";
 
-const sources = import.meta.glob<string>(
-  ["./materials/**/*.webp", "./lighting/*.bin", "./audio/*.opus"],
-  {
-    eager: true,
-    query: "?url",
-    import: "default",
-  },
-);
+const sources = import.meta.glob<string>(["./room/*.bin", "./audio/*.opus"], {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
 
 const assetCatalog = manifest.map((entry) => {
   const url = sources[`./${entry.id}`];
