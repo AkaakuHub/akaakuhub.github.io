@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 import { brotliCompress, constants } from "node:zlib";
@@ -10,20 +10,19 @@ const compress = promisify(brotliCompress);
 export function compressedAssets(): Plugin {
   return {
     name: "compressed-assets",
-    async generateBundle(...[, bundle]) {
-      const files = Object.values(bundle).filter(
-        (file) =>
-          /\.(js|css)$/.test(file.fileName) && (file.type !== "chunk" || file.code.length > 0),
-      );
-      const compressed = await Promise.all(
-        files.map(async (file) => ({
-          fileName: `${file.fileName}.br`,
-          source: await compress(file.type === "chunk" ? file.code : file.source, {
+    async writeBundle(options, bundle) {
+      if (!options.dir) throw new Error("圧縮する配信ファイルの出力先がありません。");
+      const directory = options.dir;
+      const files = Object.values(bundle).filter((file) => /\.(js|css)$/.test(file.fileName));
+      await Promise.all(
+        files.map(async (file) => {
+          const path = resolve(directory, file.fileName);
+          const source = await compress(await readFile(path), {
             params: { [constants.BROTLI_PARAM_QUALITY]: 11 },
-          }),
-        })),
+          });
+          await writeFile(`${path}.br`, source);
+        }),
       );
-      for (const file of compressed) this.emitFile({ type: "asset", ...file });
     },
     configurePreviewServer(server) {
       const directory = resolve(server.config.root, server.config.build.outDir);
