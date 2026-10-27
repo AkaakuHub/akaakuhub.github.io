@@ -1,4 +1,5 @@
 import { finishRecovery, reloadEverything, retryAvailableAt, retryDelay } from "./recovery";
+import { createLoadingState } from "./loading-state";
 
 export type Loading = ReturnType<typeof createLoading>;
 
@@ -17,9 +18,7 @@ export function createLoading(root: HTMLElement) {
   }
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
-  let failed = false;
-  let materials = 0;
-  let rendering = 0;
+  const state = createLoadingState();
   let restarting = false;
   const schedule = (): void => {
     const delay = Math.max(retryDelay(), retryAvailableAt() - Date.now());
@@ -40,32 +39,25 @@ export function createLoading(root: HTMLElement) {
     }
   };
   const update = (): void => {
-    if (failed) return;
-    const value = materials * 0.75 + rendering * 0.2;
+    if (state.status !== "loading") return;
+    const value = state.value;
     progress.value = value;
     panel.style.setProperty("--load-progress", String(value));
     setPercent(value * 100);
   };
   return {
     progress(completed: number, total: number): void {
-      if (
-        !Number.isFinite(completed) ||
-        !Number.isFinite(total) ||
-        total < 1 ||
-        completed < 0 ||
-        completed > total
-      )
-        throw new Error("読み込みの進捗が不正です。");
-      materials = completed / total;
+      state.advance("materials", completed, total);
       update();
     },
     rendering(completed: number, total: number): void {
-      rendering = completed / total;
+      state.advance("rendering", completed, total);
       update();
     },
     complete(): void {
-      if (failed) return;
+      if (state.status !== "loading") return;
       finishRecovery();
+      state.complete();
       root.setAttribute("aria-busy", "false");
       progress.value = 1;
       setPercent(100);
@@ -80,19 +72,17 @@ export function createLoading(root: HTMLElement) {
       );
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) panel.remove();
     },
+    recover(error: unknown): void {
+      console.error(error);
+      schedule();
+    },
     fail(error: unknown): void {
       console.error(error);
-      if (failed) return;
-      failed = true;
+      if (!state.fail()) return;
       if (!panel.isConnected) root.append(panel);
       panel.classList.remove("loading-complete");
       root.dataset.loading = "true";
       root.setAttribute("aria-busy", "true");
-      materials = 0;
-      rendering = 0;
-      progress.value = 0;
-      panel.style.setProperty("--load-progress", "0");
-      setPercent(0);
       schedule();
     },
   };

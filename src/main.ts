@@ -47,7 +47,7 @@ export async function startRoom(
   const batchStaticMeshes = createStaticBatcher();
   const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
-    bindRenderingErrors(renderer, loading.fail);
+    bindRenderingErrors(renderer, loading.fail, loading.recover);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFShadowMap;
     performance.mark("room-renderer-ready");
@@ -219,7 +219,7 @@ export async function startRoom(
     frameMetrics?.end(moving);
     if (!ready) {
       ready = true;
-      void finishFirstFrame(renderer)
+      void finishFirstFrame()
         .then(() => {
           loading.complete();
           fluorescent.start();
