@@ -1,6 +1,6 @@
 import { HalfFloatType, MathUtils, RenderTarget } from "three";
 import type { Texture } from "three";
-import { ConvertNode, MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
+import { ConvertNode, MeshBasicNodeMaterial, QuadMesh, RenderPipeline } from "three/webgpu";
 import type { Node, Renderer } from "three/webgpu";
 import {
   Fn,
@@ -27,20 +27,19 @@ export class DisplayPass {
     depthWrite: false,
     toneMapped: false,
   });
-  private readonly output = new MeshBasicNodeMaterial({
-    depthTest: false,
-    depthWrite: false,
-    toneMapped: false,
-  });
   private readonly composite = new QuadMesh(this.material);
-  private readonly screen = new QuadMesh(this.output);
+  private readonly pipeline;
   private readonly source;
   private readonly state = new DisplayState();
   private readonly display = window.matchMedia("(dynamic-range: high)");
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private startedAt: number | undefined;
 
-  constructor(source: Texture, scattering: Node) {
+  constructor(
+    private readonly renderer: Renderer,
+    source: Texture,
+    scattering: Node,
+  ) {
     this.source = texture(source);
     const atmosphere = new ConvertNode<"vec4">(scattering, "vec4");
     const radiance = Fn(() => {
@@ -52,12 +51,14 @@ export class DisplayPass {
     })();
     const exposed = radiance.mul(this.exposure).max(0);
     const mapped = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
-    this.material.vertexNode = this.output.vertexNode = vec4(positionGeometry.xy, 0, 1);
+    this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
     const antialiased = new ConvertNode<"vec4">(fxaa(texture(this.target.texture)), "vec4");
     const linear = new ConvertNode<"vec3">(sRGBTransferEOTF(antialiased.rgb), "vec3");
-    this.output.fragmentNode = vec4(linear.mul(this.visibility), 1);
+    const visible = new ConvertNode<"vec3">(sRGBTransferOETF(linear.mul(this.visibility)), "vec3");
+    this.pipeline = new RenderPipeline(renderer, vec4(visible, 1));
+    this.pipeline.outputColorTransform = false;
   }
 
   get revealing(): boolean {
@@ -68,13 +69,8 @@ export class DisplayPass {
     this.target.setSize(width, height);
   }
 
-  render(
-    renderer: Renderer,
-    source: Texture,
-    revision: number,
-    scattering: boolean,
-    changing: boolean,
-  ): void {
+  render(source: Texture, revision: number, scattering: boolean, changing: boolean): void {
+    const renderer = this.renderer;
     const now = performance.now();
     this.startedAt ??= now;
     this.visibility.value = this.reducedMotion.matches
@@ -100,6 +96,18 @@ export class DisplayPass {
       renderer.render(this.composite, this.composite.camera);
     }
     renderer.setRenderTarget(null);
-    renderer.render(this.screen, this.screen.camera);
+    const depth = renderer.depth;
+    const toneMapping = renderer.toneMapping;
+    const colorSpace = renderer.outputColorSpace;
+    const xr = renderer.xr.enabled;
+    try {
+      renderer.depth = false;
+      this.pipeline.render();
+    } finally {
+      renderer.depth = depth;
+      renderer.toneMapping = toneMapping;
+      renderer.outputColorSpace = colorSpace;
+      renderer.xr.enabled = xr;
+    }
   }
 }

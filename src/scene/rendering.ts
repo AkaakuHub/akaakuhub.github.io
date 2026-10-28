@@ -34,7 +34,7 @@ export function createRendering(
     frame.texture,
     profile.scatteringSteps,
   );
-  const display = new DisplayPass(frame.texture, scattering.colorNode);
+  const display = new DisplayPass(renderer, frame.texture, scattering.colorNode);
   let pixelRatio = 1;
   return {
     weather,
@@ -66,7 +66,6 @@ export function createRendering(
       try {
         const changed = scattering.render(renderer, input);
         display.render(
-          renderer,
           input.texture,
           surfaces.revision,
           celestialLight.intensity > 0,
