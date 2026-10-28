@@ -3,6 +3,7 @@ import {
   CylinderGeometry,
   Euler,
   ExtrudeGeometry,
+  InstancedMesh,
   Matrix4,
   Mesh,
   Path,
@@ -99,7 +100,7 @@ bolt.rotateX(Math.PI / 2);
 bolt.translate(0, 0, 0.0031);
 
 export class HardwareBatch {
-  private readonly pieces = new Map<Material, BufferGeometry[]>();
+  private readonly pieces = new Map<Material, Map<BufferGeometry, Matrix4[]>>();
 
   add(
     geometry: BufferGeometry,
@@ -112,10 +113,14 @@ export class HardwareBatch {
       new Quaternion().setFromEuler(new Euler(...rotation)),
       new Vector3(1, 1, 1),
     );
-    const copy = geometry.clone().applyMatrix4(transform);
-    const pieces = this.pieces.get(material);
-    if (pieces) pieces.push(copy);
-    else this.pieces.set(material, [copy]);
+    let pieces = this.pieces.get(material);
+    if (!pieces) {
+      pieces = new Map();
+      this.pieces.set(material, pieces);
+    }
+    const transforms = pieces.get(geometry);
+    if (transforms) transforms.push(transform);
+    else pieces.set(geometry, [transform]);
   }
 
   screw(material: Material, position: Triple, rotation: Triple = [0, 0, 0]): void {
@@ -128,16 +133,35 @@ export class HardwareBatch {
   }
 
   finish(parent: Object3D): void {
+    const meshes: Mesh[] = [];
     for (const [material, pieces] of this.pieces) {
-      const indexed = pieces.map((piece) =>
+      const singles: BufferGeometry[] = [];
+      for (const [source, transforms] of pieces) {
+        if (transforms.length === 1) {
+          const transform = transforms[0];
+          if (!transform) throw new Error("金具の配置がありません。");
+          singles.push(source.clone().applyMatrix4(transform));
+          continue;
+        }
+        const geometry = source.index ? source : mergeVertices(source, 0.0000001);
+        const mesh = new InstancedMesh(geometry, material, transforms.length);
+        transforms.forEach((transform, index) => mesh.setMatrixAt(index, transform));
+        mesh.computeBoundingBox();
+        mesh.computeBoundingSphere();
+        meshes.push(mesh);
+      }
+      if (singles.length === 0) continue;
+      const indexed = singles.map((piece) =>
         piece.index ? piece : mergeVertices(piece, 0.0000001),
       );
       const geometry = mergeGeometries(indexed);
       for (let index = 0; index < indexed.length; index++)
-        if (indexed[index] !== pieces[index]) indexed[index]?.dispose();
-      for (const piece of pieces) piece.dispose();
+        if (indexed[index] !== singles[index]) indexed[index]?.dispose();
+      for (const piece of singles) piece.dispose();
       if (!geometry) throw new Error("金具の形状を結合できませんでした。");
-      const mesh = new Mesh(geometry, material);
+      meshes.push(new Mesh(geometry, material));
+    }
+    for (const mesh of meshes) {
       mesh.name = "fasteners-and-joinery";
       mesh.castShadow = mesh.receiveShadow = true;
       parent.add(mesh);

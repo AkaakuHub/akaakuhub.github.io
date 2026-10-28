@@ -1,4 +1,4 @@
-import { Group, Mesh, MeshPhysicalMaterial, Vector3 } from "three";
+import { Group, InstancedMesh, Mesh, MeshPhysicalMaterial, Vector3 } from "three";
 import type { BufferGeometry, Material, Object3D, Scene } from "three";
 import { decodeGeometry, encodeGeometry, geometryTransfers } from "./geometry/batching/protocol";
 import type { BatchRequest, BatchResponse, GeometryData } from "./geometry/batching/protocol";
@@ -19,6 +19,7 @@ export function createStaticBatcher() {
       scene.traverseVisible((object) => {
         if (
           !(object instanceof Mesh) ||
+          object instanceof InstancedMesh ||
           Array.isArray(object.material) ||
           object.children.length > 0 ||
           preserved.has(object) ||
