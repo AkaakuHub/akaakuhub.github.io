@@ -74,4 +74,16 @@ describe("動く物体の描画", () => {
     pass.render(renderer, target);
     expect(renderer.render).toHaveBeenCalledOnce();
   });
+
+  it("親の向きや位置が変わったときは描画前の可視判定へ反映する", () => {
+    const { scene, monitor, pass } = fixture();
+    const parent = new Group();
+    parent.add(monitor);
+    scene.add(parent);
+    expect(pass.visible).toBe(true);
+    parent.position.x = 100;
+    expect(pass.visible).toBe(false);
+    parent.position.x = 0;
+    expect(pass.visible).toBe(true);
+  });
 });
