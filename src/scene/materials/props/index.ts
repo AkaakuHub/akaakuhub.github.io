@@ -2,6 +2,7 @@ import { DoubleSide, Vector2 } from "three";
 import type { MaterialLibrary } from "../library";
 import { physicalSurface, scannedSurface } from "../surface";
 import { bookLabelMaterial, pageEdgeMaterial } from "./books";
+import { thinGlassMaterial } from "./glass";
 
 export function createPropMaterials(maps: MaterialLibrary) {
   const cloth = (color: string) =>
@@ -26,17 +27,7 @@ export function createPropMaterials(maps: MaterialLibrary) {
       normalScale: new Vector2(0.2, 0.2),
     });
   return {
-    glass: physicalSurface(maps.plastic, {
-      map: null,
-      color: "#f5faf7",
-      roughness: 0.065,
-      roughnessMap: null,
-      ior: 1.52,
-      transparent: true,
-      opacity: 0.14,
-      depthWrite: false,
-      normalScale: new Vector2(0.025, 0.025),
-    }),
+    glass: thinGlassMaterial(),
     frostedGlass: physicalSurface(maps.plastic, {
       map: null,
       color: "#bdc6b9",
