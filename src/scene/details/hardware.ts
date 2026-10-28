@@ -1,5 +1,6 @@
 import {
   CircleGeometry,
+  BufferGeometry,
   CylinderGeometry,
   Euler,
   ExtrudeGeometry,
@@ -11,7 +12,7 @@ import {
   Shape,
   Vector3,
 } from "three";
-import type { BufferGeometry, Material, Object3D } from "three";
+import type { Material, Object3D } from "three";
 import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { metricCylinderUv } from "../materials/uv";
 
@@ -135,22 +136,21 @@ export class HardwareBatch {
   finish(parent: Object3D): void {
     const meshes: Mesh[] = [];
     for (const [material, pieces] of this.pieces) {
-      const singles: BufferGeometry[] = [];
-      for (const [source, transforms] of pieces) {
-        if (transforms.length === 1) {
-          const transform = transforms[0];
-          if (!transform) throw new Error("金具の配置がありません。");
-          singles.push(source.clone().applyMatrix4(transform));
-          continue;
-        }
+      const first = pieces.entries().next().value;
+      if (pieces.size === 1 && first && first[1].length > 1) {
+        const [source, transforms] = first;
         const geometry = source.index ? source : mergeVertices(source, 0.0000001);
         const mesh = new InstancedMesh(geometry, material, transforms.length);
         transforms.forEach((transform, index) => mesh.setMatrixAt(index, transform));
         mesh.computeBoundingBox();
         mesh.computeBoundingSphere();
         meshes.push(mesh);
+        continue;
       }
-      if (singles.length === 0) continue;
+      const singles: BufferGeometry[] = [];
+      for (const [source, transforms] of pieces)
+        for (const transform of transforms)
+          singles.push(new BufferGeometry().copy(source).applyMatrix4(transform));
       const indexed = singles.map((piece) =>
         piece.index ? piece : mergeVertices(piece, 0.0000001),
       );

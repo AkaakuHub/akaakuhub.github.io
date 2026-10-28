@@ -78,4 +78,16 @@ describe("同じ金具の形状の共有", () => {
     batch.finish(next);
     expect(next.children).toHaveLength(0);
   });
+
+  it("複数種類の金具が混在しても材質ごとの描画を増やさない", () => {
+    const material = new MeshStandardMaterial();
+    const parent = new Group();
+    const batch = new HardwareBatch();
+    for (let index = 0; index < 8; index++) batch.screw(material, [index * 0.02, 0, 0]);
+    batch.bolt(material, [0, 0.02, 0]);
+    batch.finish(parent);
+    expect(parent.children).toHaveLength(1);
+    expect(parent.children[0]).toBeInstanceOf(Mesh);
+    expect(parent.children[0]).not.toBeInstanceOf(InstancedMesh);
+  });
 });
