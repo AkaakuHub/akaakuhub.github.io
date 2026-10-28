@@ -8,7 +8,7 @@ const attribution = JSON.parse(await readFile(file, "utf8"));
 let before = 0;
 let after = 0;
 for (const [name, definition] of Object.entries(materialDefinitions)) {
-  if (definition.format !== "arm" || name === "aluminum") continue;
+  if (definition.format !== "arm" || name === "aluminum" || name === "paint") continue;
   const entry = attribution.assets.find((asset) => asset.id === definition.id).maps.arm;
   const source = await readFile(entry.file);
   const { data, info } = await sharp(source)
