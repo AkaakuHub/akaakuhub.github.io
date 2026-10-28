@@ -1,7 +1,8 @@
 import { MeshStandardMaterial, Vector2 } from "three";
 import type { MeshStandardMaterialParameters } from "three";
 import type { MaterialLibrary, MetalMaps } from "./library";
-import { physicalSurface, scannedSurface } from "./surface";
+import { scannedSurface } from "./surface";
+import { paintedSurface } from "./paint";
 
 function texturedMetal(maps: MetalMaps, parameters: MeshStandardMaterialParameters) {
   return new MeshStandardMaterial({
@@ -15,11 +16,8 @@ function texturedMetal(maps: MetalMaps, parameters: MeshStandardMaterialParamete
 
 export function createMetalMaterials(maps: MaterialLibrary) {
   const paintedMetal = (color: string) =>
-    physicalSurface(maps.paint, {
+    paintedSurface(maps.paint, {
       color,
-      roughness: 1,
-      metalness: 1,
-      metalnessMap: maps.paint.roughnessMap,
     });
   return {
     aluminum: scannedSurface(maps.aluminum, {

@@ -1,6 +1,7 @@
 import { Vector2 } from "three";
 import type { MaterialLibrary } from "../../materials/library";
 import { scannedSurface } from "../../materials/surface";
+import { paintedSurface } from "../../materials/paint";
 
 export function createArchitectureMaterials(maps: MaterialLibrary) {
   return {
@@ -23,11 +24,8 @@ export function createArchitectureMaterials(maps: MaterialLibrary) {
     trim: scannedSurface(maps.walnut, {
       color: "#d5cebb",
     }),
-    frame: scannedSurface(maps.paint, {
+    frame: paintedSurface(maps.paint, {
       color: "#d8d8ce",
-      roughness: 1,
-      metalness: 1,
-      metalnessMap: maps.paint.roughnessMap,
     }),
     sill: scannedSurface(maps.walnut),
     door: scannedSurface(maps.oak, {
