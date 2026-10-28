@@ -1,4 +1,4 @@
-import { MeshPhysicalMaterial, MeshStandardMaterial, Vector2 } from "three";
+import { MeshPhysicalMaterial, MeshStandardMaterial } from "three";
 import type { MeshPhysicalMaterialParameters, MeshStandardMaterialParameters } from "three";
 import type { PbrMaps } from "./library";
 
@@ -6,7 +6,6 @@ function pbrParameters(maps: PbrMaps): MeshStandardMaterialParameters {
   return {
     map: maps.map,
     normalMap: maps.normalMap,
-    normalScale: new Vector2(0.45, 0.45),
     aoMap: maps.aoMap,
     roughnessMap: maps.roughnessMap,
     alphaMap: maps.alphaMap,

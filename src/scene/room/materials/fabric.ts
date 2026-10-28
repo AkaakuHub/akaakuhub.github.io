@@ -1,11 +1,10 @@
-import { DoubleSide, MeshPhysicalMaterial, Vector2 } from "three";
+import { DoubleSide, MeshPhysicalMaterial } from "three";
 import type { PbrMaps } from "../../materials/library";
 
 export function curtainMaterials(maps: PbrMaps) {
   return new MeshPhysicalMaterial({
     map: maps.map,
     normalMap: maps.normalMap,
-    normalScale: new Vector2(0.24, 0.24),
     roughnessMap: maps.roughnessMap,
     aoMap: maps.aoMap,
     roughness: 1,
