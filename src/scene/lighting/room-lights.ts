@@ -1,15 +1,22 @@
 import { Box3, RectAreaLight, Vector3 } from "three";
 import type { Color, Scene } from "three";
-import { fixtureEmitterWidth, fixturePositions, fluorescentColor, tubeLength } from "./fixtures";
+import {
+  fixtureEmitterWidth,
+  fixtureHeight,
+  fixturePositions,
+  fluorescentColor,
+  tubeLength,
+} from "./fixtures";
 import { photometry } from "./photometry";
-import { createFixtureLight } from "./fixture-shadow";
 
 export function createRoomLights(scene: Scene) {
   const intensity =
     (2 * photometry.tubeLumens * photometry.scale) / (Math.PI * fixtureEmitterWidth * tubeLength);
   const lights = fixturePositions.map((z) => {
-    const light = createFixtureLight(fluorescentColor, intensity, z);
-    scene.add(light, light.target);
+    const light = new RectAreaLight(fluorescentColor, intensity, fixtureEmitterWidth, tubeLength);
+    light.position.set(0, fixtureHeight - 0.02, z);
+    light.rotation.x = -Math.PI / 2;
+    scene.add(light);
     return light;
   });
   const bounds = new Box3();
@@ -22,9 +29,6 @@ export function createRoomLights(scene: Scene) {
   sky.rotation.y = -Math.PI / 2;
   scene.add(sky);
   return {
-    invalidateShadows(): void {
-      for (const light of lights) light.shadow.needsUpdate = true;
-    },
     setRoomLightLevel(level: number): void {
       for (const light of lights) light.intensity = intensity * level;
     },

@@ -19,7 +19,7 @@ import { RoomNodeLibrary } from "./node-library";
 describe("部室の材質と光源の変換", () => {
   const library = new RoomNodeLibrary();
 
-  it("PMREMの背景にも使う基本材質の色と画像を引き継ぐ", () => {
+  it("背景にも使う基本材質の色と画像を引き継ぐ", () => {
     const material = new MeshBasicMaterial({ color: 0x254c72, map: new Texture() });
     const converted = library.fromMaterial(material);
     expect(converted).toBeInstanceOf(MeshBasicNodeMaterial);
@@ -74,7 +74,7 @@ describe("部室の材質と光源の変換", () => {
     expect(library.fromMaterial(material)).toBe(material);
   });
 
-  it("天体光と影付きの矩形光源にThree.jsの実装を使う", () => {
+  it("天体光と矩形光源にThree.jsの実装を使う", () => {
     expect(library.getLightNodeClass(DirectionalLight)).toBe(DirectionalLightNode);
     expect(library.getLightNodeClass(RectAreaLight)).toBe(RectAreaLightNode);
   });

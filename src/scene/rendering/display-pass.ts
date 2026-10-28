@@ -1,10 +1,8 @@
 import { HalfFloatType, MathUtils, RenderTarget } from "three";
 import type { Texture } from "three";
 import { ConvertNode, MeshBasicNodeMaterial, QuadMesh, RenderPipeline } from "three/webgpu";
-import type { Node, Renderer } from "three/webgpu";
+import type { Renderer } from "three/webgpu";
 import {
-  Fn,
-  If,
   float,
   positionGeometry,
   sRGBTransferEOTF,
@@ -20,7 +18,6 @@ export class DisplayPass {
   private readonly target = new RenderTarget(1, 1, { type: HalfFloatType, depthBuffer: false });
   private readonly exposure = uniform(1);
   private readonly headroom = uniform(1);
-  private readonly scattering = uniform(false);
   private readonly visibility = uniform(0);
   private readonly material = new MeshBasicNodeMaterial({
     depthTest: false,
@@ -38,18 +35,9 @@ export class DisplayPass {
   constructor(
     private readonly renderer: Renderer,
     source: Texture,
-    scattering: Node,
   ) {
     this.source = texture(source);
-    const atmosphere = new ConvertNode<"vec4">(scattering, "vec4");
-    const radiance = Fn(() => {
-      const color = this.source.rgb.toVar();
-      If(this.scattering, () => {
-        color.assign(atmosphere.rgb);
-      });
-      return color;
-    })();
-    const exposed = radiance.mul(this.exposure).max(0);
+    const exposed = this.source.rgb.mul(this.exposure).max(0);
     const mapped = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
@@ -69,7 +57,7 @@ export class DisplayPass {
     this.target.setSize(width, height);
   }
 
-  render(source: Texture, revision: number, scattering: boolean, changing: boolean): void {
+  render(source: Texture, revision: number, changing: boolean): void {
     const renderer = this.renderer;
     const now = performance.now();
     this.startedAt ??= now;
@@ -79,7 +67,6 @@ export class DisplayPass {
     this.source.value = source;
     this.exposure.value = renderer.toneMappingExposure;
     this.headroom.value = this.display.matches ? 4 : 1;
-    this.scattering.value = scattering;
     if (
       this.state.update(
         {
@@ -87,7 +74,6 @@ export class DisplayPass {
           revision,
           exposure: this.exposure.value,
           headroom: this.headroom.value,
-          scattering,
         },
         changing,
       )

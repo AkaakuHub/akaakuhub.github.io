@@ -5,7 +5,6 @@ interface DisplayFrame {
   revision: number;
   exposure: number;
   headroom: number;
-  scattering: boolean;
 }
 
 export class DisplayState {
@@ -19,8 +18,7 @@ export class DisplayState {
       previous.source !== frame.source ||
       previous.revision !== frame.revision ||
       previous.exposure !== frame.exposure ||
-      previous.headroom !== frame.headroom ||
-      previous.scattering !== frame.scattering;
+      previous.headroom !== frame.headroom;
     this.current = frame;
     return changed;
   }

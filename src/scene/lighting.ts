@@ -3,7 +3,6 @@ import type { Scene } from "three";
 import type { Renderer } from "three/webgpu";
 import { roomCelestialLighting } from "./daylight/celestial";
 import { cameraExposure, unitLuminance } from "./lighting/photometry";
-import { createRoomReflection } from "./lighting/room-reflection";
 import { createRoomLights } from "./lighting/room-lights";
 import { createMonitorLight, setMonitorLight } from "./lighting/monitor";
 import type { TokyoWeather } from "../weather/schema";
@@ -40,7 +39,6 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   });
   const background = new Color();
   scene.background = background;
-  const reflection = createRoomReflection(scene, renderer);
   let roomLightsOn = true;
   let modulation = 1;
 
@@ -50,7 +48,7 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     for (const [material, intensity] of tubes) material.emissiveIntensity = intensity * level;
   }
 
-  function update(date: Date, currentWeather: TokyoWeather, captureReflection = true): void {
+  function update(date: Date, currentWeather: TokyoWeather): void {
     const state = roomCelestialLighting(date, currentWeather);
     celestialLight.position
       .copy(state.direction)
@@ -64,24 +62,19 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     fixtures.updateSky(sky, state.skyIntensity / Math.PI);
     background.copy(state.exterior).multiplyScalar(1 / cameraExposure);
     for (const material of skyMaterials) material.color.copy(background);
-    if (captureReflection) reflection.update(date);
   }
 
   function setRoomLights(on: boolean): void {
     roomLightsOn = on;
     modulation = 1;
     applyRoomLights();
-    reflection.update(new Date(), true);
   }
   function setMonitorPower(on: boolean): void {
     setMonitorLight(monitorLight, on);
-    reflection.update(new Date(), true);
   }
-  update(new Date(), weather, false);
+  update(new Date(), weather);
   return {
-    celestialLight,
     update,
-    prepareReflection: reflection.prepare,
     setRoomLights,
     setFluorescentModulation(value: number): boolean {
       if (!roomLightsOn || modulation === value) return false;
@@ -93,7 +86,6 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     setMonitorPower,
     invalidateShadows: () => {
       celestialLight.shadow.needsUpdate = true;
-      fixtures.invalidateShadows();
     },
   };
 }

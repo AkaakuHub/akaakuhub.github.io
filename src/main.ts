@@ -95,7 +95,7 @@ export async function startRoom(
     (current) => {
       const sample = weatherAt(current, Date.now());
       audio.updateWeather(sample);
-      lighting.update(new Date(), sample, prepared && !view.moving);
+      lighting.update(new Date(), sample);
       if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
       invalidate();
     },
@@ -109,7 +109,6 @@ export async function startRoom(
     renderer,
     scene,
     camera,
-    lighting.celestialLight,
     computer.monitor,
     computer.fanSurfaces,
     contributions.object,
@@ -188,7 +187,7 @@ export async function startRoom(
     }
     const sample = weatherAt(weather.current, Date.now());
     audio.updateWeather(sample);
-    lighting.update(new Date(), sample, prepared && !view.moving);
+    lighting.update(new Date(), sample);
     if (scene.background instanceof Color) rendering.weather.update(sample, scene.background);
     lighting.invalidateShadows();
     invalidate();
@@ -251,18 +250,9 @@ export async function startRoom(
     frame = requestAnimationFrame(render);
   }
   updateTime();
-  let viewPreparation = 0;
-  let reflectionPreparation = 0;
-  await Promise.all([
-    lighting.prepareReflection(({ loaded, total }) => {
-      reflectionPreparation = loaded / total;
-      loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
-    }),
-    prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
-      viewPreparation = loaded / total;
-      loading.rendering(2 + viewPreparation + reflectionPreparation, 4);
-    }),
-  ]);
+  await prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
+    loading.rendering(2 + (2 * loaded) / total, 4);
+  });
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   performance.mark("room-lighting-ready");
   controls = bindRoomControls(
