@@ -65,5 +65,6 @@ export default defineConfig(({ command, mode }) => {
     },
     preview: { https, headers },
     build: { target: "es2023", assetsInlineLimit: 0 },
+    test: { include: ["src/**/*.test.ts", "scripts/**/*.test.ts", "worker/**/*.test.ts"] },
   };
 });

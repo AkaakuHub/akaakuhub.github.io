@@ -44,8 +44,14 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
     renderer.setRenderTarget(target);
   }
   const sources: Object3D[] = [];
+  // 発光面は面光源の直接光に含まれるため、環境反射へ重複させない。
   scene.traverse((object) => {
-    if (object.name === "world-sky") sources.push(object);
+    if (
+      object.name === "world-sky" ||
+      object.name === "room-fluorescent" ||
+      object.name === "computer-monitor"
+    )
+      sources.push(object);
   });
   let reflection: RenderTarget | undefined;
   let capturedAt: number | undefined;
@@ -71,6 +77,7 @@ export function createRoomReflection(scene: Scene, renderer: Renderer) {
     }
     scene.environment = next.texture;
     environmentNode.value = next.texture;
+    if (!reflection) direct.dispose();
     scene.environmentIntensity = 1;
     reflection = next;
     capturedAt = timestamp;

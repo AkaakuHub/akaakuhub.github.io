@@ -91,6 +91,7 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     setMonitorPower,
     invalidateShadows: () => {
       celestialLight.shadow.needsUpdate = true;
+      fixtures.invalidateShadows();
     },
   };
 }
