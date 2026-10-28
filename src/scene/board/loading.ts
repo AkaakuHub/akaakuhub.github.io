@@ -10,7 +10,7 @@ export function createBoardLoader(update: (state: BoardState) => void) {
       active?.abort();
       const controller = new AbortController();
       active = controller;
-      update({ status: "loading" });
+      if (revoke) update({ status: "loading" });
       let content: SiteContent | undefined;
       try {
         if (revoke) await revokeSiteContent(controller.signal);

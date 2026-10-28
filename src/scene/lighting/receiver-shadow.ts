@@ -1,17 +1,7 @@
 import type { DepthTexture, LightShadow } from "three";
 import type { Node } from "three/webgpu";
 import { ConvertNode } from "three/webgpu";
-import {
-  dFdx,
-  dFdy,
-  float,
-  interleavedGradientNoise,
-  reference,
-  screenCoordinate,
-  texture,
-  vec2,
-  vogelDiskSample,
-} from "three/tsl";
+import { dFdx, dFdy, float, reference, texture, vec2 } from "three/tsl";
 
 export function receiverShadow({
   depthTexture,
@@ -34,13 +24,17 @@ export function receiverShadow({
     .toVar();
   const footprint = gradient.abs().dot(texel).mul(0.5).toVar();
   const radius = reference("radius", "float", shadow).mul(texel.x);
-  const phi = interleavedGradientNoise(screenCoordinate.xy).mul(2 * Math.PI);
   let sum: Node<"float"> = float(0);
-  for (let sample = 0; sample < 5; sample++) {
-    const offset = vogelDiskSample(float(sample), float(5), phi).mul(radius);
+  for (const [x, y] of [
+    [-0.5, -0.5],
+    [0.5, -0.5],
+    [-0.5, 0.5],
+    [0.5, 0.5],
+  ]) {
+    const offset = vec2(x, y).mul(radius);
     const depth = shadowCoord.z.add(gradient.dot(offset)).sub(footprint);
     const comparison = texture(depthTexture, shadowCoord.xy.add(offset)).compare(depth);
     sum = sum.add(new ConvertNode<"float">(comparison, "float"));
   }
-  return sum.mul(0.2);
+  return sum.mul(0.25);
 }
