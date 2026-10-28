@@ -1,10 +1,11 @@
-import { Euler, ExtrudeGeometry, Matrix4, Quaternion, Shape, Vector3 } from "three";
-import type { BufferGeometry } from "three";
+import { BufferGeometry, Euler, ExtrudeGeometry, Matrix4, Quaternion, Shape, Vector3 } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import type { Key } from "./layout";
 
 export const pitch = 0.0185;
 const keyHeight = 0.0095;
+const geometries = new Map<string, BufferGeometry>();
 
 export function keyTransform(key: Key): Matrix4 {
   const center = key.row + key.rows / 2;
@@ -28,6 +29,19 @@ export function topHeight(key: Key, x: number, z: number): number {
 }
 
 export function keycapGeometry(key: Key): BufferGeometry {
+  const name = [key.units, key.rows, key.shape ?? ""].join(":");
+  const existing = geometries.get(name);
+  if (existing) return existing;
+  const source = createKeycap(key);
+  const transferable = new BufferGeometry().copy(source);
+  const geometry = mergeVertices(transferable, 0.0000001);
+  transferable.dispose();
+  source.dispose();
+  geometries.set(name, geometry);
+  return geometry;
+}
+
+function createKeycap(key: Key): BufferGeometry {
   const width = key.units * pitch - 0.0015;
   const depth = key.rows * pitch - 0.0015;
   if (key.shape === "enter") {

@@ -1,4 +1,4 @@
-import type { BufferGeometry } from "three";
+import { BufferGeometry } from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import { metricBoxUv } from "../materials/uv";
@@ -15,7 +15,9 @@ export function roundedBoxGeometry(
   if (existing) return existing;
   const source = new RoundedBoxGeometry(...size, segments, radius);
   metricBoxUv(source);
-  const geometry = mergeVertices(source, 0.0000001);
+  const transferable = new BufferGeometry().copy(source);
+  const geometry = mergeVertices(transferable, 0.0000001);
+  transferable.dispose();
   source.dispose();
   geometries.set(key, geometry);
   return geometry;

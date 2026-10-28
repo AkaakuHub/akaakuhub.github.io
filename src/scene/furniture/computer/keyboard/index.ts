@@ -15,7 +15,9 @@ export function mechanicalKeyboard(): Group {
   const depth = 6.5 * pitch + 0.014;
   roundBox(keyboard, [width, 0.011, depth], [0, 0.0065, 0], shell, 0.003);
   roundBox(keyboard, [width - 0.01, 0.002, depth - 0.01], [0, 0.012, 0], plate, 0.002);
-  const parts = keyboardKeys.map((key) => keycapGeometry(key).applyMatrix4(keyTransform(key)));
+  const parts = keyboardKeys.map((key) =>
+    keycapGeometry(key).clone().applyMatrix4(keyTransform(key)),
+  );
   const geometry = mergeGeometries(parts);
   for (const part of parts) part.dispose();
   if (!geometry) throw new Error("キーボードの形状をまとめられません。");
