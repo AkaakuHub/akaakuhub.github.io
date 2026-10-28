@@ -138,13 +138,16 @@ export function createView(
       if (state.mode !== "room") transition({ mode: "room", direction: roomDirection }, 0.32);
     },
     resize() {
+      if (elapsed < duration) {
+        move(duration - elapsed);
+        return;
+      }
       target = pose();
-      elapsed = duration;
       apply(target);
     },
     update(delta: number) {
       if (elapsed < duration) {
-        elapsed = motion.matches ? duration : Math.min(duration, elapsed + delta);
+        elapsed = motion.matches ? duration : Math.min(duration, elapsed + Math.min(delta, 1 / 30));
         const t = duration === 0 ? 1 : MathUtils.smootherstep(elapsed / duration, 0, 1);
         position.lerpVectors(start.position, target.position, t);
         quaternion.slerpQuaternions(start.quaternion, target.quaternion, t);

@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { createView } from "./index";
 import { roomPose } from "./targets";
 
-function createFixture() {
-  vi.stubGlobal("window", { matchMedia: () => ({ matches: false }) });
+function createFixture(reducedMotion = false) {
+  vi.stubGlobal("window", { matchMedia: () => ({ matches: reducedMotion }) });
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
   const target = {
     object: new Object3D(),
@@ -98,5 +98,45 @@ describe("モーションによる視点の移動", () => {
     settle(view);
     expect(camera.position.distanceTo(initial)).toBeCloseTo(0.025);
     expect(camera.quaternion.angleTo(quaternion)).toBeLessThan(0.11);
+  });
+});
+
+describe("視点を切り替えるアニメーション", () => {
+  it("描画が遅れても一度の更新で移動先へ飛ばない", () => {
+    const { camera, view } = createFixture();
+    const initial = camera.position.clone();
+    const destination = roomPose(0, 0, camera.aspect);
+    view.back();
+    expect(view.update(0.8)).toBe(true);
+    expect(camera.position.distanceTo(initial)).toBeGreaterThan(0);
+    expect(camera.position.distanceTo(destination.position)).toBeGreaterThan(0.01);
+    settle(view);
+    expect(camera.position.distanceTo(destination.position)).toBeLessThan(0.000001);
+  });
+
+  it("移動中に表示サイズが変わっても途中の視点を保つ", () => {
+    const { camera, view } = createFixture();
+    view.back();
+    view.update(1 / 60);
+    const position = camera.position.clone();
+    const quaternion = camera.quaternion.clone();
+    camera.aspect = 0.5;
+    view.resize();
+    expect(view.moving).toBe(true);
+    expect(camera.position.distanceTo(position)).toBeLessThan(0.000001);
+    expect(camera.quaternion.angleTo(quaternion)).toBeLessThan(0.000001);
+    settle(view);
+    const destination = roomPose(0, 0, camera.aspect);
+    expect(camera.position.distanceTo(destination.position)).toBeLessThan(0.000001);
+    expect(camera.fov).toBeCloseTo(destination.fov);
+  });
+
+  it("動きを減らす設定ではアニメーションせず移動する", () => {
+    const { camera, view } = createFixture(true);
+    view.back();
+    expect(view.update(1 / 60)).toBe(false);
+    const destination = roomPose(0, 0, camera.aspect);
+    expect(camera.position.distanceTo(destination.position)).toBeLessThan(0.000001);
+    expect(camera.quaternion.angleTo(destination.quaternion)).toBeLessThan(0.000001);
   });
 });
