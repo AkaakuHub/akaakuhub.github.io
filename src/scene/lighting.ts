@@ -9,6 +9,7 @@ import { createMonitorLight, setMonitorLight } from "./lighting/monitor";
 import type { TokyoWeather } from "../weather/schema";
 import { renderingProfile } from "./quality";
 import { fitShadowCamera, shadowCasterBounds } from "./lighting/shadow-camera";
+import { receiverShadow } from "./lighting/receiver-shadow";
 
 export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeather, monitor: Mesh) {
   renderer.toneMappingExposure = cameraExposure;
@@ -18,6 +19,7 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   celestialLight.target.position.set(0, 1.2, 0);
   celestialLight.castShadow = true;
   celestialLight.shadow.autoUpdate = false;
+  Object.assign(celestialLight.shadow, { filterNode: receiverShadow });
   const shadowSize = renderingProfile().shadowSize;
   celestialLight.shadow.mapSize.set(shadowSize, shadowSize);
   celestialLight.shadow.radius = 2;

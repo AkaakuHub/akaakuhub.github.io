@@ -1,8 +1,10 @@
 import { LightShadow, MathUtils, Object3D, PerspectiveCamera, RectAreaLight } from "three";
 import type { Color } from "three";
 import { fixtureEmitterWidth, fixtureHeight, tubeLength } from "./fixtures";
+import { receiverShadow } from "./receiver-shadow";
 
 class FixtureShadow extends LightShadow<PerspectiveCamera> {
+  readonly filterNode = receiverShadow;
   constructor(z: number) {
     const height = fixtureHeight - 0.02;
     const halfExtent = 2.7 + Math.abs(z) + 0.03;
