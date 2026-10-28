@@ -1,5 +1,5 @@
 import type { PropMaterials } from "../materials/props";
-import { BoxGeometry, Group, Mesh } from "three";
+import { Group, Mesh, Vector3 } from "three";
 import type { MaterialLibrary } from "../materials/library";
 import type { MetalMaterials } from "../materials/metal";
 import { box } from "../primitives";
@@ -9,6 +9,7 @@ import { createArchitectureMaterials } from "./materials/architecture";
 import { createWindow } from "./window";
 import { wallBlock } from "./wall";
 import { orientWoodGrain } from "../materials/wood-grain";
+import { chamferedBox } from "../geometry/chamfered-box";
 
 export function createRoom(
   maps: MaterialLibrary,
@@ -41,9 +42,9 @@ export function createRoom(
         "y",
         "v",
       );
-    box(room, [5.2, 0.07, 0.05], [0, 0.043, z - Math.sign(z) * 0.015], trim);
-    box(room, [5.2, 0.038, 0.065], [0, 0.862, z - Math.sign(z) * 0.017], trim);
-    box(room, [5.2, 0.058, 0.045], [0, 2.724, z - Math.sign(z) * 0.012], trim);
+    chamferedBox(room, [5.2, 0.07, 0.05], [0, 0.043, z - Math.sign(z) * 0.015], trim, 0.001);
+    chamferedBox(room, [5.2, 0.038, 0.065], [0, 0.862, z - Math.sign(z) * 0.017], trim, 0.001);
+    chamferedBox(room, [5.2, 0.058, 0.045], [0, 2.724, z - Math.sign(z) * 0.012], trim, 0.001);
   }
   for (const x of [-2.586, 2.586]) {
     for (let panel = 0; panel < 8; panel++)
@@ -52,15 +53,15 @@ export function createRoom(
         "y",
         "v",
       );
-    box(room, [0.05, 0.07, 5.2], [x - Math.sign(x) * 0.015, 0.043, 0], trim);
-    box(room, [0.065, 0.038, 5.2], [x - Math.sign(x) * 0.017, 0.862, 0], trim);
-    box(room, [0.045, 0.058, 5.2], [x - Math.sign(x) * 0.012, 2.724, 0], trim);
+    chamferedBox(room, [0.05, 0.07, 5.2], [x - Math.sign(x) * 0.015, 0.043, 0], trim, 0.001);
+    chamferedBox(room, [0.065, 0.038, 5.2], [x - Math.sign(x) * 0.017, 0.862, 0], trim, 0.001);
+    chamferedBox(room, [0.045, 0.058, 5.2], [x - Math.sign(x) * 0.012, 2.724, 0], trim, 0.001);
   }
   for (const x of [-2.535, 2.535]) {
     for (const z of [-2.535, 2.535]) {
       wallBlock(room, [0.13, 2.9, 0.13], [x, 1.45, z], wall);
       orientWoodGrain(box(room, [0.145, 0.9, 0.145], [x, 0.45, z], boards), "y", "v");
-      box(room, [0.155, 0.06, 0.155], [x, 0.87, z], trim);
+      chamferedBox(room, [0.155, 0.06, 0.155], [x, 0.87, z], trim, 0.0008);
     }
   }
   room.add(
@@ -68,11 +69,14 @@ export function createRoom(
     createWindow(materials, maps.fabric, metals, props),
     createDoor(materials, metals, props),
   );
+  const size = new Vector3();
   room.traverse((object) => {
-    if (!(object instanceof Mesh) || !(object.geometry instanceof BoxGeometry)) return;
+    if (!(object instanceof Mesh)) return;
     if (object.material !== trim && object.material !== materials.sill) return;
-    const { width, height, depth } = object.geometry.parameters;
-    const axis = height > width && height > depth ? "y" : depth > width ? "z" : "x";
+    if (!object.geometry.boundingBox) object.geometry.computeBoundingBox();
+    if (!object.geometry.boundingBox) throw new Error("木製の見切りの寸法を確認できません。");
+    object.geometry.boundingBox.getSize(size);
+    const axis = size.y > size.x && size.y > size.z ? "y" : size.z > size.x ? "z" : "x";
     orientWoodGrain(object, axis, "v");
   });
   return room;

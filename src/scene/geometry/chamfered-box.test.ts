@@ -1,6 +1,7 @@
 import { Raycaster, Mesh, MeshBasicMaterial, Vector3 } from "three";
 import { describe, expect, it } from "vite-plus/test";
 import { chamferedBoxGeometry } from "./chamfered-box";
+import { orientWoodGrain } from "../materials/wood-grain";
 
 describe("木製パネルの面取り", () => {
   it("指定した外寸と薄い面取りを保ち、三角形数を抑える", () => {
@@ -41,5 +42,27 @@ describe("木製パネルの面取り", () => {
           const ray = new Raycaster(from, from.clone().negate().normalize());
           expect(ray.intersectObject(mesh).length).toBeGreaterThan(0);
         }
+  });
+
+  it.each([
+    { axis: "x" as const, size: [5.2, 0.038, 0.065] as const },
+    { axis: "y" as const, size: [0.05, 1.8, 0.08] as const },
+    { axis: "z" as const, size: [0.32, 0.055, 4.13] as const },
+  ])("面取りした長い部材でも木目の向きと実寸を保つ: $axis", ({ axis, size }) => {
+    const source = chamferedBoxGeometry(size, 0.001);
+    const mesh = new Mesh(source, new MeshBasicMaterial());
+    orientWoodGrain(mesh, axis, "v");
+    expect(mesh.geometry).not.toBe(source);
+    const positions = mesh.geometry.getAttribute("position");
+    const normals = mesh.geometry.getAttribute("normal");
+    const uv = mesh.geometry.getAttribute("uv");
+    const normal = new Vector3();
+    const point = new Vector3();
+    for (let index = 0; index < positions.count; index++) {
+      normal.fromBufferAttribute(normals, index);
+      if (Math.abs(normal[axis]) >= 0.9) continue;
+      point.fromBufferAttribute(positions, index);
+      expect(uv.getY(index)).toBe(point[axis]);
+    }
   });
 });

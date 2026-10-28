@@ -5,6 +5,7 @@ import { box } from "../primitives";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { roundedBoxGeometry } from "../geometry/rounded-box";
 import type { MetalMaterials } from "../materials/metal";
+import { chamferedBox } from "../geometry/chamfered-box";
 
 function roundBox(
   parent: Group,
@@ -93,10 +94,10 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
       roundBox(frame, [0.069, 0.058, 0.014], [x, 0.153, z], rubber, 0.005);
     const cap = roundBox(frame, [0.055, 0.008, 0.068], [x, 1.828, -0.012], rubber, 0.004);
     cap.name = "stand-tube-endcap";
-    const brace = box(frame, [0.026, 0.78, 0.027], [x, 0.54, -0.13], coating);
+    const brace = chamferedBox(frame, [0.026, 0.78, 0.027], [x, 0.54, -0.13], coating, 0.0008);
     brace.rotation.x = 0.3;
   }
-  box(frame, [2.56, 0.035, 0.035], [0, 0.42, -0.06], coating);
+  chamferedBox(frame, [2.56, 0.035, 0.035], [0, 0.42, -0.06], coating, 0.001);
   roundBox(frame, [1.78, 0.025, 0.13], [0.15, 0.585, 0.08], aluminum, 0.008);
   box(frame, [1.78, 0.035, 0.012], [0.15, 0.595, 0.142], coating);
   for (const x of [-0.61, 0.91]) hardware.screw(aluminum, [x, 0.583, 0.149]);

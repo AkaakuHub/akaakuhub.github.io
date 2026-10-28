@@ -7,6 +7,7 @@ import { HardwareBatch } from "../details/hardware";
 import { windowPull } from "../details/pull";
 import { createCurtains } from "./curtains";
 import type { ArchitectureMaterials } from "./materials/architecture";
+import { chamferedBox } from "../geometry/chamfered-box";
 
 export function createWindow(
   materials: ArchitectureMaterials,
@@ -53,21 +54,21 @@ export function createWindow(
     for (const edge of [-width / 2 + 0.018, width / 2 - 0.018]) {
       box(window, [0.075, 1.46, 0.018], [-2.572, 1.785, center + edge], gasket);
     }
-    box(window, [0.07, 0.028, width - 0.04], [-2.568, 2.19, center], frame);
+    chamferedBox(window, [0.07, 0.028, width - 0.04], [-2.568, 2.19, center], frame, 0.0006);
     const handle = windowPull(steel);
     handle.position.set(-2.4999, 1.65, center + width / 2);
     handle.rotation.y = Math.PI / 2;
     window.add(handle);
   }
   for (const y of [1.02, 2.55]) {
-    box(window, [0.16, 0.075, 3.93], [-2.57, y, 0], frame);
+    chamferedBox(window, [0.16, 0.075, 3.93], [-2.57, y, 0], frame, 0.0006);
   }
   for (const z of [-1.93, -0.63, 0.63, 1.93]) {
-    box(window, [0.14, 1.6, 0.055], [-2.57, 1.785, z], frame);
+    chamferedBox(window, [0.14, 1.6, 0.055], [-2.57, 1.785, z], frame, 0.0006);
     for (const y of [1.075, 2.49]) hardware.screw(steel, [-2.4999, y, z], [0, Math.PI / 2, 0]);
   }
-  box(window, [0.32, 0.055, 4.13], [-2.43, 0.965, 0], sill);
-  box(window, [0.055, 0.115, 4.1], [-2.31, 0.9, 0], sill);
+  chamferedBox(window, [0.32, 0.055, 4.13], [-2.43, 0.965, 0], sill, 0.0015);
+  chamferedBox(window, [0.055, 0.115, 4.1], [-2.31, 0.9, 0], sill, 0.001);
   for (const x of [-2.54, -2.58]) box(window, [0.002, 0.006, 3.78], [x, 1.0605, 0], steel);
   hardware.finish(window);
   const dust = props.paper.clone();
