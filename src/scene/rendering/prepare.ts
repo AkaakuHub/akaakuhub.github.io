@@ -1,4 +1,4 @@
-import { Frustum, Group, HalfFloatType, Matrix4, Mesh, RenderTarget } from "three";
+import { Frustum, Group, HalfFloatType, InstancedMesh, Matrix4, Mesh, RenderTarget } from "three";
 import type { BufferGeometry, Material, Object3D, PerspectiveCamera, Scene } from "three";
 import type { Renderer } from "three/webgpu";
 
@@ -32,6 +32,8 @@ export async function prepareRoomShaders(
       materials.map((material) => `${material.uuid}:${material.version}`).join(","),
       object.receiveShadow,
       object.layers.mask,
+      object instanceof InstancedMesh,
+      object instanceof InstancedMesh && object.instanceColor !== null,
       ...Object.entries(object.geometry.attributes).map(([name, attribute]) =>
         [name, attribute.itemSize, attribute.normalized, attribute.array.constructor.name].join(
           ":",

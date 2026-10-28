@@ -1,5 +1,13 @@
-import { DepthTexture, HalfFloatType, Matrix4, NearestFilter, RenderTarget, Vector3 } from "three";
-import type { DirectionalLight, PerspectiveCamera, Texture } from "three";
+import {
+  DepthTexture,
+  HalfFloatType,
+  Matrix4,
+  NearestFilter,
+  RenderTarget,
+  Texture,
+  Vector3,
+} from "three";
+import type { DirectionalLight, PerspectiveCamera } from "three";
 import { FunctionNode, MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
 import type { Renderer } from "three/webgpu";
 import { texture, uniform, uv, wgslFn } from "three/tsl";
@@ -22,6 +30,8 @@ export class VolumetricPass {
     depthBuffer: false,
   });
   private readonly shadowDepth = texture(new DepthTexture(1, 1));
+  private readonly sceneDepth = texture(new DepthTexture(1, 1));
+  private readonly sceneColor = texture(new Texture());
   private readonly inverseProjection = uniform(new Matrix4());
   private readonly cameraWorld = uniform(new Matrix4());
   private readonly lightMatrix = uniform(new Matrix4());
@@ -51,9 +61,10 @@ export class VolumetricPass {
     color: Texture,
     steps: number,
   ) {
-    const sceneDepth = texture(depth);
+    this.sceneDepth.value = depth;
+    this.sceneColor.value = color;
     this.scatteringMaterial.fragmentNode = integrate({
-      sceneDepth,
+      sceneDepth: this.sceneDepth,
       lightDepth: this.shadowDepth,
       uv: uv(),
       inverseProjection: this.inverseProjection,
@@ -67,9 +78,9 @@ export class VolumetricPass {
       extinction: this.extinction,
     });
     this.compositeMaterial.fragmentNode = composite({
-      sceneColor: texture(color),
+      sceneColor: this.sceneColor,
       scattering: texture(this.target.texture),
-      sceneDepth,
+      sceneDepth: this.sceneDepth,
       uv: uv(),
       inverseProjection: this.inverseProjection,
       cameraWorld: this.cameraWorld,
@@ -84,7 +95,11 @@ export class VolumetricPass {
   invalidate(): void {
     this.state.invalidate();
   }
-  render(renderer: Renderer, output: RenderTarget): void {
+  render(renderer: Renderer, output: RenderTarget, input: RenderTarget): void {
+    if (!input.depthTexture) throw new Error("部屋の深度テクスチャがありません。");
+    if (this.sceneDepth.value !== input.depthTexture) this.state.invalidate();
+    this.sceneDepth.value = input.depthTexture;
+    this.sceneColor.value = input.texture;
     const depth = this.light.shadow.map?.depthTexture;
     if (!depth) throw new Error("天体光の深度テクスチャが生成されていません。");
     this.shadowDepth.value = depth;

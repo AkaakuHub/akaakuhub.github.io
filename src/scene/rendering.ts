@@ -80,16 +80,19 @@ export function createRendering(
       startedAt ??= now;
       visibility.value = reducedMotion.matches ? 1 : MathUtils.smoothstep(now - startedAt, 0, 300);
       if (celestialLight.shadow.needsUpdate) scattering.invalidate();
-      surfaces.render(renderer, frame, moving);
-      dynamic.render(renderer, frame);
-      weather.render(renderer, frame);
+      const compose = dynamic.visible || weather.active;
+      const input = surfaces.render(renderer, frame, moving, compose);
+      if (compose) {
+        dynamic.render(renderer, frame);
+        weather.render(renderer, frame);
+      }
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
       try {
         if (celestialLight.intensity > 0) {
-          scattering.render(renderer, composite);
+          scattering.render(renderer, composite, input);
           source.value = composite.texture;
-        } else source.value = frame.texture;
+        } else source.value = input.texture;
         exposure.value = renderer.toneMappingExposure;
         renderer.setRenderTarget(null);
         quad.render(renderer);

@@ -2,7 +2,7 @@ import { AlwaysDepth, DepthTexture, HalfFloatType, Matrix4, RenderTarget } from 
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 import { MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
 import type { Renderer } from "three/webgpu";
-import { texture } from "three/tsl";
+import { positionGeometry, texture, vec4 } from "three/tsl";
 
 export class ScenePass {
   private readonly depth = new DepthTexture(1, 1);
@@ -24,6 +24,7 @@ export class ScenePass {
     private readonly camera: PerspectiveCamera,
     private readonly dynamicSurfaces: readonly Object3D[],
   ) {
+    this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     this.material.fragmentNode = texture(this.target.texture);
     this.material.depthNode = texture(this.depth).r;
   }
@@ -36,35 +37,45 @@ export class ScenePass {
     this.dirty = true;
   }
 
-  render(renderer: Renderer, output: RenderTarget, moving: boolean): void {
+  render(
+    renderer: Pick<Renderer, "autoClear" | "setRenderTarget" | "render">,
+    output: RenderTarget,
+    moving: boolean,
+    composite: boolean,
+  ): RenderTarget {
     this.camera.updateMatrixWorld();
     const autoClear = renderer.autoClear;
     renderer.autoClear = true;
-    if (
-      moving ||
-      this.dirty ||
-      !this.world.equals(this.camera.matrixWorld) ||
-      !this.projection.equals(this.camera.projectionMatrix)
-    ) {
-      renderer.setRenderTarget(moving ? output : this.target);
-      const visibility = this.dynamicSurfaces.map((object) => ({
-        object,
-        visible: object.visible,
-      }));
-      for (const { object } of visibility) object.visible = false;
-      try {
-        renderer.render(this.scene, this.camera);
-      } finally {
-        for (const { object, visible } of visibility) object.visible = visible;
+    const direct = moving && composite;
+    try {
+      if (
+        moving ||
+        this.dirty ||
+        !this.world.equals(this.camera.matrixWorld) ||
+        !this.projection.equals(this.camera.projectionMatrix)
+      ) {
+        renderer.setRenderTarget(direct ? output : this.target);
+        const visibility = this.dynamicSurfaces.map((object) => ({
+          object,
+          visible: object.visible,
+        }));
+        for (const { object } of visibility) object.visible = false;
+        try {
+          renderer.render(this.scene, this.camera);
+        } finally {
+          for (const { object, visible } of visibility) object.visible = visible;
+        }
+        this.world.copy(this.camera.matrixWorld);
+        this.projection.copy(this.camera.projectionMatrix);
+        this.dirty = direct;
       }
-      this.world.copy(this.camera.matrixWorld);
-      this.projection.copy(this.camera.projectionMatrix);
-      this.dirty = moving;
+      if (composite && !direct) {
+        renderer.setRenderTarget(output);
+        renderer.render(this.quad, this.quad.camera);
+      }
+      return composite ? output : this.target;
+    } finally {
+      renderer.autoClear = autoClear;
     }
-    if (!moving) {
-      renderer.setRenderTarget(output);
-      this.quad.render(renderer);
-    }
-    renderer.autoClear = autoClear;
   }
 }

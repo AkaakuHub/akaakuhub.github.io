@@ -42,6 +42,10 @@ export class DynamicSurfacePass {
     return false;
   }
 
+  get visible(): boolean {
+    return this.hasVisibleSurface();
+  }
+
   render(
     renderer: Pick<Renderer, "autoClear" | "setRenderTarget" | "render">,
     target: RenderTarget,
