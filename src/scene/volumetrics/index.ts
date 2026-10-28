@@ -46,13 +46,9 @@ export class VolumetricPass {
     depthWrite: false,
     toneMapped: false,
   });
-  private readonly compositeMaterial = new MeshBasicNodeMaterial({
-    depthTest: false,
-    depthWrite: false,
-    toneMapped: false,
-  });
   private readonly quad = new QuadMesh(this.scatteringMaterial);
   private readonly state = new ScatteringState();
+  readonly colorNode;
 
   constructor(
     private readonly camera: PerspectiveCamera,
@@ -77,7 +73,7 @@ export class VolumetricPass {
       steps: uniform(steps, "int"),
       extinction: this.extinction,
     });
-    this.compositeMaterial.fragmentNode = composite({
+    this.colorNode = composite({
       sceneColor: this.sceneColor,
       scattering: texture(this.target.texture),
       sceneDepth: this.sceneDepth,
@@ -95,11 +91,12 @@ export class VolumetricPass {
   invalidate(): void {
     this.state.invalidate();
   }
-  render(renderer: Renderer, output: RenderTarget, input: RenderTarget): void {
+  render(renderer: Renderer, input: RenderTarget): boolean {
     if (!input.depthTexture) throw new Error("部屋の深度テクスチャがありません。");
     if (this.sceneDepth.value !== input.depthTexture) this.state.invalidate();
     this.sceneDepth.value = input.depthTexture;
     this.sceneColor.value = input.texture;
+    if (this.light.intensity <= 0) return false;
     const depth = this.light.shadow.map?.depthTexture;
     if (!depth) throw new Error("天体光の深度テクスチャが生成されていません。");
     this.shadowDepth.value = depth;
@@ -113,13 +110,9 @@ export class VolumetricPass {
     this.radiance.value
       .set(this.light.color.r, this.light.color.g, this.light.color.b)
       .multiplyScalar(this.light.intensity);
-    if (this.state.update(this.camera, this.light)) {
-      this.quad.material = this.scatteringMaterial;
-      renderer.setRenderTarget(this.target);
-      this.quad.render(renderer);
-    }
-    this.quad.material = this.compositeMaterial;
-    renderer.setRenderTarget(output);
+    if (!this.state.update(this.camera, this.light)) return false;
+    renderer.setRenderTarget(this.target);
     this.quad.render(renderer);
+    return true;
   }
 }

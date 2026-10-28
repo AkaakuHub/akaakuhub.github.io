@@ -13,6 +13,7 @@ export class ScenePass {
   private readonly world = new Matrix4();
   private readonly projection = new Matrix4();
   private dirty = true;
+  private version = 0;
   private readonly material = new MeshBasicNodeMaterial({
     depthFunc: AlwaysDepth,
     toneMapped: false,
@@ -31,6 +32,9 @@ export class ScenePass {
 
   invalidate(): void {
     this.dirty = true;
+  }
+  get revision(): number {
+    return this.version;
   }
   setSize(width: number, height: number): void {
     this.target.setSize(width, height);
@@ -62,6 +66,7 @@ export class ScenePass {
         for (const { object } of visibility) object.visible = false;
         try {
           renderer.render(this.scene, this.camera);
+          this.version++;
         } finally {
           for (const { object, visible } of visibility) object.visible = visible;
         }
