@@ -6,6 +6,8 @@ import {
   Group,
   Mesh,
   MeshStandardMaterial,
+  MeshBasicMaterial,
+  PlaneGeometry,
   TubeGeometry,
   Vector3,
 } from "three";
@@ -23,31 +25,51 @@ export function createDoor(
 ): Group {
   const door = new Group();
   door.position.set(2.51, 0, 0.95);
+  door.name = "room-door";
+  const pivot = new Group();
+  pivot.name = "room-door-pivot";
+  pivot.position.set(-0.007, 0, 0.5);
+  const leaf = new Group();
+  leaf.name = "room-door-leaf";
+  leaf.position.set(0.007, 0, -0.5);
+  pivot.add(leaf);
+  door.add(pivot);
+  const light = new Mesh(
+    new PlaneGeometry(1.04, 2.2),
+    new MeshBasicMaterial({ color: 0xffffff, toneMapped: false }),
+  );
+  light.material.color.multiplyScalar(12);
+  light.name = "room-door-light";
+  light.position.set(0.45, 1.1, 0);
+  light.rotation.y = -Math.PI / 2;
+  light.visible = false;
+  door.add(light);
   const wood = materials.door;
   const trim = materials.trim;
   const gasket = metals.rubber;
   const steel = metals.steel;
   const hardware = new HardwareBatch();
+  const frameHardware = new HardwareBatch();
   for (const z of [-0.54, 0.54]) {
     box(door, [0.14, 2.24, 0.075], [0, 1.12, z], trim);
   }
   box(door, [0.14, 0.075, 1.16], [0, 2.25, 0], trim);
-  box(door, [0.06, 1.17, 1.0], [0.027, 0.6, 0], wood);
-  box(door, [0.06, 0.17, 1.0], [0.027, 2.13, 0], wood);
-  box(door, [0.06, 0.86, 0.26], [0.027, 1.62, -0.37], wood);
-  box(door, [0.06, 0.86, 0.2], [0.027, 1.62, 0.4], wood);
+  box(leaf, [0.06, 1.17, 1.0], [0.027, 0.6, 0], wood);
+  box(leaf, [0.06, 0.17, 1.0], [0.027, 2.13, 0], wood);
+  box(leaf, [0.06, 0.86, 0.26], [0.027, 1.62, -0.37], wood);
+  box(leaf, [0.06, 0.86, 0.2], [0.027, 1.62, 0.4], wood);
   const glass = props.frostedGlass;
   const paneGeometry = new BoxGeometry(0.012, 0.812, 0.512, 1, 17, 11);
   metricBoxUv(paneGeometry);
   const pane = new Mesh(paneGeometry, glass);
   pane.position.set(-0.023, 1.62, 0.03);
   pane.receiveShadow = true;
-  door.add(pane);
+  leaf.add(pane);
   for (const z of [-0.24, 0.3]) {
-    box(door, [0.028, 0.86, 0.027], [-0.027, 1.62, z], trim);
+    box(leaf, [0.028, 0.86, 0.027], [-0.027, 1.62, z], trim);
   }
   for (const y of [1.2, 2.04]) {
-    box(door, [0.028, 0.027, 0.57], [-0.027, y, 0.03], trim);
+    box(leaf, [0.028, 0.027, 0.57], [-0.027, y, 0.03], trim);
   }
   const plate = new RoundedBoxGeometry(0.002, 0.22, 0.075, 2, 0.0007);
   metricBoxUv(plate);
@@ -76,7 +98,7 @@ export function createDoor(
   metricBoxUv(kickPlate);
   hardware.add(kickPlate, steel, [-0.00375, 0.15, 0]);
   kickPlate.dispose();
-  box(door, [0.025, 0.025, 1.01], [-0.015, 0.017, 0], gasket);
+  box(leaf, [0.025, 0.025, 1.01], [-0.015, 0.017, 0], gasket);
   for (const y of [0.45, 1.1, 1.95]) {
     const joint = hinge(steel);
     joint.position.set(-0.007, y, 0.5);
@@ -86,7 +108,8 @@ export function createDoor(
   for (const y of [0.1, 0.2])
     for (const z of [-0.34, 0.34]) hardware.screw(steel, [-0.0046, y, z], [0, -Math.PI / 2, 0]);
   for (const y of [0.3, 2.1])
-    for (const z of [-0.54, 0.54]) hardware.screw(steel, [-0.0702, y, z], [0, -Math.PI / 2, 0]);
+    for (const z of [-0.54, 0.54])
+      frameHardware.screw(steel, [-0.0702, y, z], [0, -Math.PI / 2, 0]);
   const switchPlate = box(door, [0.025, 0.115, 0.07], [-0.011, 1.16, -0.8], metals.ivory);
   switchPlate.name = "room-light-switch";
   const rocker = box(switchPlate, [0.016, 0.06, 0.04], [-0.018, 0, 0], metals.ivory);
@@ -103,7 +126,9 @@ export function createDoor(
     strip.name = "switch-phosphorescent-tape";
     strip.castShadow = false;
   }
-  for (const y of [1.116, 1.204]) hardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
-  hardware.finish(door);
+  for (const y of [1.116, 1.204])
+    frameHardware.screw(steel, [-0.0237, y, -0.8], [0, -Math.PI / 2, 0]);
+  hardware.finish(leaf);
+  frameHardware.finish(door);
   return door;
 }

@@ -6,6 +6,7 @@ import type { createView } from "../scene/view";
 import { createPicker } from "./picking";
 import type { createComputerInterface } from "./computer";
 import type { bindRoomSwitch } from "./room-switch";
+import type { createDoorInterface } from "./door";
 import { bindKeyboardTargets } from "./keyboard-targets";
 
 export function bindRoomControls(
@@ -18,10 +19,19 @@ export function bindRoomControls(
   computer: ReturnType<typeof createComputerInterface>,
   lightSwitch: ReturnType<typeof bindRoomSwitch>,
   refreshBoard: () => void,
+  door: ReturnType<typeof createDoorInterface>,
 ) {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
-  const pick = createPicker(ui.canvas, camera, scene, papers, computer.targets, lightSwitch.object);
+  const pick = createPicker(
+    ui.canvas,
+    camera,
+    scene,
+    papers,
+    computer.targets,
+    lightSwitch.object,
+    door.targets,
+  );
   const keyboard = bindKeyboardTargets(
     root,
     ui,
@@ -48,6 +58,7 @@ export function bindRoomControls(
     else view.inspect(Math.max(0, next));
   }
   window.addEventListener("keydown", (event) => {
+    if (view.locked) return;
     if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
     if (event.key === "Escape") {
       view.back();
@@ -101,7 +112,7 @@ export function bindRoomControls(
     ui.canvas.classList.toggle("cursor-grabbing", dragging);
   }
   ui.canvas.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0 || view.moving) return;
+    if (event.button !== 0 || view.moving || view.locked) return;
     ui.canvas.focus({ preventScroll: true });
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     ui.canvas.setPointerCapture(event.pointerId);
@@ -117,7 +128,8 @@ export function bindRoomControls(
   ui.canvas.addEventListener("pointermove", (event) => {
     const previous = pointers.get(event.pointerId);
     if (!previous) {
-      if (event.pointerType === "mouse") cursor(!view.moving && Boolean(pick(event, false)), false);
+      if (event.pointerType === "mouse")
+        cursor(!view.locked && !view.moving && Boolean(pick(event, false)), false);
       return;
     }
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -155,10 +167,18 @@ export function bindRoomControls(
       else view.vertical(dy > 0 ? 1 : -1);
       return;
     }
-    if (Math.hypot(dx, dy) >= 10 || view.moving) return;
+    if (Math.hypot(dx, dy) >= 10 || view.moving || view.locked) return;
     const hit = pick(event, true);
     if (!hit) {
       view.back();
+      return;
+    }
+    if (hit.type === "door") {
+      door.toggle();
+      return;
+    }
+    if (hit.type === "door-light") {
+      door.enter();
       return;
     }
     if (hit.type === "computer") {
@@ -194,7 +214,7 @@ export function bindRoomControls(
   ui.canvas.addEventListener(
     "wheel",
     (event) => {
-      if (view.state.mode === "room") return;
+      if (view.locked || view.state.mode === "room") return;
       event.preventDefault();
       const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 540 : 1;
       if (view.state.mode === "notice" && !event.ctrlKey) {

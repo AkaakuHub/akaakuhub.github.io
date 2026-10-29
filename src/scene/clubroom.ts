@@ -37,6 +37,12 @@ export async function assembleClubroom(
   const lightSwitch = scene.getObjectByName("room-light-switch");
   const rocker = scene.getObjectByName("room-light-switch-rocker");
   if (!lightSwitch || !rocker) throw new Error("部屋の照明スイッチが見つかりません。");
+  const pivot = scene.getObjectByName("room-door-pivot");
+  const leaf = scene.getObjectByName("room-door-leaf");
+  const doorLight = scene.getObjectByName("room-door-light");
+  if (!(pivot instanceof Group) || !(leaf instanceof Group) || !(doorLight instanceof Mesh))
+    throw new Error("ドアの可動部と光が見つかりません。");
+  const door = { pivot, leaf, light: doorLight };
   const power = scene.getObjectByName("computer-power-button");
   const monitor = scene.getObjectByName("computer-monitor");
   const head = scene.getObjectByName("computer-display-head");
@@ -57,6 +63,8 @@ export async function assembleClubroom(
   const fanSurfaces: Mesh[] = [];
   const preserved = new Set<Object3D>([
     ...board.notices.keys(),
+    pivot,
+    doorLight,
     lightSwitch,
     rocker,
     computer.object,
@@ -64,6 +72,7 @@ export async function assembleClubroom(
     power,
     monitor,
   ]);
+  leaf.traverse((object) => preserved.add(object));
   lightSwitch.traverse((object) => preserved.add(object));
   head.traverse((object) => preserved.add(object));
   for (const fan of fans)
@@ -76,6 +85,7 @@ export async function assembleClubroom(
   performance.mark("room-batching-ready");
   return {
     board,
+    door,
     lightSwitch,
     rocker,
     computer: Object.assign(computer, { power, monitor, fans, fanSurfaces, orientDisplay }),

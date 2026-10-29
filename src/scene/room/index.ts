@@ -47,14 +47,42 @@ export function createRoom(
     chamferedBox(room, [5.2, 0.058, 0.045], [0, 2.724, z - Math.sign(z) * 0.012], trim, 0.001);
   }
   for (const x of [-2.586, 2.586]) {
-    for (let panel = 0; panel < 8; panel++)
-      orientWoodGrain(
-        box(room, [0.012, 0.84, 0.6485], [x, 0.42, -2.275 + panel * 0.65], boards),
-        "y",
-        "v",
+    const spans =
+      x > 0
+        ? ([
+            [-2.6, 0.39],
+            [1.51, 2.6],
+          ] as const)
+        : ([[-2.6, 2.6]] as const);
+    for (const [start, end] of spans) {
+      for (let panel = 0; panel < 8; panel++) {
+        const center = -2.275 + panel * 0.65;
+        const left = Math.max(start, center - 0.6485 / 2);
+        const right = Math.min(end, center + 0.6485 / 2);
+        if (right <= left) continue;
+        orientWoodGrain(
+          box(room, [0.012, 0.84, right - left], [x, 0.42, (left + right) / 2], boards),
+          "y",
+          "v",
+        );
+      }
+      const length = end - start;
+      const center = (start + end) / 2;
+      chamferedBox(
+        room,
+        [0.05, 0.07, length],
+        [x - Math.sign(x) * 0.015, 0.043, center],
+        trim,
+        0.001,
       );
-    chamferedBox(room, [0.05, 0.07, 5.2], [x - Math.sign(x) * 0.015, 0.043, 0], trim, 0.001);
-    chamferedBox(room, [0.065, 0.038, 5.2], [x - Math.sign(x) * 0.017, 0.862, 0], trim, 0.001);
+      chamferedBox(
+        room,
+        [0.065, 0.038, length],
+        [x - Math.sign(x) * 0.017, 0.862, center],
+        trim,
+        0.001,
+      );
+    }
     chamferedBox(room, [0.045, 0.058, 5.2], [x - Math.sign(x) * 0.012, 2.724, 0], trim, 0.001);
   }
   for (const x of [-2.535, 2.535]) {

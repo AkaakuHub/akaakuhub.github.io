@@ -13,6 +13,7 @@ export function createPicker(
   papers: readonly Object3D[],
   computer: ComputerTargets,
   lightSwitch: Object3D,
+  door: { leaf: Object3D; light: Object3D },
 ) {
   const raycaster = new Raycaster();
   const pointer = new Vector2();
@@ -46,7 +47,8 @@ export function createPicker(
         raycaster.far = Infinity;
       }
     }
-    const targets = [...papers, computer.power, lightSwitch];
+    const targets = [...papers, computer.power, lightSwitch, door.leaf];
+    if (door.light.visible) targets.push(door.light);
     let candidate = raycaster.intersectObjects(targets, true)[0];
     let target: Object3D | undefined;
     if (candidate) {
@@ -76,6 +78,8 @@ export function createPicker(
       });
       if (blocked) return;
     }
+    if (target === door.leaf) return { type: "door" as const };
+    if (target === door.light) return { type: "door-light" as const };
     if (target === lightSwitch) return { type: "light" as const };
     if (target && computer.surfaces.includes(target)) return { type: "computer" as const };
     if (target === computer.power) return { type: "power" as const };
