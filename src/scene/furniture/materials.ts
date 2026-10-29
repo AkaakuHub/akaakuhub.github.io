@@ -18,7 +18,6 @@ export function createFurnitureMaterials(
     enamel: metals.enamel,
     deepGreen: metals.deepGreen,
     metal: metals.steel,
-    brass: metals.brass,
     graphite: metals.graphite,
     rubber: metals.rubber,
     ...props,

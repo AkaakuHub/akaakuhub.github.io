@@ -174,57 +174,27 @@
     "pack": "room/surfaces.bin"
   },
   {
-    "id": "materials/Metal048B/normal.webp",
-    "offset": 1306160,
-    "bytes": 268,
-    "pack": "room/surfaces.bin"
-  },
-  {
     "id": "materials/Metal027/normal.webp",
-    "offset": 1306432,
+    "offset": 1306160,
     "bytes": 402,
     "pack": "room/surfaces.bin"
   },
   {
     "id": "materials/Plastic010/color.webp",
-    "offset": 1306840,
+    "offset": 1306568,
     "bytes": 676,
     "pack": "room/surfaces.bin"
   },
   {
     "id": "materials/Plastic010/normal.webp",
-    "offset": 1307520,
+    "offset": 1307248,
     "bytes": 290,
     "pack": "room/surfaces.bin"
   },
   {
     "id": "materials/Plastic010/roughness.webp",
-    "offset": 1307816,
+    "offset": 1307544,
     "bytes": 30076,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "materials/LeafSet024/color.webp",
-    "offset": 1337896,
-    "bytes": 97386,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "materials/LeafSet024/normal.webp",
-    "offset": 1435288,
-    "bytes": 31088,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "materials/LeafSet024/roughness.webp",
-    "offset": 1466376,
-    "bytes": 19058,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "materials/LeafSet024/opacity.webp",
-    "offset": 1485440,
-    "bytes": 8230,
     "pack": "room/surfaces.bin"
   }
 ]

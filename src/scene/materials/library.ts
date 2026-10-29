@@ -24,7 +24,7 @@ export function loadMaterials(assets: RoomAssetLoader) {
       normalMap: texture(id, "normal", meters),
       roughnessMap: texture(id, packed ? "arm" : "roughness", meters),
       aoMap: packed ? texture(id, "arm", meters) : null,
-      alphaMap: format === "leaf" ? texture(id, "opacity", meters) : null,
+      alphaMap: null,
     };
   }
   function loadMetal({ id, meters }: MetalDefinition): MetalMaps {
@@ -41,11 +41,9 @@ export function loadMaterials(assets: RoomAssetLoader) {
     aluminum: loadSet(materialDefinitions.aluminum),
     paint: loadSet(materialDefinitions.paint),
     steel: loadMetal(materialDefinitions.steel),
-    brass: loadMetal(materialDefinitions.brass),
     powder: loadMetal(materialDefinitions.powder),
     paper: loadSet(materialDefinitions.paper),
     plastic: loadSet(materialDefinitions.plastic),
-    leaves: loadSet(materialDefinitions.leaves),
   };
   const paperReady = Promise.all(
     [materials.paper.map, materials.paper.normalMap, materials.paper.roughnessMap].map((map) =>

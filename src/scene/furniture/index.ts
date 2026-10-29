@@ -4,7 +4,6 @@ import { Group, Mesh, Vector3 } from "three";
 import type { MaterialLibrary } from "../materials/library";
 import { createFurnitureMaterials } from "./materials";
 import { createWorkbench } from "./workbench";
-import { createCabinets } from "./cabinets";
 import { createFrontFurniture } from "./front";
 import { orientWoodGrain } from "../materials/wood-grain";
 
@@ -16,11 +15,7 @@ export function createFurniture(
   const furniture = new Group();
   furniture.name = "furniture";
   const materials = createFurnitureMaterials(maps, metals, props);
-  furniture.add(
-    createWorkbench(materials),
-    createCabinets(materials),
-    createFrontFurniture(materials),
-  );
+  furniture.add(createWorkbench(materials), createFrontFurniture(materials));
   const size = new Vector3();
   furniture.traverse((object) => {
     if (!(object instanceof Mesh) || object.material !== materials.oak) return;

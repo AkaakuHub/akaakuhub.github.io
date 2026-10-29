@@ -26,7 +26,6 @@ export function createMetalMaterials(maps: MaterialLibrary) {
       metalnessMap: maps.aluminum.roughnessMap,
     }),
     steel: texturedMetal(maps.steel, { color: "#c8cbd0", roughness: 0.42 }),
-    brass: texturedMetal(maps.brass, { color: "#d8b477", roughness: 0.34 }),
     enamel: paintedMetal("#d5ddd2"),
     deepGreen: paintedMetal("#334d43"),
     ivory: paintedMetal("#e9e9df"),

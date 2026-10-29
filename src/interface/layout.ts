@@ -1,4 +1,4 @@
-export const directions = ["ホワイトボード", "窓", "本棚", "ドア", "天井"] as const;
+export const directions = ["ホワイトボード", "窓", "奥の壁", "ドア", "天井"] as const;
 
 export function roomMarkup(): string {
   return `

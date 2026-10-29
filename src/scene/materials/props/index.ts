@@ -1,4 +1,4 @@
-import { DoubleSide, Vector2 } from "three";
+import { Vector2 } from "three";
 import type { MaterialLibrary } from "../library";
 import { physicalSurface, scannedSurface } from "../surface";
 import { bookLabelMaterial, pageEdgeMaterial } from "./books";
@@ -47,7 +47,6 @@ export function createPropMaterials(maps: MaterialLibrary) {
     rust: cover("#a5654c"),
     mustard: cover("#b49a57"),
     bookCream: cover("#e9e0c4"),
-    bookGreen: cover("#627566"),
     porcelain: physicalSurface(maps.plastic, {
       map: null,
       color: "#e6e2d8",
@@ -56,24 +55,8 @@ export function createPropMaterials(maps: MaterialLibrary) {
       clearcoatRoughness: 0.18,
       normalScale: new Vector2(0.08, 0.08),
     }),
-    terracotta: scannedSurface(maps.plaster, {
-      color: "#bc795a",
-      roughness: 1,
-      normalScale: new Vector2(0.32, 0.32),
-    }),
     plasticIvory: plastic("#e4decb", 0.8),
     plasticGraphite: plastic("#303633", 0.9),
-    foliage: physicalSurface(maps.leaves, {
-      color: "#d7e6b1",
-      side: DoubleSide,
-      alphaTest: 0.45,
-      alphaToCoverage: true,
-      normalScale: new Vector2(0.6, 0.6),
-      clearcoat: 0.18,
-      clearcoatRoughness: 0.5,
-      roughness: 0.9,
-    }),
-    stem: scannedSurface(maps.oak, { color: "#627844", roughness: 1 }),
   };
 }
 
