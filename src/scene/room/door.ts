@@ -7,7 +7,6 @@ import {
   Mesh,
   MeshStandardMaterial,
   MeshBasicMaterial,
-  PlaneGeometry,
   TubeGeometry,
   Vector3,
 } from "three";
@@ -35,12 +34,12 @@ export function createDoor(
   pivot.add(leaf);
   door.add(pivot);
   const light = new Mesh(
-    new PlaneGeometry(1.04, 2.2),
+    new BoxGeometry(1.12, 2.28, 0.12),
     new MeshBasicMaterial({ color: 0xffffff, toneMapped: false }),
   );
   light.material.color.multiplyScalar(12);
   light.name = "room-door-light";
-  light.position.set(0.45, 1.1, 0);
+  light.position.set(0.12, 1.13, 0);
   light.rotation.y = -Math.PI / 2;
   light.visible = false;
   door.add(light);

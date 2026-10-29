@@ -27,7 +27,6 @@ export function createRoom(
   wallBlock(room, [0.14, 2.9, 3.08], [2.67, 1.45, -1.16], wall);
   wallBlock(room, [0.14, 2.9, 1.2], [2.67, 1.45, 2.1], wall);
   wallBlock(room, [0.14, 0.65, 1.12], [2.67, 2.575, 0.95], wall);
-  wallBlock(room, [0.1, 2.9, 1.7], [3.35, 1.45, 0.95], wall);
   wallBlock(room, [0.14, 0.98, 5.4], [-2.67, 0.49, 0], wall);
   wallBlock(room, [0.14, 0.35, 5.4], [-2.67, 2.725, 0], wall);
   for (const z of [-2.3, 2.3]) {

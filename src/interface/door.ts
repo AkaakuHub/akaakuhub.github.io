@@ -61,7 +61,7 @@ export function createDoorInterface(
     startRotation.copy(camera.quaternion);
     door.light.getWorldPosition(destination);
     destination.y = start.y;
-    destination.x += 0.08;
+    destination.x -= 0.14;
     direction.setFromRotationMatrix(look.lookAt(start, destination, camera.up));
     journey = 0;
     respawned = false;
