@@ -20,7 +20,6 @@ import type { WeatherDay } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
-import { prepareRoomShaders } from "./scene/rendering/prepare";
 import { createBoardLoader } from "./scene/board/loading";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
@@ -258,9 +257,7 @@ export async function startRoom(
   }
   updateTime();
   void boardLoader.refresh(false);
-  await prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
-    loading.rendering(2 + (2 * loaded) / total, 4);
-  });
+  loading.rendering(3, 4);
   lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   performance.mark("room-lighting-ready");
   controls = bindRoomControls(
