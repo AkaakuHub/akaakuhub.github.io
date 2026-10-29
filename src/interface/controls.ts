@@ -1,3 +1,4 @@
+import { paperLinkAt } from "../scene/board/paper-links";
 import { MathUtils } from "three";
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 import type { createInterface } from ".";
@@ -74,7 +75,7 @@ export function bindRoomControls(
         const notice = entries[view.state.index]?.[1];
         if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
         if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
-        else refreshBoard();
+        else if (notice.refreshable) refreshBoard();
       }
       return;
     }
@@ -130,8 +131,20 @@ export function bindRoomControls(
   ui.canvas.addEventListener("pointermove", (event) => {
     const previous = pointers.get(event.pointerId);
     if (!previous) {
-      if (event.pointerType === "mouse")
-        cursor(!view.locked && !view.moving && Boolean(pick(event, false)), false);
+      if (event.pointerType === "mouse") {
+        const hit = !view.locked && !view.moving ? pick(event, false) : undefined;
+        const notice = hit?.type === "notice" ? entries[hit.index]?.[1] : undefined;
+        const focused =
+          hit?.type === "notice" && view.state.mode === "notice" && view.state.index === hit.index;
+        cursor(
+          Boolean(hit) &&
+            (!focused ||
+              Boolean(
+                notice && (notice.link || notice.refreshable || paperLinkAt(notice.links, hit.uv)),
+              )),
+          false,
+        );
+      }
       return;
     }
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -204,9 +217,14 @@ export function bindRoomControls(
     }
     const notice = entries[hit.index]?.[1];
     if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
+    const region = paperLinkAt(notice.links, hit.uv);
+    if (region) {
+      window.open(region.href, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (view.state.mode === "notice" && view.state.index === hit.index) {
       if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
-      else refreshBoard();
+      else if (notice.refreshable) refreshBoard();
     } else view.inspect(hit.index);
   });
   const cancel = (event: PointerEvent) => {

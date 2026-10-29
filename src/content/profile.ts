@@ -4,13 +4,8 @@ export const profile = {
   hobbies: "エンジニア・変なアニメの視聴",
   favorite: "蓮ノ空",
   education: ["電気通信大学", "メディア情報学プログラム"],
-  activities: [
-    "フロントエンド開発",
-    "アプリの分析・改良",
-    "自宅サーバー・スクリプト制作",
-    "2024年 学園祭での",
-    "モバイルオーダー開発・導入",
-  ],
+  activities: ["個人開発", "team411でのグループ開発"],
+  team: { label: "team411", href: "https://team411.net/" },
   awards: [
     { year: "2024", title: "UECアイディア実証コンテスト", prize: "協賛企業賞" },
     { year: "2025", title: "UEC Bug Bounty 2024/25", prize: "特別賞" },

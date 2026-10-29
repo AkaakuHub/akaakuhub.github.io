@@ -1,3 +1,4 @@
+import teamUrl from "../../../assets/icons/team411.png?url";
 import languageUrl from "../../../assets/icons/typescript.png?url";
 import type { BoardNotice } from "../notices";
 import type { PrintedPaper, PrintRequest, PrintResponse } from "./protocol";
@@ -36,12 +37,13 @@ function createPrintWorker() {
       stock: ImageBitmap,
       avatar: ImageBitmap,
       language: ImageBitmap,
+      team: ImageBitmap,
     ): Promise<PrintedPaper[]> {
       if (failure) return Promise.reject(failure);
       const id = nextId++;
       return new Promise((resolve, reject) => {
         pending.set(id, { resolve, reject });
-        const request: PrintRequest = { id, notices, stock, avatar, language };
+        const request: PrintRequest = { id, notices, stock, avatar, language, team };
         try {
           worker.postMessage(request);
         } catch (cause) {
@@ -55,13 +57,16 @@ function createPrintWorker() {
 
 export function createPaperPrinter() {
   const workers = [createPrintWorker(), createPrintWorker()];
-  let languageReady: Promise<ImageBitmap> | undefined;
-  function loadLanguageIcon(): Promise<ImageBitmap> {
-    languageReady ??= fetch(languageUrl).then(async (response) => {
-      if (!response.ok) throw new Error("TypeScriptのアイコンを読み込めませんでした。");
-      return createImageBitmap(await response.blob());
-    });
-    return languageReady;
+  let iconsReady: Promise<readonly ImageBitmap[]> | undefined;
+  function loadPrintIcons(): Promise<readonly ImageBitmap[]> {
+    iconsReady ??= Promise.all(
+      [languageUrl, teamUrl].map(async (url) => {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("掲示のアイコンを読み込めませんでした。");
+        return createImageBitmap(await response.blob());
+      }),
+    );
+    return iconsReady;
   }
   return {
     dispose(cause: unknown): void {
@@ -74,13 +79,14 @@ export function createPaperPrinter() {
     ): Promise<PrintedPaper[]> {
       const size = Math.ceil(notices.length / workers.length);
       if (size === 0) return [];
-      const language = await loadLanguageIcon();
+      const [language, team] = await loadPrintIcons();
+      if (!language || !team) throw new Error("掲示のアイコンが揃っていません。");
       const results = await Promise.all(
         workers.map((worker, index) => {
           const batch = notices.slice(index * size, (index + 1) * size);
           return batch.length === 0
             ? Promise.resolve([])
-            : worker.print(batch, stock, avatar, language);
+            : worker.print(batch, stock, avatar, language, team);
         }),
       );
       return results.flat();

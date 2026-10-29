@@ -1,3 +1,4 @@
+import { paperBodySize } from "./type";
 import { profile } from "../../../content/profile";
 import { siteFont } from "../../../assets/typography";
 
@@ -25,7 +26,7 @@ export function paintProfile(
   context.fillText("好きなもの", margin, width * 0.445);
   context.fillText("好きな言語", width * 0.58, width * 0.445);
   context.fillStyle = "#253b31";
-  context.font = `500 ${width * 0.039}px ${siteFont}`;
+  context.font = `500 ${width * paperBodySize}px ${siteFont}`;
   context.fillText(profile.hobbies, margin, width * 0.355);
   context.fillText(profile.favorite, margin, width * 0.505);
   context.drawImage(language, width * 0.58, width * 0.48, width * 0.065, width * 0.065);

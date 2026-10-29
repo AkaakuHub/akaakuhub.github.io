@@ -1,3 +1,4 @@
+import type { PaperLink } from "../paper-links";
 import type { BoardNotice } from "../notices";
 import type { PrintedPaper } from "./protocol";
 import { siteFont } from "../../../assets/typography";
@@ -12,6 +13,7 @@ export function printPaper(
   stock: ImageBitmap,
   avatar: ImageBitmap,
   language: ImageBitmap,
+  team: ImageBitmap,
 ): PrintedPaper {
   const [sheetWidth, sheetHeight] = print.size;
   const canvas = new OffscreenCanvas(1, 1);
@@ -37,13 +39,14 @@ export function printPaper(
   context.fillStyle = print.stock;
   context.fillRect(0, 0, width, height);
   context.globalCompositeOperation = "source-over";
+  let links: PaperLink[] = [];
   if (print.kind === "privacy") {
     paintPrivacy(context, width);
   } else if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
     if (print.kind === "profile") paintProfile(context, avatar, language, width);
-    if (print.kind === "portfolio") paintPortfolio(context, width);
+    if (print.kind === "portfolio") links = paintPortfolio(context, width, height, team);
     context.fillStyle = print.ink;
     if (print.link) {
       context.fillRect(margin, height - width * 0.085, width - margin * 2, 1);
@@ -52,5 +55,5 @@ export function printPaper(
     }
   }
   const pixels = context.getImageData(0, 0, width, height);
-  return { width, height, pixels: new Uint8Array(pixels.data.buffer) };
+  return { width, height, links, pixels: new Uint8Array(pixels.data.buffer) };
 }

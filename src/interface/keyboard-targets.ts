@@ -1,3 +1,4 @@
+import { profile } from "../content/profile";
 import { privacy, privacyText } from "../content/privacy";
 import { MathUtils } from "three";
 import type { createInterface } from ".";
@@ -31,6 +32,14 @@ export function bindKeyboardTargets(
   policy.addEventListener("focus", () => view.inspectPrivacy());
   policy.addEventListener("click", () => view.inspectPrivacy());
   navigation.append(policy);
+  const team = document.createElement("a");
+  team.href = profile.team.href;
+  team.target = "_blank";
+  team.rel = "noopener noreferrer";
+  team.dataset.paperLink = "team411";
+  team.textContent = "team411の公式サイト";
+  team.addEventListener("focus", () => view.inspect(1));
+  navigation.append(team);
   for (const [label, href] of [
     ["Googleのデータ利用", privacy.google],
     ["計測を停止する", privacy.optout],
@@ -67,7 +76,7 @@ export function bindKeyboardTargets(
       const notice = notices[index];
       if (!notice) throw new Error("掲示の操作対象が見つかりません。");
       if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
-      else refreshBoard();
+      else if (notice.refreshable) refreshBoard();
     });
     button.addEventListener("keydown", (event) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
@@ -117,7 +126,9 @@ export function bindKeyboardTargets(
       if (!notice) throw new Error("掲示の操作対象が見つかりません。");
       button.textContent = notice.link
         ? `${notice.title}：${notice.link.label}`
-        : `${notice.title}：掲示を再取得`;
+        : notice.refreshable
+          ? `${notice.title}：掲示を再取得`
+          : notice.title;
     });
   }
   syncNotices();

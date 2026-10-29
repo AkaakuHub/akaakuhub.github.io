@@ -1,7 +1,10 @@
+import type { PaperLink } from "./paper-links";
 import type { SiteContent } from "../../content/schema";
 import { profile } from "../../content/profile";
 
 export interface Notice {
+  links: readonly PaperLink[];
+  refreshable: boolean;
   title: string;
   size: readonly [number, number];
   link: { label: string; href: string } | null;
@@ -11,7 +14,7 @@ export type BoardState =
   | { status: "loading" | "error" }
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
-export interface BoardNotice extends Notice {
+export interface BoardNotice extends Omit<Notice, "links" | "refreshable"> {
   kind: "profile" | "github" | "article" | "privacy" | "portfolio";
   eyebrow: string;
   position: readonly [number, number];
@@ -45,7 +48,7 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       ink: "#294536",
       stock: "#f0f0e2",
       thumbnail: null,
-      link: { label: "GitHubを開く", href: profile.github },
+      link: null,
     },
     {
       kind: "github",

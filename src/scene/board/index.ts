@@ -61,7 +61,13 @@ export async function createBoard(
     const magnetOffset = width * (notice.kind === "profile" ? 0.34 : 0.46);
     addMagnets(sheet, magnetOffset, height, notice.ink, props);
     group.add(sheet);
-    const metadata = { title: notice.title, size: notice.size, link: notice.link };
+    const metadata = {
+      title: notice.title,
+      size: notice.size,
+      link: notice.link,
+      links: print.links,
+      refreshable: notice.kind === "article",
+    };
     notices.set(paper, metadata);
     papers.push(paper);
   }

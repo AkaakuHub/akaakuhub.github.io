@@ -16,12 +16,12 @@ const fontReady = Promise.all([
 );
 
 self.addEventListener("message", (event: MessageEvent<PrintRequest>) => {
-  const { id, notices, stock, avatar, language } = event.data;
+  const { id, notices, stock, avatar, language, team } = event.data;
   void (async () => {
     try {
       const failure = await fontReady;
       if (failure instanceof Error) throw failure;
-      const papers = notices.map((notice) => printPaper(notice, stock, avatar, language));
+      const papers = notices.map((notice) => printPaper(notice, stock, avatar, language, team));
       const response: PrintResponse = { id, ok: true, papers };
       self.postMessage(response, { transfer: papers.map((paper) => paper.pixels.buffer) });
     } catch (cause) {
@@ -35,6 +35,7 @@ self.addEventListener("message", (event: MessageEvent<PrintRequest>) => {
       stock.close();
       avatar.close();
       language.close();
+      team.close();
       for (const notice of notices) notice.thumbnail?.close();
     }
   })();

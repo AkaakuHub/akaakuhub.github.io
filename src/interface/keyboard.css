@@ -9,7 +9,8 @@
   z-index: 10;
 }
 
-.room-keyboard button:not([data-view-direction], .room-device-control) {
+.room-keyboard button:not([data-view-direction], .room-device-control),
+.room-keyboard a[data-paper-link] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -19,7 +20,8 @@
   clip-path: inset(50%);
 }
 
-.room-keyboard button:not([data-view-direction], .room-device-control):focus-visible {
+.room-keyboard button:not([data-view-direction], .room-device-control):focus-visible,
+.room-keyboard a[data-paper-link]:focus-visible {
   position: relative;
   width: auto;
   min-height: 44px;
