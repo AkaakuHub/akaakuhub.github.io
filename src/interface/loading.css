@@ -39,20 +39,21 @@ body {
 .loading::after {
   content: "";
   position: absolute;
-  inset-block: 0;
-  width: calc(50% + 1px);
+  inset-block: -1px;
+  width: calc(50% + 2px);
   background: var(--loading-background);
-  z-index: -1;
+  z-index: 0;
 }
 .loading::before {
-  left: 0;
+  left: -1px;
 }
 .loading::after {
-  right: 0;
+  right: -1px;
 }
 .loading-center {
   --frame-size: min(280px, 72vw);
   position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
   width: var(--frame-size);

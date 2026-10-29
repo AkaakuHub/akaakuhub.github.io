@@ -11,7 +11,7 @@ export function createInterface(root: HTMLElement) {
   const room = root.querySelector("main");
   const status = root.querySelector(".view-status");
   if (!canvas || !room || !status) throw new Error("画面の初期化に失敗しました。");
-  room.append(loading);
+  root.append(loading);
   let wasMoving = false;
   let announcement = "ホワイトボードを向いています";
   return {
