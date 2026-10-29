@@ -13,6 +13,8 @@ import { roundBox } from "../furniture/geometry";
 
 export function createFluorescentFixtures(metals: MetalMaterials): Group {
   const fixtures = new Group();
+  const tubeGeometry = new CylinderGeometry(tubeRadius, tubeRadius, tubeLength, 16);
+  const capGeometry = new CylinderGeometry(0.0135, 0.0135, 0.019, 16);
   const tubeMaterial = new MeshStandardMaterial({
     color: "#f3f3ed",
     emissive: fluorescentColor,
@@ -36,16 +38,13 @@ export function createFluorescentFixtures(metals: MetalMaterials): Group {
           metals.ivory,
           0.003,
         );
-        const cap = new Mesh(new CylinderGeometry(0.0135, 0.0135, 0.019, 16), metals.aluminum);
+        const cap = new Mesh(capGeometry, metals.aluminum);
         cap.rotation.x = Math.PI / 2;
         cap.position.set(x, fixtureHeight, z + edge * 0.529);
         cap.castShadow = cap.receiveShadow = true;
         fixtures.add(cap);
       }
-      const tube = new Mesh(
-        new CylinderGeometry(tubeRadius, tubeRadius, tubeLength, 16),
-        tubeMaterial,
-      );
+      const tube = new Mesh(tubeGeometry, tubeMaterial);
       tube.name = "room-fluorescent";
       tube.rotation.x = Math.PI / 2;
       tube.position.set(x, fixtureHeight, z);
