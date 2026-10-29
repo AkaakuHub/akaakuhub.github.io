@@ -6,11 +6,10 @@ import {
   SRGBColorSpace,
   Texture,
 } from "three";
-import type { Renderer } from "three/webgpu";
 import type { RoomAssetLoader } from "../../assets/loading";
 import { renderingProfile } from "../quality";
 
-export function createTextureLoader(rendererReady: Promise<Renderer>, assets: RoomAssetLoader) {
+export function createTextureLoader(assets: RoomAssetLoader) {
   const textures = new Map<string, Texture<ImageBitmap | null>>();
   const pending = new Map<Texture<ImageBitmap | null>, () => Promise<void>>();
   const anisotropy = renderingProfile().anisotropy;
@@ -35,10 +34,9 @@ export function createTextureLoader(rendererReady: Promise<Renderer>, assets: Ro
           premultiplyAlpha: "none",
           colorSpaceConversion: "none",
         })
-        .then(async (bitmap) => {
+        .then((bitmap) => {
           result.image = bitmap;
           result.needsUpdate = true;
-          (await rendererReady).initTexture(result);
         });
       return loading;
     });

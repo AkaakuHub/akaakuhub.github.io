@@ -5,6 +5,8 @@ import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
 import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 import { DisplayPass } from "./rendering/display-pass";
+import { renderingProfile } from "./quality";
+import { fitPixelBudget } from "./rendering/resolution";
 
 export function createRendering(
   renderer: Renderer,
@@ -20,6 +22,11 @@ export function createRendering(
     type: HalfFloatType,
     depthTexture: depth,
   });
+  const motionFrame = new RenderTarget(1, 1, {
+    type: HalfFloatType,
+    depthTexture: new DepthTexture(1, 1),
+  });
+  const motionPixelBudget = renderingProfile().motionPixelBudget;
   const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
   const dynamic = new DynamicSurfacePass(monitor, fanSurfaces, contributions, scene, camera);
   const weather = new WeatherPass(camera);
@@ -38,19 +45,22 @@ export function createRendering(
       const w = Math.max(1, Math.floor(width * pixelRatio));
       const h = Math.max(1, Math.floor(height * pixelRatio));
       frame.setSize(w, h);
-      display.setSize(w, h);
+      const motion = fitPixelBudget(w, h, motionPixelBudget);
+      motionFrame.setSize(motion.width, motion.height);
       surfaces.setSize(w, h);
     },
     render(moving = false) {
       const compose = (!moving && dynamic.visible) || weather.active;
-      const input = surfaces.render(renderer, frame, moving, compose);
+      const target = moving ? motionFrame : frame;
+      const input = surfaces.render(renderer, target, moving, compose);
       if (compose) {
-        if (!moving) dynamic.render(renderer, frame);
-        weather.render(renderer, frame);
+        if (!moving) dynamic.render(renderer, target);
+        weather.render(renderer, target);
       }
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
       try {
+        display.setSize(input.width, input.height);
         display.render(input.texture, surfaces.revision, compose);
       } finally {
         renderer.autoClear = autoClear;

@@ -50,7 +50,7 @@ export class ScenePass {
     this.camera.updateMatrixWorld();
     const autoClear = renderer.autoClear;
     renderer.autoClear = true;
-    const direct = moving && composite;
+    const direct = moving;
     try {
       if (
         moving ||
@@ -78,7 +78,7 @@ export class ScenePass {
         renderer.setRenderTarget(output);
         renderer.render(this.quad, this.quad.camera);
       }
-      return composite ? output : this.target;
+      return direct || composite ? output : this.target;
     } finally {
       renderer.autoClear = autoClear;
     }

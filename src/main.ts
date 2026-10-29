@@ -63,7 +63,7 @@ export async function startRoom(
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
   camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
-  const materialLoading = loadMaterials(rendererReady, assets);
+  const materialLoading = loadMaterials(assets);
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
   const clubroomReady = Promise.all([avatarReady, materialLoading.paperReady, fontsReady]).then(
