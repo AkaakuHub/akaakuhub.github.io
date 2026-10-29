@@ -1,6 +1,7 @@
 import type { PerspectiveCamera } from "three";
 import type { assembleClubroom } from "../../scene/clubroom";
 import type { createView } from "../../scene/view";
+import { slideWindow } from "../../scene/room/window-panels";
 import { createPassageInterface } from "./passage";
 
 export function createRoomPassages(
@@ -42,7 +43,7 @@ export function createRoomPassages(
         panel: windowOpening.sash,
         destination: windowOpening.darkness,
         setAmount: (amount) => {
-          windowOpening.sash.position.set(-0.02 * amount, 0, -1.28 * amount);
+          slideWindow(windowOpening.sash, amount);
         },
         label: "窓",
         direction: 1,
