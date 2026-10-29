@@ -60,7 +60,7 @@ export function createRendering(
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
       try {
-        display.setSize(input.width, input.height);
+        display.setSize(input.width, input.height, moving);
         display.render(input.texture, surfaces.revision, compose);
       } finally {
         renderer.autoClear = autoClear;

@@ -115,8 +115,9 @@ body {
   animation: room-scan 2.5s ease-in-out infinite;
 }
 .loading-number {
-  display: grid;
-  grid-template-columns: repeat(3, 0.64em) 0.28em repeat(2, 0.64em) 0.85em;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
   width: max-content;
   justify-self: center;
   font:
@@ -125,8 +126,8 @@ body {
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
-.loading-number > span {
-  text-align: center;
+.loading-number > span[hidden] {
+  display: none;
 }
 .loading-footer {
   padding-top: 24px;

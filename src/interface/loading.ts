@@ -13,7 +13,9 @@ export function createLoading(root: HTMLElement) {
   function setPercent(value: number): void {
     const text = value.toFixed(2).padStart(6, " ");
     digits.forEach((digit, index) => {
-      digit.textContent = text.charAt(index);
+      const character = text.charAt(index);
+      digit.hidden = character === " ";
+      digit.textContent = character;
     });
   }
   root.setAttribute("aria-busy", "true");

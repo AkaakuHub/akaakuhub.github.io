@@ -15,7 +15,16 @@ import { fxaa } from "three/addons/tsl/display/FXAANode.js";
 import { DisplayState } from "./display-state";
 
 export class DisplayPass {
-  private readonly target = new RenderTarget(1, 1, { type: HalfFloatType, depthBuffer: false });
+  private readonly staticTarget = new RenderTarget(1, 1, {
+    type: HalfFloatType,
+    depthBuffer: false,
+  });
+  private readonly motionTarget = new RenderTarget(1, 1, {
+    type: HalfFloatType,
+    depthBuffer: false,
+  });
+  private target = this.staticTarget;
+  private readonly antialiasSource = texture(this.staticTarget.texture);
   private readonly exposure = uniform(1);
   private readonly headroom = uniform(1);
   private readonly visibility = uniform(0);
@@ -42,7 +51,7 @@ export class DisplayPass {
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
-    const antialiased = new ConvertNode<"vec4">(fxaa(texture(this.target.texture)), "vec4");
+    const antialiased = new ConvertNode<"vec4">(fxaa(this.antialiasSource), "vec4");
     const linear = new ConvertNode<"vec3">(sRGBTransferEOTF(antialiased.rgb), "vec3");
     const visible = new ConvertNode<"vec3">(sRGBTransferOETF(linear.mul(this.visibility)), "vec3");
     this.pipeline = new RenderPipeline(renderer, vec4(visible, 1));
@@ -53,8 +62,10 @@ export class DisplayPass {
     return this.visibility.value < 1;
   }
 
-  setSize(width: number, height: number): void {
+  setSize(width: number, height: number, moving = false): void {
+    this.target = moving ? this.motionTarget : this.staticTarget;
     this.target.setSize(width, height);
+    this.antialiasSource.value = this.target.texture;
   }
 
   render(source: Texture, revision: number, changing: boolean): void {
