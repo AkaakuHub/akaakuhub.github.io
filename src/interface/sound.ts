@@ -13,6 +13,7 @@ export function bindSoundControl(
   const button = document.createElement("button");
   button.className = "room-sound room-device-control";
   button.type = "button";
+  button.hidden = true;
   button.setAttribute("aria-keyshortcuts", "M");
   button.setAttribute("aria-label", "天気の音");
   audio.bindMute((muted) => {
@@ -24,5 +25,9 @@ export function bindSoundControl(
     );
   });
   button.addEventListener("click", audio.toggleMuted);
+  audio.bindAvailable((available) => {
+    button.hidden = !available;
+    introduction.setSoundAvailable(available);
+  });
   navigation.append(button);
 }

@@ -28,10 +28,6 @@ export function createMotionSource(
     const { beta, gamma } = event;
     if (beta === null || gamma === null || !Number.isFinite(beta) || !Number.isFinite(gamma))
       return;
-    if (!available) {
-      available = true;
-      onAvailable(true);
-    }
     if (!enabled) {
       window.removeEventListener("deviceorientation", read);
       return;
@@ -48,9 +44,20 @@ export function createMotionSource(
   function probe(): void {
     if (available) return;
     if (needsPermission(orientation)) {
-      available = navigator.maxTouchPoints > 0;
+      available = navigator.maxTouchPoints > 0 && matchMedia("(pointer: coarse)").matches;
       onAvailable(available);
-    } else window.addEventListener("deviceorientation", read);
+    } else window.addEventListener("devicemotion", detectGyroscope);
+  }
+  function detectGyroscope(event: DeviceMotionEvent): void {
+    const rate = event.rotationRate;
+    if (
+      !rate ||
+      ![rate.alpha, rate.beta, rate.gamma].some((value) => value !== null && Number.isFinite(value))
+    )
+      return;
+    available = true;
+    onAvailable(true);
+    window.removeEventListener("devicemotion", detectGyroscope);
   }
   function disable(): void {
     enabled = false;
@@ -62,6 +69,7 @@ export function createMotionSource(
   screen.orientation.addEventListener("change", recenter);
   window.addEventListener("pageshow", probe);
   window.addEventListener("pagehide", (event) => {
+    window.removeEventListener("devicemotion", detectGyroscope);
     disable();
     if (!event.persisted) {
       document.removeEventListener("visibilitychange", recenter);
@@ -73,8 +81,11 @@ export function createMotionSource(
   return {
     async enable(): Promise<boolean> {
       if (!available) return false;
-      if (needsPermission(orientation) && (await orientation.requestPermission()) !== "granted")
+      if (needsPermission(orientation) && (await orientation.requestPermission()) !== "granted") {
+        available = false;
+        onAvailable(false);
         return false;
+      }
       if (document.hidden) return false;
       recenter();
       enabled = true;

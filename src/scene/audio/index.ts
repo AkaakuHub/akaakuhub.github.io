@@ -1,6 +1,7 @@
 import type { PerspectiveCamera } from "three";
 import type { createWeatherMixer } from "./mixer";
 import type { SoundWeather } from "./mix";
+import { hasWeatherSound } from "./availability";
 
 export type WeatherAudio = ReturnType<typeof createWeatherAudio>;
 
@@ -11,6 +12,8 @@ export function createWeatherAudio() {
   let weather: SoundWeather | undefined;
   let ready = false;
   let muted = true;
+  let available = false;
+  let onAvailable: ((available: boolean) => void) | undefined;
   let disposed = false;
   let onMute: ((muted: boolean) => void) | undefined;
   let suspendTimer: ReturnType<typeof setTimeout> | undefined;
@@ -39,7 +42,7 @@ export function createWeatherAudio() {
     applyPose();
   }
   function unlock(): void {
-    if (disposed || muted) return;
+    if (disposed || muted || !available) return;
     clearTimeout(suspendTimer);
     if (!context) {
       context = new AudioContext({ latencyHint: "interactive" });
@@ -75,6 +78,7 @@ export function createWeatherAudio() {
       });
   }
   function toggleMuted(): void {
+    if (!available) return;
     muted = !muted;
     onMute?.(muted);
     clearTimeout(suspendTimer);
@@ -129,6 +133,14 @@ export function createWeatherAudio() {
     },
     updateWeather(next: SoundWeather): void {
       weather = next;
+      const nextAvailable = hasWeatherSound(next);
+      if (nextAvailable !== available) {
+        available = nextAvailable;
+        onAvailable?.(available);
+        mixer?.mute(muted || !available);
+        if (!available && context?.state === "running") void context.suspend().catch(console.error);
+        else if (available && !muted) unlock();
+      }
       sync();
     },
     updateCamera(camera: PerspectiveCamera): void {
@@ -140,6 +152,10 @@ export function createWeatherAudio() {
     bindMute(callback: (muted: boolean) => void): void {
       onMute = callback;
       callback(muted);
+    },
+    bindAvailable(callback: (available: boolean) => void): void {
+      onAvailable = callback;
+      callback(available);
     },
     toggleMuted,
   };

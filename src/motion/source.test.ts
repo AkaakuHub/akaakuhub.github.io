@@ -23,6 +23,7 @@ function createFixture(permission?: "granted" | "denied") {
   vi.stubGlobal("screen", { orientation });
   vi.stubGlobal("navigator", { maxTouchPoints: 1 });
   vi.stubGlobal("isSecureContext", true);
+  vi.stubGlobal("matchMedia", () => ({ matches: true }));
   vi.stubGlobal(
     "DeviceOrientationEvent",
     permission ? PermissionOrientationEvent : OrientationEvent,
@@ -71,6 +72,18 @@ describe("モーション操作の許可とセンサー接続", () => {
     fixture.windowEvents.dispatchEvent(new OrientationEvent(Infinity, 0));
     expect(fixture.onAvailable).not.toHaveBeenCalled();
     fixture.windowEvents.dispatchEvent(new OrientationEvent(60, 0));
+    expect(fixture.onAvailable).not.toHaveBeenCalled();
+    fixture.windowEvents.dispatchEvent(
+      Object.assign(new Event("devicemotion"), {
+        rotationRate: { alpha: null, beta: null, gamma: null },
+      }),
+    );
+    expect(fixture.onAvailable).not.toHaveBeenCalled();
+    fixture.windowEvents.dispatchEvent(
+      Object.assign(new Event("devicemotion"), {
+        rotationRate: { alpha: 0, beta: 0, gamma: 0 },
+      }),
+    );
     expect(fixture.onAvailable).toHaveBeenCalledWith(true);
     expect(fixture.onTilt).not.toHaveBeenCalled();
   });

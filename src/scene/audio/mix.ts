@@ -2,6 +2,7 @@ import type { TokyoWeather } from "../../weather/schema";
 import type { SoundName } from "./assets";
 import { getPosition, getTimes } from "suncalc";
 import { tokyo } from "../../weather/schema";
+import { windSoundThreshold } from "./availability";
 
 export type SoundWeather = Pick<TokyoWeather, "rain" | "windSpeed" | "windDirection">;
 
@@ -12,7 +13,7 @@ function smooth(value: number, start: number, end: number): number {
 
 export function weatherMix(weather: SoundWeather, date: Date): Record<SoundName, number> {
   const rain = Math.min(1, Math.sqrt(Math.max(0, weather.rain) / 3));
-  const wind = Math.min(1, Math.max(0, weather.windSpeed - 0.5) / 8);
+  const wind = Math.min(1, Math.max(0, weather.windSpeed - windSoundThreshold) / 8);
   const windward = 0.6 + 0.4 * Math.max(0, Math.cos((weather.windDirection * Math.PI) / 180));
   const { altitude } = getPosition(date, tokyo.latitude, tokyo.longitude);
   const { sunrise } = getTimes(date, tokyo.latitude, tokyo.longitude, 0, 540);

@@ -22,6 +22,12 @@
 .room-keyboard .room-device-control:hover {
   background: rgb(12 20 24 / 78%);
 }
+.room-keyboard .room-device-control[hidden] {
+  display: none;
+}
+.room-keyboard:has(.room-sound[hidden]) .room-motion {
+  left: max(1rem, env(safe-area-inset-left));
+}
 
 .room-keyboard .room-device-control:focus-visible {
   outline: 2px solid white;

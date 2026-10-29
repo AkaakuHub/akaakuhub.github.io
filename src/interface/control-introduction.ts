@@ -34,19 +34,21 @@ export function createControlIntroduction(root: HTMLElement) {
   root.append(guide);
   let seen = localStorage.getItem(key) === "true";
   let sound = false;
+  let soundAvailable = false;
   let motion = false;
   let motionAvailable = false;
   let ready = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   function update(): void {
-    const needed = !sound || (motionAvailable && !motion);
+    const needsSound = soundAvailable && !sound;
+    const needed = needsSound || (motionAvailable && !motion);
     if (!needed) guide.hidden = true;
-    guide.dataset.target = sound && motionAvailable ? "motion" : "sound";
+    guide.dataset.target = needsSound ? "sound" : "motion";
     message.textContent =
-      !sound && motionAvailable && !motion
+      needsSound && motionAvailable && !motion
         ? "音やモーションをオンにすると、部屋をもっと楽しめます"
-        : !sound
+        : needsSound
           ? "音をオンにすると、雨や風の音も楽しめます"
           : "モーションをオンにすると、端末の傾きで視点を動かせます";
     clearTimeout(timer);
@@ -68,6 +70,10 @@ export function createControlIntroduction(root: HTMLElement) {
     },
     setSoundEnabled(value: boolean): void {
       sound = value;
+      update();
+    },
+    setSoundAvailable(value: boolean): void {
+      soundAvailable = value;
       update();
     },
     setMotionEnabled(value: boolean): void {
