@@ -16,11 +16,22 @@
   <body>
     <div id="app">
       <section class="loading" aria-label="部室を読み込んでいます">
-        <div class="loading-fog" aria-hidden="true"></div>
         <div class="loading-center">
+          <div class="loading-frame" aria-hidden="true">
+            <div class="loading-frame-half loading-frame-left">
+              <span class="loading-line-top"></span>
+              <span class="loading-line-side"></span>
+              <span class="loading-line-bottom"></span>
+            </div>
+            <div class="loading-frame-half loading-frame-right">
+              <span class="loading-line-top"></span>
+              <span class="loading-line-side"></span>
+              <span class="loading-line-bottom"></span>
+            </div>
+          </div>
           <div class="loading-readout">
             <span data-loading-percent class="loading-number" aria-hidden="true"
-              ><span data-loading-digit hidden></span><span data-loading-digit></span
+              ><span data-loading-digit hidden>0</span><span data-loading-digit hidden>0</span
               ><span data-loading-digit>0</span><span data-loading-digit>.</span
               ><span data-loading-digit>0</span><span data-loading-digit>0</span
               ><span>%</span></span

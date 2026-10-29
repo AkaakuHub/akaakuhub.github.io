@@ -1,14 +1,14 @@
 :root {
   color-scheme: light dark;
-  --loading-background: #e7ebe7;
-  --loading-ink: #233b35;
-  --loading-fog: #ffffff;
+  --loading-background: #edf0e5;
+  --loading-ink: #183b31;
+  --loading-accent: #b2663d;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --loading-background: #101815;
-    --loading-ink: #d8e4de;
-    --loading-fog: #78988b;
+    --loading-background: #141c19;
+    --loading-ink: #c5d9cb;
+    --loading-accent: #dda478;
   }
 }
 html,
@@ -33,57 +33,148 @@ body {
   overflow: hidden;
   isolation: isolate;
   color: var(--loading-ink);
-  background: var(--loading-background);
-  font-family: "Zen Maru Gothic Board", sans-serif;
-  transition: opacity 0.7s ease;
+  font-family: system-ui, sans-serif;
 }
-.loading-fog {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: calc(1 - var(--load-progress));
-  transform: scale(calc(1 + var(--load-progress) * 0.18));
-  transition:
-    opacity 0.9s ease-out,
-    transform 1.2s ease-out;
-}
-.loading-fog::before,
-.loading-fog::after {
+.loading::before,
+.loading::after {
   content: "";
   position: absolute;
-  inset: -20%;
-  background: var(--loading-fog);
-  mask: url("/textures/loading-fog.webp") center / 100% 100% no-repeat;
-  mask-mode: luminance;
-  animation: fog-drift 16s ease-in-out infinite alternate;
+  inset-block: 0;
+  width: calc(50% + 1px);
+  background: var(--loading-background);
+  z-index: -1;
 }
-.loading-fog::after {
-  inset: -30%;
-  opacity: 0.65;
-  animation-direction: alternate-reverse;
-  animation-duration: 21s;
+.loading::before {
+  left: 0;
+}
+.loading::after {
+  right: 0;
 }
 .loading-center {
   position: relative;
-  padding: 24px;
+  display: grid;
+  place-items: center;
+  width: min(280px, 72vw);
+  aspect-ratio: 1;
+}
+.loading-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.loading-frame-half {
+  position: absolute;
+  inset-block: 0;
+  width: 50%;
+}
+.loading-frame-left {
+  left: 0;
+}
+.loading-frame-right {
+  right: 0;
+}
+.loading-frame-half > span {
+  position: absolute;
+  display: block;
+  transform: translate(
+      calc((1 - var(--assembly)) * var(--offset-x)),
+      calc((1 - var(--assembly)) * var(--offset-y))
+    )
+    rotate(calc((1 - var(--assembly)) * var(--angle)));
+}
+.loading-frame-half > span::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  transform-origin: inherit;
+  animation: loading-line-drift 3.6s ease-in-out infinite;
+}
+.loading-line-top,
+.loading-line-bottom {
+  --offset-x: 0px;
+  width: 100%;
+  height: 1px;
+  transform-origin: left;
+}
+.loading-line-top {
+  --assembly: clamp(0, var(--load-progress) / 0.4, 1);
+  --offset-y: -26px;
+  --angle: -14deg;
+  top: 0;
+}
+.loading-line-bottom {
+  --assembly: clamp(0, (var(--load-progress) - 0.4) / 0.4, 1);
+  --offset-y: 26px;
+  --angle: 14deg;
+  bottom: 0;
+}
+.loading-frame-right .loading-line-top,
+.loading-frame-right .loading-line-bottom {
+  transform-origin: right;
+}
+.loading-line-side {
+  --offset-y: 0px;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  transform-origin: bottom;
+}
+.loading-frame-left .loading-line-side {
+  --assembly: clamp(0, (var(--load-progress) - 0.6) / 0.4, 1);
+  --offset-x: -32px;
+  --angle: -12deg;
+  left: 0;
+}
+.loading-frame-right .loading-line-side {
+  --assembly: clamp(0, (var(--load-progress) - 0.2) / 0.4, 1);
+  --offset-x: 32px;
+  --angle: 12deg;
+  right: 0;
+  transform-origin: top;
+}
+.loading-line-top::before,
+.loading-line-bottom::before {
+  scale: calc(0.24 + var(--assembly) * 0.76) 1;
+}
+.loading-line-side::before {
+  scale: 1 calc(0.24 + var(--assembly) * 0.76);
+}
+.loading-frame-right .loading-line-top::before,
+.loading-frame-left .loading-line-bottom::before {
+  background: var(--loading-accent);
+  animation-delay: -1.8s;
+}
+.loading-line-side::before {
+  animation-delay: -0.9s;
+}
+.loading-readout {
+  position: relative;
+  animation: loading-arrive 0.6s ease-out both;
 }
 .loading-number {
   display: flex;
   align-items: baseline;
   justify-content: center;
   font:
-    300 clamp(56px, 10vw, 112px)/1 ui-monospace,
+    300 clamp(36px, 8vw, 48px)/1.2 ui-monospace,
     monospace;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.07em;
+  letter-spacing: -0.06em;
 }
 .loading-number > span[hidden] {
-  display: none;
+  display: inline;
+  visibility: hidden;
+}
+.loading-number > span:nth-child(n + 4) {
+  opacity: 0.5;
 }
 .loading-number > span:last-child {
-  margin-left: 0.45em;
-  font-size: 0.25em;
+  margin-left: 0.6em;
+  font-size: 12px;
   letter-spacing: 0;
+  opacity: 1;
 }
 .loading-footer {
   position: absolute;
@@ -100,46 +191,110 @@ body {
   clip-path: none;
 }
 .loading-complete {
-  opacity: 0;
   pointer-events: none;
+  animation: loading-depart 1.35s linear both;
 }
-.loading-failed .loading-fog::before,
-.loading-failed .loading-fog::after {
-  animation-play-state: paused;
+.loading-complete::before {
+  animation: loading-open-left 0.85s cubic-bezier(0.65, 0, 0.25, 1) 0.4s both;
+}
+.loading-complete::after {
+  animation: loading-open-right 0.85s cubic-bezier(0.65, 0, 0.25, 1) 0.4s both;
+}
+.loading-complete .loading-frame-left {
+  animation: loading-frame-open-left 0.65s ease-in-out 0.25s both;
+}
+.loading-complete .loading-frame-right {
+  animation: loading-frame-open-right 0.65s ease-in-out 0.25s both;
+}
+.loading-complete .loading-readout {
+  animation: loading-readout-depart 0.3s ease-in 0.2s both;
+}
+.loading-complete .loading-frame-half > span::before,
+.loading-failed .loading-frame-half > span::before {
+  animation: none;
+}
+.loading-failed .loading-frame {
+  display: none;
 }
 .loading-retry {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  min-height: 56px;
+  min-height: 48px;
   padding: 12px 20px;
   border: 1px solid currentColor;
   border-radius: 4px;
   background: transparent;
   color: inherit;
   font: inherit;
-  font-size: 24px;
   cursor: pointer;
 }
-@keyframes fog-drift {
+@keyframes loading-arrive {
   from {
-    transform: translate(-5%, 3%) rotate(-8deg);
+    opacity: 0;
+    transform: translateY(6px);
   }
   to {
-    transform: translate(5%, -3%) rotate(8deg);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes loading-line-drift {
+  0%,
+  100% {
+    opacity: 0.55;
+    translate: 0 calc((1 - var(--assembly)) * -4px);
+  }
+  50% {
+    opacity: 1;
+    translate: 0 calc((1 - var(--assembly)) * 4px);
+  }
+}
+@keyframes loading-readout-depart {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes loading-open-left {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes loading-open-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes loading-frame-open-left {
+  to {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+}
+@keyframes loading-frame-open-right {
+  to {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+}
+@keyframes loading-depart {
+  0%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .loading,
-  .loading-fog {
-    transition: none;
-  }
-  .loading-fog {
-    transform: none;
-  }
-  .loading-fog::before,
-  .loading-fog::after {
+  .loading::before,
+  .loading::after,
+  .loading-readout,
+  .loading-frame-half,
+  .loading-frame-half > span::before {
     animation: none;
   }
 }

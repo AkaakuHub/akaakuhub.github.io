@@ -1,5 +1,6 @@
 import { RotateCw, createElement } from "lucide";
 import { createLoadingState } from "./loading-state";
+import { createLoadingReadout } from "./loading-readout";
 
 export type Loading = ReturnType<typeof createLoading>;
 
@@ -8,22 +9,14 @@ export function createLoading(root: HTMLElement) {
   const progress = root.querySelector<HTMLProgressElement>("[data-loading-progress]");
   const percent = root.querySelector<HTMLElement>("[data-loading-percent]");
   if (!panel || !progress || !percent) throw new Error("読み込み状態の表示先が見つかりません。");
-  const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
-  if (digits.length !== 6) throw new Error("進捗の桁が揃っていません。");
-  function setPercent(value: number): void {
-    const text = value.toFixed(2).padStart(6, " ");
-    digits.forEach((digit, index) => {
-      const character = text.charAt(index);
-      digit.hidden = character === " ";
-      digit.textContent = character;
-    });
-  }
+  const readout = createLoadingReadout(panel, progress, percent);
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
   const state = createLoadingState();
   let retry: HTMLButtonElement | undefined;
   const showFailure = (): void => {
     if (retry) return;
+    readout.stop();
     retry = document.createElement("button");
     retry.type = "button";
     retry.className = "loading-retry";
@@ -43,10 +36,7 @@ export function createLoading(root: HTMLElement) {
   };
   const update = (): void => {
     if (state.status !== "loading") return;
-    const value = state.value;
-    progress.value = value;
-    panel.style.setProperty("--load-progress", String(value));
-    setPercent(value * 100);
+    readout.update(state.value);
   };
   return {
     progress(completed: number, total: number): void {
@@ -60,16 +50,24 @@ export function createLoading(root: HTMLElement) {
     complete(): void {
       if (state.status !== "loading") return;
       state.complete();
-      root.setAttribute("aria-busy", "false");
-      progress.value = 1;
-      panel.style.setProperty("--load-progress", "1");
-      setPercent(100);
-      delete root.dataset.loading;
-      panel.classList.add("loading-complete");
-      panel.addEventListener("transitionend", (event) => {
-        if (event.target === panel && panel.classList.contains("loading-complete")) panel.remove();
+      readout.update(1, () => {
+        if (panel.classList.contains("loading-failed")) return;
+        panel.classList.add("loading-complete");
+        const finish = (): void => {
+          panel.remove();
+          root.setAttribute("aria-busy", "false");
+          delete root.dataset.loading;
+        };
+        panel.addEventListener("animationend", (event) => {
+          if (
+            event.target === panel &&
+            event.animationName === "loading-depart" &&
+            panel.classList.contains("loading-complete")
+          )
+            finish();
+        });
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) finish();
       });
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) panel.remove();
     },
     recover(error: unknown): void {
       console.error(error);
