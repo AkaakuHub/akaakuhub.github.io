@@ -21,7 +21,7 @@ import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
-import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
+import { prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
 import { createIntroduction } from "./interface/introduction";
@@ -46,7 +46,7 @@ export async function startRoom(
   performance.mark("room-startup");
   const ui = createInterface(root);
   const batchStaticMeshes = createStaticBatcher();
-  const fontsReady = Promise.all([prepareBoardFont(""), prepareBoardHeadingFont()]);
+  const fontsReady = prepareBoardHeadingFont();
   let deviceLost = false;
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
     bindRenderingErrors(renderer, loading.fail, (error) => {

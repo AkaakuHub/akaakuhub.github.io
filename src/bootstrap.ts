@@ -4,6 +4,7 @@ import { createRoomAssetLoader } from "./assets/loading";
 import type { RoomAssetLoader } from "./assets/loading";
 import { createWeatherAudio } from "./scene/audio";
 import { loadProfileAvatar } from "./content/avatar";
+import { prepareBoardFont } from "./assets/typography";
 import { createPaperPrinter } from "./scene/board/printing";
 
 const root = document.querySelector<HTMLElement>("#app");
@@ -23,7 +24,7 @@ try {
   assets = createRoomAssetLoader((summary) => loading.progress(summary.progressPercent, 100));
   const [room] = await Promise.all([
     import("./main"),
-    import("./assets/fonts/board-text.css"),
+    import("./assets/fonts/board-text.css").then(() => prepareBoardFont("")),
     import("./assets/fonts/yomogi.css"),
   ]);
   await room.startRoom(root, loading, weatherReady, assets, audio, avatarReady, printer);
