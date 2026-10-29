@@ -1,4 +1,5 @@
-import { CanvasTexture, RepeatWrapping, SRGBColorSpace, Vector2 } from "three";
+import { textureFromCanvas } from "../printed-texture";
+import { RepeatWrapping, Vector2 } from "three";
 import type { PbrMaps } from "../library";
 import { scannedSurface } from "../surface";
 
@@ -7,7 +8,7 @@ export function bookLabelMaterial(paper: PbrMaps) {
   if (!stock) throw new Error("背表紙の画像が準備されていません。");
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 1024;
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) throw new Error("本の背表紙を描画できませんでした。");
   const titles = [
     "回路",
@@ -40,8 +41,7 @@ export function bookLabelMaterial(paper: PbrMaps) {
     context.lineWidth = 1;
     context.strokeRect(x + 22, y + 17, 212, 222);
   }
-  const map = new CanvasTexture(canvas);
-  map.colorSpace = SRGBColorSpace;
+  const map = textureFromCanvas(context);
   map.anisotropy = paper.map.anisotropy;
   const normalMap = paper.normalMap.clone();
   normalMap.channel = 1;
@@ -61,7 +61,7 @@ export function pageEdgeMaterial(paper: PbrMaps) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 256;
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) throw new Error("本の小口を描画できませんでした。");
   context.drawImage(stock, 0, 0, 1024, 256);
   for (let page = 0; page < 16; page++) {
@@ -70,8 +70,7 @@ export function pageEdgeMaterial(paper: PbrMaps) {
     context.fillStyle = "rgba(255,255,245,0.16)";
     context.fillRect(0, page * 16 + 2, 1024, 3);
   }
-  const map = new CanvasTexture(canvas);
-  map.colorSpace = SRGBColorSpace;
+  const map = textureFromCanvas(context);
   map.wrapS = map.wrapT = RepeatWrapping;
   map.repeat.set(1 / 0.3, 1 / 0.0024);
   map.anisotropy = paper.map.anisotropy;

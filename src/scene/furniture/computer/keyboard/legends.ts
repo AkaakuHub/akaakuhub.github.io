@@ -1,4 +1,5 @@
-import { CanvasTexture, Mesh, MeshStandardMaterial, PlaneGeometry, SRGBColorSpace } from "three";
+import { textureFromCanvas } from "../../../materials/printed-texture";
+import { Mesh, MeshStandardMaterial, PlaneGeometry } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { keyTransform, pitch, topHeight } from "./keycap";
 import type { Key } from "./layout";
@@ -7,7 +8,7 @@ export function keyLegends(keys: readonly Key[]): Mesh {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 512;
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) throw new Error("キーの刻印を描画できません。");
   context.fillStyle = "#90958f";
   context.textAlign = "center";
@@ -35,8 +36,7 @@ export function keyLegends(keys: readonly Key[]): Mesh {
   const geometry = mergeGeometries(parts);
   for (const part of parts) part.dispose();
   if (!geometry) throw new Error("キーの刻印をまとめられません。");
-  const texture = new CanvasTexture(canvas);
-  texture.colorSpace = SRGBColorSpace;
+  const texture = textureFromCanvas(context);
   const material = new MeshStandardMaterial({ map: texture, roughness: 0.85, alphaTest: 0.15 });
   return new Mesh(geometry, material);
 }

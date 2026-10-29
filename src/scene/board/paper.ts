@@ -1,27 +1,13 @@
+import type { DataTexture } from "three";
 import type { PbrMaps } from "../materials/library";
-import {
-  DataTexture,
-  DoubleSide,
-  LinearFilter,
-  LinearMipmapLinearFilter,
-  Mesh,
-  MeshStandardMaterial,
-  PlaneGeometry,
-  SRGBColorSpace,
-  Vector2,
-} from "three";
+import { DoubleSide, Mesh, MeshStandardMaterial, PlaneGeometry, Vector2 } from "three";
 
+import { textureFromPixels } from "../materials/printed-texture";
 import type { PrintedPaper } from "./printing/protocol";
 
 function printedTexture(print: PrintedPaper): DataTexture {
-  const texture = new DataTexture(print.pixels, print.width, print.height);
-  texture.flipY = true;
-  texture.generateMipmaps = true;
-  texture.minFilter = LinearMipmapLinearFilter;
-  texture.magFilter = LinearFilter;
-  texture.colorSpace = SRGBColorSpace;
+  const texture = textureFromPixels(print.pixels, print.width, print.height);
   texture.anisotropy = 8;
-  texture.needsUpdate = true;
   return texture;
 }
 
