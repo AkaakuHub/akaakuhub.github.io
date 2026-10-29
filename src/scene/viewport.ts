@@ -33,6 +33,7 @@ export function observeViewport(
     previousHeight = height;
     previousRatio = pixelRatio;
     camera.aspect = width / height;
+    camera.updateProjectionMatrix();
     renderer.setDrawingBufferSize(width, height, pixelRatio);
     composer.setPixelRatio(pixelRatio);
     composer.setSize(width, height);

@@ -16,9 +16,10 @@ export function bindKeyboardTargets(
 ) {
   const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-notice-index]")];
   const light = root.querySelector<HTMLButtonElement>("[data-room-light]");
+  const screen = root.querySelector<HTMLButtonElement>("[data-computer-screen]");
   const power = root.querySelector<HTMLButtonElement>("[data-computer-power]");
   const navigation = root.querySelector<HTMLElement>(".room-keyboard");
-  if (buttons.length !== 4 || notices.length !== 4 || !light || !power || !navigation)
+  if (buttons.length !== 4 || notices.length !== 4 || !light || !power || !screen || !navigation)
     throw new Error("キーボード操作の対象が揃っていません。");
   const lightButton: HTMLButtonElement = light;
   const powerButton: HTMLButtonElement = power;
@@ -77,6 +78,8 @@ export function bindKeyboardTargets(
     ui.announce(on ? "部屋の電気を点けました" : "部屋の電気を消しました");
   }
   lightButton.addEventListener("click", toggleLight);
+  screen.addEventListener("focus", () => view.inspectScreen());
+  screen.addEventListener("click", () => view.inspectScreen());
   powerButton.addEventListener("focus", () => view.inspectComputer());
   function togglePower(): void {
     const on = computer.togglePower();
