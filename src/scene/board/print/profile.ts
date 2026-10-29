@@ -8,7 +8,7 @@ export function paintProfile(
   width: number,
 ): void {
   const margin = width * 0.075;
-  const imageSize = width * 0.18;
+  const imageSize = width * 0.14;
   context.drawImage(avatar, margin, margin, imageSize, imageSize);
   context.fillStyle = "#253b31";
   context.font = `500 ${width * 0.07}px ${siteFont}`;
@@ -16,31 +16,17 @@ export function paintProfile(
   context.strokeStyle = "#a6a797";
   context.lineWidth = 1;
   context.beginPath();
-  context.moveTo(margin, width * 0.3);
-  context.lineTo(width - margin, width * 0.3);
+  context.moveTo(margin, width * 0.245);
+  context.lineTo(width - margin, width * 0.245);
   context.stroke();
-  const rows = [
-    { label: "趣味", value: profile.hobbies },
-    { label: "好きなもの", value: profile.favorite },
-  ];
-  let y = width * 0.38;
-  for (const row of rows) {
-    context.fillStyle = "#53645c";
-    context.font = `500 ${width * 0.033}px ${siteFont}`;
-    context.fillText(row.label, margin, y);
-    context.fillStyle = "#253b31";
-    context.font = `500 ${width * 0.039}px ${siteFont}`;
-    context.fillText(row.value, margin, y + width * 0.065);
-    y += width * 0.16;
-  }
   context.fillStyle = "#53645c";
   context.font = `500 ${width * 0.033}px ${siteFont}`;
-  context.fillText("好きな言語", margin, y);
-  context.drawImage(
-    language,
-    margin + width * 0.22,
-    y - width * 0.04,
-    width * 0.065,
-    width * 0.065,
-  );
+  context.fillText("趣味", margin, width * 0.3);
+  context.fillText("好きなもの", margin, width * 0.445);
+  context.fillText("好きな言語", width * 0.58, width * 0.445);
+  context.fillStyle = "#253b31";
+  context.font = `500 ${width * 0.039}px ${siteFont}`;
+  context.fillText(profile.hobbies, margin, width * 0.355);
+  context.fillText(profile.favorite, margin, width * 0.505);
+  context.drawImage(language, width * 0.58, width * 0.48, width * 0.065, width * 0.065);
 }

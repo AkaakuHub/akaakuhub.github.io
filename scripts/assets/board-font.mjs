@@ -1,9 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import { boardHeadingText } from "../../src/content/board-text.ts";
 
 const url = new URL("https://fonts.googleapis.com/css2");
 url.search = new URLSearchParams({
   family: "Yomogi",
-  text: "最新記事GitHubSkillsWeather by Open-Meteo",
+  text: boardHeadingText,
   display: "swap",
 }).toString();
 const response = await fetch(url, {

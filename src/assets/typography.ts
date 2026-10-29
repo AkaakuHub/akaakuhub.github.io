@@ -1,4 +1,4 @@
-import { boardText } from "../content/board-text";
+import { boardHeadingText, boardText } from "../content/board-text";
 
 export const siteFont = '"Zen Maru Gothic Board", "Zen Maru Gothic", sans-serif';
 const boardCharacters = new Set(boardText);
@@ -17,9 +17,6 @@ export async function prepareBoardFont(content: string): Promise<void> {
 }
 
 export async function prepareBoardHeadingFont(): Promise<void> {
-  const faces = await document.fonts.load(
-    '400 176px "Yomogi"',
-    "最新記事GitHubSkillsWeather by Open-Meteo",
-  );
+  const faces = await document.fonts.load('400 176px "Yomogi"', boardHeadingText);
   if (faces.length === 0) throw new Error("見出しのフォントが読み込まれていません。");
 }
