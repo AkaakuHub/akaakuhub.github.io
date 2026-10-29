@@ -14,12 +14,12 @@ const fontReady = new FontFace("Zen Maru Gothic Board", `url(${fontUrl})`, { wei
   );
 
 self.addEventListener("message", (event: MessageEvent<PrintRequest>) => {
-  const { id, notices, stock, avatar } = event.data;
+  const { id, notices, stock, avatar, language } = event.data;
   void (async () => {
     try {
       const failure = await fontReady;
       if (failure instanceof Error) throw failure;
-      const papers = notices.map((notice) => printPaper(notice, stock, avatar));
+      const papers = notices.map((notice) => printPaper(notice, stock, avatar, language));
       const response: PrintResponse = { id, ok: true, papers };
       self.postMessage(response, { transfer: papers.map((paper) => paper.pixels.buffer) });
     } catch (cause) {
@@ -32,6 +32,7 @@ self.addEventListener("message", (event: MessageEvent<PrintRequest>) => {
     } finally {
       stock.close();
       avatar.close();
+      language.close();
       for (const notice of notices) notice.thumbnail?.close();
     }
   })();

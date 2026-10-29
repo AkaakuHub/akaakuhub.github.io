@@ -3,6 +3,7 @@ import type { PrintedPaper } from "./protocol";
 import { siteFont } from "../../../assets/typography";
 import { paintArticle } from "../print/article";
 import { paintProfile } from "../print/profile";
+import { paintPortfolio } from "../print/portfolio";
 import { paintPrivacy } from "../print/privacy";
 import { paintLink } from "../print/link";
 
@@ -10,6 +11,7 @@ export function printPaper(
   print: BoardNotice,
   stock: ImageBitmap,
   avatar: ImageBitmap,
+  language: ImageBitmap,
 ): PrintedPaper {
   const [sheetWidth, sheetHeight] = print.size;
   const canvas = new OffscreenCanvas(1, 1);
@@ -40,7 +42,8 @@ export function printPaper(
   } else if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
-    if (print.kind === "profile") paintProfile(context, avatar, width);
+    if (print.kind === "profile") paintProfile(context, avatar, language, width);
+    if (print.kind === "portfolio") paintPortfolio(context, width);
     context.fillStyle = print.ink;
     if (print.link) {
       context.fillRect(margin, height - width * 0.085, width - margin * 2, 1);

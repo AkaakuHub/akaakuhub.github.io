@@ -7,8 +7,8 @@ export function roomMarkup(): string {
       <nav class="room-keyboard" aria-label="部室の操作対象">
         <button type="button" data-notice-index="0">GitHubの掲示</button>
         <button type="button" data-notice-index="1">スキルの掲示</button>
-        <button type="button" data-notice-index="2">最新記事1</button>
-        <button type="button" data-notice-index="3">最新記事2</button>
+        <button type="button" data-notice-index="2">GitHubの掲示</button>
+        <button type="button" data-notice-index="3">最新記事</button>
         <button type="button" data-room-light aria-pressed="true">部屋の電気</button>
         <button type="button" data-computer-screen>PC画面</button>
         <button type="button" data-computer-power aria-pressed="false">PCの電源</button>

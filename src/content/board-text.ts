@@ -1,9 +1,14 @@
+import { profile } from "./profile.ts";
 import { privacyText } from "./privacy.ts";
 
 export const boardText = [
   privacyText,
+  profile.hobbies,
+  profile.favorite,
+  ...profile.activities,
+  "趣味 好きなもの 好きな言語 活動・資格",
   "Googleのデータ利用 計測を停止する",
-  "あかあく 好きなこと 趣味 好きな言語 ひとこと",
+  "あかあく",
   "紙の外をタップしてみてください 紙の外をクリックしてみてください",
   "天気の音を再生 天気の音を消す >",
   "音をオンにすると、雨や風の音も楽しめます 音やモーションをオンにすると、部屋をもっと楽しめます モーションをオンにすると、端末の傾きで視点を動かせます 案内を閉じる モーション操作をオン モーション操作をオフ",

@@ -1,3 +1,4 @@
+import languageUrl from "../../../assets/icons/typescript.png?url";
 import type { BoardNotice } from "../notices";
 import type { PrintedPaper, PrintRequest, PrintResponse } from "./protocol";
 
@@ -34,12 +35,13 @@ function createPrintWorker() {
       notices: readonly BoardNotice[],
       stock: ImageBitmap,
       avatar: ImageBitmap,
+      language: ImageBitmap,
     ): Promise<PrintedPaper[]> {
       if (failure) return Promise.reject(failure);
       const id = nextId++;
       return new Promise((resolve, reject) => {
         pending.set(id, { resolve, reject });
-        const request: PrintRequest = { id, notices, stock, avatar };
+        const request: PrintRequest = { id, notices, stock, avatar, language };
         try {
           worker.postMessage(request);
         } catch (cause) {
@@ -53,6 +55,14 @@ function createPrintWorker() {
 
 export function createPaperPrinter() {
   const workers = [createPrintWorker(), createPrintWorker()];
+  let languageReady: Promise<ImageBitmap> | undefined;
+  function loadLanguageIcon(): Promise<ImageBitmap> {
+    languageReady ??= fetch(languageUrl).then(async (response) => {
+      if (!response.ok) throw new Error("TypeScriptのアイコンを読み込めませんでした。");
+      return createImageBitmap(await response.blob());
+    });
+    return languageReady;
+  }
   return {
     dispose(cause: unknown): void {
       for (const worker of workers) worker.dispose(cause);
@@ -64,10 +74,13 @@ export function createPaperPrinter() {
     ): Promise<PrintedPaper[]> {
       const size = Math.ceil(notices.length / workers.length);
       if (size === 0) return [];
+      const language = await loadLanguageIcon();
       const results = await Promise.all(
         workers.map((worker, index) => {
           const batch = notices.slice(index * size, (index + 1) * size);
-          return batch.length === 0 ? Promise.resolve([]) : worker.print(batch, stock, avatar);
+          return batch.length === 0
+            ? Promise.resolve([])
+            : worker.print(batch, stock, avatar, language);
         }),
       );
       return results.flat();

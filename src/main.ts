@@ -132,10 +132,10 @@ export async function startRoom(
       return notice.size[0] + 0.04;
     },
     get height() {
-      return notice.size[1] + (index === 1 || index === 2 ? 0.16 : 0.04);
+      return notice.size[1] + (index === 2 || index === 3 ? 0.16 : 0.04);
     },
     depth: 0,
-    offsetY: index === 1 || index === 2 ? 0.06 : 0,
+    offsetY: index === 2 || index === 3 ? 0.06 : 0,
     topAligned: false,
   }));
   let introduction: ReturnType<typeof createIntroduction> | undefined;

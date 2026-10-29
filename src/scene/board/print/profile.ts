@@ -4,6 +4,7 @@ import { siteFont } from "../../../assets/typography";
 export function paintProfile(
   context: OffscreenCanvasRenderingContext2D,
   avatar: ImageBitmap,
+  language: ImageBitmap,
   width: number,
 ): void {
   const margin = width * 0.075;
@@ -18,17 +19,28 @@ export function paintProfile(
   context.moveTo(margin, width * 0.3);
   context.lineTo(width - margin, width * 0.3);
   context.stroke();
-  const columnWidth = (width - margin * 2) / 2;
-  for (const [index, label] of ["好きなこと", "趣味", "好きな言語", "ひとこと"].entries()) {
-    const x = margin + (index % 2) * columnWidth;
-    const y = width * (0.37 + Math.floor(index / 2) * 0.23);
+  const rows = [
+    { label: "趣味", value: profile.hobbies },
+    { label: "好きなもの", value: profile.favorite },
+  ];
+  let y = width * 0.38;
+  for (const row of rows) {
+    context.fillStyle = "#53645c";
+    context.font = `500 ${width * 0.033}px ${siteFont}`;
+    context.fillText(row.label, margin, y);
     context.fillStyle = "#253b31";
-    context.font = `500 ${width * 0.04}px ${siteFont}`;
-    context.fillText(label, x, y);
-    context.strokeStyle = "#c0bdb0";
-    context.beginPath();
-    context.moveTo(x, y + width * 0.16);
-    context.lineTo(x + columnWidth - width * 0.04, y + width * 0.16);
-    context.stroke();
+    context.font = `500 ${width * 0.039}px ${siteFont}`;
+    context.fillText(row.value, margin, y + width * 0.065);
+    y += width * 0.16;
   }
+  context.fillStyle = "#53645c";
+  context.font = `500 ${width * 0.033}px ${siteFont}`;
+  context.fillText("好きな言語", margin, y);
+  context.drawImage(
+    language,
+    margin + width * 0.22,
+    y - width * 0.04,
+    width * 0.065,
+    width * 0.065,
+  );
 }

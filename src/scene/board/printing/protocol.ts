@@ -11,6 +11,7 @@ export interface PrintRequest {
   notices: readonly BoardNotice[];
   stock: ImageBitmap;
   avatar: ImageBitmap;
+  language: ImageBitmap;
 }
 
 export type PrintResponse =

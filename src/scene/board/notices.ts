@@ -12,7 +12,7 @@ export type BoardState =
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
 export interface BoardNotice extends Notice {
-  kind: "profile" | "github" | "article" | "privacy";
+  kind: "profile" | "github" | "article" | "privacy" | "portfolio";
   eyebrow: string;
   position: readonly [number, number];
   angle: number;
@@ -36,11 +36,23 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       link: { label: "GitHubを開く", href: profile.github },
     },
     {
+      kind: "portfolio",
+      title: "活動・資格",
+      eyebrow: "",
+      size: [1.08, 0.64],
+      position: [-0.56, 0.98],
+      angle: -0.009,
+      ink: "#294536",
+      stock: "#f0f0e2",
+      thumbnail: null,
+      link: { label: "GitHubを開く", href: profile.github },
+    },
+    {
       kind: "github",
       title: "GitHubの記録",
       eyebrow: "",
       size: [1.08, 0.47],
-      position: [-0.56, 0.94],
+      position: [0.56, 1.89],
       angle: -0.009,
       ink: "#294536",
       stock: "#f0f0e2",
@@ -54,32 +66,30 @@ export function boardNotices(state: BoardState): BoardNotice[] {
     month: "2-digit",
     day: "2-digit",
   });
-  for (let index = 0; index < 2; index++) {
-    const article = state.status === "ready" ? state.content.articles[index] : undefined;
-    let thumbnail: ImageBitmap | null = null;
-    if (article && state.status === "ready") {
-      const image = state.thumbnails.get(article.url);
-      if (!image) throw new Error(`記事の画像が準備されていません: ${article.url}`);
-      thumbnail = image;
-    }
-    notices.push({
-      kind: "article",
-      eyebrow: article ? date.format(article.publishedAt) : "最近の記事",
-      title: article
-        ? article.title
-        : state.status === "loading"
-          ? "読み込み中"
-          : state.status === "error"
-            ? "掲示を読み直す"
-            : "公開記事はありません",
-      link: article ? { label: "この記事を読む", href: article.url } : null,
-      size: [1.08, 0.69],
-      position: [0.56, 1.89 - index * 0.8],
-      angle: index % 2 ? 0.012 : -0.01,
-      ink: "#65442a",
-      stock: "#f8f4e8",
-      thumbnail,
-    });
+  const article = state.status === "ready" ? state.content.articles[0] : undefined;
+  let thumbnail: ImageBitmap | null = null;
+  if (article && state.status === "ready") {
+    const image = state.thumbnails.get(article.url);
+    if (!image) throw new Error(`記事の画像が準備されていません: ${article.url}`);
+    thumbnail = image;
   }
+  notices.push({
+    kind: "article",
+    eyebrow: article ? date.format(article.publishedAt) : "最近の記事",
+    title: article
+      ? article.title
+      : state.status === "loading"
+        ? "読み込み中"
+        : state.status === "error"
+          ? "掲示を読み直す"
+          : "公開記事はありません",
+    link: article ? { label: "この記事を読む", href: article.url } : null,
+    size: [1.08, 0.69],
+    position: [0.56, 1.09],
+    angle: 0.012,
+    ink: "#65442a",
+    stock: "#f8f4e8",
+    thumbnail,
+  });
   return notices;
 }

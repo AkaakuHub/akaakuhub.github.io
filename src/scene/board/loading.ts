@@ -20,7 +20,7 @@ export function createBoardLoader(update: (state: BoardState) => Promise<void>) 
               content = await loadSiteContent(controller.signal);
             }
             const thumbnails = await loadArticleThumbnails(
-              content.articles,
+              content.articles.slice(0, 1),
               controller.signal,
               revoke || attempt > 0,
             );
