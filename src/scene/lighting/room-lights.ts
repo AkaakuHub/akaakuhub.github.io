@@ -20,11 +20,12 @@ export function createRoomLights(scene: Scene) {
     return light;
   });
   const bounds = new Box3();
-  for (const pane of scene.getObjectsByProperty("name", "room-window-pane"))
-    bounds.expandByObject(pane);
+  for (const name of ["room-window-upper-pane", "room-window-lower-pane"])
+    for (const pane of scene.getObjectsByProperty("name", name)) bounds.expandByObject(pane);
   if (bounds.isEmpty()) throw new Error("天空光の窓が見つかりません。");
   const size = bounds.getSize(new Vector3());
   const sky = new RectAreaLight(0xffffff, 0, size.z, size.y);
+  sky.name = "window-sky-light";
   bounds.getCenter(sky.position);
   sky.rotation.y = -Math.PI / 2;
   scene.add(sky);

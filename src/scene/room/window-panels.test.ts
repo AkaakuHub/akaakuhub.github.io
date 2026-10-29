@@ -1,6 +1,7 @@
-import { MeshBasicMaterial, Raycaster, Vector3 } from "three";
+import { MeshBasicMaterial, Raycaster, RectAreaLight, Scene, Vector3 } from "three";
 import type { Object3D } from "three";
 import { describe, expect, it } from "vite-plus/test";
+import { createRoomLights } from "../lighting/room-lights";
 import { createWindowPanels, slideWindow } from "./window-panels";
 
 function fixture() {
@@ -63,5 +64,20 @@ describe("1枚だけ開く窓", () => {
     group.updateMatrixWorld(true);
     for (const [object, position] of closedPositions)
       expect(object.getWorldPosition(new Vector3()).equals(position)).toBe(true);
+  });
+});
+
+describe("窓と天空光の組み立て", () => {
+  it("上下に分かれた実際の窓から天空光の範囲を作成できる", () => {
+    const { group } = fixture();
+    const scene = new Scene();
+    scene.add(group);
+    createRoomLights(scene);
+    const sky = scene.getObjectByName("window-sky-light");
+    expect(sky).toBeInstanceOf(RectAreaLight);
+    if (!(sky instanceof RectAreaLight)) throw new Error("天空光がありません。");
+    expect(sky.width).toBeCloseTo(3.84);
+    expect(sky.height).toBeCloseTo(1.48);
+    expect(sky.position.x).toBeCloseTo(-2.626);
   });
 });

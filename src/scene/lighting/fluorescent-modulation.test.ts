@@ -29,7 +29,7 @@ describe("蛍光灯の微弱な明るさの変化", () => {
   it("蛍光灯の変化を天空光へ適用しない", () => {
     const scene = new Scene();
     const pane = new Mesh(new PlaneGeometry(2, 1.5), new MeshBasicMaterial());
-    pane.name = "room-window-pane";
+    pane.name = "room-window-upper-pane";
     scene.add(pane);
     const fixtures = createRoomLights(scene);
     fixtures.updateSky(new Color(0xffffff), 0.5);
