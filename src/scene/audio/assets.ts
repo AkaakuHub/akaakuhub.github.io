@@ -16,5 +16,5 @@ export async function loadSound(
     AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
     "low",
   );
-  return prepareAudioLoop(context, await context.decodeAudioData(bytes.buffer));
+  return prepareAudioLoop(context, await context.decodeAudioData(Uint8Array.from(bytes).buffer));
 }
