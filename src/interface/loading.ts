@@ -62,16 +62,13 @@ export function createLoading(root: HTMLElement) {
       state.complete();
       root.setAttribute("aria-busy", "false");
       progress.value = 1;
+      panel.style.setProperty("--load-progress", "1");
       setPercent(100);
       delete root.dataset.loading;
       panel.classList.add("loading-complete");
-      panel.addEventListener(
-        "transitionend",
-        () => {
-          if (panel.classList.contains("loading-complete")) panel.remove();
-        },
-        { once: true },
-      );
+      panel.addEventListener("transitionend", (event) => {
+        if (event.target === panel && panel.classList.contains("loading-complete")) panel.remove();
+      });
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) panel.remove();
     },
     recover(error: unknown): void {

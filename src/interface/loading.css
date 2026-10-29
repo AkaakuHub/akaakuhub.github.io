@@ -1,14 +1,14 @@
 :root {
   color-scheme: light dark;
-  --loading-background: #edf0e5;
-  --loading-ink: #183b31;
-  --loading-accent: #b2663d;
+  --loading-background: #e7ebe7;
+  --loading-ink: #233b35;
+  --loading-fog: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --loading-background: #141c19;
-    --loading-ink: #c5d9cb;
-    --loading-accent: #dda478;
+    --loading-background: #101815;
+    --loading-ink: #d8e4de;
+    --loading-fog: #78988b;
   }
 }
 html,
@@ -28,144 +28,89 @@ body {
   position: fixed;
   inset: 0;
   z-index: 20;
-  box-sizing: border-box;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  place-items: center;
   overflow: hidden;
-  padding: clamp(24px, 5vw, 72px);
+  isolation: isolate;
   color: var(--loading-ink);
   background: var(--loading-background);
   font-family: "Zen Maru Gothic Board", sans-serif;
-  transition: opacity 0.18s ease;
+  transition: opacity 0.7s ease;
 }
-.loading *,
-.loading *::before,
-.loading *::after {
-  box-sizing: border-box;
-}
-.loading-center {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 8vw;
-  width: min(100%, 1000px);
-  min-height: 0;
-  margin: 0 auto;
-}
-.loading-visual {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 300px;
-  perspective: 800px;
-}
-.loading-model {
-  position: relative;
-  width: 190px;
-  height: 190px;
-  transform-style: preserve-3d;
-  transform: rotateX(-22deg) rotateY(35deg);
-  animation: room-orbit 9s ease-in-out infinite;
-}
-.loading-model > div {
+.loading-fog {
   position: absolute;
   inset: 0;
-  border: 1px solid color-mix(in srgb, var(--loading-ink) 50%, transparent);
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 37px,
-      color-mix(in srgb, var(--loading-ink) 8%, transparent) 38px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 37px,
-      color-mix(in srgb, var(--loading-ink) 8%, transparent) 38px
-    );
-  backface-visibility: visible;
+  pointer-events: none;
+  opacity: calc(1 - var(--load-progress));
+  transform: scale(calc(1 + var(--load-progress) * 0.18));
+  transition:
+    opacity 0.9s ease-out,
+    transform 1.2s ease-out;
 }
-.loading-wall-back {
-  transform: translateZ(-95px);
-}
-.loading-wall-side {
-  transform: rotateY(90deg) translateZ(-95px);
-}
-.loading-floor {
-  transform: rotateX(90deg) translateZ(-95px);
-}
-.loading-floor::after {
+.loading-fog::before,
+.loading-fog::after {
   content: "";
   position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--loading-ink) 16%, transparent);
-  transform: scaleX(var(--load-progress));
-  transform-origin: left;
-  transition: transform 0.4s ease;
+  inset: -20%;
+  background: var(--loading-fog);
+  mask: url("/textures/loading-fog.webp") center / 100% 100% no-repeat;
+  mask-mode: luminance;
+  animation: fog-drift 16s ease-in-out infinite alternate;
 }
-.loading-model .loading-scan {
-  border: 0;
-  border-top: 1px solid var(--loading-accent);
-  background: linear-gradient(
-    color-mix(in srgb, var(--loading-accent) 10%, transparent),
-    transparent 36%
-  );
-  transform: translateZ(0);
-  animation: room-scan 2.5s ease-in-out infinite;
+.loading-fog::after {
+  inset: -30%;
+  opacity: 0.65;
+  animation-direction: alternate-reverse;
+  animation-duration: 21s;
+}
+.loading-center {
+  position: relative;
+  padding: 24px;
 }
 .loading-number {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  width: max-content;
-  justify-self: center;
   font:
-    clamp(64px, 9vw, 128px)/1 "Zen Maru Gothic Board",
-    sans-serif;
-  letter-spacing: 0;
+    300 clamp(56px, 10vw, 112px)/1 ui-monospace,
+    monospace;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.07em;
 }
 .loading-number > span[hidden] {
   display: none;
 }
+.loading-number > span:last-child {
+  margin-left: 0.45em;
+  font-size: 0.25em;
+  letter-spacing: 0;
+}
 .loading-footer {
-  padding-top: 24px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
-.loading-progress {
-  display: block;
-  width: 100%;
-  height: 3px;
-  border: 0;
-  background: color-mix(in srgb, var(--loading-ink) 13%, transparent);
-  accent-color: var(--loading-ink);
-}
-.loading-progress::-webkit-progress-bar {
-  background: color-mix(in srgb, var(--loading-ink) 13%, transparent);
-}
-.loading-progress::-webkit-progress-value {
-  background: var(--loading-ink);
-  transition: width 0.35s ease;
-}
-.loading-progress::-moz-progress-bar {
-  background: var(--loading-ink);
+.loading-footer:has(noscript p) {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 24px;
+  clip-path: none;
 }
 .loading-complete {
   opacity: 0;
   pointer-events: none;
 }
-.loading-failed .loading-model,
-.loading-failed .loading-scan {
+.loading-failed .loading-fog::before,
+.loading-failed .loading-fog::after {
   animation-play-state: paused;
-}
-.loading-failed .loading-progress {
-  display: none;
 }
 .loading-retry {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  justify-self: center;
   gap: 12px;
   min-height: 56px;
   padding: 12px 20px;
@@ -177,65 +122,24 @@ body {
   font-size: 24px;
   cursor: pointer;
 }
-@keyframes room-orbit {
-  50% {
-    transform: rotateX(-18deg) rotateY(50deg) translateY(-8px);
+@keyframes fog-drift {
+  from {
+    transform: translate(-5%, 3%) rotate(-8deg);
   }
-}
-@keyframes room-scan {
-  0%,
-  100% {
-    transform: translateZ(-80px);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translateZ(80px);
-    opacity: 1;
-  }
-}
-@media (max-width: 640px) {
-  .loading {
-    padding: max(22px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
-      max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
-  }
-  .loading-center {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: 0;
-    padding: 20px 0;
-    text-align: center;
-  }
-  .loading-visual {
-    min-height: 0;
-    height: 100%;
-  }
-  .loading-model {
-    scale: 0.72;
-  }
-  .loading-number {
-    font-size: clamp(54px, 16vw, 84px);
-  }
-}
-@media (max-height: 540px) {
-  .loading-model {
-    scale: 0.55;
-  }
-  .loading-center {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
-  }
-  .loading-number {
-    font-size: 54px;
+  to {
+    transform: translate(5%, -3%) rotate(8deg);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .loading,
-  .loading-floor::after,
-  .loading-progress::-webkit-progress-value {
+  .loading-fog {
     transition: none;
   }
-  .loading-model,
-  .loading-scan {
+  .loading-fog {
+    transform: none;
+  }
+  .loading-fog::before,
+  .loading-fog::after {
     animation: none;
   }
 }
