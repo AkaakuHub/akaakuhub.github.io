@@ -1,6 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "akaakuhub",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "akaaku.net", "custom_domain": true }],
   "main": "worker/index.ts",
   "compatibility_date": "2026-10-25",
   "build": { "command": "pnpm build", "watch_dir": "worker" },
