@@ -5,7 +5,8 @@ export type RoomDirection = 0 | 1 | 2 | 3 | 4;
 export type ViewState =
   | { readonly mode: "room"; readonly direction: RoomDirection }
   | { readonly mode: "notice"; readonly index: number }
-  | { readonly mode: "computer" };
+  | { readonly mode: "computer" }
+  | { readonly mode: "screen" };
 export interface InspectionTarget {
   object: Object3D;
   width: number;

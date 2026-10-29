@@ -1,8 +1,12 @@
 import { PlaneGeometry, RectAreaLight } from "three";
-import type { Group, Mesh } from "three";
+import type { Group, Mesh, MeshBasicMaterial } from "three";
+import { createComputerScreen } from "./screen";
 
-export function createDisplayOrientation(head: Group, screen: Mesh<PlaneGeometry>) {
-  let current: boolean | undefined;
+export function createDisplayOrientation(
+  head: Group,
+  screen: Mesh<PlaneGeometry, MeshBasicMaterial>,
+) {
+  let current = false;
   return (portrait: boolean): boolean => {
     if (portrait === current) return false;
     current = portrait;
@@ -11,6 +15,8 @@ export function createDisplayOrientation(head: Group, screen: Mesh<PlaneGeometry
     screen.rotation.z = portrait ? -Math.PI / 2 : 0;
     screen.geometry.dispose();
     screen.geometry = new PlaneGeometry(portrait ? 0.331 : 0.589, portrait ? 0.589 : 0.331);
+    screen.material.map?.dispose();
+    screen.material.map = createComputerScreen(portrait);
     const light = head.getObjectByName("computer-monitor-light");
     if (light instanceof RectAreaLight) {
       light.width = screen.geometry.parameters.width;

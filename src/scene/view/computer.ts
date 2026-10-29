@@ -1,4 +1,12 @@
-import { Box3, BoxGeometry, Mesh, MeshBasicMaterial, Object3D, Vector3 } from "three";
+import {
+  Box3,
+  BoxGeometry,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  PlaneGeometry,
+  Vector3,
+} from "three";
 import type { Scene } from "three";
 import type { InspectionTarget } from "./targets";
 
@@ -14,15 +22,24 @@ function createPickVolume(parent: Object3D): Mesh {
   return volume;
 }
 
-export function createComputerInspection(
-  scene: Scene,
-): InspectionTarget & { surfaces: readonly Mesh[]; resizeInspection: () => void } {
+export function createComputerInspection(scene: Scene): InspectionTarget & {
+  surfaces: readonly Object3D[];
+  screen: InspectionTarget;
+  resizeInspection: () => void;
+} {
   const tower = scene.getObjectByName("white-desktop-tower");
   const monitor = scene.getObjectByName("computer-display-head");
-  if (!tower || !monitor) throw new Error("PCとモニターのモデルが見つかりません。");
+  const screen = scene.getObjectByName("computer-monitor");
+  if (
+    !tower ||
+    !monitor ||
+    !(screen instanceof Mesh) ||
+    !(screen.geometry instanceof PlaneGeometry)
+  )
+    throw new Error("PCとモニターのモデルが見つかりません。");
   tower.updateWorldMatrix(true, true);
   const towerBounds = new Box3().setFromObject(tower);
-  const surfaces = [createPickVolume(tower), createPickVolume(monitor)];
+  const surfaces = [createPickVolume(tower), monitor];
   const anchor = new Object3D();
   anchor.rotation.y = -Math.PI / 6;
   tower.add(anchor);
@@ -46,6 +63,18 @@ export function createComputerInspection(
   return {
     object,
     surfaces,
+    screen: {
+      object: screen,
+      get width() {
+        return screen.geometry.parameters.width;
+      },
+      get height() {
+        return screen.geometry.parameters.height;
+      },
+      depth: 0,
+      offsetY: 0,
+      topAligned: false,
+    },
     get width() {
       return object.geometry.parameters.width;
     },

@@ -4,6 +4,7 @@ import type { Object3D, PerspectiveCamera, Scene } from "three";
 interface ComputerTargets {
   surfaces: readonly Object3D[];
   power: Object3D;
+  screen: Object3D;
 }
 
 export function createPicker(
@@ -47,7 +48,7 @@ export function createPicker(
         raycaster.far = Infinity;
       }
     }
-    const targets = [...papers, computer.power, lightSwitch, door.leaf];
+    const targets = [...papers, computer.power, computer.screen, lightSwitch, door.leaf];
     if (door.light.visible) targets.push(door.light);
     let candidate = raycaster.intersectObjects(targets, true)[0];
     let target: Object3D | undefined;
@@ -59,13 +60,18 @@ export function createPicker(
         }
       }
     }
-    const tower = raycaster.intersectObjects(computerSurfaces, false)[0];
+    const tower = raycaster.intersectObjects(computerSurfaces, true)[0];
     if (
       tower &&
       (!candidate || (tower.distance < candidate.distance && target !== computer.power))
     ) {
       candidate = tower;
-      target = tower.object;
+      for (let owner: Object3D | null = tower.object; owner; owner = owner.parent) {
+        if (computerSurfaces.includes(owner)) {
+          target = owner;
+          break;
+        }
+      }
     }
     if (!candidate) return;
     if (occlusion) {
@@ -78,6 +84,7 @@ export function createPicker(
       });
       if (blocked) return;
     }
+    if (target === computer.screen) return { type: "screen" as const };
     if (target === door.leaf) return { type: "door" as const };
     if (target === door.light) return { type: "door-light" as const };
     if (target === lightSwitch) return { type: "light" as const };

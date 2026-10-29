@@ -181,6 +181,10 @@ export function bindRoomControls(
       door.enter();
       return;
     }
+    if (hit.type === "screen") {
+      view.inspectScreen();
+      return;
+    }
     if (hit.type === "computer") {
       view.inspectComputer();
       return;

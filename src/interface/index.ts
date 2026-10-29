@@ -37,7 +37,7 @@ export function createInterface(root: HTMLElement) {
         if (!notice) throw new Error("掲示の情報が見つかりません。");
         announcement = `${notice.title}を表示しています`;
       } else {
-        announcement = "PCを表示しています";
+        announcement = state.mode === "screen" ? "PC画面を表示しています" : "PCを表示しています";
       }
       status.textContent = announcement;
     },

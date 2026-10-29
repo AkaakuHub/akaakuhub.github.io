@@ -16,7 +16,7 @@ export type { ViewState } from "./targets";
 export function createView(
   camera: PerspectiveCamera,
   inspections: readonly InspectionTarget[],
-  computer: InspectionTarget,
+  computer: InspectionTarget & { screen: InspectionTarget },
   onChange: (state: ViewState, zoom: number) => void,
   invalidate: () => void,
   getViewport: () => InspectionViewport,
@@ -36,9 +36,17 @@ export function createView(
   let elapsed = 1;
   let duration = 1;
 
+  function inspectionTarget(): InspectionTarget {
+    if (state.mode === "computer") return computer;
+    if (state.mode === "screen") return computer.screen;
+    if (state.mode !== "notice") throw new Error("拡大する対象がありません。");
+    const inspection = inspections[state.index];
+    if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
+    return inspection;
+  }
   function pose(): CameraPose {
     if (state.mode === "room") return roomPose(state.direction, heading, camera.aspect);
-    const inspection = state.mode === "computer" ? computer : inspections[state.index];
+    const inspection = inspectionTarget();
     if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
     const viewport = getViewport();
     const bounds = inspectionBounds(inspection, viewport, framing.zoom);
@@ -126,6 +134,13 @@ export function createView(
       if (locked) return;
       if (deviceMotion.setTarget(x, y)) invalidate();
     },
+    inspectScreen(): void {
+      if (locked || state.mode === "screen") return;
+      framing.zoom = 1;
+      framing.panX = 0;
+      framing.panY = 0;
+      transition({ mode: "screen" }, 0.36);
+    },
     inspectComputer() {
       if (locked) return;
       if (state.mode === "computer") return;
@@ -145,7 +160,7 @@ export function createView(
     pan(dx: number, dy: number) {
       if (locked) return;
       if (state.mode === "room" || framing.zoom === 1) return;
-      const inspection = state.mode === "computer" ? computer : inspections[state.index];
+      const inspection = inspectionTarget();
       if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
       const bounds = inspectionBounds(inspection, getViewport(), framing.zoom);
       framing.panX -= dx * bounds.visibleWidth;

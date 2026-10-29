@@ -17,7 +17,7 @@ function createFixture(reducedMotion = false) {
   const view = createView(
     camera,
     [target],
-    target,
+    { ...target, screen: target },
     () => {},
     () => {},
     () => ({

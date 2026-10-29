@@ -19,7 +19,7 @@ export function createComputerInterface(
   let lastFanTime = 0;
   let fanStartedAt = 0;
   return {
-    targets: { surfaces: computer.surfaces, power: computer.power },
+    targets: { surfaces: computer.surfaces, screen: computer.screen.object, power: computer.power },
     togglePower(): boolean {
       powered = !powered;
       computer.power.material.emissiveIntensity = powered ? 1 : 0;
@@ -39,6 +39,7 @@ export function createComputerInterface(
       const visible =
         powered &&
         (view.state.mode === "computer" ||
+          view.state.mode === "screen" ||
           (view.state.mode === "room" && view.state.direction === 1));
       if (visible && now - lastFanTime >= fanFrameMs) {
         const angle = (((now - fanStartedAt) / 1000) * Math.PI * 5) % (Math.PI * 2);

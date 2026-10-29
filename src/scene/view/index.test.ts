@@ -18,7 +18,7 @@ function setup() {
   const view = createView(
     camera,
     [target],
-    target,
+    { ...target, screen: target },
     () => {},
     () => {},
     () => ({ width: 800, height: 800, insetX: 12, insetY: 12 }),
