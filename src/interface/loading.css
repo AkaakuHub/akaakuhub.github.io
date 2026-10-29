@@ -51,10 +51,11 @@ body {
   right: 0;
 }
 .loading-center {
+  --frame-size: min(280px, 72vw);
   position: relative;
   display: grid;
   place-items: center;
-  width: min(280px, 72vw);
+  width: var(--frame-size);
   aspect-ratio: 1;
 }
 .loading-frame {
@@ -93,29 +94,43 @@ body {
 }
 .loading-line-top,
 .loading-line-bottom {
-  --offset-x: 0px;
   width: 100%;
   height: 1px;
   transform-origin: left;
 }
 .loading-line-top {
   --assembly: clamp(0, var(--load-progress) / 0.4, 1);
-  --offset-y: -26px;
-  --angle: -14deg;
+  --initial-length: 0.3;
+  --offset-x: calc(var(--frame-size) * 0.28);
+  --offset-y: calc(var(--frame-size) * 0.14);
+  --angle: -28deg;
   top: 0;
 }
 .loading-line-bottom {
   --assembly: clamp(0, (var(--load-progress) - 0.4) / 0.4, 1);
-  --offset-y: 26px;
-  --angle: 14deg;
+  --initial-length: 0.36;
+  --offset-x: calc(var(--frame-size) * 0.12);
+  --offset-y: calc(var(--frame-size) * -0.28);
+  --angle: 55deg;
   bottom: 0;
 }
 .loading-frame-right .loading-line-top,
 .loading-frame-right .loading-line-bottom {
   transform-origin: right;
 }
+.loading-frame-right .loading-line-top {
+  --initial-length: 0.34;
+  --offset-x: calc(var(--frame-size) * -0.14);
+  --offset-y: calc(var(--frame-size) * 0.28);
+  --angle: 58deg;
+}
+.loading-frame-right .loading-line-bottom {
+  --initial-length: 0.28;
+  --offset-x: calc(var(--frame-size) * -0.34);
+  --offset-y: calc(var(--frame-size) * -0.12);
+  --angle: -20deg;
+}
 .loading-line-side {
-  --offset-y: 0px;
   top: 0;
   height: 100%;
   width: 1px;
@@ -123,23 +138,27 @@ body {
 }
 .loading-frame-left .loading-line-side {
   --assembly: clamp(0, (var(--load-progress) - 0.6) / 0.4, 1);
-  --offset-x: -32px;
-  --angle: -12deg;
+  --initial-length: 0.22;
+  --offset-x: calc(var(--frame-size) * 0.1);
+  --offset-y: calc(var(--frame-size) * -0.64);
+  --angle: 30deg;
   left: 0;
 }
 .loading-frame-right .loading-line-side {
   --assembly: clamp(0, (var(--load-progress) - 0.2) / 0.4, 1);
-  --offset-x: 32px;
-  --angle: 12deg;
+  --initial-length: 0.2;
+  --offset-x: calc(var(--frame-size) * -0.1);
+  --offset-y: calc(var(--frame-size) * 0.66);
+  --angle: 38deg;
   right: 0;
   transform-origin: top;
 }
 .loading-line-top::before,
 .loading-line-bottom::before {
-  scale: calc(0.24 + var(--assembly) * 0.76) 1;
+  scale: calc(var(--initial-length) + var(--assembly) * (1 - var(--initial-length))) 1;
 }
 .loading-line-side::before {
-  scale: 1 calc(0.24 + var(--assembly) * 0.76);
+  scale: 1 calc(var(--initial-length) + var(--assembly) * (1 - var(--initial-length)));
 }
 .loading-frame-right .loading-line-top::before,
 .loading-frame-left .loading-line-bottom::before {
