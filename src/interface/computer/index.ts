@@ -23,7 +23,7 @@ export function createComputerInterface(
     togglePower(): boolean {
       powered = !powered;
       computer.power.material.emissiveIntensity = powered ? 1 : 0;
-      computer.monitor.material.color.copy(powered ? screenColor : new Color("#080b0a"));
+      computer.monitor.material.color.copy(powered ? screenColor : new Color("#000000"));
       lastFanTime = performance.now();
       if (powered) fanStartedAt = lastFanTime;
       else {

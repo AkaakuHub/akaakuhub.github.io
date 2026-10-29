@@ -9,13 +9,14 @@ import {
 import { cylinder, roundBox } from "../geometry";
 import { desktopTower } from "./tower";
 import { mechanicalKeyboard } from "./keyboard";
+import { createComputerScreen } from "./screen";
 
 export function desktopComputer(): Group {
   const computer = new Group();
   computer.name = "desktop-computer";
   const white = new MeshStandardMaterial({ color: "#e5e7e6", roughness: 0.62 });
   const graphite = new MeshStandardMaterial({ color: "#232827", roughness: 0.74 });
-  const display = new MeshBasicMaterial({ color: "#080b0a" });
+  const display = new MeshBasicMaterial({ color: "#000000", map: createComputerScreen() });
   roundBox(computer, [0.22, 0.012, 0.18], [0, 0.006, -0.15], white, 0.008);
   roundBox(computer, [0.045, 0.17, 0.035], [0, 0.095, -0.22], white, 0.006);
   const head = new Group();
