@@ -28,7 +28,12 @@ export function createWindowPanels(
     upper.name = "room-window-upper-pane";
     upper.castShadow = upper.receiveShadow = false;
     const parent = center === 0.45 ? sash : group;
-    const lower = box(parent, [0.008, 1.131, width - 0.02], [-2.626, 1.6105, center], glass);
+    const lower = box(
+      parent,
+      [0.008, center === 0.45 ? 1.095 : 1.131, center === 0.45 ? 1.18 : width - 0.02],
+      [-2.626, center === 0.45 ? 1.61675 : 1.6105, center],
+      glass,
+    );
     lower.name = "room-window-lower-pane";
     lower.castShadow = lower.receiveShadow = false;
     for (const edge of [-width / 2 + 0.018, width / 2 - 0.018])
@@ -46,8 +51,14 @@ export function createWindowPanels(
     handle.rotation.y = Math.PI / 2;
     parent.add(handle);
   }
-  for (const y of [1.052, 2.169])
-    chamferedBox(sash, [0.025, 0.014, 1.22], [-2.611, y, 0.45], frame, 0.0006);
+  for (const y of [1.0655, 2.168]) {
+    const rail = chamferedBox(sash, [0.04, 0.016, 1.205], [-2.611, y, 0.45], frame, 0.0006);
+    rail.name = "room-window-sash-rail";
+  }
+  for (const z of [-0.1445, 1.0445]) {
+    const stile = chamferedBox(sash, [0.04, 1.1185, 0.016], [-2.611, 1.61675, z], frame, 0.0006);
+    stile.name = "room-window-sash-stile";
+  }
   return { group, sash };
 }
 

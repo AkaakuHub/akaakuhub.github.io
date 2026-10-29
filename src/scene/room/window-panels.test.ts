@@ -26,6 +26,8 @@ describe("1枚だけ開く窓", () => {
     expect(sash.getObjectsByProperty("name", "room-window-lower-pane")).toHaveLength(1);
     expect(sash.getObjectsByProperty("name", "room-window-upper-pane")).toHaveLength(0);
     expect(sash.getObjectsByProperty("name", "room-window-transom")).toHaveLength(0);
+    expect(sash.getObjectsByProperty("name", "room-window-sash-rail")).toHaveLength(2);
+    expect(sash.getObjectsByProperty("name", "room-window-sash-stile")).toHaveLength(2);
     const pane = sash.getObjectByName("room-window-lower-pane");
     if (!pane) throw new Error("可動ガラスがありません。");
     const before = pane.getWorldPosition(new Vector3());
