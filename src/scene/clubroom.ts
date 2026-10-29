@@ -8,6 +8,7 @@ import { createMetalMaterials } from "./materials/metal";
 import { createPropMaterials } from "./materials/props";
 import { createRoom } from "./room";
 import { createComputerInspection } from "./view/computer";
+import { createPrivacyPoster } from "./room/privacy";
 import { createDisplayOrientation } from "./furniture/computer/orientation";
 
 function isMonitor(object: Object3D | undefined): object is Mesh<PlaneGeometry, MeshBasicMaterial> {
@@ -31,9 +32,12 @@ export async function assembleClubroom(
   const boardReady = createBoard(metals, materials.paper, props, avatar, printer);
   scene.add(createRoom(materials, metals, props), createFurniture(materials, metals, props));
   performance.mark("room-models-ready");
-  const board = await boardReady;
+  const [board, privacyPoster] = await Promise.all([
+    boardReady,
+    createPrivacyPoster(materials.paper, props, avatar, printer),
+  ]);
   performance.mark("room-paper-ready");
-  scene.add(board.group);
+  scene.add(board.group, privacyPoster.group);
   const lightSwitch = scene.getObjectByName("room-light-switch");
   const rocker = scene.getObjectByName("room-light-switch-rocker");
   if (!lightSwitch || !rocker) throw new Error("部屋の照明スイッチが見つかりません。");
@@ -68,6 +72,7 @@ export async function assembleClubroom(
   const fanSurfaces: Mesh[] = [];
   const preserved = new Set<Object3D>([
     ...board.notices.keys(),
+    privacyPoster.target.object,
     pivot,
     doorLight,
     darkness,
@@ -92,6 +97,7 @@ export async function assembleClubroom(
   performance.mark("room-batching-ready");
   return {
     board,
+    privacy: privacyPoster.target,
     door,
     windowOpening,
     lightSwitch,

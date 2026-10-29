@@ -19,6 +19,7 @@ function setup() {
     camera,
     [target],
     { ...target, screen: target },
+    target,
     () => {},
     () => {},
     () => ({ width: 800, height: 800, insetX: 12, insetY: 12 }),

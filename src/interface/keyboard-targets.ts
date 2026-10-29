@@ -1,3 +1,4 @@
+import { privacy, privacyText } from "../content/privacy";
 import { MathUtils } from "three";
 import type { createInterface } from ".";
 import type { Notice } from "../scene/board";
@@ -23,6 +24,24 @@ export function bindKeyboardTargets(
     throw new Error("キーボード操作の対象が揃っていません。");
   const lightButton: HTMLButtonElement = light;
   const powerButton: HTMLButtonElement = power;
+  const policy = document.createElement("button");
+  policy.type = "button";
+  policy.textContent = "プライバシーポリシー";
+  policy.setAttribute("aria-description", privacyText);
+  policy.addEventListener("focus", () => view.inspectPrivacy());
+  policy.addEventListener("click", () => view.inspectPrivacy());
+  navigation.append(policy);
+  for (const [label, href] of [
+    ["Googleのデータ利用", privacy.google],
+    ["計測を停止する", privacy.optout],
+  ] as const) {
+    const link = document.createElement("button");
+    link.type = "button";
+    link.textContent = label;
+    link.addEventListener("focus", () => view.inspectPrivacy());
+    link.addEventListener("click", () => window.open(href, "_blank", "noopener,noreferrer"));
+    navigation.append(link);
+  }
   const canvas = ui.canvas;
   canvas.addEventListener("keydown", (event) => {
     if (event.key !== "Tab" || !event.shiftKey) return;

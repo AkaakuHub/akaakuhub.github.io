@@ -36,6 +36,8 @@ export function createInterface(root: HTMLElement) {
       } else if (state.mode === "notice") {
         if (!notice) throw new Error("掲示の情報が見つかりません。");
         announcement = `${notice.title}を表示しています`;
+      } else if (state.mode === "privacy") {
+        announcement = "プライバシーポリシーを表示しています";
       } else {
         announcement = state.mode === "screen" ? "PC画面を表示しています" : "PCを表示しています";
       }

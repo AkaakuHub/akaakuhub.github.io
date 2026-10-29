@@ -1,4 +1,8 @@
+import { privacyText } from "./privacy.ts";
+
 export const boardText = [
+  privacyText,
+  "Googleのデータ利用 計測を停止する",
   "あかあく 好きなこと 趣味 好きな言語 ひとこと",
   "紙の外をタップしてみてください 紙の外をクリックしてみてください",
   "天気の音を再生 天気の音を消す >",

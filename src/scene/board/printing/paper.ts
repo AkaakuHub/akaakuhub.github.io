@@ -3,6 +3,7 @@ import type { PrintedPaper } from "./protocol";
 import { siteFont } from "../../../assets/typography";
 import { paintArticle } from "../print/article";
 import { paintProfile } from "../print/profile";
+import { paintPrivacy } from "../print/privacy";
 import { paintLink } from "../print/link";
 
 export function printPaper(
@@ -34,7 +35,9 @@ export function printPaper(
   context.fillStyle = print.stock;
   context.fillRect(0, 0, width, height);
   context.globalCompositeOperation = "source-over";
-  if (print.kind === "article") {
+  if (print.kind === "privacy") {
+    paintPrivacy(context, width);
+  } else if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
     if (print.kind === "profile") paintProfile(context, avatar, width);

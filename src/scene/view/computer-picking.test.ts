@@ -42,6 +42,7 @@ describe("部室に配置したPC画面の選択", () => {
       { surfaces: inspection.surfaces, screen, power },
       new Object3D(),
       [],
+      new Object3D(),
     );
     expect(pick({ clientX: 400, clientY: 400, pointerType: "mouse" }, true)?.type).toBe("screen");
   });

@@ -74,14 +74,17 @@ export async function startRoom(
       return room;
     },
   );
-  const [renderer, initialWeather, { board, door, windowOpening, lightSwitch, rocker, computer }] =
-    await Promise.all([
-      rendererReady,
-      weatherReady,
-      clubroomReady,
-      materialLoading.loadRemaining().then(() => performance.mark("room-textures-ready")),
-      lightTablesReady,
-    ]);
+  const [
+    renderer,
+    initialWeather,
+    { board, privacy, door, windowOpening, lightSwitch, rocker, computer },
+  ] = await Promise.all([
+    rendererReady,
+    weatherReady,
+    clubroomReady,
+    materialLoading.loadRemaining().then(() => performance.mark("room-textures-ready")),
+    lightTablesReady,
+  ]);
   performance.mark("room-assets-and-geometry-ready");
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   loading.rendering(1, 4);
@@ -141,6 +144,7 @@ export async function startRoom(
     camera,
     inspections,
     computer,
+    privacy,
     (state) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
@@ -290,6 +294,7 @@ export async function startRoom(
     roomSwitch,
     () => void boardLoader.refresh(true),
     passages,
+    privacy.object,
   );
   loading.rendering(4, 4);
   prepared = true;

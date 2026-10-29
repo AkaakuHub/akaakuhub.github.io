@@ -17,6 +17,7 @@ export function createView(
   camera: PerspectiveCamera,
   inspections: readonly InspectionTarget[],
   computer: InspectionTarget & { screen: InspectionTarget },
+  privacy: InspectionTarget,
   onChange: (state: ViewState, zoom: number) => void,
   invalidate: () => void,
   getViewport: () => InspectionViewport,
@@ -39,6 +40,7 @@ export function createView(
   function inspectionTarget(): InspectionTarget {
     if (state.mode === "computer") return computer;
     if (state.mode === "screen") return computer.screen;
+    if (state.mode === "privacy") return privacy;
     if (state.mode !== "notice") throw new Error("拡大する対象がありません。");
     const inspection = inspections[state.index];
     if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
@@ -132,6 +134,13 @@ export function createView(
     setMotion(x: number, y: number): void {
       if (locked) return;
       if (deviceMotion.setTarget(x, y)) invalidate();
+    },
+    inspectPrivacy(): void {
+      if (locked || state.mode === "privacy") return;
+      framing.zoom = 1;
+      framing.panX = 0;
+      framing.panY = 0;
+      transition({ mode: "privacy" }, 0.36);
     },
     inspectScreen(): void {
       if (locked || state.mode === "screen") return;

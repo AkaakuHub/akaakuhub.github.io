@@ -18,6 +18,7 @@ function createFixture(reducedMotion = false) {
     camera,
     [target],
     { ...target, screen: target },
+    target,
     () => {},
     () => {},
     () => ({

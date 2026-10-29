@@ -15,6 +15,7 @@ export function createPicker(
   computer: ComputerTargets,
   lightSwitch: Object3D,
   passages: readonly { panel: Object3D; destination: Object3D }[],
+  privacy: Object3D,
 ) {
   const raycaster = new Raycaster();
   const pointer = new Vector2();
@@ -48,7 +49,7 @@ export function createPicker(
         raycaster.far = Infinity;
       }
     }
-    const targets = [...papers, computer.power, computer.screen, lightSwitch];
+    const targets = [...papers, computer.power, computer.screen, lightSwitch, privacy];
     for (const passage of passages) {
       targets.push(passage.panel);
       if (passage.destination.visible) targets.push(passage.destination);
@@ -87,6 +88,7 @@ export function createPicker(
       });
       if (blocked) return;
     }
+    if (target === privacy) return { type: "privacy" as const };
     if (target === computer.screen) return { type: "screen" as const };
     for (const [index, passage] of passages.entries()) {
       if (target === passage.panel) return { type: "passage" as const, index };

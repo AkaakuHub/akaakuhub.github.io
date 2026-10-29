@@ -12,7 +12,7 @@ export type BoardState =
   | { status: "ready"; content: SiteContent; thumbnails: ReadonlyMap<string, ImageBitmap> };
 
 export interface BoardNotice extends Notice {
-  kind: "profile" | "github" | "article";
+  kind: "profile" | "github" | "article" | "privacy";
   eyebrow: string;
   position: readonly [number, number];
   angle: number;

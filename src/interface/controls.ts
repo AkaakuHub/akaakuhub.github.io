@@ -20,6 +20,7 @@ export function bindRoomControls(
   lightSwitch: ReturnType<typeof bindRoomSwitch>,
   refreshBoard: () => void,
   passages: readonly ReturnType<typeof createPassageInterface>[],
+  privacy: Object3D,
 ) {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
@@ -31,6 +32,7 @@ export function bindRoomControls(
     computer.targets,
     lightSwitch.object,
     passages.map((passage) => passage.targets),
+    privacy,
   );
   const keyboard = bindKeyboardTargets(
     root,
@@ -178,6 +180,10 @@ export function bindRoomControls(
       if (!passage) throw new Error("出入口が見つかりません。");
       if (hit.type === "passage") passage.toggle();
       else passage.enter();
+      return;
+    }
+    if (hit.type === "privacy") {
+      view.inspectPrivacy();
       return;
     }
     if (hit.type === "screen") {
