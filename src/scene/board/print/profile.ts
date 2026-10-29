@@ -2,7 +2,7 @@ import { profile } from "../../../content/profile";
 import { siteFont } from "../../../assets/typography";
 
 export function paintProfile(
-  context: CanvasRenderingContext2D,
+  context: OffscreenCanvasRenderingContext2D,
   avatar: ImageBitmap,
   width: number,
 ): void {

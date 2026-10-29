@@ -7,7 +7,7 @@ const arrow = ArrowUpRight.map(([tag, attributes]) => {
 });
 
 export function paintLink(
-  context: CanvasRenderingContext2D,
+  context: OffscreenCanvasRenderingContext2D,
   label: string,
   x: number,
   y: number,

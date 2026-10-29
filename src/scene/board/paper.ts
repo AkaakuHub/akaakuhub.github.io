@@ -11,57 +11,10 @@ import {
   Vector2,
 } from "three";
 
-import type { BoardNotice } from "./notices";
-import { siteFont } from "../../assets/typography";
-import { paintArticle } from "./print/article";
-import { paintProfile } from "./print/profile";
-import { paintLink } from "./print/link";
+import type { PrintedPaper } from "./printing/protocol";
 
-function printedPaper(
-  print: BoardNotice,
-  maps: PbrMaps,
-  sheetWidth: number,
-  sheetHeight: number,
-  avatar: ImageBitmap,
-): DataTexture {
-  const canvas = document.createElement("canvas");
-  const density = 2048 / Math.max(sheetWidth, sheetHeight);
-  canvas.width = Math.round(sheetWidth * density);
-  canvas.height = Math.round(sheetHeight * density);
-  const context = canvas.getContext("2d", { willReadFrequently: true });
-  if (!context) throw new Error("掲示用紙を描画できませんでした。");
-  const width = canvas.width;
-  const height = canvas.height;
-  const margin = width * 0.06;
-  const stock = maps.map.image;
-  if (!stock) throw new Error("掲示用紙の画像が準備されていません。");
-  const pattern = context.createPattern(stock, "repeat");
-  if (!pattern) throw new Error("紙の繊維を描画できませんでした。");
-  pattern.setTransform(
-    new DOMMatrix().scale(
-      (0.3 * width) / (sheetWidth * stock.width),
-      (0.3 * height) / (sheetHeight * stock.height),
-    ),
-  );
-  context.fillStyle = pattern;
-  context.fillRect(0, 0, width, height);
-  context.globalCompositeOperation = "multiply";
-  context.fillStyle = print.stock;
-  context.fillRect(0, 0, width, height);
-  context.globalCompositeOperation = "source-over";
-  if (print.kind === "article") {
-    paintArticle(context, print, width, height);
-  } else {
-    if (print.kind === "profile") paintProfile(context, avatar, width);
-    context.fillStyle = print.ink;
-    if (print.link) {
-      context.fillRect(margin, height - width * 0.085, width - margin * 2, 1);
-      context.font = `500 ${width * 0.042}px ${siteFont}`;
-      paintLink(context, print.link.label, margin, height - width * 0.028, width * 0.042);
-    }
-  }
-  const pixels = context.getImageData(0, 0, width, height);
-  const texture = new DataTexture(new Uint8Array(pixels.data.buffer), width, height);
+function printedTexture(print: PrintedPaper): DataTexture {
+  const texture = new DataTexture(print.pixels, print.width, print.height);
   texture.flipY = true;
   texture.generateMipmaps = true;
   texture.minFilter = LinearMipmapLinearFilter;
@@ -93,14 +46,13 @@ function paperGeometry(width: number, height: number): PlaneGeometry {
 export function createPaper(
   width: number,
   height: number,
-  print: BoardNotice,
   maps: PbrMaps,
-  avatar: ImageBitmap,
+  print: PrintedPaper,
 ): Mesh<PlaneGeometry, MeshStandardMaterial> {
   const paper = new Mesh(
     paperGeometry(width, height),
     new MeshStandardMaterial({
-      map: printedPaper(print, maps, width, height, avatar),
+      map: printedTexture(print),
       normalMap: maps.normalMap,
       roughnessMap: maps.roughnessMap,
       normalScale: new Vector2(0.1, 0.1),
@@ -115,11 +67,9 @@ export function createPaper(
 
 export function updatePaper(
   paper: Mesh<PlaneGeometry, MeshStandardMaterial>,
-  print: BoardNotice,
-  maps: PbrMaps,
-  avatar: ImageBitmap,
+  print: PrintedPaper,
 ): void {
   const previous = paper.material.map;
-  paper.material.map = printedPaper(print, maps, print.size[0], print.size[1], avatar);
+  paper.material.map = printedTexture(print);
   previous?.dispose();
 }

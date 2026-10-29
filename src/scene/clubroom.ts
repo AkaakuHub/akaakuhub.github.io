@@ -1,6 +1,7 @@
 import { Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry } from "three";
 import type { Object3D, Scene } from "three";
 import { createBoard } from "./board";
+import type { PaperPrinter } from "./board/printing";
 import { createFurniture } from "./furniture";
 import type { MaterialLibrary } from "./materials/library";
 import { createMetalMaterials } from "./materials/metal";
@@ -22,18 +23,17 @@ export async function assembleClubroom(
   materials: MaterialLibrary,
   avatar: ImageBitmap,
   batchStaticMeshes: (scene: Scene, preserved: ReadonlySet<Object3D>) => Promise<void>,
+  printer: PaperPrinter,
 ) {
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
   performance.mark("room-paper-start");
-  const board = createBoard(metals, materials.paper, props, avatar);
-  performance.mark("room-paper-ready");
-  scene.add(
-    createRoom(materials, metals, props),
-    createFurniture(materials, metals, props),
-    board.group,
-  );
+  const boardReady = createBoard(metals, materials.paper, props, avatar, printer);
+  scene.add(createRoom(materials, metals, props), createFurniture(materials, metals, props));
   performance.mark("room-models-ready");
+  const board = await boardReady;
+  performance.mark("room-paper-ready");
+  scene.add(board.group);
   const lightSwitch = scene.getObjectByName("room-light-switch");
   const rocker = scene.getObjectByName("room-light-switch-rocker");
   if (!lightSwitch || !rocker) throw new Error("部屋の照明スイッチが見つかりません。");

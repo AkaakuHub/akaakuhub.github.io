@@ -3,14 +3,14 @@ import { loadArticleThumbnails } from "../../content/thumbnails";
 import type { BoardState } from "./notices";
 import type { SiteContent } from "../../content/schema";
 
-export function createBoardLoader(update: (state: BoardState) => void) {
+export function createBoardLoader(update: (state: BoardState) => Promise<void>) {
   let active: AbortController | undefined;
   return {
     async refresh(revoke: boolean): Promise<void> {
       active?.abort();
       const controller = new AbortController();
       active = controller;
-      if (revoke) update({ status: "loading" });
+      if (revoke) await update({ status: "loading" });
       let content: SiteContent | undefined;
       try {
         if (revoke) await revokeSiteContent(controller.signal);
@@ -25,7 +25,8 @@ export function createBoardLoader(update: (state: BoardState) => void) {
               revoke || attempt > 0,
             );
             try {
-              if (!controller.signal.aborted) update({ status: "ready", content, thumbnails });
+              if (!controller.signal.aborted)
+                await update({ status: "ready", content, thumbnails });
             } finally {
               for (const bitmap of thumbnails.values()) bitmap.close();
             }
@@ -42,7 +43,7 @@ export function createBoardLoader(update: (state: BoardState) => void) {
         if (controller.signal.aborted) return;
         console.error(error);
       }
-      if (!controller.signal.aborted) update({ status: "error" });
+      if (!controller.signal.aborted) await update({ status: "error" });
     },
   };
 }

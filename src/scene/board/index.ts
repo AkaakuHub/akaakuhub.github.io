@@ -1,5 +1,7 @@
 import type { PbrMaps } from "../materials/library";
 import { Group } from "three";
+import type { Texture } from "three";
+import type { PaperPrinter } from "./printing";
 import type { Object3D } from "three";
 import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
@@ -12,17 +14,18 @@ import { addMagnets } from "./magnets";
 
 export type { Notice } from "./notices";
 
-export function createBoard(
+export async function createBoard(
   metals: MetalMaterials,
   paperMaps: PbrMaps,
   props: PropMaterials,
   avatar: ImageBitmap,
-): {
+  printer: PaperPrinter,
+): Promise<{
   group: Group;
   notices: Map<Object3D, Notice>;
   contributions: ReturnType<typeof createPaper>;
-  setState: (state: BoardState) => void;
-} {
+  setState: (state: BoardState) => Promise<readonly Texture[]>;
+}> {
   const group = createFrame(metals, props);
   group.name = "notice-board";
   group.position.z = -2.12;
@@ -41,12 +44,18 @@ export function createBoard(
     createBoardHeading("最新記事", 0.33, 2.275),
     createBoardCredit(),
   );
-  for (const notice of boardNotices({ status: "loading" })) {
+  const initial = boardNotices({ status: "loading" });
+  const stock = paperMaps.map.image;
+  if (!stock) throw new Error("紙の画像が準備されていません。");
+  const printed = await printer.print(initial, stock, avatar);
+  for (const [index, notice] of initial.entries()) {
+    const print = printed[index];
+    if (!print) throw new Error("掲示の印刷結果がありません。");
     const [width, height] = notice.size;
     const sheet = new Group();
     sheet.position.set(...notice.position, 0.045);
     sheet.rotation.z = notice.angle;
-    const paper = createPaper(width, height, notice, paperSurface, avatar);
+    const paper = createPaper(width, height, paperSurface, print);
     if (notice.kind === "github") contributions = paper;
     sheet.add(paper);
     const magnetOffset = width * (notice.kind === "profile" ? 0.34 : 0.46);
@@ -61,16 +70,32 @@ export function createBoard(
     group,
     notices,
     contributions,
-    setState(state): void {
-      boardNotices(state).forEach((notice, index) => {
+    async setState(state) {
+      const next = boardNotices(state);
+      const prints = await printer.print(
+        next.filter((notice) => notice.kind === "article"),
+        stock,
+        avatar,
+      );
+      const textures: Texture[] = [];
+      let articleIndex = 0;
+      for (const [index, notice] of next.entries()) {
         const paper = papers[index];
         if (!paper) throw new Error("掲示の表示先がありません。");
         const metadata = notices.get(paper);
         if (!metadata) throw new Error("掲示の情報がありません。");
         metadata.title = notice.title;
         metadata.link = notice.link;
-        if (notice.kind === "article") updatePaper(paper, notice, paperSurface, avatar);
-      });
+        if (notice.kind === "article") {
+          const print = prints[articleIndex++];
+          if (!print) throw new Error("記事の印刷結果がありません。");
+          updatePaper(paper, print);
+          const map = paper.material.map;
+          if (!map) throw new Error("記事の画像がありません。");
+          textures.push(map);
+        }
+      }
+      return textures;
     },
   };
 }

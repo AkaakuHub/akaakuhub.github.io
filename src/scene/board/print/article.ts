@@ -4,7 +4,7 @@ import { thumbnailBounds } from "./image-layout";
 import { paintLink } from "./link";
 
 export function paintArticle(
-  context: CanvasRenderingContext2D,
+  context: OffscreenCanvasRenderingContext2D,
   print: BoardNotice,
   width: number,
   height: number,

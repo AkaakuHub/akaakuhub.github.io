@@ -4,6 +4,7 @@ import { createRoomAssetLoader } from "./assets/loading";
 import type { RoomAssetLoader } from "./assets/loading";
 import { createWeatherAudio } from "./scene/audio";
 import { loadProfileAvatar } from "./content/avatar";
+import { createPaperPrinter } from "./scene/board/printing";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
@@ -15,6 +16,7 @@ window.addEventListener("error", (event) =>
 window.addEventListener("unhandledrejection", (event) => loading.fail(event.reason));
 
 let assets: RoomAssetLoader | undefined;
+const printer = createPaperPrinter();
 try {
   const weatherReady = loadTokyoWeather();
   const avatarReady = loadProfileAvatar();
@@ -24,8 +26,9 @@ try {
     import("./assets/fonts/board-text.css"),
     import("./assets/fonts/yomogi.css"),
   ]);
-  await room.startRoom(root, loading, weatherReady, assets, audio, avatarReady);
+  await room.startRoom(root, loading, weatherReady, assets, audio, avatarReady, printer);
 } catch (error) {
+  printer.dispose(error);
   assets?.abort(error);
   loading.fail(error);
 }

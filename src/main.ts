@@ -32,6 +32,7 @@ import { bindSoundControl } from "./interface/sound";
 import { finishFirstFrame } from "./scene/rendering/first-frame";
 import { createControlIntroduction } from "./interface/control-introduction";
 import { bindMotionControl } from "./interface/motion";
+import type { PaperPrinter } from "./scene/board/printing";
 import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animation";
 
 export async function startRoom(
@@ -41,6 +42,7 @@ export async function startRoom(
   assets: RoomAssetLoader,
   audio: WeatherAudio,
   avatarReady: Promise<ImageBitmap>,
+  printer: PaperPrinter,
 ) {
   performance.mark("room-startup");
   const ui = createInterface(root);
@@ -67,7 +69,7 @@ export async function startRoom(
   const clubroomReady = Promise.all([avatarReady, materialLoading.paperReady, fontsReady]).then(
     async ([avatar]) => {
       performance.mark("room-geometry-start");
-      const room = await assembleClubroom(scene, materials, avatar, batchStaticMeshes);
+      const room = await assembleClubroom(scene, materials, avatar, batchStaticMeshes, printer);
       performance.mark("room-geometry-ready");
       return room;
     },
@@ -162,9 +164,10 @@ export async function startRoom(
   );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   let controls: ReturnType<typeof bindRoomControls>;
-  const boardLoader = createBoardLoader((state) => {
-    board.setState(state);
-    controls.syncNotices();
+  const boardLoader = createBoardLoader(async (state) => {
+    const printed = await board.setState(state);
+    for (const map of printed) renderer.initTexture(map);
+    if (prepared) controls.syncNotices();
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
   });
@@ -238,7 +241,6 @@ export async function startRoom(
           controlIntroduction.start();
           introduction?.start();
           contributions.load();
-          void boardLoader.refresh(false);
         })
         .catch(loading.fail);
     }
@@ -255,6 +257,7 @@ export async function startRoom(
     frame = requestAnimationFrame(render);
   }
   updateTime();
+  void boardLoader.refresh(false);
   await prepareRoomShaders(renderer, scene, camera, ({ loaded, total }) => {
     loading.rendering(2 + (2 * loaded) / total, 4);
   });
