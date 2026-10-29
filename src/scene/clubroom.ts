@@ -43,6 +43,11 @@ export async function assembleClubroom(
   if (!(pivot instanceof Group) || !(leaf instanceof Group) || !(doorLight instanceof Mesh))
     throw new Error("ドアの可動部と光が見つかりません。");
   const door = { pivot, leaf, light: doorLight };
+  const sash = scene.getObjectByName("room-window-sash");
+  const darkness = scene.getObjectByName("room-window-darkness");
+  if (!(sash instanceof Group) || !(darkness instanceof Mesh))
+    throw new Error("窓の可動部と闇が見つかりません。");
+  const windowOpening = { sash, darkness };
   const power = scene.getObjectByName("computer-power-button");
   const monitor = scene.getObjectByName("computer-monitor");
   const head = scene.getObjectByName("computer-display-head");
@@ -65,6 +70,7 @@ export async function assembleClubroom(
     ...board.notices.keys(),
     pivot,
     doorLight,
+    darkness,
     lightSwitch,
     rocker,
     computer.object,
@@ -72,6 +78,7 @@ export async function assembleClubroom(
     power,
     monitor,
   ]);
+  sash.traverse((object) => preserved.add(object));
   leaf.traverse((object) => preserved.add(object));
   lightSwitch.traverse((object) => preserved.add(object));
   head.traverse((object) => preserved.add(object));
@@ -86,6 +93,7 @@ export async function assembleClubroom(
   return {
     board,
     door,
+    windowOpening,
     lightSwitch,
     rocker,
     computer: Object.assign(computer, { power, monitor, fans, fanSurfaces, orientDisplay }),

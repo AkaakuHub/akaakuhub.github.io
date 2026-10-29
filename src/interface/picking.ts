@@ -8,20 +8,20 @@ interface ComputerTargets {
 }
 
 export function createPicker(
-  canvas: HTMLCanvasElement,
+  canvas: Pick<HTMLCanvasElement, "getBoundingClientRect">,
   camera: PerspectiveCamera,
   scene: Scene,
   papers: readonly Object3D[],
   computer: ComputerTargets,
   lightSwitch: Object3D,
-  door: { leaf: Object3D; light: Object3D },
+  passages: readonly { panel: Object3D; destination: Object3D }[],
 ) {
   const raycaster = new Raycaster();
   const pointer = new Vector2();
   const powerPoint = new Vector3();
   const projectedPower = new Vector3();
   const computerSurfaces = [...computer.surfaces];
-  return (event: PointerEvent, occlusion: boolean) => {
+  return (event: Pick<PointerEvent, "clientX" | "clientY" | "pointerType">, occlusion: boolean) => {
     const rect = canvas.getBoundingClientRect();
     pointer.set(
       ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -48,8 +48,11 @@ export function createPicker(
         raycaster.far = Infinity;
       }
     }
-    const targets = [...papers, computer.power, computer.screen, lightSwitch, door.leaf];
-    if (door.light.visible) targets.push(door.light);
+    const targets = [...papers, computer.power, computer.screen, lightSwitch];
+    for (const passage of passages) {
+      targets.push(passage.panel);
+      if (passage.destination.visible) targets.push(passage.destination);
+    }
     let candidate = raycaster.intersectObjects(targets, true)[0];
     let target: Object3D | undefined;
     if (candidate) {
@@ -85,8 +88,10 @@ export function createPicker(
       if (blocked) return;
     }
     if (target === computer.screen) return { type: "screen" as const };
-    if (target === door.leaf) return { type: "door" as const };
-    if (target === door.light) return { type: "door-light" as const };
+    for (const [index, passage] of passages.entries()) {
+      if (target === passage.panel) return { type: "passage" as const, index };
+      if (target === passage.destination) return { type: "destination" as const, index };
+    }
     if (target === lightSwitch) return { type: "light" as const };
     if (target && computer.surfaces.includes(target)) return { type: "computer" as const };
     if (target === computer.power) return { type: "power" as const };

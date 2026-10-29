@@ -32,7 +32,7 @@ import { finishFirstFrame } from "./scene/rendering/first-frame";
 import { createControlIntroduction } from "./interface/control-introduction";
 import { bindMotionControl } from "./interface/motion";
 import type { PaperPrinter } from "./scene/board/printing";
-import { createDoorInterface } from "./interface/door";
+import { createRoomPassages } from "./interface/passages";
 import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animation";
 
 export async function startRoom(
@@ -74,7 +74,7 @@ export async function startRoom(
       return room;
     },
   );
-  const [renderer, initialWeather, { board, door, lightSwitch, rocker, computer }] =
+  const [renderer, initialWeather, { board, door, windowOpening, lightSwitch, rocker, computer }] =
     await Promise.all([
       rendererReady,
       weatherReady,
@@ -163,17 +163,18 @@ export async function startRoom(
     requestFrame,
     lighting.setMonitorPower,
   );
-  const doorInterface = createDoorInterface(
+  const requestPassageFrame = (geometryChanged: boolean): void => {
+    if (geometryChanged) {
+      lighting.invalidateShadows();
+      invalidate();
+    } else requestFrame();
+  };
+  const passages = createRoomPassages(
     root,
     camera,
     view,
-    door,
-    (doorMoved) => {
-      if (doorMoved) {
-        lighting.invalidateShadows();
-        invalidate();
-      } else requestFrame();
-    },
+    { door, windowOpening },
+    requestPassageFrame,
     ui.announce,
   );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
@@ -233,8 +234,9 @@ export async function startRoom(
     }
     const seconds = (time - previous) / 1000;
     const viewMoving = view.update(seconds);
-    const doorMoving = doorInterface.update(seconds);
-    const moving = viewMoving || doorMoving;
+    let passageMoving = false;
+    for (const passage of passages) passageMoving = passage.update(seconds) || passageMoving;
+    const moving = viewMoving || passageMoving;
     audio.updateCamera(camera);
     ui.setMoving(moving);
     previous = time;
@@ -287,7 +289,7 @@ export async function startRoom(
     computerInterface,
     roomSwitch,
     () => void boardLoader.refresh(true),
-    doorInterface,
+    passages,
   );
   loading.rendering(4, 4);
   prepared = true;

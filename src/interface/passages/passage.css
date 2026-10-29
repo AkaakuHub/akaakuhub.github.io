@@ -1,10 +1,9 @@
-.door-whiteout {
+.passage-fade {
   position: fixed;
   inset: 0;
   z-index: 30;
-  background: #fff;
   pointer-events: auto;
 }
-.door-whiteout[hidden] {
+.passage-fade[hidden] {
   display: none;
 }

@@ -1,7 +1,7 @@
 import type { PropMaterials } from "../materials/props";
 import type { MetalMaterials } from "../materials/metal";
 import type { PbrMaps } from "../materials/library";
-import { Group, MeshBasicMaterial } from "three";
+import { BoxGeometry, Group, Mesh, MeshBasicMaterial } from "three";
 import { box } from "../primitives";
 import { HardwareBatch } from "../details/hardware";
 import { windowPull } from "../details/pull";
@@ -16,6 +16,23 @@ export function createWindow(
   props: PropMaterials,
 ): Group {
   const window = new Group();
+  const sash = new Group();
+  sash.name = "room-window-sash";
+  window.add(sash);
+  const hitArea = new Mesh(new BoxGeometry(0.16, 1.65, 1.26), new MeshBasicMaterial());
+  hitArea.name = "room-window-hit-area";
+  hitArea.position.set(-2.51, 1.785, 0.45);
+  hitArea.visible = false;
+  sash.add(hitArea);
+  const darkness = new Mesh(
+    new BoxGeometry(1.28, 1.57, 0.12),
+    new MeshBasicMaterial({ color: "#000000", toneMapped: false }),
+  );
+  darkness.name = "room-window-darkness";
+  darkness.position.set(-2.695, 1.785, 0.45);
+  darkness.rotation.y = Math.PI / 2;
+  darkness.visible = false;
+  window.add(darkness);
   const frame = materials.frame;
   const steel = metals.steel;
   const hardware = new HardwareBatch();
@@ -43,27 +60,28 @@ export function createWindow(
   }
   const glass = props.glass;
   for (const [center, width] of [
-    [-1.28, 1.3],
-    [0, 1.26],
-    [1.28, 1.3],
+    [-1.055, 1.75],
+    [0.45, 1.26],
+    [1.505, 0.85],
   ] as const) {
-    const pane = box(window, [0.008, 1.48, width - 0.02], [-2.626, 1.785, center], glass);
+    const parent = center === 0.45 ? sash : window;
+    const pane = box(parent, [0.008, 1.48, width - 0.02], [-2.626, 1.785, center], glass);
     pane.name = "room-window-pane";
     pane.castShadow = false;
     pane.receiveShadow = false;
     for (const edge of [-width / 2 + 0.018, width / 2 - 0.018]) {
-      box(window, [0.075, 1.46, 0.018], [-2.572, 1.785, center + edge], gasket);
+      box(parent, [0.075, 1.46, 0.018], [-2.572, 1.785, center + edge], gasket);
     }
-    chamferedBox(window, [0.07, 0.028, width - 0.04], [-2.568, 2.19, center], frame, 0.0006);
+    chamferedBox(parent, [0.07, 0.028, width - 0.04], [-2.568, 2.19, center], frame, 0.0006);
     const handle = windowPull(steel);
     handle.position.set(-2.4999, 1.65, center + width / 2);
     handle.rotation.y = Math.PI / 2;
-    window.add(handle);
+    parent.add(handle);
   }
   for (const y of [1.02, 2.55]) {
     chamferedBox(window, [0.16, 0.075, 3.93], [-2.57, y, 0], frame, 0.0006);
   }
-  for (const z of [-1.93, -0.63, 0.63, 1.93]) {
+  for (const z of [-1.93, -0.18, 1.08, 1.93]) {
     chamferedBox(window, [0.14, 1.6, 0.055], [-2.57, 1.785, z], frame, 0.0006);
     for (const y of [1.075, 2.49]) hardware.screw(steel, [-2.4999, y, z], [0, Math.PI / 2, 0]);
   }

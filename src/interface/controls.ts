@@ -6,7 +6,7 @@ import type { createView } from "../scene/view";
 import { createPicker } from "./picking";
 import type { createComputerInterface } from "./computer";
 import type { bindRoomSwitch } from "./room-switch";
-import type { createDoorInterface } from "./door";
+import type { createPassageInterface } from "./passages/passage";
 import { bindKeyboardTargets } from "./keyboard-targets";
 
 export function bindRoomControls(
@@ -19,7 +19,7 @@ export function bindRoomControls(
   computer: ReturnType<typeof createComputerInterface>,
   lightSwitch: ReturnType<typeof bindRoomSwitch>,
   refreshBoard: () => void,
-  door: ReturnType<typeof createDoorInterface>,
+  passages: readonly ReturnType<typeof createPassageInterface>[],
 ) {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
@@ -30,7 +30,7 @@ export function bindRoomControls(
     papers,
     computer.targets,
     lightSwitch.object,
-    door.targets,
+    passages.map((passage) => passage.targets),
   );
   const keyboard = bindKeyboardTargets(
     root,
@@ -173,12 +173,11 @@ export function bindRoomControls(
       view.back();
       return;
     }
-    if (hit.type === "door") {
-      door.toggle();
-      return;
-    }
-    if (hit.type === "door-light") {
-      door.enter();
+    if (hit.type === "passage" || hit.type === "destination") {
+      const passage = passages[hit.index];
+      if (!passage) throw new Error("出入口が見つかりません。");
+      if (hit.type === "passage") passage.toggle();
+      else passage.enter();
       return;
     }
     if (hit.type === "screen") {

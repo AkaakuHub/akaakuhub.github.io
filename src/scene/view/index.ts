@@ -47,7 +47,6 @@ export function createView(
   function pose(): CameraPose {
     if (state.mode === "room") return roomPose(state.direction, heading, camera.aspect);
     const inspection = inspectionTarget();
-    if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
     const viewport = getViewport();
     const bounds = inspectionBounds(inspection, viewport, framing.zoom);
     framing.panX = MathUtils.clamp(framing.panX, -bounds.maxX, bounds.maxX);
@@ -161,7 +160,6 @@ export function createView(
       if (locked) return;
       if (state.mode === "room" || framing.zoom === 1) return;
       const inspection = inspectionTarget();
-      if (!inspection) throw new Error("掲示用紙の視点が見つかりません。");
       const bounds = inspectionBounds(inspection, getViewport(), framing.zoom);
       framing.panX -= dx * bounds.visibleWidth;
       framing.panY += dy * bounds.visibleHeight;
