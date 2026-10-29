@@ -1,15 +1,9 @@
-import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBinaryAsset";
-import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
+import { loadAssetBinary } from "../../assets/binary";
 import { asset } from "../../assets/catalog";
 import { prepareAudioLoop } from "./loop";
 
 export const soundNames = ["rain", "window", "gutter", "wind", "dayRain"] as const;
 export type SoundName = (typeof soundNames)[number];
-
-const loader = createBinaryAssetLoader({
-  loader: { load: loadBrowserArtifact },
-  fetch: (url, signal) => fetch(url, { signal, priority: "low" }),
-});
 
 export async function loadSound(
   context: BaseAudioContext,
@@ -17,16 +11,10 @@ export async function loadSound(
   signal: AbortSignal,
 ): Promise<AudioBuffer> {
   const entry = asset(`audio/${name}.opus`);
-  const result = await loader.load({
-    source: {
-      key: `akaakuhub:audio:${name}`,
-      url: new URL(entry.url, location.href).href,
-      identity: entry.sha256,
-      size: entry.bytes,
-    },
-    signal: AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
-    decode: async (bytes) =>
-      prepareAudioLoop(context, await context.decodeAudioData(Uint8Array.from(bytes).buffer)),
-  });
-  return result.value;
+  const bytes = await loadAssetBinary(
+    entry,
+    AbortSignal.any([signal, AbortSignal.timeout(15_000)]),
+    "low",
+  );
+  return prepareAudioLoop(context, await context.decodeAudioData(bytes.buffer));
 }

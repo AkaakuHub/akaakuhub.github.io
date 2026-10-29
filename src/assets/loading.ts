@@ -6,27 +6,15 @@ import type {
 } from "unified-asset-loader/domain/artifactLoadEntryState";
 import { resolveArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
 import type { ArtifactLoadSummary } from "unified-asset-loader/domain/artifactLoadSummary";
-import { createBinaryAssetLoader } from "unified-asset-loader/application/loadBinaryAsset";
-import { loadBrowserArtifact } from "unified-asset-loader/browser/browserArtifactLoader";
+import { loadAssetBinary } from "./binary";
 import { asset } from "./catalog";
 import members from "./room-manifest.json";
 import { unpackAsset } from "./packing";
 import { createImageDecoder } from "./images/decoder";
 
 export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) => void) {
-  if (!isSecureContext || !crossOriginIsolated || !navigator.storage.getDirectory)
-    throw new Error("HTTPSとクロスオリジン分離、OPFSが必要です。");
   const controller = new AbortController();
   const images = createImageDecoder();
-  const initialUrl = new URL(asset("room/initial.bin").url, location.href).href;
-  const { load: loadBinaryAsset } = createBinaryAssetLoader({
-    loader: { load: loadBrowserArtifact },
-    fetch: (url, signal) =>
-      fetch(url, {
-        signal,
-        priority: url === initialUrl ? "high" : "low",
-      }),
-  });
   let state: ArtifactLoadEntryState = new Map();
   const descriptors = new Map(
     [...new Set(members.map((member) => member.pack))].map((id) => [
@@ -57,23 +45,14 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     const descriptor = descriptors.get(id);
     if (!descriptor) throw new Error(`読み込み対象が登録されていません: ${id}`);
     const entry = asset(id);
-    const result = runArtifactLoadStep(
-      descriptor,
-      report,
-      (reportProgress, reportCacheWriteFailure) =>
-        loadBinaryAsset({
-          source: {
-            key: descriptor.identity,
-            url: new URL(entry.url, location.href).href,
-            identity: entry.sha256,
-            size: entry.bytes,
-          },
-          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
-          decode: async (bytes) => bytes,
-          reportProgress,
-          reportCacheWriteFailure,
-        }),
-    ).then((result) => result.value);
+    const result = runArtifactLoadStep(descriptor, report, (reportProgress) =>
+      loadAssetBinary(
+        entry,
+        AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
+        id === "room/initial.bin" ? "high" : "low",
+        reportProgress,
+      ),
+    );
     pending.set(id, result);
     return result;
   }
