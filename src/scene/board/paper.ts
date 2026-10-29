@@ -1,7 +1,9 @@
 import type { PbrMaps } from "../materials/library";
 import {
-  CanvasTexture,
+  DataTexture,
   DoubleSide,
+  LinearFilter,
+  LinearMipmapLinearFilter,
   Mesh,
   MeshStandardMaterial,
   PlaneGeometry,
@@ -21,12 +23,12 @@ function printedPaper(
   sheetWidth: number,
   sheetHeight: number,
   avatar: ImageBitmap,
-): CanvasTexture {
+): DataTexture {
   const canvas = document.createElement("canvas");
   const density = 2048 / Math.max(sheetWidth, sheetHeight);
   canvas.width = Math.round(sheetWidth * density);
   canvas.height = Math.round(sheetHeight * density);
-  const context = canvas.getContext("2d");
+  const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) throw new Error("掲示用紙を描画できませんでした。");
   const width = canvas.width;
   const height = canvas.height;
@@ -58,9 +60,15 @@ function printedPaper(
       paintLink(context, print.link.label, margin, height - width * 0.028, width * 0.042);
     }
   }
-  const texture = new CanvasTexture(canvas);
+  const pixels = context.getImageData(0, 0, width, height);
+  const texture = new DataTexture(new Uint8Array(pixels.data.buffer), width, height);
+  texture.flipY = true;
+  texture.generateMipmaps = true;
+  texture.minFilter = LinearMipmapLinearFilter;
+  texture.magFilter = LinearFilter;
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 8;
+  texture.needsUpdate = true;
   return texture;
 }
 

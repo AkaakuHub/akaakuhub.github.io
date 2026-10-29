@@ -42,10 +42,10 @@ export function createRendering(
       surfaces.setSize(w, h);
     },
     render(moving = false) {
-      const compose = dynamic.visible || weather.active;
+      const compose = (!moving && dynamic.visible) || weather.active;
       const input = surfaces.render(renderer, frame, moving, compose);
       if (compose) {
-        dynamic.render(renderer, frame);
+        if (!moving) dynamic.render(renderer, frame);
         weather.render(renderer, frame);
       }
       const autoClear = renderer.autoClear;

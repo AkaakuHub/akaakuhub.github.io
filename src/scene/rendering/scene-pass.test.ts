@@ -19,6 +19,19 @@ function fixture() {
 }
 
 describe("静止した部屋の描画", () => {
+  it("移動中は動く物体も同じ描画に含め、停止後は静的なキャッシュから外す", () => {
+    const { scene, pass, animated, renderer, output } = fixture();
+    const visibility: boolean[] = [];
+    renderer.render.mockImplementation((object) => {
+      if (object === scene) visibility.push(animated.visible);
+    });
+    pass.render(renderer, output, true, false);
+    pass.render(renderer, output, false, false);
+    pass.render(renderer, output, false, false);
+    expect(visibility).toEqual([true, false]);
+    expect(animated.visible).toBe(true);
+    expect(renderer.render).toHaveBeenCalledTimes(2);
+  });
   it("動的な合成がなければキャッシュの色と深度を直接再利用する", () => {
     const { pass, renderer, output } = fixture();
     const first = pass.render(renderer, output, false, false);

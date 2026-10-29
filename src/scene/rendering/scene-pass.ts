@@ -59,7 +59,7 @@ export class ScenePass {
         !this.projection.equals(this.camera.projectionMatrix)
       ) {
         renderer.setRenderTarget(direct ? output : this.target);
-        const visibility = this.dynamicSurfaces.map((object) => ({
+        const visibility = (moving ? [] : this.dynamicSurfaces).map((object) => ({
           object,
           visible: object.visible,
         }));
@@ -72,7 +72,7 @@ export class ScenePass {
         }
         this.world.copy(this.camera.matrixWorld);
         this.projection.copy(this.camera.projectionMatrix);
-        this.dirty = direct;
+        this.dirty = moving;
       }
       if (composite && !direct) {
         renderer.setRenderTarget(output);

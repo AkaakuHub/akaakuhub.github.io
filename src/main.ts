@@ -65,13 +65,18 @@ export async function startRoom(
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
   const clubroomReady = Promise.all([avatarReady, materialLoading.paperReady, fontsReady]).then(
-    ([avatar]) => assembleClubroom(scene, materials, avatar, batchStaticMeshes),
+    async ([avatar]) => {
+      performance.mark("room-geometry-start");
+      const room = await assembleClubroom(scene, materials, avatar, batchStaticMeshes);
+      performance.mark("room-geometry-ready");
+      return room;
+    },
   );
   const [renderer, initialWeather, { board, lightSwitch, rocker, computer }] = await Promise.all([
     rendererReady,
     weatherReady,
     clubroomReady,
-    materialLoading.loadRemaining(),
+    materialLoading.loadRemaining().then(() => performance.mark("room-textures-ready")),
     lightTablesReady,
   ]);
   performance.mark("room-assets-and-geometry-ready");

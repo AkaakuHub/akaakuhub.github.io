@@ -25,12 +25,15 @@ export async function assembleClubroom(
 ) {
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
+  performance.mark("room-paper-start");
   const board = createBoard(metals, materials.paper, props, avatar);
+  performance.mark("room-paper-ready");
   scene.add(
     createRoom(materials, metals, props),
     createFurniture(materials, metals, props),
     board.group,
   );
+  performance.mark("room-models-ready");
   const lightSwitch = scene.getObjectByName("room-light-switch");
   const rocker = scene.getObjectByName("room-light-switch-rocker");
   if (!lightSwitch || !rocker) throw new Error("部屋の照明スイッチが見つかりません。");
@@ -68,7 +71,9 @@ export async function assembleClubroom(
       preserved.add(object);
       if (object instanceof Mesh) fanSurfaces.push(object);
     });
+  performance.mark("room-batching-start");
   await batchStaticMeshes(scene, preserved);
+  performance.mark("room-batching-ready");
   return {
     board,
     lightSwitch,
