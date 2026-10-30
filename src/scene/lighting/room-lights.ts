@@ -1,4 +1,4 @@
-import { Box3, RectAreaLight, Vector3 } from "three";
+import { AmbientLight, Box3, RectAreaLight, Vector3 } from "three";
 import type { Color, Scene } from "three";
 import {
   fixtureEmitterWidth,
@@ -13,29 +13,30 @@ export function createRoomLights(scene: Scene) {
   const intensity =
     (2 * photometry.tubeLumens * photometry.scale) / (Math.PI * fixtureEmitterWidth * tubeLength);
   const lights = fixturePositions.flatMap((z) => {
-    const downward = new RectAreaLight(
+    const light = new RectAreaLight(
       fluorescentColor,
-      intensity * 0.6,
+      intensity * 0.8,
       fixtureEmitterWidth,
       tubeLength,
     );
-    downward.position.set(0, fixtureHeight - 0.02, z);
-    downward.rotation.x = -Math.PI / 2;
-    const sideways = [-1, 1].map((side) => {
-      const light = new RectAreaLight(
-        fluorescentColor,
-        intensity * 0.2,
-        fixtureEmitterWidth,
-        tubeLength,
-      );
-      light.position.set(side * 0.17, fixtureHeight, z);
-      light.rotation.set(Math.PI / 2, 0, (-side * Math.PI) / 3);
-      return light;
-    });
-    const emitters = [downward, ...sideways];
-    scene.add(...emitters);
-    return emitters.map((light) => ({ light, intensity: light.intensity }));
+    light.position.set(0, fixtureHeight - 0.02, z);
+    light.rotation.x = -Math.PI / 2;
+    const upward = new RectAreaLight(
+      fluorescentColor,
+      intensity * 0.2,
+      fixtureEmitterWidth,
+      tubeLength,
+    );
+    upward.position.set(0, fixtureHeight + 0.06, z);
+    upward.rotation.x = Math.PI / 2;
+    scene.add(light, upward);
+    return [light, upward].map((emitter) => ({ light: emitter, intensity: emitter.intensity }));
   });
+  const surfaceArea = 2 * 5.4 * 5.4 + 4 * 5.4 * 2.9;
+  const reflectedIntensity =
+    (fixturePositions.length * 2 * photometry.tubeLumens * photometry.scale) / surfaceArea;
+  const reflected = new AmbientLight(fluorescentColor, reflectedIntensity);
+  scene.add(reflected);
   const bounds = new Box3();
   for (const name of ["room-window-upper-pane", "room-window-lower-pane"])
     for (const pane of scene.getObjectsByProperty("name", name)) bounds.expandByObject(pane);
@@ -49,6 +50,7 @@ export function createRoomLights(scene: Scene) {
   return {
     setRoomLightLevel(level: number): void {
       for (const entry of lights) entry.light.intensity = entry.intensity * level;
+      reflected.intensity = reflectedIntensity * level;
     },
     updateSky(color: Color, intensity: number): void {
       sky.color.copy(color);

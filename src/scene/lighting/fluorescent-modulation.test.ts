@@ -1,4 +1,4 @@
-import { Color, Mesh, MeshBasicMaterial, PlaneGeometry, RectAreaLight, Scene } from "three";
+import { Color, Light, Mesh, MeshBasicMaterial, PlaneGeometry, Scene } from "three";
 import { describe, expect, it } from "vite-plus/test";
 import { fluorescentModulation } from "./fluorescent-modulation";
 import { createRoomLights } from "./room-lights";
@@ -34,16 +34,15 @@ describe("蛍光灯の微弱な明るさの変化", () => {
     const fixtures = createRoomLights(scene);
     fixtures.updateSky(new Color(0xffffff), 0.5);
     const lights = scene.children.filter(
-      (object): object is RectAreaLight => object instanceof RectAreaLight,
+      (object): object is Light => object instanceof Light && object.name !== "window-sky-light",
     );
     const initial = lights.map((light) => light.intensity);
     fixtures.setRoomLightLevel(1.0015);
-    expect(lights[0]?.intensity).toBeCloseTo(initial[0]! * 1.0015);
-    expect(lights[1]?.intensity).toBeCloseTo(initial[1]! * 1.0015);
-    expect(lights[2]?.intensity).toBe(initial[2]);
+    for (const [index, light] of lights.entries())
+      expect(light.intensity).toBeCloseTo(initial[index]! * 1.0015);
+    expect(scene.getObjectByName("window-sky-light")).toHaveProperty("intensity", 0.5);
     fixtures.setRoomLightLevel(0);
-    expect(lights[0]?.intensity).toBe(0);
-    expect(lights[1]?.intensity).toBe(0);
-    expect(lights[2]?.intensity).toBe(initial[2]);
+    for (const light of lights) expect(light.intensity).toBe(0);
+    expect(scene.getObjectByName("window-sky-light")).toHaveProperty("intensity", 0.5);
   });
 });

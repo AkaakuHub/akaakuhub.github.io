@@ -69,7 +69,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..872dab99411f9bb9f011fc0a7756692480df2532 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..6288168d517beb1d6d394316cf6c912ecf04f67b 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -191,7 +191,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..872dab99411f9bb9f011fc0a77566924
  	directRectArea( { lightColor, lightPosition, halfWidth, halfHeight, reflectedLight, ltc_1, ltc_2 }, /* builder */ ) {
  
  		const p0 = lightPosition.add( halfWidth ).sub( halfHeight ); // counterclockwise; light shines in local neg z direction
-@@ -26064,42 +26155,19 @@ class PhysicalLightingModel extends LightingModel {
+@@ -26064,20 +26155,9 @@ class PhysicalLightingModel extends LightingModel {
  		const V = positionViewDirection;
  		const P = positionView.toVar();
  
@@ -214,10 +214,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..872dab99411f9bb9f011fc0a77566924
  
  		reflectedLight.directSpecular.addAssign( lightColor.mul( fresnel ).mul( LTC_Evaluate( { N, V, P, mInv, p0, p1, p2, p3 } ) ) );
  
--		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate( { N, V, P, mInv: mat3( 1, 0, 0, 0, 1, 0, 0, 0, 1 ), p0, p1, p2, p3 } ) ) );
-+		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate_Diffuse( { N, P, p0, p1, p2, p3 } ) ) );
- 
- 		if ( this.clearcoat === true ) {
+@@ -26087,19 +26167,7 @@ class PhysicalLightingModel extends LightingModel {
  
  			const Ncc = clearcoatNormalView;
  
@@ -693,7 +690,7 @@ index 6030b42b22794eb87711bfd5d1e65f974abf1eba..c5ef7f189fddf8949f194af5d0ef1155
 -export { LTC_Evaluate, LTC_Evaluate_Volume, LTC_Uv };
 +export { LTC_Evaluate_Diffuse, LTC_Evaluate, LTC_Evaluate_Volume, LTC_Uv };
 diff --git a/src/nodes/functions/PhysicalLightingModel.js b/src/nodes/functions/PhysicalLightingModel.js
-index 1b0d57ef9184baee157733a3e96b262d5e1bf6b6..cbb2733c231ded399f32e00942de48972a336497 100644
+index 1b0d57ef9184baee157733a3e96b262d5e1bf6b6..d8a4504e9ba5d389e937af43257c3d052ecbea40 100644
 --- a/src/nodes/functions/PhysicalLightingModel.js
 +++ b/src/nodes/functions/PhysicalLightingModel.js
 @@ -5,7 +5,7 @@ import EnvironmentBRDF from './BSDF/EnvironmentBRDF.js';
@@ -774,7 +771,7 @@ index 1b0d57ef9184baee157733a3e96b262d5e1bf6b6..cbb2733c231ded399f32e00942de4897
  	directRectArea( { lightColor, lightPosition, halfWidth, halfHeight, reflectedLight, ltc_1, ltc_2 }, /* builder */ ) {
  
  		const p0 = lightPosition.add( halfWidth ).sub( halfHeight ); // counterclockwise; light shines in local neg z direction
-@@ -694,42 +749,19 @@ class PhysicalLightingModel extends LightingModel {
+@@ -694,20 +749,9 @@ class PhysicalLightingModel extends LightingModel {
  		const V = positionViewDirection;
  		const P = positionView.toVar();
  
@@ -797,10 +794,7 @@ index 1b0d57ef9184baee157733a3e96b262d5e1bf6b6..cbb2733c231ded399f32e00942de4897
  
  		reflectedLight.directSpecular.addAssign( lightColor.mul( fresnel ).mul( LTC_Evaluate( { N, V, P, mInv, p0, p1, p2, p3 } ) ) );
  
--		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate( { N, V, P, mInv: mat3( 1, 0, 0, 0, 1, 0, 0, 0, 1 ), p0, p1, p2, p3 } ) ) );
-+		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate_Diffuse( { N, P, p0, p1, p2, p3 } ) ) );
- 
- 		if ( this.clearcoat === true ) {
+@@ -717,19 +761,7 @@ class PhysicalLightingModel extends LightingModel {
  
  			const Ncc = clearcoatNormalView;
  
@@ -822,7 +816,7 @@ index 1b0d57ef9184baee157733a3e96b262d5e1bf6b6..cbb2733c231ded399f32e00942de4897
  			this.clearcoatSpecularDirect.addAssign( lightColor.mul( fresnelClearcoat ).mul( LTC_Evaluate( { N: Ncc, V, P, mInv: mInvClearcoat, p0, p1, p2, p3 } ) ) );
  
 diff --git a/src/nodes/lighting/LightsNode.js b/src/nodes/lighting/LightsNode.js
-index 9a1dabe607894f810b5de4df13067ef609f1d635..c5181c18adbd6eb14ad866393859313181dbc94c 100644
+index 9a1dabe607894f810b5de4df13067ef609f1d635..920732fa28185e753e1b0d7a2954b0b6f91544a4 100644
 --- a/src/nodes/lighting/LightsNode.js
 +++ b/src/nodes/lighting/LightsNode.js
 @@ -1,3 +1,9 @@
