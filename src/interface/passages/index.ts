@@ -41,15 +41,15 @@ export function createRoomPassages(
       view,
       {
         panel: windowOpening.sash,
-        destination: windowOpening.darkness,
+        destination: windowOpening.exit,
         setAmount: (amount) => {
           slideWindow(windowOpening.sash, amount);
         },
         label: "窓",
         direction: 1,
         color: "#000000",
-        enterLabel: "窓の外の闇へ進む",
-        enteringMessage: "窓の外の闇へ進んでいます",
+        enterLabel: "窓の外へ進む",
+        enteringMessage: "窓の外へ進んでいます",
       },
       requestPassageFrame,
       announce,

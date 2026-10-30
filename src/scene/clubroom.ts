@@ -48,10 +48,10 @@ export async function assembleClubroom(
     throw new Error("ドアの可動部と光が見つかりません。");
   const door = { pivot, leaf, light: doorLight };
   const sash = scene.getObjectByName("room-window-sash");
-  const darkness = scene.getObjectByName("room-window-darkness");
-  if (!(sash instanceof Group) || !(darkness instanceof Mesh))
-    throw new Error("窓の可動部と闇が見つかりません。");
-  const windowOpening = { sash, darkness };
+  const exit = scene.getObjectByName("room-window-exit");
+  if (!(sash instanceof Group) || !(exit instanceof Mesh))
+    throw new Error("窓の可動部と移動先が見つかりません。");
+  const windowOpening = { sash, exit };
   const power = scene.getObjectByName("computer-power-button");
   const monitor = scene.getObjectByName("computer-monitor");
   const head = scene.getObjectByName("computer-display-head");
@@ -75,7 +75,7 @@ export async function assembleClubroom(
     privacyPoster.target.object,
     pivot,
     doorLight,
-    darkness,
+    exit,
     lightSwitch,
     rocker,
     computer.object,

@@ -16,15 +16,15 @@ export function createWindow(
   props: PropMaterials,
 ): Group {
   const window = new Group();
-  const darkness = new Mesh(
+  const exit = new Mesh(
     new BoxGeometry(1.28, 1.16, 0.12),
-    new MeshBasicMaterial({ color: "#000000", toneMapped: false }),
+    new MeshBasicMaterial({ visible: false }),
   );
-  darkness.name = "room-window-darkness";
-  darkness.position.set(-2.695, 1.61, 0.45);
-  darkness.rotation.y = Math.PI / 2;
-  darkness.visible = false;
-  window.add(darkness);
+  exit.name = "room-window-exit";
+  exit.position.set(-2.695, 1.61, 0.45);
+  exit.rotation.y = Math.PI / 2;
+  exit.visible = false;
+  window.add(exit);
   const frame = materials.frame;
   const steel = metals.steel;
   const hardware = new HardwareBatch();
