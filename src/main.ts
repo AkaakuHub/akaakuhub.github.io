@@ -1,6 +1,6 @@
 import "./tailwind.css";
 import "./interface/keyboard.css";
-import { Color, PCFShadowMap, PerspectiveCamera, Scene, WebGPUCoordinateSystem } from "three";
+import { Color, PCFShadowMap, PerspectiveCamera, Scene } from "three";
 import { createRoomRenderer } from "./scene/rendering/renderer";
 import { createInterface } from "./interface";
 import type { Loading } from "./interface/loading";
@@ -65,7 +65,6 @@ export async function startRoom(
   });
   const scene = new Scene();
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
-  camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
   const materialLoading = loadMaterials(assets);
   const skyReady = createSky(assets);
@@ -92,6 +91,8 @@ export async function startRoom(
     materialLoading.loadRemaining().then(() => performance.mark("room-textures-ready")),
     lightTablesReady,
   ]);
+  camera.coordinateSystem = renderer.coordinateSystem;
+  camera.updateProjectionMatrix();
   performance.mark("room-assets-and-geometry-ready");
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   loading.rendering(1, 4);

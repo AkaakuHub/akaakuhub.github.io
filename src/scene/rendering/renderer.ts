@@ -9,5 +9,6 @@ export async function createRoomRenderer(canvas: HTMLCanvasElement): Promise<Roo
   ColorManagement.define({ [ExtendedSRGBColorSpace]: ExtendedSRGBColorSpaceImpl });
   const renderer = new RoomRenderer(canvas);
   await renderer.init();
+  renderer.refreshDisplay();
   return renderer;
 }
