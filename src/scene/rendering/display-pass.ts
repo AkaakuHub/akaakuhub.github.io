@@ -4,7 +4,6 @@ import { ConvertNode, MeshBasicNodeMaterial, QuadMesh, RenderPipeline } from "th
 import type { RoomRenderer } from "./room-renderer";
 import {
   float,
-  neutralToneMapping,
   positionGeometry,
   sRGBTransferEOTF,
   sRGBTransferOETF,
@@ -14,6 +13,8 @@ import {
 } from "three/tsl";
 import { fxaa } from "three/addons/tsl/display/FXAANode.js";
 import { DisplayState } from "./display-state";
+
+const hdrHeadroom = 4;
 
 export class DisplayPass {
   private readonly staticTarget = new RenderTarget(1, 1, {
@@ -47,9 +48,7 @@ export class DisplayPass {
   ) {
     this.source = texture(source);
     const exposed = this.source.rgb.mul(this.exposure).max(0);
-    const hdr = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
-    const sdr = new ConvertNode<"vec3">(neutralToneMapping(this.source.rgb, this.exposure), "vec3");
-    const mapped = this.headroom.greaterThan(1).select(hdr, sdr);
+    const mapped = this.headroom.mul(float(1).sub(exposed.div(hdrHeadroom).negate().exp()));
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
@@ -83,7 +82,7 @@ export class DisplayPass {
       : MathUtils.smoothstep(now - this.startedAt, 0, 300);
     this.source.value = source;
     this.exposure.value = renderer.toneMappingExposure;
-    this.headroom.value = renderer.hdrActive ? 4 : 1;
+    this.headroom.value = renderer.hdrActive ? hdrHeadroom : 1;
     if (
       this.state.update(
         {
