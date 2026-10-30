@@ -1,5 +1,5 @@
 diff --git a/build/three.core.js b/build/three.core.js
-index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..e42d39a9d4d09045eaf99719eb4b03d88aa74acb 100644
+index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805628cdfa2 100644
 --- a/build/three.core.js
 +++ b/build/three.core.js
 @@ -2093,20 +2093,28 @@ function warnOnce( ...params ) {
@@ -11,7 +11,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..e42d39a9d4d09045eaf99719eb4b03d8
 +
 +async function yieldToMain( interval = 12 ) {
 +
-+	if ( performance.now() - lastYieldTime < interval ) return;
++	if ( performance.now() - lastYieldTime < Math.max( interval, 4 ) ) return;
  
  	if ( typeof self !== 'undefined' && typeof self.scheduler !== 'undefined' && typeof self.scheduler.yield !== 'undefined' ) {
  
@@ -25,7 +25,8 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..e42d39a9d4d09045eaf99719eb4b03d8
 -	return new Promise( resolve => {
 +	await new Promise( resolve => {
  
- 		requestAnimationFrame( resolve );
+-		requestAnimationFrame( resolve );
++		setTimeout( resolve, 0 );
  
  	} );
  
@@ -805,7 +806,7 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..c97c374de7095971c7ecd415b9c7284f
  
  	/**
 diff --git a/src/utils.js b/src/utils.js
-index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..d43d44cad4127c8611a8d0b0f45cf642f93a0a68 100644
+index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..3ea2e4b551fb55a29322a736e18da0fe1ed28e22 100644
 --- a/src/utils.js
 +++ b/src/utils.js
 @@ -353,20 +353,28 @@ function warnOnce( ...params ) {
@@ -817,7 +818,7 @@ index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..d43d44cad4127c8611a8d0b0f45cf642
 +
 +async function yieldToMain( interval = 12 ) {
 +
-+	if ( performance.now() - lastYieldTime < interval ) return;
++	if ( performance.now() - lastYieldTime < Math.max( interval, 4 ) ) return;
  
  	if ( typeof self !== 'undefined' && typeof self.scheduler !== 'undefined' && typeof self.scheduler.yield !== 'undefined' ) {
  
@@ -831,7 +832,8 @@ index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..d43d44cad4127c8611a8d0b0f45cf642
 -	return new Promise( resolve => {
 +	await new Promise( resolve => {
  
- 		requestAnimationFrame( resolve );
+-		requestAnimationFrame( resolve );
++		setTimeout( resolve, 0 );
  
  	} );
  
