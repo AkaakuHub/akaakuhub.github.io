@@ -12,7 +12,7 @@ export const privacy = {
     },
     {
       title: "保存と外部サービス",
-      text: "読み込み用データと操作案内の表示状態を端末内へ保存します。配信にCloudflare、プロフィール画像にGitHub、天気と記事の取得にOpen-Meteoとブログを利用します。",
+      text: "読み込み用データ、HDR設定、操作案内の表示状態を端末内へ保存します。配信にCloudflare、プロフィール画像にGitHub、天気と記事の取得にOpen-Meteoとブログを利用します。",
     },
     {
       title: "位置情報と端末の傾き",

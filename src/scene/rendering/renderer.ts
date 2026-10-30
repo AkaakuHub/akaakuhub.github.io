@@ -1,19 +1,13 @@
-import { ColorManagement, HalfFloatType } from "three";
-import { Renderer, WebGPUBackend } from "three/webgpu";
+import { ColorManagement } from "three";
 import {
   ExtendedSRGBColorSpace,
   ExtendedSRGBColorSpaceImpl,
 } from "three/addons/math/ColorSpaces.js";
-import { RoomNodeLibrary } from "./node-library";
+import { RoomRenderer } from "./room-renderer";
 
-export async function createRoomRenderer(canvas: HTMLCanvasElement): Promise<Renderer> {
+export async function createRoomRenderer(canvas: HTMLCanvasElement): Promise<RoomRenderer> {
   ColorManagement.define({ [ExtendedSRGBColorSpace]: ExtendedSRGBColorSpaceImpl });
-  const renderer = new Renderer(
-    new WebGPUBackend({ canvas, alpha: false, outputType: HalfFloatType }),
-    { antialias: false, outputBufferType: HalfFloatType },
-  );
-  renderer.library = new RoomNodeLibrary();
-  renderer.outputColorSpace = ExtendedSRGBColorSpace;
+  const renderer = new RoomRenderer(canvas);
   await renderer.init();
   return renderer;
 }

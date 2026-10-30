@@ -1,16 +1,15 @@
 import { DepthTexture, HalfFloatType, NoToneMapping, RenderTarget } from "three";
 import type { Mesh, Object3D, PerspectiveCamera, Scene } from "three";
-import type { Renderer } from "three/webgpu";
+import type { RoomRenderer, HdrObserver } from "./rendering/room-renderer";
 import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
 import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 import { DisplayPass } from "./rendering/display-pass";
-import type { HdrObserver } from "./rendering/display-pass";
 import { renderingProfile } from "./quality";
 import { fitPixelBudget } from "./rendering/resolution";
 
 export function createRendering(
-  renderer: Renderer,
+  renderer: RoomRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
   monitor: Mesh,
@@ -35,13 +34,14 @@ export function createRendering(
   let pixelRatio = 1;
   return {
     weather,
-    observeHdr: (observer: HdrObserver) => display.observeHdr(observer),
-    toggleHdr: () => display.toggleHdr(),
+    observeHdr: (observer: HdrObserver) => renderer.observeHdr(observer),
+    toggleHdr: () => renderer.toggleHdr(),
     get revealing() {
       return display.revealing;
     },
     invalidate: () => surfaces.invalidate(),
     resume() {
+      renderer.refreshDisplay();
       display.invalidate();
       surfaces.invalidate();
     },
