@@ -92,7 +92,7 @@ await writeFile("src/assets/environment/clouds.webp", atlas);
 
 const landscape = await photograph("kloofendal_48d_partly_cloudy");
 const top = Math.round(landscape.height * 0.46);
-const rows = Math.round(landscape.height * 0.14);
+const rows = Math.round(landscape.height * 0.34);
 const rgb = encode(landscape, top, rows);
 const rgba = new Uint8Array(landscape.width * rows * 4);
 const start = Math.round(landscape.height * 0.48) - top;

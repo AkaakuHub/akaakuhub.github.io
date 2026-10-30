@@ -1,6 +1,6 @@
 import { Color, Mesh, PlaneGeometry, SRGBColorSpace, Texture } from "three";
 import { MeshBasicNodeMaterial } from "three/webgpu";
-import { mix, texture, uniform, uv, vec2, vec3 } from "three/tsl";
+import { mix, texture, uniform, vec3 } from "three/tsl";
 import type { roomCelestialLighting } from "./celestial";
 import type { skyAppearance } from "./sky-state";
 import { cameraExposure } from "../lighting/photometry";
@@ -13,11 +13,7 @@ export function createHorizon(bitmap: ImageBitmap) {
   const brightness = uniform(1);
   const tint = uniform(new Color());
   const haze = uniform(new Color());
-  const coordinates = uv();
-  const sample = texture(
-    map,
-    vec2(coordinates.x, coordinates.y.mul(10).sub(5.8).div(4.2).clamp(0, 1)),
-  );
+  const sample = texture(map);
   const daytime = mix(sample.rgb.mul(tint), haze, 0.4);
   const night = sample.rgb.dot(vec3(0.2126, 0.7152, 0.0722)).mul(vec3(0.008, 0.012, 0.023));
   const material = new MeshBasicNodeMaterial({ alphaTest: 0.25 });
