@@ -3,39 +3,43 @@ export function createLoadingReadout(
   progress: HTMLProgressElement,
   percent: HTMLElement,
 ) {
-  const digits = percent.querySelectorAll<HTMLElement>("[data-loading-digit]");
-  if (digits.length !== 6) throw new Error("進捗の桁が揃っていません。");
-  let target = 0;
-  let frame = 0;
+  const worker = new Worker(new URL("./loading-painter.worker.ts", import.meta.url), {
+    type: "module",
+  });
+  const canvas = document.createElement("canvas");
+  const ratio = window.devicePixelRatio;
+  canvas.width = Math.round(280 * ratio);
+  canvas.height = Math.round(80 * ratio);
+  canvas.style.width = "280px";
+  canvas.style.height = "80px";
+  canvas.setAttribute("aria-hidden", "true");
+  const style = getComputedStyle(percent);
+  const surface = canvas.transferControlToOffscreen();
+  worker.postMessage(
+    {
+      type: "setup",
+      canvas: surface,
+      ratio,
+      size: Number.parseFloat(style.fontSize),
+      ink: style.color,
+    },
+    [surface],
+  );
+  percent.replaceChildren(canvas);
   function paint(value: number): void {
     progress.value = value;
     panel.style.setProperty("--load-progress", String(value));
-    const text = (value * 100).toFixed(2).padStart(6, " ");
-    digits.forEach((digit, index) => {
-      const character = text.charAt(index);
-      digit.hidden = character === " ";
-      const content = character === " " ? "0" : character;
-      if (digit.textContent !== content) digit.textContent = content;
-    });
+    worker.postMessage({ type: "progress", value });
   }
-  paint(0);
   return {
-    update(value: number): void {
-      target = value;
-      if (!frame)
-        frame = requestAnimationFrame(() => {
-          frame = 0;
-          paint(target);
-        });
-    },
+    update: paint,
     complete(): void {
-      cancelAnimationFrame(frame);
-      frame = 0;
       paint(1);
+      panel.addEventListener("animationend", () => worker.terminate(), { once: true });
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) worker.terminate();
     },
     stop(): void {
-      cancelAnimationFrame(frame);
-      frame = 0;
+      worker.terminate();
     },
   };
 }
