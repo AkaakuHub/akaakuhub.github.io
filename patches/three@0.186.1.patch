@@ -34,6 +34,297 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..51d85730fca5a4da6922a92efc014ed4
  }
  
  /**
+diff --git a/build/three.webgpu.js b/build/three.webgpu.js
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..1b38e9659bbf0743c56f7e3537fa6b11c7b103fa 100644
+--- a/build/three.webgpu.js
++++ b/build/three.webgpu.js
+@@ -25203,6 +25203,40 @@ const LTC_EdgeVectorFormFactor = /*@__PURE__*/ Fn( ( { v1, v2 } ) => {
+ 	]
+ } );
+ 
++const LTC_Evaluate_Diffuse = /*@__PURE__*/ Fn( ( { N, P, p0, p1, p2, p3 } ) => {
++
++	const result = vec3().toVar();
++	const lightNormal = p1.sub( p0 ).cross( p3.sub( p0 ) );
++	If( lightNormal.dot( P.sub( p0 ) ).greaterThanEqual( 0.0 ), () => {
++
++		const coords0 = p0.sub( P ).normalize().toVar();
++		const coords1 = p1.sub( P ).normalize().toVar();
++		const coords2 = p2.sub( P ).normalize().toVar();
++		const coords3 = p3.sub( P ).normalize().toVar();
++		const f = vec3( 0 ).toVar();
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords0, v2: coords1 } ) );
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords1, v2: coords2 } ) );
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords2, v2: coords3 } ) );
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords3, v2: coords0 } ) );
++		const l = f.length().toVar();
++		result.assign( vec3( l.mul( l ).sub( N.dot( f ) ).div( l.add( 1.0 ) ).max( 0 ) ) );
++
++	} );
++	return result;
++
++} ).setLayout( {
++	name: 'LTC_Evaluate_Diffuse',
++	type: 'vec3',
++	inputs: [
++		{ name: 'N', type: 'vec3' },
++		{ name: 'P', type: 'vec3' },
++		{ name: 'p0', type: 'vec3' },
++		{ name: 'p1', type: 'vec3' },
++		{ name: 'p2', type: 'vec3' },
++		{ name: 'p3', type: 'vec3' }
++	]
++} );
++
+ const LTC_Evaluate = /*@__PURE__*/ Fn( ( { N, V, P, mInv, p0, p1, p2, p3 } ) => {
+ 
+ 	// bail if point is on back side of plane of light
+@@ -25869,6 +25903,9 @@ class PhysicalLightingModel extends LightingModel {
+ 	 */
+ 	start( builder ) {
+ 
++		this.rectAreaLut = null;
++		this.rectAreaClearcoatLut = null;
++
+ 		if ( this.clearcoat === true ) {
+ 
+ 			this.clearcoatRadiance = vec3().toVar( 'clearcoatRadiance' );
+@@ -26064,42 +26101,58 @@ class PhysicalLightingModel extends LightingModel {
+ 		const V = positionViewDirection;
+ 		const P = positionView.toVar();
+ 
+-		const uv = LTC_Uv( { N, V, roughness } );
++		if ( this.rectAreaLut === null ) {
+ 
+-		const t1 = ltc_1.sample( uv ).toVar();
+-		const t2 = ltc_2.sample( uv ).toVar();
++			const uv = LTC_Uv( { N, V, roughness } );
+ 
+-		const mInv = mat3(
+-			vec3( t1.x, 0, t1.y ),
+-			vec3( 0, 1, 0 ),
+-			vec3( t1.z, 0, t1.w )
+-		).toVar();
++			const t1 = ltc_1.sample( uv ).toVar();
++			const t2 = ltc_2.sample( uv ).toVar();
+ 
+-		// LTC Fresnel Approximation by Stephen Hill
+-		// http://blog.selfshadow.com/publications/s2016-advances/s2016_ltc_fresnel.pdf
+-		const fresnel = specularColorBlended.mul( t2.x ).add( specularF90.sub( specularColorBlended ).mul( t2.y ) ).toVar();
++			const mInv = mat3(
++				vec3( t1.x, 0, t1.y ),
++				vec3( 0, 1, 0 ),
++				vec3( t1.z, 0, t1.w )
++			).toVar();
++
++			// LTC Fresnel Approximation by Stephen Hill
++			// http://blog.selfshadow.com/publications/s2016-advances/s2016_ltc_fresnel.pdf
++			const fresnel = specularColorBlended.mul( t2.x ).add( specularF90.sub( specularColorBlended ).mul( t2.y ) ).toVar();
++
++			this.rectAreaLut = { mInv, fresnel };
++
++		}
++
++		const { mInv, fresnel } = this.rectAreaLut;
+ 
+ 		reflectedLight.directSpecular.addAssign( lightColor.mul( fresnel ).mul( LTC_Evaluate( { N, V, P, mInv, p0, p1, p2, p3 } ) ) );
+ 
+-		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate( { N, V, P, mInv: mat3( 1, 0, 0, 0, 1, 0, 0, 0, 1 ), p0, p1, p2, p3 } ) ) );
++		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate_Diffuse( { N, P, p0, p1, p2, p3 } ) ) );
+ 
+ 		if ( this.clearcoat === true ) {
+ 
+ 			const Ncc = clearcoatNormalView;
+ 
+-			const uvClearcoat = LTC_Uv( { N: Ncc, V, roughness: clearcoatRoughness } );
++			if ( this.rectAreaClearcoatLut === null ) {
+ 
+-			const t1Clearcoat = ltc_1.sample( uvClearcoat );
+-			const t2Clearcoat = ltc_2.sample( uvClearcoat );
++				const uvClearcoat = LTC_Uv( { N: Ncc, V, roughness: clearcoatRoughness } );
+ 
+-			const mInvClearcoat = mat3(
+-				vec3( t1Clearcoat.x, 0, t1Clearcoat.y ),
+-				vec3( 0, 1, 0 ),
+-				vec3( t1Clearcoat.z, 0, t1Clearcoat.w )
+-			);
++				const t1Clearcoat = ltc_1.sample( uvClearcoat );
++				const t2Clearcoat = ltc_2.sample( uvClearcoat );
++
++				const mInvClearcoat = mat3(
++					vec3( t1Clearcoat.x, 0, t1Clearcoat.y ),
++					vec3( 0, 1, 0 ),
++					vec3( t1Clearcoat.z, 0, t1Clearcoat.w )
++				);
++
++				// LTC Fresnel Approximation for clearcoat
++				const fresnelClearcoat = clearcoatF0.mul( t2Clearcoat.x ).add( clearcoatF90.sub( clearcoatF0 ).mul( t2Clearcoat.y ) );
++
++				this.rectAreaClearcoatLut = { mInvClearcoat, fresnelClearcoat };
++
++			}
+ 
+-			// LTC Fresnel Approximation for clearcoat
+-			const fresnelClearcoat = clearcoatF0.mul( t2Clearcoat.x ).add( clearcoatF90.sub( clearcoatF0 ).mul( t2Clearcoat.y ) );
++			const { mInvClearcoat, fresnelClearcoat } = this.rectAreaClearcoatLut;
+ 
+ 			this.clearcoatSpecularDirect.addAssign( lightColor.mul( fresnelClearcoat ).mul( LTC_Evaluate( { N: Ncc, V, P, mInv: mInvClearcoat, p0, p1, p2, p3 } ) ) );
+ 
+diff --git a/src/nodes/functions/BSDF/LTC.js b/src/nodes/functions/BSDF/LTC.js
+index 6030b42b22794eb87711bfd5d1e65f974abf1eba..c5ef7f189fddf8949f194af5d0ef115582db7f0f 100644
+--- a/src/nodes/functions/BSDF/LTC.js
++++ b/src/nodes/functions/BSDF/LTC.js
+@@ -72,6 +72,40 @@ const LTC_EdgeVectorFormFactor = /*@__PURE__*/ Fn( ( { v1, v2 } ) => {
+ 	]
+ } );
+ 
++const LTC_Evaluate_Diffuse = /*@__PURE__*/ Fn( ( { N, P, p0, p1, p2, p3 } ) => {
++
++	const result = vec3().toVar();
++	const lightNormal = p1.sub( p0 ).cross( p3.sub( p0 ) );
++	If( lightNormal.dot( P.sub( p0 ) ).greaterThanEqual( 0.0 ), () => {
++
++		const coords0 = p0.sub( P ).normalize().toVar();
++		const coords1 = p1.sub( P ).normalize().toVar();
++		const coords2 = p2.sub( P ).normalize().toVar();
++		const coords3 = p3.sub( P ).normalize().toVar();
++		const f = vec3( 0 ).toVar();
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords0, v2: coords1 } ) );
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords1, v2: coords2 } ) );
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords2, v2: coords3 } ) );
++		f.addAssign( LTC_EdgeVectorFormFactor( { v1: coords3, v2: coords0 } ) );
++		const l = f.length().toVar();
++		result.assign( vec3( l.mul( l ).sub( N.dot( f ) ).div( l.add( 1.0 ) ).max( 0 ) ) );
++
++	} );
++	return result;
++
++} ).setLayout( {
++	name: 'LTC_Evaluate_Diffuse',
++	type: 'vec3',
++	inputs: [
++		{ name: 'N', type: 'vec3' },
++		{ name: 'P', type: 'vec3' },
++		{ name: 'p0', type: 'vec3' },
++		{ name: 'p1', type: 'vec3' },
++		{ name: 'p2', type: 'vec3' },
++		{ name: 'p3', type: 'vec3' }
++	]
++} );
++
+ const LTC_Evaluate = /*@__PURE__*/ Fn( ( { N, V, P, mInv, p0, p1, p2, p3 } ) => {
+ 
+ 	// bail if point is on back side of plane of light
+@@ -172,4 +206,4 @@ const LTC_Evaluate_Volume = /*@__PURE__*/ Fn( ( { P, p0, p1, p2, p3 } ) => {
+ 	]
+ } );
+ 
+-export { LTC_Evaluate, LTC_Evaluate_Volume, LTC_Uv };
++export { LTC_Evaluate_Diffuse, LTC_Evaluate, LTC_Evaluate_Volume, LTC_Uv };
+diff --git a/src/nodes/functions/PhysicalLightingModel.js b/src/nodes/functions/PhysicalLightingModel.js
+index 1b0d57ef9184baee157733a3e96b262d5e1bf6b6..238a6cf9a104194a6007a81cc5bd7be80b93c2e4 100644
+--- a/src/nodes/functions/PhysicalLightingModel.js
++++ b/src/nodes/functions/PhysicalLightingModel.js
+@@ -5,7 +5,7 @@ import EnvironmentBRDF from './BSDF/EnvironmentBRDF.js';
+ import F_Schlick from './BSDF/F_Schlick.js';
+ import Schlick_to_F0 from './BSDF/Schlick_to_F0.js';
+ import BRDF_Sheen from './BSDF/BRDF_Sheen.js';
+-import { LTC_Evaluate, LTC_Uv } from './BSDF/LTC.js';
++import { LTC_Evaluate_Diffuse, LTC_Evaluate, LTC_Uv } from './BSDF/LTC.js';
+ import LightingModel from '../core/LightingModel.js';
+ import { diffuseColor, diffuseContribution, specularColor, specularColorBlended, specularF90, roughness, metalness, clearcoat, clearcoatRoughness, sheen, sheenRoughness, iridescence, iridescenceIOR, iridescenceThickness, ior, thickness, transmission, attenuationDistance, attenuationColor, dispersion, retroreflectivity } from '../core/PropertyNode.js';
+ import { normalView, clearcoatNormalView, normalWorld } from '../accessors/Normal.js';
+@@ -499,6 +499,9 @@ class PhysicalLightingModel extends LightingModel {
+ 	 */
+ 	start( builder ) {
+ 
++		this.rectAreaLut = null;
++		this.rectAreaClearcoatLut = null;
++
+ 		if ( this.clearcoat === true ) {
+ 
+ 			this.clearcoatRadiance = vec3().toVar( 'clearcoatRadiance' );
+@@ -694,42 +697,58 @@ class PhysicalLightingModel extends LightingModel {
+ 		const V = positionViewDirection;
+ 		const P = positionView.toVar();
+ 
+-		const uv = LTC_Uv( { N, V, roughness } );
++		if ( this.rectAreaLut === null ) {
++
++			const uv = LTC_Uv( { N, V, roughness } );
+ 
+-		const t1 = ltc_1.sample( uv ).toVar();
+-		const t2 = ltc_2.sample( uv ).toVar();
++			const t1 = ltc_1.sample( uv ).toVar();
++			const t2 = ltc_2.sample( uv ).toVar();
++
++			const mInv = mat3(
++				vec3( t1.x, 0, t1.y ),
++				vec3( 0, 1, 0 ),
++				vec3( t1.z, 0, t1.w )
++			).toVar();
+ 
+-		const mInv = mat3(
+-			vec3( t1.x, 0, t1.y ),
+-			vec3( 0, 1, 0 ),
+-			vec3( t1.z, 0, t1.w )
+-		).toVar();
++			// LTC Fresnel Approximation by Stephen Hill
++			// http://blog.selfshadow.com/publications/s2016-advances/s2016_ltc_fresnel.pdf
++			const fresnel = specularColorBlended.mul( t2.x ).add( specularF90.sub( specularColorBlended ).mul( t2.y ) ).toVar();
++
++			this.rectAreaLut = { mInv, fresnel };
++
++		}
+ 
+-		// LTC Fresnel Approximation by Stephen Hill
+-		// http://blog.selfshadow.com/publications/s2016-advances/s2016_ltc_fresnel.pdf
+-		const fresnel = specularColorBlended.mul( t2.x ).add( specularF90.sub( specularColorBlended ).mul( t2.y ) ).toVar();
++		const { mInv, fresnel } = this.rectAreaLut;
+ 
+ 		reflectedLight.directSpecular.addAssign( lightColor.mul( fresnel ).mul( LTC_Evaluate( { N, V, P, mInv, p0, p1, p2, p3 } ) ) );
+ 
+-		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate( { N, V, P, mInv: mat3( 1, 0, 0, 0, 1, 0, 0, 0, 1 ), p0, p1, p2, p3 } ) ) );
++		reflectedLight.directDiffuse.addAssign( lightColor.mul( diffuseContribution ).mul( LTC_Evaluate_Diffuse( { N, P, p0, p1, p2, p3 } ) ) );
+ 
+ 		if ( this.clearcoat === true ) {
+ 
+ 			const Ncc = clearcoatNormalView;
+ 
+-			const uvClearcoat = LTC_Uv( { N: Ncc, V, roughness: clearcoatRoughness } );
++			if ( this.rectAreaClearcoatLut === null ) {
+ 
+-			const t1Clearcoat = ltc_1.sample( uvClearcoat );
+-			const t2Clearcoat = ltc_2.sample( uvClearcoat );
++				const uvClearcoat = LTC_Uv( { N: Ncc, V, roughness: clearcoatRoughness } );
+ 
+-			const mInvClearcoat = mat3(
+-				vec3( t1Clearcoat.x, 0, t1Clearcoat.y ),
+-				vec3( 0, 1, 0 ),
+-				vec3( t1Clearcoat.z, 0, t1Clearcoat.w )
+-			);
++				const t1Clearcoat = ltc_1.sample( uvClearcoat );
++				const t2Clearcoat = ltc_2.sample( uvClearcoat );
++
++				const mInvClearcoat = mat3(
++					vec3( t1Clearcoat.x, 0, t1Clearcoat.y ),
++					vec3( 0, 1, 0 ),
++					vec3( t1Clearcoat.z, 0, t1Clearcoat.w )
++				);
++
++				// LTC Fresnel Approximation for clearcoat
++				const fresnelClearcoat = clearcoatF0.mul( t2Clearcoat.x ).add( clearcoatF90.sub( clearcoatF0 ).mul( t2Clearcoat.y ) );
++
++				this.rectAreaClearcoatLut = { mInvClearcoat, fresnelClearcoat };
++
++			}
+ 
+-			// LTC Fresnel Approximation for clearcoat
+-			const fresnelClearcoat = clearcoatF0.mul( t2Clearcoat.x ).add( clearcoatF90.sub( clearcoatF0 ).mul( t2Clearcoat.y ) );
++			const { mInvClearcoat, fresnelClearcoat } = this.rectAreaClearcoatLut;
+ 
+ 			this.clearcoatSpecularDirect.addAssign( lightColor.mul( fresnelClearcoat ).mul( LTC_Evaluate( { N: Ncc, V, P, mInv: mInvClearcoat, p0, p1, p2, p3 } ) ) );
+ 
 diff --git a/src/utils.js b/src/utils.js
 index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..9a1e7d07081bc5dc14f1fdcc37036c27ff93354b 100644
 --- a/src/utils.js
