@@ -13,6 +13,7 @@ export class DynamicSurfacePass {
     private readonly contributions: Object3D,
     private readonly scene: Scene,
     private readonly camera: PerspectiveCamera,
+    private readonly staticSurfaces: Object3D,
   ) {
     this.surfaces = [monitor, ...fanSurfaces, contributions];
     for (const source of [monitor, ...fanSurfaces]) source.layers.enable(1);
@@ -56,6 +57,8 @@ export class DynamicSurfacePass {
     const layers = this.camera.layers.mask;
     const background = this.scene.background;
     const autoClear = renderer.autoClear;
+    const staticVisible = this.staticSurfaces.visible;
+    this.staticSurfaces.visible = false;
     this.camera.layers.set(1);
     this.scene.background = null;
     renderer.autoClear = false;
@@ -63,6 +66,7 @@ export class DynamicSurfacePass {
     try {
       renderer.render(this.scene, this.camera);
     } finally {
+      this.staticSurfaces.visible = staticVisible;
       renderer.autoClear = autoClear;
       this.scene.background = background;
       this.camera.layers.mask = layers;

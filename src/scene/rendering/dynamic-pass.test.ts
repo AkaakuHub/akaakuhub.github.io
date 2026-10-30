@@ -17,8 +17,9 @@ function fixture() {
   camera.position.z = 3;
   const monitor = new Mesh(new BoxGeometry(1, 1, 0.1), new MeshBasicMaterial());
   const contributions = new Group();
-  scene.add(monitor, contributions);
-  const pass = new DynamicSurfacePass(monitor, [], contributions, scene, camera);
+  const staticSurfaces = new Group();
+  scene.add(monitor, contributions, staticSurfaces);
+  const pass = new DynamicSurfacePass(monitor, [], contributions, scene, camera, staticSurfaces);
   const renderer = {
     autoClear: true,
     setRenderTarget: vi.fn<Renderer["setRenderTarget"]>(),
@@ -29,6 +30,7 @@ function fixture() {
     camera,
     monitor,
     contributions,
+    staticSurfaces,
     pass,
     renderer,
     target: new RenderTarget(32, 32),
@@ -46,13 +48,15 @@ describe("動く物体の描画", () => {
   });
 
   it("画面内の物体を描画し、描画状態を復元する", () => {
-    const { scene, camera, pass, renderer, target } = fixture();
+    const { scene, camera, pass, renderer, target, staticSurfaces } = fixture();
+    renderer.render.mockImplementation(() => expect(staticSurfaces.visible).toBe(false));
     scene.updateMatrixWorld(true);
     const layers = camera.layers.mask;
     pass.render(renderer, target);
     expect(renderer.render).toHaveBeenCalledOnce();
     expect(camera.layers.mask).toBe(layers);
     expect(renderer.autoClear).toBe(true);
+    expect(staticSurfaces.visible).toBe(true);
   });
 
   it("親が非表示の物体を描画しない", () => {
