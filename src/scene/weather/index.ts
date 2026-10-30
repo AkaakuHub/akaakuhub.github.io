@@ -133,7 +133,6 @@ export class WeatherPass {
       .intersectsBox(bounds);
   }
   render(renderer: Renderer, target: RenderTarget): void {
-    if (!this.active) return;
     this.rain.uniforms.time.value = this.snow.uniforms.time.value = performance.now() / 1000;
     const autoClear = renderer.autoClear;
     renderer.autoClear = false;

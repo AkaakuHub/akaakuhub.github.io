@@ -7,6 +7,7 @@ import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 import { DisplayPass } from "./rendering/display-pass";
 import { renderingProfile } from "./quality";
 import { fitPixelBudget } from "./rendering/resolution";
+import { SceneTransforms } from "./rendering/scene-transforms";
 
 export function createRendering(
   renderer: RoomRenderer,
@@ -28,6 +29,7 @@ export function createRendering(
   });
   const motionPixelBudget = renderingProfile().motionPixelBudget;
   const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
+  const transforms = new SceneTransforms(scene);
   const dynamic = new DynamicSurfacePass(monitor, fanSurfaces, contributions, scene, camera);
   const weather = new WeatherPass(camera);
   const display = new DisplayPass(renderer, frame.texture);
@@ -39,11 +41,15 @@ export function createRendering(
     get revealing() {
       return display.revealing;
     },
-    invalidate: () => surfaces.invalidate(),
+    invalidate() {
+      transforms.invalidate();
+      surfaces.invalidate();
+    },
     resume() {
       renderer.refreshDisplay();
       display.invalidate();
       surfaces.invalidate();
+      transforms.invalidate();
     },
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;
@@ -57,7 +63,9 @@ export function createRendering(
       surfaces.setSize(w, h);
     },
     render(moving = false) {
-      const compose = (!moving && dynamic.visible) || weather.active;
+      transforms.update();
+      const precipitation = weather.active;
+      const compose = (!moving && dynamic.visible) || precipitation;
       const target = moving ? motionFrame : frame;
       if (
         renderer.domElement.width !== target.width ||
@@ -67,7 +75,7 @@ export function createRendering(
       const input = surfaces.render(renderer, target, moving, compose);
       if (compose) {
         if (!moving) dynamic.render(renderer, target);
-        weather.render(renderer, target);
+        if (precipitation) weather.render(renderer, target);
       }
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
@@ -77,6 +85,7 @@ export function createRendering(
       } finally {
         renderer.autoClear = autoClear;
       }
+      return precipitation;
     },
   };
 }

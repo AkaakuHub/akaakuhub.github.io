@@ -237,7 +237,7 @@ export async function startRoom(
     computerInterface.update(time);
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
-    rendering.render(moving);
+    const precipitation = rendering.render(moving);
     frameMetrics?.end(moving);
     if (!ready) {
       ready = true;
@@ -255,7 +255,7 @@ export async function startRoom(
         })
         .catch(loading.fail);
     }
-    if (!frame && (moving || rendering.weather.active || animation || rendering.revealing))
+    if (!frame && (moving || precipitation || animation || rendering.revealing))
       frame = requestAnimationFrame(render);
   }
   function invalidate() {

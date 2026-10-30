@@ -96,7 +96,7 @@ export function createContributionDisplay(
     object,
     load: () => void load(),
     update(camera: PerspectiveCamera, now: number): boolean {
-      if (!surface) return false;
+      if (!surface || time.value >= duration) return false;
       camera.updateMatrixWorld();
       surface.updateWorldMatrix(true, false);
       projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
