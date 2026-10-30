@@ -252,7 +252,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..872dab99411f9bb9f011fc0a77566924
  	 */
  	setupLights( builder, lightNodes ) {
  
-+		const areas = lightNodes.filter( ( node ) => node instanceof RectAreaLightNode && ! node.light.castShadow );
++		const areas = builder.renderer.compileYieldInterval === 0 ? [] : lightNodes.filter( ( node ) => node instanceof RectAreaLightNode && ! node.light.castShadow );
 +		if ( areas.length > 0 ) {
 +
 +			const data = areas.map( ( node ) => {
@@ -849,7 +849,7 @@ index 9a1dabe607894f810b5de4df13067ef609f1d635..c5181c18adbd6eb14ad8663938593131
  	 */
  	setupLights( builder, lightNodes ) {
  
-+		const areas = lightNodes.filter( ( node ) => node instanceof RectAreaLightNode && ! node.light.castShadow );
++		const areas = builder.renderer.compileYieldInterval === 0 ? [] : lightNodes.filter( ( node ) => node instanceof RectAreaLightNode && ! node.light.castShadow );
 +		if ( areas.length > 0 ) {
 +
 +			const data = areas.map( ( node ) => {
