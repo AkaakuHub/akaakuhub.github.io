@@ -19,6 +19,7 @@ class RoomBackend extends WebGPUBackend {
 }
 
 export class RoomRenderer extends Renderer {
+  readonly compileYieldInterval = renderingSession.forceWebGL ? 0 : 12;
   private readonly output: RoomBackend;
   private readonly preference: HdrPreference;
   private readonly display: MediaQueryList;

@@ -1,5 +1,5 @@
 diff --git a/build/three.core.js b/build/three.core.js
-index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..107c6da913ca22e0a5007b80c662949f6b6fe5bb 100644
+index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..e42d39a9d4d09045eaf99719eb4b03d88aa74acb 100644
 --- a/build/three.core.js
 +++ b/build/three.core.js
 @@ -2093,20 +2093,28 @@ function warnOnce( ...params ) {
@@ -9,9 +9,9 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..107c6da913ca22e0a5007b80c662949f
 -function yieldToMain() {
 +let lastYieldTime = 0;
 +
-+async function yieldToMain() {
++async function yieldToMain( interval = 12 ) {
 +
-+	if ( performance.now() - lastYieldTime < 12 ) return;
++	if ( performance.now() - lastYieldTime < interval ) return;
  
  	if ( typeof self !== 'undefined' && typeof self.scheduler !== 'undefined' && typeof self.scheduler.yield !== 'undefined' ) {
  
@@ -68,7 +68,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..107c6da913ca22e0a5007b80c662949f
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..219465048eb97049a719bff566e2fe1e57558da3 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd676482d5c5 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -312,6 +312,15 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..219465048eb97049a719bff566e2fe1e
  
  		}
  
+@@ -55964,7 +56089,7 @@ class NodeBuilder {
+ 				}
+ 
+ 				// Yield to main thread after each shader stage to prevent blocking
+-				await yieldToMain();
++				await yieldToMain( this.renderer?.compileYieldInterval );
+ 
+ 			}
+ 
 @@ -62718,6 +62843,7 @@ class Renderer {
  
  		const total = compilationPromises.length;
@@ -320,7 +329,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..219465048eb97049a719bff566e2fe1e
  
  		for ( const item of compilationPromises ) {
  
-@@ -62735,12 +62861,11 @@ class Renderer {
+@@ -62735,12 +62861,12 @@ class Renderer {
  			this._bindings.updateForRender( renderObject );
  			this._isPreCompiling = false;
  
@@ -330,11 +339,17 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..219465048eb97049a719bff566e2fe1e
  			if ( pipelinePromises.length > 0 ) {
  
 -				await Promise.all( pipelinePromises );
-+				pendingPipelines.push( Promise.all( pipelinePromises ) );
++				if ( this.compileYieldInterval === 0 ) await Promise.all( pipelinePromises );
++				else pendingPipelines.push( Promise.all( pipelinePromises ) );
  
  			}
  
-@@ -62761,6 +62886,8 @@ class Renderer {
+@@ -62757,10 +62883,12 @@ class Renderer {
+ 			}
+ 
+ 			// Yield between objects to allow animation frames
+-			await yieldToMain();
++			await yieldToMain( this.compileYieldInterval );
  
  		}
  
@@ -343,10 +358,28 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..219465048eb97049a719bff566e2fe1e
  	}
  
  	/**
+@@ -62844,7 +62972,7 @@ class Renderer {
+ 
+ 			}
+ 
+-			if ( loaded < total ) await yieldToMain();
++			if ( loaded < total ) await yieldToMain( this.compileYieldInterval );
+ 
+ 		}
+ 
 diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
-index e96c4ae08d528fea66c58e5869923c1675822ac9..8d30d30342bd2e32f261d868d9eb3150798815ef 100644
+index e96c4ae08d528fea66c58e5869923c1675822ac9..d78f35fbab0dcebaf8a42ba4af9004a5d437f7bb 100644
 --- a/build/three.webgpu.nodes.js
 +++ b/build/three.webgpu.nodes.js
+@@ -55964,7 +55964,7 @@ class NodeBuilder {
+ 				}
+ 
+ 				// Yield to main thread after each shader stage to prevent blocking
+-				await yieldToMain();
++				await yieldToMain( this.renderer?.compileYieldInterval );
+ 
+ 			}
+ 
 @@ -62718,6 +62718,7 @@ class Renderer {
  
  		const total = compilationPromises.length;
@@ -355,7 +388,7 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..8d30d30342bd2e32f261d868d9eb3150
  
  		for ( const item of compilationPromises ) {
  
-@@ -62735,12 +62736,11 @@ class Renderer {
+@@ -62735,12 +62736,12 @@ class Renderer {
  			this._bindings.updateForRender( renderObject );
  			this._isPreCompiling = false;
  
@@ -365,11 +398,17 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..8d30d30342bd2e32f261d868d9eb3150
  			if ( pipelinePromises.length > 0 ) {
  
 -				await Promise.all( pipelinePromises );
-+				pendingPipelines.push( Promise.all( pipelinePromises ) );
++				if ( this.compileYieldInterval === 0 ) await Promise.all( pipelinePromises );
++				else pendingPipelines.push( Promise.all( pipelinePromises ) );
  
  			}
  
-@@ -62761,6 +62761,8 @@ class Renderer {
+@@ -62757,10 +62758,12 @@ class Renderer {
+ 			}
+ 
+ 			// Yield between objects to allow animation frames
+-			await yieldToMain();
++			await yieldToMain( this.compileYieldInterval );
  
  		}
  
@@ -378,6 +417,15 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..8d30d30342bd2e32f261d868d9eb3150
  	}
  
  	/**
+@@ -62844,7 +62847,7 @@ class Renderer {
+ 
+ 			}
+ 
+-			if ( loaded < total ) await yieldToMain();
++			if ( loaded < total ) await yieldToMain( this.compileYieldInterval );
+ 
+ 		}
+ 
 diff --git a/src/math/Frustum.js b/src/math/Frustum.js
 index 177dcf1478bf44c3f5d32d38a0cac6c44932a952..af73337956fa7d9d48a87b9c7be4af8e8ba2e60a 100644
 --- a/src/math/Frustum.js
@@ -433,6 +481,19 @@ index e6e75bfd3268cf04a229febcf6b92c124b790050..f8f9331ee5de84f45f6f918bcb67ed29
  	directRectArea( /*lightData, builder*/ ) {}
  
  	/**
+diff --git a/src/nodes/core/NodeBuilder.js b/src/nodes/core/NodeBuilder.js
+index c489c35af79b3aab5bf4ba6f5b2a263c75a33247..ffc69439e550f4c8453d8a8a2987781cc1ef83a7 100644
+--- a/src/nodes/core/NodeBuilder.js
++++ b/src/nodes/core/NodeBuilder.js
+@@ -3279,7 +3279,7 @@ class NodeBuilder {
+ 				}
+ 
+ 				// Yield to main thread after each shader stage to prevent blocking
+-				await yieldToMain();
++				await yieldToMain( this.renderer?.compileYieldInterval );
+ 
+ 			}
+ 
 diff --git a/src/nodes/functions/BSDF/LTC.js b/src/nodes/functions/BSDF/LTC.js
 index 6030b42b22794eb87711bfd5d1e65f974abf1eba..c5ef7f189fddf8949f194af5d0ef115582db7f0f 100644
 --- a/src/nodes/functions/BSDF/LTC.js
@@ -703,7 +764,7 @@ index 9a1dabe607894f810b5de4df13067ef609f1d635..c5181c18adbd6eb14ad8663938593131
  		}
  
 diff --git a/src/renderers/common/Renderer.js b/src/renderers/common/Renderer.js
-index c05aa68471f07a0bbbf6203865da1096fea503c1..51d025067ba19d605171daaa20c7ee4d78a68022 100644
+index c05aa68471f07a0bbbf6203865da1096fea503c1..c97c374de7095971c7ecd415b9c7284f616f79a9 100644
 --- a/src/renderers/common/Renderer.js
 +++ b/src/renderers/common/Renderer.js
 @@ -1057,6 +1057,7 @@ class Renderer {
@@ -714,7 +775,7 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..51d025067ba19d605171daaa20c7ee4d
  
  		for ( const item of compilationPromises ) {
  
-@@ -1074,12 +1075,11 @@ class Renderer {
+@@ -1074,12 +1075,12 @@ class Renderer {
  			this._bindings.updateForRender( renderObject );
  			this._isPreCompiling = false;
  
@@ -724,11 +785,17 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..51d025067ba19d605171daaa20c7ee4d
  			if ( pipelinePromises.length > 0 ) {
  
 -				await Promise.all( pipelinePromises );
-+				pendingPipelines.push( Promise.all( pipelinePromises ) );
++				if ( this.compileYieldInterval === 0 ) await Promise.all( pipelinePromises );
++				else pendingPipelines.push( Promise.all( pipelinePromises ) );
  
  			}
  
-@@ -1100,6 +1100,8 @@ class Renderer {
+@@ -1096,10 +1097,12 @@ class Renderer {
+ 			}
+ 
+ 			// Yield between objects to allow animation frames
+-			await yieldToMain();
++			await yieldToMain( this.compileYieldInterval );
  
  		}
  
@@ -738,7 +805,7 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..51d025067ba19d605171daaa20c7ee4d
  
  	/**
 diff --git a/src/utils.js b/src/utils.js
-index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..9a1e7d07081bc5dc14f1fdcc37036c27ff93354b 100644
+index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..d43d44cad4127c8611a8d0b0f45cf642f93a0a68 100644
 --- a/src/utils.js
 +++ b/src/utils.js
 @@ -353,20 +353,28 @@ function warnOnce( ...params ) {
@@ -748,9 +815,9 @@ index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..9a1e7d07081bc5dc14f1fdcc37036c27
 -function yieldToMain() {
 +let lastYieldTime = 0;
 +
-+async function yieldToMain() {
++async function yieldToMain( interval = 12 ) {
 +
-+	if ( performance.now() - lastYieldTime < 12 ) return;
++	if ( performance.now() - lastYieldTime < interval ) return;
  
  	if ( typeof self !== 'undefined' && typeof self.scheduler !== 'undefined' && typeof self.scheduler.yield !== 'undefined' ) {
  
