@@ -20,7 +20,14 @@ export function createLoading(root: HTMLElement) {
     retry = document.createElement("button");
     retry.type = "button";
     retry.className = "loading-retry";
-    retry.append(createElement(RotateCw, { width: 24, height: 24, "aria-hidden": "true" }));
+    retry.append(
+      createElement(RotateCw, {
+        width: 40,
+        height: 40,
+        "stroke-width": 1,
+        "aria-hidden": "true",
+      }),
+    );
     retry.append("再読み込み");
     retry.addEventListener("click", (event) => {
       if (event.isTrusted) location.reload();
