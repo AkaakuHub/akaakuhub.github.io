@@ -5,7 +5,6 @@ import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
 import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 import { DisplayPass } from "./rendering/display-pass";
-import { renderingProfile } from "./quality";
 import { fitPixelBudget } from "./rendering/resolution";
 import { SceneTransforms } from "./rendering/scene-transforms";
 import { SkyPass } from "./rendering/sky-pass";
@@ -33,7 +32,7 @@ export async function createRendering(
     type: HalfFloatType,
     depthTexture: new DepthTexture(1, 1),
   });
-  const motionPixelBudget = renderingProfile().motionPixelBudget;
+  const motionPixelBudget = renderer.profile.motionPixelBudget;
   scene.add(sky.horizon);
   await prepareScene(renderer, scene, camera, frame, progress);
   const bundles = new StaticSceneBundles(scene);

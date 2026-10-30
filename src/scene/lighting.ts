@@ -1,19 +1,18 @@
 import { Color, DirectionalLight, Mesh, MeshStandardMaterial } from "three";
 import type { Scene } from "three";
-import type { Renderer } from "three/webgpu";
+import type { RoomRenderer } from "./rendering/room-renderer";
 import { roomCelestialLighting } from "./daylight/celestial";
 import { cameraExposure, unitLuminance } from "./lighting/photometry";
 import { createRoomLights } from "./lighting/room-lights";
 import { createMonitorLight, setMonitorLight } from "./lighting/monitor";
 import type { TokyoWeather } from "../weather/schema";
-import { renderingProfile } from "./quality";
 import { fitShadowCamera, shadowCasterBounds } from "./lighting/shadow-camera";
 import { receiverShadow } from "./lighting/receiver-shadow";
 import type { createSky } from "./daylight/sky";
 
 export function illuminate(
   scene: Scene,
-  renderer: Renderer,
+  renderer: RoomRenderer,
   weather: TokyoWeather,
   monitor: Mesh,
   sky: Awaited<ReturnType<typeof createSky>>,
@@ -26,7 +25,7 @@ export function illuminate(
   celestialLight.castShadow = true;
   celestialLight.shadow.autoUpdate = false;
   Object.assign(celestialLight.shadow, { filterNode: receiverShadow });
-  const shadowSize = renderingProfile().shadowSize;
+  const shadowSize = renderer.profile.shadowSize;
   celestialLight.shadow.mapSize.set(shadowSize, shadowSize);
   celestialLight.shadow.radius = 2;
   scene.add(celestialLight, celestialLight.target);

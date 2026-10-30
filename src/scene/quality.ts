@@ -13,6 +13,15 @@ const mobile = {
   anisotropy: 2,
 };
 
-export function renderingProfile() {
+const recovery = {
+  pixelBudget: 400_000,
+  motionPixelBudget: 120_000,
+  pixelRatio: 1,
+  shadowSize: 512,
+  anisotropy: 1,
+};
+
+export function renderingProfile(recovering = false) {
+  if (recovering) return recovery;
   return window.matchMedia("(pointer: coarse)").matches ? mobile : desktop;
 }

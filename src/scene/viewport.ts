@@ -1,12 +1,11 @@
 import type { PerspectiveCamera } from "three";
-import type { Renderer } from "three/webgpu";
+import type { RoomRenderer } from "./rendering/room-renderer";
 import type { createRendering } from "./rendering";
-import { renderingProfile } from "./quality";
 
 export function observeViewport(
   canvas: HTMLCanvasElement,
   camera: PerspectiveCamera,
-  renderer: Renderer,
+  renderer: RoomRenderer,
   composer: Awaited<ReturnType<typeof createRendering>>,
   onResize: () => void,
 ): () => void {
@@ -21,7 +20,7 @@ export function observeViewport(
     pending = 0;
     const { width, height } = container.getBoundingClientRect();
     if (width < 1 || height < 1) return;
-    const profile = renderingProfile();
+    const profile = renderer.profile;
     const pixelRatio = Math.min(
       window.devicePixelRatio,
       profile.pixelRatio,

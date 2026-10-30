@@ -2,6 +2,7 @@ import { HalfFloatType, SRGBColorSpace, Vector2 } from "three";
 import { Renderer, WebGLBackend, WebGPUBackend } from "three/webgpu";
 import type { WebGPUBackendParameters } from "three/src/renderers/webgpu/WebGPUBackend.js";
 import { ExtendedSRGBColorSpace } from "three/addons/math/ColorSpaces.js";
+import { renderingProfile } from "../quality";
 import { HdrPreference } from "./hdr-preference";
 import { RoomNodeLibrary } from "./node-library";
 import { completeWebGLFrame } from "./webgl-frame";
@@ -20,6 +21,7 @@ class RoomBackend extends WebGPUBackend {
 }
 
 export class RoomRenderer extends Renderer {
+  readonly profile = renderingProfile(renderingSession.forceWebGL);
   readonly compileYieldInterval = renderingSession.forceWebGL ? 0 : 12;
   private readonly output: RoomBackend;
   private readonly preference: HdrPreference;
