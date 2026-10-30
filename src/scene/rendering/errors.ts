@@ -1,11 +1,7 @@
 import { setConsoleFunction } from "three";
 import type { Renderer } from "three/webgpu";
 
-export function bindRenderingErrors(
-  renderer: Renderer,
-  fail: (error: unknown) => void,
-  recover: (error: unknown) => void,
-): void {
+export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) => void): void {
   setConsoleFunction((type, message, ...details) => {
     if (type === "error") fail(new Error(message, { cause: details }));
     else console[type](message, ...details);
@@ -18,6 +14,6 @@ export function bindRenderingErrors(
     );
   };
   renderer.onDeviceLost = (info) => {
-    recover(new Error(`GPUとの接続が失われました: ${info.message}`));
+    fail(new Error(`GPUとの接続が失われました: ${info.message}`));
   };
 }

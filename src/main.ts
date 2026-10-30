@@ -39,6 +39,7 @@ import { observeDisplayVisibility } from "./scene/rendering/display-lifecycle";
 import { createSky } from "./scene/daylight/sky";
 import { createSkyAnimation } from "./scene/daylight/sky-animation";
 import { FrameScheduler } from "./scene/rendering/frame-scheduler";
+import { renderingSession } from "./scene/rendering/session";
 
 export async function startRoom(
   root: HTMLElement,
@@ -53,11 +54,12 @@ export async function startRoom(
   const ui = createInterface(root);
   const batchStaticMeshes = createStaticBatcher();
   let deviceLost = false;
+  const recoverRendering = (error: unknown): void => {
+    deviceLost = true;
+    if (!renderingSession.retryWebGL()) loading.recover(error);
+  };
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
-    bindRenderingErrors(renderer, loading.fail, (error) => {
-      deviceLost = true;
-      loading.recover(error);
-    });
+    bindRenderingErrors(renderer, recoverRendering);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = PCFShadowMap;
     performance.mark("room-renderer-ready");
@@ -191,7 +193,7 @@ export async function startRoom(
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
   });
-  const frames = new FrameScheduler(render, () => renderer.completedFrame(), loading.recover);
+  const frames = new FrameScheduler(render, () => renderer.completedFrame(), recoverRendering);
   let ready = false;
   let prepared = false;
   let displayActive = true;
@@ -253,7 +255,7 @@ export async function startRoom(
           introduction?.start();
           contributions.load();
         })
-        .catch(loading.fail);
+        .catch(recoverRendering);
     }
     return moving || precipitation || animation;
   }

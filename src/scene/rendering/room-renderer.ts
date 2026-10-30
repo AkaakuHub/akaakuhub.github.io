@@ -5,6 +5,7 @@ import { ExtendedSRGBColorSpace } from "three/addons/math/ColorSpaces.js";
 import { HdrPreference } from "./hdr-preference";
 import { RoomNodeLibrary } from "./node-library";
 import { completeWebGLFrame } from "./webgl-frame";
+import { renderingSession } from "./session";
 
 export type HdrObserver = (enabled: boolean, supported: boolean) => void;
 
@@ -32,11 +33,12 @@ export class RoomRenderer extends Renderer {
       alpha: false,
       outputType: active ? HalfFloatType : undefined,
     });
-    super(backend, {
+    const forceWebGL = renderingSession.forceWebGL;
+    super(forceWebGL ? new WebGLBackend({ canvas }) : backend, {
       alpha: false,
       antialias: false,
       outputBufferType: HalfFloatType,
-      getFallback: () => new WebGLBackend({ canvas }),
+      getFallback: forceWebGL ? null : () => new WebGLBackend({ canvas }),
     });
     this.output = backend;
     this.preference = preference;

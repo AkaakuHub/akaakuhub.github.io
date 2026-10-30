@@ -6,15 +6,20 @@ import { createWeatherAudio } from "./scene/audio";
 import { loadProfileAvatar } from "./content/avatar";
 import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createPaperPrinter } from "./scene/board/printing";
+import { renderingSession } from "./scene/rendering/session";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) throw new Error("表示先が見つかりません。");
 const loading = createLoading(root);
 const audio = createWeatherAudio();
-window.addEventListener("error", (event) =>
-  loading.fail(event.error ? event.error : event.message),
-);
-window.addEventListener("unhandledrejection", (event) => loading.fail(event.reason));
+const fail = (error: unknown): void => {
+  if (!renderingSession.recover(error)) loading.fail(error);
+};
+window.addEventListener("error", (event) => fail(event.error ? event.error : event.message));
+window.addEventListener("unhandledrejection", (event) => {
+  if (renderingSession.recover(event.reason)) event.preventDefault();
+  else loading.fail(event.reason);
+});
 
 let assets: RoomAssetLoader | undefined;
 const printer = createPaperPrinter();
@@ -41,5 +46,5 @@ try {
 } catch (error) {
   printer.dispose(error);
   assets?.abort(error);
-  loading.fail(error);
+  fail(error);
 }
