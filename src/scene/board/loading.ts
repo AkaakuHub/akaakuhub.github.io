@@ -5,11 +5,43 @@ import type { SiteContent } from "../../content/schema";
 
 export function createBoardLoader(update: (state: BoardState) => Promise<void>) {
   let active: AbortController | undefined;
+  let initial: Promise<BoardState> | undefined;
+  async function prepare(): Promise<BoardState> {
+    const controller = new AbortController();
+    try {
+      const content = await loadSiteContent(controller.signal);
+      const thumbnails = await loadArticleThumbnails(
+        content.articles.slice(0, 1),
+        controller.signal,
+        false,
+      );
+      return { status: "ready", content, thumbnails };
+    } catch {
+      return { status: "error" };
+    }
+  }
   return {
+    preload(): void {
+      initial ??= prepare();
+    },
     async refresh(revoke: boolean): Promise<void> {
       active?.abort();
       const controller = new AbortController();
       active = controller;
+      const prefetched = initial;
+      initial = undefined;
+      if (prefetched) {
+        const state = await prefetched;
+        if (state.status === "ready") {
+          try {
+            if (!revoke && !controller.signal.aborted) await update(state);
+          } finally {
+            for (const bitmap of state.thumbnails.values()) bitmap.close();
+          }
+          if (!revoke) return;
+        }
+      }
+      if (controller.signal.aborted) return;
       if (revoke) await update({ status: "loading" });
       let content: SiteContent | undefined;
       try {

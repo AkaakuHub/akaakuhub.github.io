@@ -52,6 +52,14 @@ export async function startRoom(
   fontsReady: Promise<void>,
 ) {
   const ui = createInterface(root);
+  const boardLoader = createBoardLoader(async (state) => {
+    const printed = await board.setState(state);
+    for (const map of printed) renderer.initTexture(map);
+    if (prepared) controls.syncNotices();
+    if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
+    invalidate();
+  });
+  boardLoader.preload();
   const batchStaticMeshes = createStaticBatcher();
   let deviceLost = false;
   const recoverRendering = (error: unknown): void => {
@@ -185,13 +193,6 @@ export async function startRoom(
   );
   const roomSwitch = bindRoomSwitch(lightSwitch, rocker, lighting.setRoomLights, invalidate);
   let controls: ReturnType<typeof bindRoomControls>;
-  const boardLoader = createBoardLoader(async (state) => {
-    const printed = await board.setState(state);
-    for (const map of printed) renderer.initTexture(map);
-    if (prepared) controls.syncNotices();
-    if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
-    invalidate();
-  });
   const frames = new FrameScheduler(render, () => renderer.completedFrame(), recoverRendering);
   let ready = false;
   let prepared = false;
