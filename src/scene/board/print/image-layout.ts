@@ -4,9 +4,12 @@ export function thumbnailBounds(
   paperWidth: number,
   paperHeight: number,
 ) {
-  const availableHeight = paperHeight - paperWidth * 0.12;
-  const scale = Math.min((paperWidth * 0.96) / imageWidth, availableHeight / imageHeight);
+  const margin = paperWidth * 0.015;
+  const scale = Math.min(
+    (paperWidth - margin * 2) / imageWidth,
+    (paperHeight - margin * 2) / imageHeight,
+  );
   const width = imageWidth * scale;
   const height = imageHeight * scale;
-  return { x: (paperWidth - width) / 2, y: 15 + (availableHeight - height) / 2, width, height };
+  return { x: (paperWidth - width) / 2, y: (paperHeight - height) / 2, width, height };
 }

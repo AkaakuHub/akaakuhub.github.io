@@ -1,7 +1,6 @@
 import type { BoardNotice } from "../notices";
 import { siteFont } from "../../../assets/typography";
 import { thumbnailBounds } from "./image-layout";
-import { paintLink } from "./link";
 
 export function paintArticle(
   context: OffscreenCanvasRenderingContext2D,
@@ -14,18 +13,6 @@ export function paintArticle(
   if (print.thumbnail) {
     const image = thumbnailBounds(print.thumbnail.width, print.thumbnail.height, width, height);
     context.drawImage(print.thumbnail, image.x, image.y, image.width, image.height);
-    context.font = `500 ${width * 0.042}px ${siteFont}`;
-    context.fillText(print.eyebrow, margin, height - width * 0.028);
-    if (print.link) {
-      paintLink(
-        context,
-        print.link.label,
-        width - margin,
-        height - width * 0.028,
-        width * 0.042,
-        "right",
-      );
-    }
   } else {
     context.font = `500 ${width * 0.03}px ${siteFont}`;
     context.fillText(print.title, margin, height / 2, width - margin * 2);

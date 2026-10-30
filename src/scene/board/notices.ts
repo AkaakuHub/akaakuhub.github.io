@@ -16,7 +16,6 @@ export type BoardState =
 
 export interface BoardNotice extends Omit<Notice, "links" | "refreshable"> {
   kind: "profile" | "github" | "article" | "privacy" | "portfolio";
-  eyebrow: string;
   position: readonly [number, number];
   angle: number;
   ink: string;
@@ -29,7 +28,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
     {
       kind: "profile",
       title: profile.name,
-      eyebrow: "",
       size: [1.08, 0.51],
       position: [-0.56, 2.07],
       angle: 0.012,
@@ -41,7 +39,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
     {
       kind: "github",
       title: "GitHubの記録",
-      eyebrow: "",
       size: [1.08, 0.46],
       position: [-0.56, 1.455],
       angle: -0.009,
@@ -51,12 +48,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       link: { label: "GitHubを開く", href: profile.github },
     },
   ];
-  const date = new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
   const article = state.status === "ready" ? state.content.articles[0] : undefined;
   let thumbnail: ImageBitmap | null = null;
   if (article && state.status === "ready") {
@@ -66,7 +57,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
   }
   notices.push({
     kind: "article",
-    eyebrow: article ? date.format(article.publishedAt) : "最近の記事",
     title: article
       ? article.title
       : state.status === "loading"
@@ -85,7 +75,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
   notices.push({
     kind: "portfolio",
     title: "活動・資格",
-    eyebrow: "",
     size: [1.08, 1.4],
     position: [0.56, 1.44],
     angle: -0.009,

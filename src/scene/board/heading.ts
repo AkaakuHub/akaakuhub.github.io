@@ -7,7 +7,7 @@ export function createBoardHeading(text: string, x: number, y: number) {
   canvas.height = 256;
   const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) throw new Error("ホワイトボードの見出しを描画できませんでした。");
-  context.font = '400 176px "Yomogi"';
+  context.font = '400 156px "Yomogi"';
   context.fillStyle = "#284a40";
   const metrics = context.measureText(text);
   context.fillText(text, 36, 160 - metrics.actualBoundingBoxDescent);

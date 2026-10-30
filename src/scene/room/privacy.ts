@@ -24,7 +24,6 @@ export async function createPrivacyPoster(
         title: privacy.title,
         size: [width, height],
         link: null,
-        eyebrow: "",
         position: [0, 0],
         angle: 0,
         ink: "#253b31",
