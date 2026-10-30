@@ -38,6 +38,29 @@ function fixture() {
 }
 
 describe("窓から見える屋外", () => {
+  it("下段の開口部に固定柱を残さず、可動枠が固定枠に衝突せずに重なる", () => {
+    const window = fixture();
+    const sash = window.getObjectByName("room-window-sash");
+    if (!(sash instanceof Group)) throw new Error("窓の可動枠がありません。");
+    const columns = window.getObjectsByProperty("name", "room-window-mullion");
+    expect(columns).toHaveLength(2);
+    for (let step = 0; step <= 10; step++) {
+      slideWindow(sash, step / 10);
+      window.updateMatrixWorld(true);
+      for (const stile of sash.getObjectsByProperty("name", "room-window-sash-stile")) {
+        const bounds = new Box3().setFromObject(stile);
+        for (const column of columns)
+          expect(bounds.intersectsBox(new Box3().setFromObject(column))).toBe(false);
+      }
+    }
+    const pane = sash.getObjectByName("room-window-lower-pane");
+    const exit = window.getObjectByName("room-window-exit");
+    if (!pane || !exit) throw new Error("窓のガラスと開口部がありません。");
+    const opening = new Box3().setFromObject(exit);
+    const paneBounds = new Box3().setFromObject(pane);
+    expect(paneBounds.max.z).toBeLessThan(opening.min.z);
+  });
+
   it("移動先の当たり判定を有効にしても奥を隠す物体を描かない", () => {
     const window = fixture();
     const exit = window.getObjectByName("room-window-exit");

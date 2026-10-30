@@ -12,6 +12,7 @@ interface Opening {
   label: string;
   direction: RoomDirection;
   color: string;
+  clearance: number;
   enterLabel: string;
   enteringMessage: string;
 }
@@ -71,7 +72,7 @@ export function createPassageInterface(
     camera.updateMatrixWorld();
     start.copy(camera.position);
     startRotation.copy(camera.quaternion);
-    destination.copy(passageApproach(opening.destination, start.y));
+    destination.copy(passageApproach(opening.destination, start.y, opening.clearance));
     direction.setFromRotationMatrix(look.lookAt(start, destination, camera.up));
     journey = 0;
     respawned = false;

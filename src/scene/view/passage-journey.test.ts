@@ -18,7 +18,8 @@ describe("ドアの先への移動", () => {
   });
 
   it("リスポーンの前後を白で覆い、戻った後に視界を戻す", () => {
-    for (const seconds of [1.8, 1.9, 2]) expect(passageJourneyAt(seconds, false).opacity).toBe(1);
+    for (const seconds of [1.4, 1.6, 1.8, 1.9, 2])
+      expect(passageJourneyAt(seconds, false).opacity).toBe(1);
     const fading = passageJourneyAt(2.3, false);
     expect(fading.respawn).toBe(true);
     expect(fading.opacity).toBeGreaterThan(0);
@@ -36,13 +37,13 @@ describe("ドアの先への移動", () => {
 
 describe("出入口への到達位置", () => {
   it.each([
-    { x: 2.63, yaw: -Math.PI / 2, expected: 2.49 },
-    { x: -2.695, yaw: Math.PI / 2, expected: -2.555 },
-  ])("ドアと窓のどちらでも面を突き抜けず、手前で止まる: $x", ({ x, yaw, expected }) => {
+    { x: 2.63, yaw: -Math.PI / 2, clearance: 0.14, expected: 2.49 },
+    { x: -2.695, yaw: Math.PI / 2, clearance: 0.85, expected: -1.845 },
+  ])("ドアと窓のどちらでも面を突き抜けず、手前で止まる: $x", ({ x, yaw, clearance, expected }) => {
     const surface = new Object3D();
     surface.position.set(x, 1.1, 0.95);
     surface.rotation.y = yaw;
-    const destination = passageApproach(surface, 1.55);
+    const destination = passageApproach(surface, 1.55, clearance);
     expect(destination.x).toBeCloseTo(expected);
     expect(destination.y).toBe(1.55);
     expect(destination.z).toBeCloseTo(0.95);

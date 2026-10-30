@@ -79,7 +79,7 @@ describe("窓と天空光の組み立て", () => {
     expect(sky).toBeInstanceOf(RectAreaLight);
     if (!(sky instanceof RectAreaLight)) throw new Error("天空光がありません。");
     expect(sky.width).toBeCloseTo(3.84);
-    expect(sky.height).toBeCloseTo(1.48);
-    expect(sky.position.x).toBeCloseTo(-2.626);
+    expect(sky.height).toBeCloseTo(1.44375);
+    expect(sky.position.x).toBeCloseTo(-2.586);
   });
 });
