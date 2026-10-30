@@ -33,8 +33,7 @@ try {
     import("./assets/fonts/board-text.css").then(() => prepareBoardFont("")),
     import("./assets/fonts/yomogi.css").then(() => prepareBoardHeadingFont()),
   ]).then(() => undefined);
-  await loading.ready;
-  const room = await import("./main");
+  const [room] = await Promise.all([import("./main"), loading.ready]);
   await room.startRoom(
     root,
     loading,
