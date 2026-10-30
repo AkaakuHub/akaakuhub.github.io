@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  three@0.186.1: 104809db85b971d8042ed684e299d6203fc2ae3bcbf690c31927c9b18aefa498
+  three@0.186.1: 88e4a1db85d4db6d5450263016ec7b6911ec6ea0c82bced77efb99a1f269c42e
 
 importers:
 
@@ -22,7 +22,7 @@ importers:
         version: 2.1.1
       three:
         specifier: ^0.186.1
-        version: 0.186.1(patch_hash=104809db85b971d8042ed684e299d6203fc2ae3bcbf690c31927c9b18aefa498)
+        version: 0.186.1(patch_hash=88e4a1db85d4db6d5450263016ec7b6911ec6ea0c82bced77efb99a1f269c42e)
       unified-asset-loader:
         specifier: 0.1.1
         version: 0.1.1
@@ -3775,7 +3775,7 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  three@0.186.1(patch_hash=104809db85b971d8042ed684e299d6203fc2ae3bcbf690c31927c9b18aefa498): {}
+  three@0.186.1(patch_hash=88e4a1db85d4db6d5450263016ec7b6911ec6ea0c82bced77efb99a1f269c42e): {}
 
   tinybench@6.2.2: {}
 
