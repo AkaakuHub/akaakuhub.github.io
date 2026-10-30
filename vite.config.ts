@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import type { ServerOptions } from "node:https";
 import { defineConfig, loadEnv } from "vite-plus";
 import tailwindcss from "@tailwindcss/vite";
-import { compressedAssets } from "./scripts/build/compression";
 import { prepareRoomAssets } from "./scripts/build/room-assets";
 
 export default defineConfig(({ command, mode }) => {
@@ -21,7 +20,6 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       prepareRoomAssets(),
-      compressedAssets(),
       tailwindcss(),
       {
         name: "loading-document",
