@@ -29,7 +29,10 @@ export class ShaderWarmup {
 
   start(canPrepare: () => boolean, prepared: () => void, failed: (error: unknown) => void): void {
     const schedule = (): void => {
-      if (!this.pending) return;
+      if (!this.pending) {
+        performance.mark("room-background-shaders-ready");
+        return;
+      }
       setTimeout(() => {
         if (!canPrepare()) {
           schedule();
@@ -39,7 +42,7 @@ export class ShaderWarmup {
           prepared();
           schedule();
         }, failed);
-      }, 100);
+      }, 16);
     };
     schedule();
   }
