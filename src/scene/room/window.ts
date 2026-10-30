@@ -18,11 +18,11 @@ export function createWindow(
 ): Group {
   const window = new Group();
   const exit = new Mesh(
-    new BoxGeometry(1.8, 1.06, 0.12),
+    new BoxGeometry(1.15, 1.06, 0.12),
     new MeshBasicMaterial({ visible: false }),
   );
   exit.name = "room-window-exit";
-  exit.position.set(-2.695, 1.61675, 0.94);
+  exit.position.set(-2.695, 1.61675, 0.45);
   exit.rotation.y = Math.PI / 2;
   exit.visible = false;
   window.add(exit);
@@ -30,7 +30,7 @@ export function createWindow(
   const steel = metals.steel;
   const hardware = new HardwareBatch();
   const sill = materials.sill;
-  window.add(createExterior(materials, metals, props));
+  window.add(createExterior(materials, metals));
   const panels = createWindowPanels(frame, metals.rubber, props.glass, steel);
   window.add(panels.group);
   for (const y of [1.02, 2.55]) {

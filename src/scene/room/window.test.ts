@@ -38,18 +38,41 @@ function fixture() {
 }
 
 describe("窓から見える屋外", () => {
+  it("ベランダの全支柱を床に固定し、前面と側面の手すりへ接続する", () => {
+    const window = fixture();
+    window.updateMatrixWorld(true);
+    const slab = window.getObjectByName("balcony-slab");
+    if (!slab) throw new Error("ベランダの床がありません。");
+    const floor = new Box3().setFromObject(slab);
+    const posts = window.getObjectsByProperty("name", "balcony-post");
+    const rails = window.getObjectsByProperty("name", "balcony-rail");
+    expect(posts).toHaveLength(5);
+    for (const post of posts) {
+      const bounds = new Box3().setFromObject(post);
+      expect(bounds.min.y).toBeCloseTo(floor.max.y);
+      const foot = bounds.getCenter(new Vector3());
+      foot.y = floor.max.y - 0.001;
+      expect(floor.containsPoint(foot)).toBe(true);
+      expect(rails.some((rail) => bounds.intersectsBox(new Box3().setFromObject(rail)))).toBe(true);
+    }
+  });
+
   it("下段の開口部に固定柱を残さず、可動枠が固定枠に衝突せずに重なる", () => {
     const window = fixture();
     const sash = window.getObjectByName("room-window-sash");
     if (!(sash instanceof Group)) throw new Error("窓の可動枠がありません。");
     const columns = window.getObjectsByProperty("name", "room-window-mullion");
     expect(columns).toHaveLength(2);
+    const fixedStiles = window
+      .getObjectsByProperty("name", "room-window-sash-stile")
+      .filter((stile) => stile.parent !== sash);
+    expect(fixedStiles).toHaveLength(4);
     for (let step = 0; step <= 10; step++) {
       slideWindow(sash, step / 10);
       window.updateMatrixWorld(true);
       for (const stile of sash.getObjectsByProperty("name", "room-window-sash-stile")) {
         const bounds = new Box3().setFromObject(stile);
-        for (const column of columns)
+        for (const column of [...columns, ...fixedStiles])
           expect(bounds.intersectsBox(new Box3().setFromObject(column))).toBe(false);
       }
     }

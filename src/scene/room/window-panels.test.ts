@@ -24,6 +24,7 @@ describe("1枚だけ開く窓", () => {
       if (!belongsTo(object, sash)) fixed.set(object, object.getWorldPosition(new Vector3()));
     });
     expect(sash.getObjectsByProperty("name", "room-window-lower-pane")).toHaveLength(1);
+    expect(group.getObjectsByProperty("name", "room-window-lower-pane")).toHaveLength(3);
     expect(sash.getObjectsByProperty("name", "room-window-upper-pane")).toHaveLength(0);
     expect(sash.getObjectsByProperty("name", "room-window-transom")).toHaveLength(0);
     expect(sash.getObjectsByProperty("name", "room-window-sash-rail")).toHaveLength(2);
@@ -34,6 +35,8 @@ describe("1枚だけ開く窓", () => {
     slideWindow(sash, 1);
     group.updateMatrixWorld(true);
     expect(pane.getWorldPosition(new Vector3()).distanceTo(before)).toBeGreaterThan(1);
+    expect(pane.getWorldPosition(new Vector3()).z).toBeLessThan(before.z);
+    expect(pane.getWorldPosition(new Vector3()).x).toBe(before.x);
     for (const [object, position] of fixed)
       expect(object.getWorldPosition(new Vector3()).equals(position)).toBe(true);
   });
