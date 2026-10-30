@@ -1,5 +1,6 @@
 const backendKey = "akaakuhub:rendering-backend";
 const contextRetryKey = "akaakuhub:webgl-context-retried";
+const buildKey = "akaakuhub:rendering-build";
 
 export class RenderingContextLostError extends Error {
   constructor(api: string, message: string) {
@@ -16,7 +17,13 @@ export class RenderingRecovery {
   constructor(
     private readonly storage: Pick<Storage, "getItem" | "setItem">,
     private readonly reload: () => void,
+    build = "development",
   ) {
+    if (storage.getItem(buildKey) !== build) {
+      storage.setItem(backendKey, "");
+      storage.setItem(contextRetryKey, "");
+      storage.setItem(buildKey, build);
+    }
     this.forceWebGL = storage.getItem(backendKey) === "webgl";
     this.webgpuActive = !this.forceWebGL;
   }

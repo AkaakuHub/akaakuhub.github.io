@@ -12,6 +12,17 @@ function storage() {
 }
 
 describe("描画方式の復旧", () => {
+  it("新しいビルドでは以前の失敗によるWebGL固定を解除する", () => {
+    const saved = storage();
+    const reload = vi.fn();
+    const first = new RenderingRecovery(saved, reload, "build-a");
+    first.retryWebGL();
+    expect(new RenderingRecovery(saved, reload, "build-a").forceWebGL).toBe(true);
+    const updated = new RenderingRecovery(saved, reload, "build-b");
+    expect(updated.forceWebGL).toBe(false);
+    updated.setWebGPUActive(false);
+    expect(updated.recover(new RenderingContextLostError("WebGL", "lost"))).toBe(true);
+  });
   it("WebGLの接続喪失でも1回だけ起動し直し、次の失敗は呼び出し元へ返す", () => {
     const saved = storage();
     const reload = vi.fn();
