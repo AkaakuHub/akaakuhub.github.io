@@ -6,14 +6,19 @@ import type { PrintRequest, PrintResponse } from "./protocol";
 const fontReady = Promise.all([
   new FontFace("Zen Maru Gothic Board", `url(${fontUrl})`, { weight: "500" }).load(),
   new FontFace("Yomogi", `url(${headingFontUrl})`, { weight: "400" }).load(),
-]).then(
-  (fonts) => {
-    if (!("fonts" in self) || !(self.fonts instanceof FontFaceSet))
+])
+  .then((fonts) => {
+    if (
+      !("fonts" in self) ||
+      typeof self.fonts !== "object" ||
+      self.fonts === null ||
+      !("add" in self.fonts) ||
+      typeof self.fonts.add !== "function"
+    )
       throw new Error("Workerで掲示のフォントを登録できませんでした。");
     for (const font of fonts) self.fonts.add(font);
-  },
-  (cause: unknown) => (cause instanceof Error ? cause : new Error(String(cause))),
-);
+  })
+  .catch((cause: unknown) => (cause instanceof Error ? cause : new Error(String(cause))));
 
 self.addEventListener("message", (event: MessageEvent<PrintRequest>) => {
   const { id, notices, stock, avatar, language, team } = event.data;
