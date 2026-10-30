@@ -15,6 +15,14 @@ function fixture() {
 }
 
 describe("表示用の色変換の再計算", () => {
+  it("タブへの復帰後は同じ画角と照明でも表示結果を再生成する", () => {
+    const { state, frame } = fixture();
+    expect(state.update(frame, false)).toBe(false);
+    state.invalidate();
+    expect(state.update(frame, false)).toBe(true);
+    expect(state.update(frame, false)).toBe(false);
+  });
+
   it("画角と照明が同じならフェード中も変換結果を再利用する", () => {
     const { state, frame } = fixture();
     for (let index = 0; index < 100; index++) expect(state.update(frame, false)).toBe(false);

@@ -10,6 +10,10 @@ interface DisplayFrame {
 export class DisplayState {
   private current: DisplayFrame | undefined;
 
+  invalidate(): void {
+    this.current = undefined;
+  }
+
   update(frame: DisplayFrame, changing: boolean): boolean {
     const previous = this.current;
     const changed =

@@ -38,6 +38,10 @@ export function createRendering(
       return display.revealing;
     },
     invalidate: () => surfaces.invalidate(),
+    setActive(active: boolean) {
+      display.setActive(active);
+      surfaces.invalidate();
+    },
     setPixelRatio(ratio: number) {
       pixelRatio = ratio;
     },

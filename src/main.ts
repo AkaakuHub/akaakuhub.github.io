@@ -13,6 +13,7 @@ import type { RoomAssetLoader } from "./assets/loading";
 import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
+import { boardInspections } from "./scene/view/board";
 import { observeViewport } from "./scene/viewport";
 import { observeTokyoWeather } from "./weather/client";
 import { weatherAt } from "./weather/schema";
@@ -34,6 +35,7 @@ import { bindMotionControl } from "./interface/motion";
 import type { PaperPrinter } from "./scene/board/printing";
 import { createRoomPassages } from "./interface/passages";
 import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animation";
+import { observeDisplayVisibility } from "./scene/rendering/display-lifecycle";
 
 export async function startRoom(
   root: HTMLElement,
@@ -126,18 +128,7 @@ export async function startRoom(
   );
   loading.rendering(2, 4);
   const noticeList = [...board.notices.values()];
-  const inspections = [...board.notices].map(([object, notice], index) => ({
-    object,
-    get width() {
-      return notice.size[0] + 0.04;
-    },
-    get height() {
-      return notice.size[1] + (index === 2 || index === 3 ? 0.16 : 0.04);
-    },
-    depth: 0,
-    offsetY: index === 2 || index === 3 ? 0.06 : 0,
-    topAligned: false,
-  }));
+  const inspections = boardInspections(board.notices);
   let introduction: ReturnType<typeof createIntroduction> | undefined;
   let updateDirections: ReturnType<typeof createDirectionControls> | undefined;
   const view = createView(
@@ -195,6 +186,7 @@ export async function startRoom(
   let lastRendered = 0;
   let ready = false;
   let prepared = false;
+  let displayActive = true;
 
   const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
     if (computer.orientDisplay(camera.aspect < 1)) {
@@ -220,17 +212,10 @@ export async function startRoom(
     invalidate();
   }
   setInterval(updateTime, 60_000);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      cancelAnimationFrame(frame);
-      frame = 0;
-    } else updateTime();
-  });
-  window.addEventListener("pageshow", updateTime);
 
   function render(time: number) {
     frame = 0;
-    if (document.hidden || !prepared || deviceLost) return;
+    if (document.hidden || !displayActive || !prepared || deviceLost) return;
     const frameDuration = 1000 / 60;
     if (time - lastRendered < frameDuration - 0.5) {
       frame = requestAnimationFrame(render);
@@ -274,7 +259,7 @@ export async function startRoom(
     requestFrame();
   }
   function requestFrame() {
-    if (frame || document.hidden || deviceLost) return;
+    if (frame || document.hidden || !displayActive || deviceLost) return;
     previous = performance.now() - 16;
     frame = requestAnimationFrame(render);
   }
@@ -299,5 +284,18 @@ export async function startRoom(
   loading.rendering(4, 4);
   prepared = true;
   observeSize();
+  observeDisplayVisibility((active) => {
+    if (deviceLost) return;
+    displayActive = active;
+    rendering.setActive(active);
+    if (active) {
+      updateTime();
+      invalidate();
+    } else {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      rendering.render();
+    }
+  });
   requestFrame();
 }

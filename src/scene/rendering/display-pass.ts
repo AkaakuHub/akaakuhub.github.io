@@ -40,6 +40,8 @@ export class DisplayPass {
   private readonly display = window.matchMedia("(dynamic-range: high)");
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private startedAt: number | undefined;
+  private active = true;
+  private refreshOutput = true;
 
   constructor(
     private readonly renderer: Renderer,
@@ -62,6 +64,12 @@ export class DisplayPass {
     return this.visibility.value < 1;
   }
 
+  setActive(active: boolean): void {
+    this.active = active;
+    this.refreshOutput = true;
+    this.state.invalidate();
+  }
+
   setSize(width: number, height: number, moving = false): void {
     this.target = moving ? this.motionTarget : this.staticTarget;
     this.target.setSize(width, height);
@@ -77,7 +85,7 @@ export class DisplayPass {
       : MathUtils.smoothstep(now - this.startedAt, 0, 300);
     this.source.value = source;
     this.exposure.value = renderer.toneMappingExposure;
-    this.headroom.value = this.display.matches ? 4 : 1;
+    this.headroom.value = this.active && this.display.matches ? 4 : 1;
     if (
       this.state.update(
         {
@@ -93,6 +101,18 @@ export class DisplayPass {
       renderer.render(this.composite, this.composite.camera);
     }
     renderer.setRenderTarget(null);
+    const context = renderer.getContext();
+    if (!(context instanceof GPUCanvasContext)) throw new Error("WebGPUの表示先が見つかりません。");
+    const configuration = context.getConfiguration();
+    if (!configuration) throw new Error("WebGPUの表示設定が見つかりません。");
+    const mode = this.headroom.value > 1 ? "extended" : "standard";
+    if (
+      this.refreshOutput ||
+      (configuration.toneMapping && configuration.toneMapping.mode !== mode)
+    ) {
+      context.configure({ ...configuration, toneMapping: { mode } });
+      this.refreshOutput = false;
+    }
     const depth = renderer.depth;
     const toneMapping = renderer.toneMapping;
     const colorSpace = renderer.outputColorSpace;
