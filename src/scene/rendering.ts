@@ -5,6 +5,7 @@ import { WeatherPass } from "./weather";
 import { ScenePass } from "./rendering/scene-pass";
 import { DynamicSurfacePass } from "./rendering/dynamic-pass";
 import { DisplayPass } from "./rendering/display-pass";
+import type { HdrObserver } from "./rendering/display-pass";
 import { renderingProfile } from "./quality";
 import { fitPixelBudget } from "./rendering/resolution";
 
@@ -34,6 +35,8 @@ export function createRendering(
   let pixelRatio = 1;
   return {
     weather,
+    observeHdr: (observer: HdrObserver) => display.observeHdr(observer),
+    toggleHdr: () => display.toggleHdr(),
     get revealing() {
       return display.revealing;
     },

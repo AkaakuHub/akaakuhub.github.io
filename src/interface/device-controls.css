@@ -3,12 +3,17 @@
   --device-control-gap: 8px;
 }
 
-.room-keyboard .room-device-control {
-  display: grid;
-  place-items: center;
+.room-device-controls {
+  display: flex;
+  gap: var(--device-control-gap);
   position: fixed;
   bottom: max(1rem, env(safe-area-inset-bottom));
   left: max(1rem, env(safe-area-inset-left));
+}
+
+.room-keyboard .room-device-control {
+  display: grid;
+  place-items: center;
   width: var(--device-control-size);
   height: var(--device-control-size);
   padding: 0;
@@ -24,9 +29,6 @@
 }
 .room-keyboard .room-device-control[hidden] {
   display: none;
-}
-.room-keyboard:has(.room-sound[hidden]) .room-motion {
-  left: max(1rem, env(safe-area-inset-left));
 }
 
 .room-keyboard .room-device-control:focus-visible {

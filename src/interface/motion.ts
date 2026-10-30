@@ -1,7 +1,7 @@
 import { Smartphone, createElement } from "lucide";
 import { createMotionSource } from "../motion/source";
+import { createDeviceControl } from "./device-control";
 import type { createControlIntroduction } from "./control-introduction";
-import "./motion.css";
 
 export function bindMotionControl(
   root: HTMLElement,
@@ -9,13 +9,7 @@ export function bindMotionControl(
   announce: (message: string) => void,
   introduction: ReturnType<typeof createControlIntroduction>,
 ): void {
-  const navigation = root.querySelector(".room-keyboard");
-  if (!navigation) throw new Error("モーション操作の配置先が見つかりません。");
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "room-motion room-device-control";
-  button.hidden = true;
-  button.setAttribute("aria-label", "モーション操作");
+  const button = createDeviceControl(root, "motion", "モーション操作");
   button.setAttribute("aria-pressed", "false");
   button.title = "モーション操作をオン";
   button.append(createElement(Smartphone, { width: 22, height: 22, "aria-hidden": "true" }));
@@ -50,5 +44,4 @@ export function bindMotionControl(
       button.disabled = false;
     }
   });
-  navigation.append(button);
 }

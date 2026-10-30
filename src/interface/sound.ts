@@ -1,6 +1,6 @@
 import type { WeatherAudio } from "../scene/audio";
 import { Volume2, VolumeX, createElement } from "lucide";
-import "./sound.css";
+import { createDeviceControl } from "./device-control";
 import type { createControlIntroduction } from "./control-introduction";
 
 export function bindSoundControl(
@@ -8,14 +8,8 @@ export function bindSoundControl(
   audio: WeatherAudio,
   introduction: ReturnType<typeof createControlIntroduction>,
 ): void {
-  const navigation = root.querySelector(".room-keyboard");
-  if (!navigation) throw new Error("音の操作対象を配置できませんでした。");
-  const button = document.createElement("button");
-  button.className = "room-sound room-device-control";
-  button.type = "button";
-  button.hidden = true;
+  const button = createDeviceControl(root, "sound", "天気の音");
   button.setAttribute("aria-keyshortcuts", "M");
-  button.setAttribute("aria-label", "天気の音");
   audio.bindMute((muted) => {
     introduction.setSoundEnabled(!muted);
     button.setAttribute("aria-pressed", String(!muted));
@@ -29,5 +23,4 @@ export function bindSoundControl(
     button.hidden = !available;
     introduction.setSoundAvailable(available);
   });
-  navigation.append(button);
 }

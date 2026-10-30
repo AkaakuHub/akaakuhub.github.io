@@ -4,6 +4,7 @@ import { ConvertNode, MeshBasicNodeMaterial, QuadMesh, RenderPipeline } from "th
 import type { Renderer } from "three/webgpu";
 import {
   float,
+  neutralToneMapping,
   positionGeometry,
   sRGBTransferEOTF,
   sRGBTransferOETF,
@@ -13,6 +14,8 @@ import {
 } from "three/tsl";
 import { fxaa } from "three/addons/tsl/display/FXAANode.js";
 import { DisplayState } from "./display-state";
+
+export type HdrObserver = (enabled: boolean, supported: boolean) => void;
 
 export class DisplayPass {
   private readonly staticTarget = new RenderTarget(1, 1, {
@@ -41,6 +44,8 @@ export class DisplayPass {
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private startedAt: number | undefined;
   private refreshOutput = false;
+  private hdrEnabled = true;
+  private hdrObserver: (() => void) | undefined;
 
   constructor(
     private readonly renderer: Renderer,
@@ -48,7 +53,9 @@ export class DisplayPass {
   ) {
     this.source = texture(source);
     const exposed = this.source.rgb.mul(this.exposure).max(0);
-    const mapped = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
+    const hdr = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
+    const sdr = new ConvertNode<"vec3">(neutralToneMapping(this.source.rgb, this.exposure), "vec3");
+    const mapped = this.headroom.greaterThan(1).select(hdr, sdr);
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
@@ -61,6 +68,28 @@ export class DisplayPass {
 
   get revealing(): boolean {
     return this.visibility.value < 1;
+  }
+
+  private get hdrSupported(): boolean {
+    const context = this.renderer.getContext();
+    return (
+      this.display.matches &&
+      context instanceof GPUCanvasContext &&
+      context.getConfiguration()?.toneMapping !== undefined
+    );
+  }
+
+  observeHdr(observer: HdrObserver): void {
+    this.hdrObserver = () => observer(this.hdrEnabled, this.hdrSupported);
+    this.display.addEventListener("change", this.hdrObserver);
+    this.hdrObserver();
+  }
+
+  toggleHdr(): boolean {
+    this.hdrEnabled = !this.hdrEnabled;
+    this.state.invalidate();
+    this.hdrObserver?.();
+    return this.hdrEnabled;
   }
 
   invalidate(): void {
@@ -83,7 +112,7 @@ export class DisplayPass {
       : MathUtils.smoothstep(now - this.startedAt, 0, 300);
     this.source.value = source;
     this.exposure.value = renderer.toneMappingExposure;
-    this.headroom.value = this.display.matches ? 4 : 1;
+    this.headroom.value = this.hdrEnabled && this.display.matches ? 4 : 1;
     if (
       this.state.update(
         {

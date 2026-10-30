@@ -5,6 +5,7 @@ export function roomMarkup(): string {
     <main class="room relative h-dvh w-full overflow-hidden" aria-label="AkaakuHubの部室">
       <canvas class="room__canvas block size-full touch-none" tabindex="0" aria-label="3Dの部室。矢印キーで視点を動かし、Tabキーで掲示や設備を選べます"></canvas>
       <nav class="room-keyboard" aria-label="部室の操作対象">
+        <div class="room-device-controls"></div>
         <button type="button" data-notice-index="0">プロフィール</button>
         <button type="button" data-notice-index="1">GitHubの掲示</button>
         <button type="button" data-notice-index="2">最新記事</button>

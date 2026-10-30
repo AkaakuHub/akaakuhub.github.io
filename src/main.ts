@@ -29,6 +29,7 @@ import { createIntroduction } from "./interface/introduction";
 import { createDirectionControls } from "./interface/directions";
 import type { WeatherAudio } from "./scene/audio";
 import { bindSoundControl } from "./interface/sound";
+import { bindHdrControl } from "./interface/hdr";
 import { finishFirstFrame } from "./scene/rendering/first-frame";
 import { createControlIntroduction } from "./interface/control-introduction";
 import { bindMotionControl } from "./interface/motion";
@@ -151,6 +152,7 @@ export async function startRoom(
   const controlIntroduction = createControlIntroduction(root);
   bindSoundControl(root, audio, controlIntroduction);
   bindMotionControl(root, view.setMotion, ui.announce, controlIntroduction);
+  bindHdrControl(root, rendering, requestFrame, ui.announce);
   const computerInterface = createComputerInterface(
     computer,
     view,

@@ -1,9 +1,0 @@
-.room-keyboard .room-motion {
-  left: calc(
-    max(1rem, env(safe-area-inset-left)) + var(--device-control-size) + var(--device-control-gap)
-  );
-}
-
-.room-keyboard .room-motion[hidden] {
-  display: none;
-}

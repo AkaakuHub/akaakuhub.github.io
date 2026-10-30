@@ -1,0 +1,12 @@
+.room-hdr {
+  font:
+    500 13px/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.04em;
+}
+
+@media (pointer: coarse) {
+  .room-hdr {
+    font-size: 15px;
+  }
+}
