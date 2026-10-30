@@ -1,4 +1,4 @@
-import { RotateCw, createElement } from "lucide";
+import { showLoadingFailure } from "./loading-failure";
 import { createLoadingState } from "./loading-state";
 import { createLoadingReadout } from "./loading-readout";
 
@@ -14,35 +14,12 @@ export function createLoading(root: HTMLElement) {
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
   const state = createLoadingState();
-  let retry: HTMLButtonElement | undefined;
+  let failed = false;
   const showFailure = (error: unknown): void => {
-    if (retry) return;
+    if (failed) return;
+    failed = true;
     readout.stop();
-    retry = document.createElement("button");
-    retry.type = "button";
-    retry.className = "loading-retry";
-    retry.append(
-      createElement(RotateCw, {
-        width: 40,
-        height: 40,
-        "stroke-width": 1,
-        "aria-hidden": "true",
-      }),
-    );
-    retry.append("再読み込み");
-    retry.addEventListener("click", (event) => {
-      if (event.isTrusted) location.reload();
-    });
-    const center = panel.querySelector(".loading-center");
-    if (!center) throw new Error("再読み込みボタンの表示先が見つかりません。");
-    const message = document.createElement("p");
-    message.className = "loading-error";
-    message.textContent = error instanceof Error ? error.message : String(error);
-    center.replaceChildren(message, retry);
-    panel.classList.remove("loading-complete");
-    panel.classList.add("loading-failed");
-    panel.setAttribute("role", "alert");
-    panel.setAttribute("aria-label", "部屋を表示できませんでした");
+    showLoadingFailure(panel, error);
     root.setAttribute("aria-busy", "false");
     delete root.dataset.loading;
     if (!panel.isConnected) root.append(panel);
