@@ -40,8 +40,8 @@ export async function createBoard(
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
   group.add(
-    createBoardHeading("GitHub", 0.33, 1.765),
-    createBoardHeading("最新記事", 0.33, 1.235),
+    createBoardHeading("GitHub", 0.33, 1.84),
+    createBoardHeading("最新記事", 0.33, 1.2225),
     createBoardCredit(),
   );
   const initial = boardNotices({ status: "loading" });

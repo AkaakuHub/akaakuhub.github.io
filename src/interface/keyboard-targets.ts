@@ -82,10 +82,10 @@ export function bindKeyboardTargets(
       event.preventDefault();
       event.stopPropagation();
       const neighbors: Readonly<Record<string, readonly number[]>> = {
-        ArrowLeft: [1, 1, 1, 1],
-        ArrowRight: [0, 0, 2, 3],
-        ArrowUp: [0, 1, 0, 2],
-        ArrowDown: [2, 1, 3, 3],
+        ArrowLeft: [0, 1, 1, 1],
+        ArrowRight: [2, 3, 2, 3],
+        ArrowUp: [0, 0, 2, 2],
+        ArrowDown: [1, 1, 3, 3],
       };
       const nextIndex = neighbors[event.key]?.[index];
       const next = nextIndex === undefined ? undefined : buttons[nextIndex];

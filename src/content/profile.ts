@@ -9,19 +9,19 @@ export const profile = {
     {
       date: "2025.03",
       title: "UEC Bug Bounty 2024/25",
-      detail: "特別賞（エイチ・シー・ネットワークス賞）",
+      detail: "特別賞",
       team: false,
     },
     {
       date: "2025.03",
       title: "学内ウェブサイトの制作",
-      detail: "研究室紹介サイトをリニューアルし、バックエンドも刷新",
+      detail: "研究室紹介サイトのリニューアル",
       team: false,
     },
     {
       date: "2024.11",
       title: "UECアイディア実証コンテスト",
-      detail: "UEC dashboardでコムサット・ジャパン賞・きらぼし賞・ハートビーツ賞",
+      detail: "UEC dashboardで協賛企業賞",
       team: false,
     },
     {
@@ -36,7 +36,7 @@ export const profile = {
       detail: "モバイルオーダー・UEC dashboard",
       team: true,
     },
-    { date: "2023.07", title: "個人開発を開始", detail: "様々な技術を学びながら制作", team: false },
+    { date: "2023.07", title: "個人開発を開始", detail: "", team: false },
     {
       date: "2023.04",
       title: "電気通信大学に入学",

@@ -14,7 +14,7 @@ export function createBoardHeading(text: string, x: number, y: number) {
   const texture = textureFromCanvas(context);
   texture.anisotropy = 8;
   const heading = new Mesh(
-    new PlaneGeometry(0.65, 0.1625),
+    new PlaneGeometry(0.65, 0.11),
     new MeshStandardMaterial({
       map: texture,
       transparent: true,
