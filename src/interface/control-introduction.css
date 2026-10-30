@@ -46,7 +46,3 @@
   margin-left: 12px;
   filter: drop-shadow(0 1px 3px #000b);
 }
-
-.room-control-introduction[data-target="motion"] .room-control-introduction__arrow {
-  margin-left: calc(var(--device-control-size) + var(--device-control-gap) + 12px);
-}

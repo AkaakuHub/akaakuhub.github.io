@@ -1,6 +1,5 @@
 import { MathUtils, Quaternion, Vector3 } from "three";
 import type { PerspectiveCamera } from "three";
-import { createMotionOffset } from "./motion";
 import type { NoticeTour } from "./notice-tour";
 import { inspectionBounds, inspectionPose, isRoomDirection, roomPose } from "./targets";
 import type {
@@ -26,7 +25,6 @@ export function createView(
 ) {
   if (inspections.length === 0) throw new Error("掲示用紙が配置されていません。");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let deviceMotion = createMotionOffset();
   const position = camera.position.clone();
   const quaternion = camera.quaternion.clone();
   let locked = false;
@@ -133,7 +131,6 @@ export function createView(
       framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
-      deviceMotion = createMotionOffset();
       transition({ mode: "notice", index: 0 }, 0);
     },
     get state(): ViewState {
@@ -156,10 +153,6 @@ export function createView(
       if (next >= inspections.length) {
         if (canOperate()) select(roomDirection);
       } else if (next >= 0) inspect(next, true);
-    },
-    setMotion(x: number, y: number): void {
-      if (locked) return;
-      if (deviceMotion.setTarget(x, y)) invalidate();
     },
     inspectPrivacy(): void {
       if (!canOperate() || state.mode === "privacy") return;
@@ -238,8 +231,7 @@ export function createView(
       camera.quaternion.copy(quaternion);
       if (elapsed >= duration && state.mode === "notice" && tour.arrive(state.index))
         onChange(state, framing.zoom);
-      const moving = deviceMotion.apply(camera, delta);
-      return elapsed < duration || moving;
+      return elapsed < duration;
     },
   };
 }

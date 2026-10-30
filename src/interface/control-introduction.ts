@@ -9,6 +9,7 @@ export function createControlIntroduction(root: HTMLElement) {
   guide.hidden = true;
   const message = document.createElement("span");
   message.setAttribute("role", "status");
+  message.textContent = "音をオンにすると、雨や風の音も楽しめます";
   const close = document.createElement("button");
   close.type = "button";
   close.setAttribute("aria-label", "案内を閉じる");
@@ -25,32 +26,18 @@ export function createControlIntroduction(root: HTMLElement) {
   );
   close.addEventListener("click", () => {
     guide.hidden = true;
-    root
-      .querySelector<HTMLButtonElement>(
-        guide.dataset.target === "motion" ? ".room-motion" : ".room-sound",
-      )
-      ?.focus({ preventScroll: true });
+    root.querySelector<HTMLButtonElement>(".room-sound")?.focus({ preventScroll: true });
   });
   root.append(guide);
   let seen = localStorage.getItem(key) === "true";
   let sound = false;
   let soundAvailable = false;
-  let motion = false;
-  let motionAvailable = false;
   let ready = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   function update(): void {
-    const needsSound = soundAvailable && !sound;
-    const needed = needsSound || (motionAvailable && !motion);
+    const needed = soundAvailable && !sound;
     if (!needed) guide.hidden = true;
-    guide.dataset.target = needsSound ? "sound" : "motion";
-    message.textContent =
-      needsSound && motionAvailable && !motion
-        ? "音やモーションをオンにすると、部屋をもっと楽しめます"
-        : needsSound
-          ? "音をオンにすると、雨や風の音も楽しめます"
-          : "モーションをオンにすると、端末の傾きで視点を動かせます";
     clearTimeout(timer);
     if (!ready || seen || !needed || document.hidden) return;
     timer = setTimeout(() => {
@@ -74,14 +61,6 @@ export function createControlIntroduction(root: HTMLElement) {
     },
     setSoundAvailable(value: boolean): void {
       soundAvailable = value;
-      update();
-    },
-    setMotionEnabled(value: boolean): void {
-      motion = value;
-      update();
-    },
-    setMotionAvailable(value: boolean): void {
-      motionAvailable = value;
       update();
     },
   };

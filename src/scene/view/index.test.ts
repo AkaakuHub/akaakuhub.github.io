@@ -30,7 +30,7 @@ function setup() {
 }
 
 describe("固定演出中の視点", () => {
-  it("通常操作、端末の傾き、サイズ変更で演出中のカメラを上書きしない", () => {
+  it("通常操作とサイズ変更で演出中のカメラを上書きしない", () => {
     const { camera, view } = setup();
     view.select(3);
     view.lock();
@@ -42,7 +42,6 @@ describe("固定演出中の視点", () => {
     view.back();
     view.zoom(2, true);
     view.pan(1, 1);
-    view.setMotion(1, 1);
     view.resize();
     expect(view.update(0.1)).toBe(false);
     expect(view.state).toEqual({ mode: "room", direction: 3 });

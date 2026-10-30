@@ -2,7 +2,7 @@ import "./device-controls.css";
 
 export function createDeviceControl(
   root: HTMLElement,
-  name: "sound" | "motion" | "hdr",
+  name: "sound" | "hdr",
   label: string,
 ): HTMLButtonElement {
   const controls = root.querySelector(".room-device-controls");
