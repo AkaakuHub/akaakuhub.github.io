@@ -54,6 +54,7 @@ export function illuminate(
 
   function applyNaturalLight(): void {
     celestialLight.intensity = natural.intensity * transmission;
+    celestialLight.visible = celestialLight.intensity > 0;
     const diffuse = natural.skyIntensity * (0.92 + 0.08 * transmission);
     fixtures.updateSky(skyLight, diffuse / Math.PI);
     for (const material of exterior)
