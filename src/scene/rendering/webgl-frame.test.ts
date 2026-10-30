@@ -10,12 +10,22 @@ function context() {
     flush: vi.fn<WebGL2RenderingContext["flush"]>(),
     clientWaitSync: vi.fn<WebGL2RenderingContext["clientWaitSync"]>(() => 37146),
     deleteSync: vi.fn<WebGL2RenderingContext["deleteSync"]>(),
+    isContextLost: vi.fn(() => false),
   } satisfies Parameters<typeof completeWebGLFrame>[0];
 }
 
 afterEach(() => vi.useRealTimers());
 
 describe("WebGLの描画完了", () => {
+  it("接続喪失を通常のシェーダーエラーと区別し、同期オブジェクトを解放する", async () => {
+    const gl = context();
+    gl.isContextLost.mockReturnValue(true);
+    await expect(completeWebGLFrame(gl)).rejects.toMatchObject({
+      name: "RenderingContextLostError",
+    });
+    expect(gl.deleteSync).toHaveBeenCalledOnce();
+    expect(gl.clientWaitSync).not.toHaveBeenCalled();
+  });
   it("GPUが完了するまで待ち、同期オブジェクトを解放する", async () => {
     vi.useFakeTimers();
     const gl = context();
@@ -53,7 +63,7 @@ describe("WebGLの描画完了", () => {
   it("待機に失敗した場合も同期オブジェクトを解放する", async () => {
     const gl = context();
     gl.clientWaitSync.mockReturnValue(gl.WAIT_FAILED);
-    await expect(completeWebGLFrame(gl)).rejects.toThrow("描画処理に失敗しました");
+    await expect(completeWebGLFrame(gl)).rejects.toThrow("描画完了を確認できません");
     expect(gl.deleteSync).toHaveBeenCalledOnce();
   });
 });

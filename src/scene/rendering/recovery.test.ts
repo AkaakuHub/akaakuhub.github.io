@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vite-plus/test";
-import { RenderingRecovery } from "./recovery";
+import { RenderingContextLostError, RenderingRecovery } from "./recovery";
 
 function storage() {
   const values = new Map<string, string>();
@@ -12,6 +12,20 @@ function storage() {
 }
 
 describe("描画方式の復旧", () => {
+  it("WebGLの接続喪失でも1回だけ起動し直し、次の失敗は呼び出し元へ返す", () => {
+    const saved = storage();
+    const reload = vi.fn();
+    const first = new RenderingRecovery(saved, reload);
+    first.setWebGPUActive(false);
+    const error = new RenderingContextLostError("WebGL", "Unknown reason");
+    expect(first.recover(error)).toBe(true);
+    expect(first.recover(error)).toBe(true);
+    expect(reload).toHaveBeenCalledOnce();
+    const second = new RenderingRecovery(saved, reload);
+    expect(second.forceWebGL).toBe(true);
+    expect(second.recover(error)).toBe(false);
+    expect(reload).toHaveBeenCalledOnce();
+  });
   it("初回はWebGPUを優先する", () => {
     const reload = vi.fn();
     expect(new RenderingRecovery(storage(), reload).forceWebGL).toBe(false);

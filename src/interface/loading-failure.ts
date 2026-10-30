@@ -1,14 +1,17 @@
 import { Copy, RotateCw, createElement } from "lucide";
+import { renderingDiagnostics } from "../scene/rendering/session";
 
 export function showLoadingFailure(panel: HTMLElement, error: unknown): void {
   const center = panel.querySelector(".loading-center");
   if (!center) throw new Error("エラーの表示先が見つかりません。");
-  const report = [
-    error instanceof Error ? (error.stack ?? error.message) : String(error),
-    `URL: ${location.origin}${location.pathname}`,
-    `Browser: ${navigator.userAgent}`,
-    `Time: ${new Date().toISOString()}`,
-  ].join("\n\n");
+  const report = (): string =>
+    [
+      renderingDiagnostics.report() ||
+        (error instanceof Error ? (error.stack ?? error.message) : String(error)),
+      `URL: ${location.origin}${location.pathname}`,
+      `Browser: ${navigator.userAgent}`,
+      `Time: ${new Date().toISOString()}`,
+    ].join("\n\n");
   const title = document.createElement("p");
   title.className = "loading-error";
   title.textContent = "部室を表示できませんでした";
@@ -33,12 +36,15 @@ export function showLoadingFailure(panel: HTMLElement, error: unknown): void {
   const summary = document.createElement("summary");
   summary.textContent = "エラーの詳細";
   const content = document.createElement("pre");
-  content.textContent = report;
+  content.textContent = report();
   details.append(summary, content);
+  details.addEventListener("toggle", () => {
+    if (details.open) content.textContent = report();
+  });
   async function copyError(): Promise<void> {
     copy.disabled = true;
     try {
-      await navigator.clipboard.writeText(report);
+      await navigator.clipboard.writeText(report());
       label.textContent = "コピーしました";
     } catch {
       label.textContent = "コピーできませんでした";

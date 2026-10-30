@@ -39,7 +39,7 @@ import { observeDisplayVisibility } from "./scene/rendering/display-lifecycle";
 import { createSky } from "./scene/daylight/sky";
 import { createSkyAnimation } from "./scene/daylight/sky-animation";
 import { FrameScheduler } from "./scene/rendering/frame-scheduler";
-import { renderingSession } from "./scene/rendering/session";
+import { renderingDiagnostics, renderingSession } from "./scene/rendering/session";
 
 export async function startRoom(
   root: HTMLElement,
@@ -55,8 +55,9 @@ export async function startRoom(
   const batchStaticMeshes = createStaticBatcher();
   let deviceLost = false;
   const recoverRendering = (error: unknown): void => {
+    renderingDiagnostics.record(error, "Render recovery");
     deviceLost = true;
-    if (!renderingSession.retryWebGL()) loading.recover(error);
+    if (!renderingSession.recover(error) && !renderingSession.retryWebGL()) loading.recover(error);
   };
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
     bindRenderingErrors(renderer, recoverRendering);

@@ -1,6 +1,7 @@
 import { showLoadingFailure } from "./loading-failure";
 import { createLoadingState } from "./loading-state";
 import { createLoadingReadout } from "./loading-readout";
+import { renderingDiagnostics } from "../scene/rendering/session";
 
 export type Loading = ReturnType<typeof createLoading>;
 
@@ -53,11 +54,13 @@ export function createLoading(root: HTMLElement) {
       if (matchMedia("(prefers-reduced-motion: reduce)").matches || duration === 0) panel.remove();
     },
     recover(error: unknown): void {
+      renderingDiagnostics.record(error, "Application recovery failed");
       console.error(error);
       state.fail();
       showFailure(error);
     },
     fail(error: unknown): void {
+      renderingDiagnostics.record(error, "Application error");
       console.error(error);
       if (!state.fail()) return;
       showFailure(error);
