@@ -26,6 +26,7 @@ export class DisplayPass {
   private target = this.staticTarget;
   private readonly antialiasSource = texture(this.staticTarget.texture);
   private readonly exposure = uniform(1);
+  private readonly headroom = uniform(1);
   private readonly visibility = uniform(0);
   private readonly material = new MeshBasicNodeMaterial({
     depthTest: false,
@@ -36,6 +37,7 @@ export class DisplayPass {
   private readonly pipeline;
   private readonly source;
   private readonly state = new DisplayState();
+  private readonly display = window.matchMedia("(dynamic-range: high)");
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private startedAt: number | undefined;
 
@@ -45,7 +47,7 @@ export class DisplayPass {
   ) {
     this.source = texture(source);
     const exposed = this.source.rgb.mul(this.exposure).max(0);
-    const mapped = float(1).sub(exposed.negate().exp());
+    const mapped = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
@@ -79,12 +81,14 @@ export class DisplayPass {
       : MathUtils.smoothstep(now - this.startedAt, 0, 300);
     this.source.value = source;
     this.exposure.value = renderer.toneMappingExposure;
+    this.headroom.value = this.display.matches ? 4 : 1;
     if (
       this.state.update(
         {
           source,
           revision,
           exposure: this.exposure.value,
+          headroom: this.headroom.value,
         },
         changing,
       )
