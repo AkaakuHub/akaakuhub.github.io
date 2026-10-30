@@ -1,4 +1,4 @@
-import { HalfFloatType, SRGBColorSpace, UnsignedByteType, Vector2 } from "three";
+import { HalfFloatType, SRGBColorSpace, Vector2 } from "three";
 import { Renderer, WebGPUBackend } from "three/webgpu";
 import type { WebGPUBackendParameters } from "three/src/renderers/webgpu/WebGPUBackend.js";
 import { ExtendedSRGBColorSpace } from "three/addons/math/ColorSpaces.js";
@@ -12,7 +12,7 @@ class RoomBackend extends WebGPUBackend {
   declare readonly device: GPUDevice | null;
 
   setHdrEnabled(enabled: boolean): void {
-    this.parameters.outputType = enabled ? HalfFloatType : UnsignedByteType;
+    this.parameters.outputType = enabled ? HalfFloatType : undefined;
   }
 }
 
@@ -29,7 +29,7 @@ export class RoomRenderer extends Renderer {
     const backend = new RoomBackend({
       canvas,
       alpha: false,
-      outputType: active ? HalfFloatType : UnsignedByteType,
+      outputType: active ? HalfFloatType : undefined,
     });
     super(backend, { antialias: false, outputBufferType: HalfFloatType });
     this.output = backend;

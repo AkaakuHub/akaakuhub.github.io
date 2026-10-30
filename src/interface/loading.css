@@ -249,6 +249,20 @@ body {
 .loading-failed .loading-frame {
   transition: color 0.25s ease;
 }
+.loading-failed .loading-center {
+  width: min(560px, calc(100vw - 48px));
+  aspect-ratio: auto;
+  gap: 24px;
+}
+.loading-error {
+  margin: 0;
+  max-height: 50dvh;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.6;
+}
 .loading-center:has(.loading-retry:is(:hover, :focus-visible)) .loading-frame {
   color: var(--loading-accent);
 }

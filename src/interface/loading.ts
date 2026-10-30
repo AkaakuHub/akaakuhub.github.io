@@ -15,7 +15,7 @@ export function createLoading(root: HTMLElement) {
   root.dataset.loading = "true";
   const state = createLoadingState();
   let retry: HTMLButtonElement | undefined;
-  const showFailure = (): void => {
+  const showFailure = (error: unknown): void => {
     if (retry) return;
     readout.stop();
     retry = document.createElement("button");
@@ -35,7 +35,10 @@ export function createLoading(root: HTMLElement) {
     });
     const center = panel.querySelector(".loading-center");
     if (!center) throw new Error("再読み込みボタンの表示先が見つかりません。");
-    center.replaceChildren(retry);
+    const message = document.createElement("p");
+    message.className = "loading-error";
+    message.textContent = error instanceof Error ? error.message : String(error);
+    center.replaceChildren(message, retry);
     panel.classList.remove("loading-complete");
     panel.classList.add("loading-failed");
     panel.setAttribute("role", "alert");
@@ -75,12 +78,12 @@ export function createLoading(root: HTMLElement) {
     recover(error: unknown): void {
       console.error(error);
       state.fail();
-      showFailure();
+      showFailure(error);
     },
     fail(error: unknown): void {
       console.error(error);
       if (!state.fail()) return;
-      showFailure();
+      showFailure(error);
     },
   };
 }
