@@ -243,7 +243,7 @@ export async function startRoom(
     computerInterface.update(time);
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
-    const precipitation = rendering.render(moving);
+    const precipitation = rendering.render(view.rotating);
     frameMetrics?.end(moving);
     if (!ready) {
       ready = true;

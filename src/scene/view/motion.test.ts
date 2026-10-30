@@ -105,6 +105,35 @@ describe("モーションによる視点の移動", () => {
 });
 
 describe("視点を切り替えるアニメーション", () => {
+  it("フォーカス解除では通常画質を保ち部屋の回転中だけ解像度を下げる", () => {
+    const { view } = createFixture();
+    view.back();
+    expect(view.moving).toBe(true);
+    expect(view.rotating).toBe(false);
+    settle(view);
+    view.select(1);
+    expect(view.rotating).toBe(true);
+    view.lock();
+    expect(view.rotating).toBe(false);
+    view.unlock();
+    settle(view);
+    expect(view.rotating).toBe(false);
+    view.inspectComputer();
+    expect(view.moving).toBe(true);
+    expect(view.rotating).toBe(false);
+    settle(view);
+    view.back();
+    expect(view.rotating).toBe(false);
+  });
+
+  it("動きを減らす設定では向きを切り替えても解像度を下げない", () => {
+    const { view } = createFixture(true);
+    view.back();
+    settle(view);
+    view.select(1);
+    expect(view.rotating).toBe(false);
+  });
+
   it("20fpsでも60fpsと同じ時間で視点が進む", () => {
     const smooth = createFixture();
     const slow = createFixture();

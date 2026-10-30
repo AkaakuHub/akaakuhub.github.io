@@ -38,6 +38,7 @@ export function createView(
   let target: CameraPose;
   let elapsed = 1;
   let duration = 1;
+  let turning = false;
 
   function canOperate(): boolean {
     return !locked && !tour.restricted;
@@ -70,6 +71,7 @@ export function createView(
     camera.updateProjectionMatrix();
   }
   function transition(next: ViewState, seconds: number): void {
+    turning = state.mode === "room" && next.mode === "room";
     state = next;
     if (state.mode !== "notice") tour.leave();
     onChange(state, framing.zoom);
@@ -139,6 +141,9 @@ export function createView(
     },
     get moving(): boolean {
       return elapsed < duration && !motion.matches;
+    },
+    get rotating(): boolean {
+      return !locked && turning && elapsed < duration && !motion.matches;
     },
     get zoomFactor(): number {
       return framing.zoom;

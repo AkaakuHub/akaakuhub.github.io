@@ -67,27 +67,27 @@ export function createRendering(
       motionFrame.setSize(motion.width, motion.height);
       surfaces.setSize(w, h);
     },
-    render(moving = false) {
+    render(rotating = false) {
       transforms.update();
       const precipitation = weather.active;
       const skyVisible = skyPass.visible;
-      const compose = skyVisible || (!moving && dynamic.visible) || precipitation;
-      const target = moving ? motionFrame : frame;
+      const compose = skyVisible || (!rotating && dynamic.visible) || precipitation;
+      const target = rotating ? motionFrame : frame;
       if (
         renderer.domElement.width !== target.width ||
         renderer.domElement.height !== target.height
       )
         renderer.setDrawingBufferSize(target.width, target.height, 1);
-      const input = surfaces.render(renderer, target, moving, compose);
+      const input = surfaces.render(renderer, target, rotating, compose);
       if (compose) {
         if (skyVisible) skyPass.render(renderer, target);
-        if (!moving) dynamic.render(renderer, target);
+        if (!rotating) dynamic.render(renderer, target);
         if (precipitation) weather.render(renderer, target);
       }
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
       try {
-        display.setSize(input.width, input.height, moving);
+        display.setSize(input.width, input.height, rotating);
         display.render(input.texture, surfaces.revision, compose);
       } finally {
         renderer.autoClear = autoClear;
