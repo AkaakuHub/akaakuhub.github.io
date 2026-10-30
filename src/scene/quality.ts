@@ -1,13 +1,13 @@
 const desktop = {
   pixelBudget: 3_000_000,
-  motionPixelBudget: 1_400_000,
+  motionPixelBudget: 650_000,
   pixelRatio: 2,
   shadowSize: 2048,
   anisotropy: 4,
 };
 const mobile = {
   pixelBudget: 1_500_000,
-  motionPixelBudget: 500_000,
+  motionPixelBudget: 220_000,
   pixelRatio: 2,
   shadowSize: 1024,
   anisotropy: 2,

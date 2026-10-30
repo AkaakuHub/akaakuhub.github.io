@@ -105,6 +105,19 @@ describe("モーションによる視点の移動", () => {
 });
 
 describe("視点を切り替えるアニメーション", () => {
+  it("20fpsでも60fpsと同じ時間で視点が進む", () => {
+    const smooth = createFixture();
+    const slow = createFixture();
+    smooth.view.back();
+    slow.view.back();
+    for (let frame = 0; frame < 12; frame++) smooth.view.update(1 / 60);
+    for (let frame = 0; frame < 4; frame++) slow.view.update(1 / 20);
+    expect(smooth.camera.position.distanceTo(slow.camera.position)).toBeLessThan(0.000001);
+    expect(smooth.camera.quaternion.angleTo(slow.camera.quaternion)).toBeLessThan(0.000001);
+    for (let frame = 0; frame < 3; frame++) slow.view.update(1 / 20);
+    expect(slow.view.moving).toBe(false);
+  });
+
   it("描画が遅れても一度の更新で移動先へ飛ばない", () => {
     const { camera, view } = createFixture();
     const initial = camera.position.clone();

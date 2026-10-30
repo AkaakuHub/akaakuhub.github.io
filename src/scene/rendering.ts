@@ -59,6 +59,11 @@ export function createRendering(
     render(moving = false) {
       const compose = (!moving && dynamic.visible) || weather.active;
       const target = moving ? motionFrame : frame;
+      if (
+        renderer.domElement.width !== target.width ||
+        renderer.domElement.height !== target.height
+      )
+        renderer.setDrawingBufferSize(target.width, target.height, 1);
       const input = surfaces.render(renderer, target, moving, compose);
       if (compose) {
         if (!moving) dynamic.render(renderer, target);

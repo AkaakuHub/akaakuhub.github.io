@@ -219,7 +219,7 @@ export function createView(
     update(delta: number) {
       if (locked) return false;
       if (elapsed < duration) {
-        elapsed = motion.matches ? duration : Math.min(duration, elapsed + Math.min(delta, 1 / 30));
+        elapsed = motion.matches ? duration : Math.min(duration, elapsed + Math.min(delta, 0.1));
         const t = duration === 0 ? 1 : MathUtils.smootherstep(elapsed / duration, 0, 1);
         position.lerpVectors(start.position, target.position, t);
         quaternion.slerpQuaternions(start.quaternion, target.quaternion, t);
