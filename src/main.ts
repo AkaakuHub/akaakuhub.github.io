@@ -37,6 +37,7 @@ import type { PaperPrinter } from "./scene/board/printing";
 import { createRoomPassages } from "./interface/passages";
 import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animation";
 import { observeDisplayVisibility } from "./scene/rendering/display-lifecycle";
+import { createSky } from "./scene/daylight/sky";
 
 export async function startRoom(
   root: HTMLElement,
@@ -67,6 +68,7 @@ export async function startRoom(
   camera.coordinateSystem = WebGPUCoordinateSystem;
   camera.position.set(0, 1.55, 0.45);
   const materialLoading = loadMaterials(assets);
+  const skyReady = createSky(assets);
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
   const clubroomReady = Promise.all([avatarReady, materialLoading.paperReady, fontsReady]).then(
@@ -81,14 +83,17 @@ export async function startRoom(
     renderer,
     initialWeather,
     { board, privacy, door, windowOpening, lightSwitch, rocker, computer },
+    sky,
   ] = await Promise.all([
     rendererReady,
     weatherReady,
     clubroomReady,
+    skyReady,
     materialLoading.loadRemaining().then(() => performance.mark("room-textures-ready")),
     lightTablesReady,
   ]);
   performance.mark("room-assets-and-geometry-ready");
+  scene.add(sky.object);
   const frameMetrics = import.meta.env.DEV ? createFrameMetrics(renderer) : undefined;
   loading.rendering(1, 4);
   const lighting = illuminate(
@@ -96,6 +101,7 @@ export async function startRoom(
     renderer,
     weatherAt(initialWeather, Date.now()),
     computer.monitor,
+    sky,
   );
   const fluorescent = createFluorescentAnimation(
     scene,
@@ -244,9 +250,6 @@ export async function startRoom(
         .then(() => {
           loading.complete();
           fluorescent.start();
-          const measurement = performance.measure("room-first-frame", { start: 0 });
-          if (import.meta.env.DEV)
-            console.info(`部室の初回描画: ${measurement.duration.toFixed(0)}ms`);
           audio.start();
           controlIntroduction.start();
           introduction?.start();
@@ -268,7 +271,6 @@ export async function startRoom(
   updateTime();
   void boardLoader.refresh(false);
   loading.rendering(3, 4);
-  lighting.update(new Date(), weatherAt(weather.current, Date.now()));
   performance.mark("room-lighting-ready");
   controls = bindRoomControls(
     root,

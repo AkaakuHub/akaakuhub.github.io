@@ -1,4 +1,4 @@
-import { Color, DirectionalLight, Mesh, MeshBasicMaterial, MeshStandardMaterial } from "three";
+import { Color, DirectionalLight, Mesh, MeshStandardMaterial } from "three";
 import type { Scene } from "three";
 import type { Renderer } from "three/webgpu";
 import { roomCelestialLighting } from "./daylight/celestial";
@@ -9,8 +9,15 @@ import type { TokyoWeather } from "../weather/schema";
 import { renderingProfile } from "./quality";
 import { fitShadowCamera, shadowCasterBounds } from "./lighting/shadow-camera";
 import { receiverShadow } from "./lighting/receiver-shadow";
+import type { createSky } from "./daylight/sky";
 
-export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeather, monitor: Mesh) {
+export function illuminate(
+  scene: Scene,
+  renderer: Renderer,
+  weather: TokyoWeather,
+  monitor: Mesh,
+  sky: Awaited<ReturnType<typeof createSky>>,
+) {
   renderer.toneMappingExposure = cameraExposure;
   const fixtures = createRoomLights(scene);
   const monitorLight = createMonitorLight(monitor);
@@ -25,16 +32,16 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
   scene.add(celestialLight, celestialLight.target);
   const shadowBounds = shadowCasterBounds(scene);
 
-  const skyMaterials = new Set<MeshBasicMaterial>();
   const tubes = new Map<MeshStandardMaterial, number>();
+  const exterior = new Set<MeshStandardMaterial>();
   scene.traverse((object) => {
     if (!(object instanceof Mesh)) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of materials) {
       if (object.name === "room-fluorescent" && material instanceof MeshStandardMaterial)
         tubes.set(material, material.emissiveIntensity);
-      if (object.name === "world-sky" && material instanceof MeshBasicMaterial)
-        skyMaterials.add(material);
+      if (material.name === "exterior-surface" && material instanceof MeshStandardMaterial)
+        exterior.add(material);
     }
   });
   const background = new Color();
@@ -50,6 +57,7 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
 
   function update(date: Date, currentWeather: TokyoWeather): void {
     const state = roomCelestialLighting(date, currentWeather);
+    sky.update(state, currentWeather);
     celestialLight.position
       .copy(state.direction)
       .multiplyScalar(16)
@@ -58,10 +66,14 @@ export function illuminate(scene: Scene, renderer: Renderer, weather: TokyoWeath
     celestialLight.intensity = state.intensity;
     fitShadowCamera(celestialLight, shadowBounds);
     celestialLight.shadow.needsUpdate = true;
-    const sky = unitLuminance(state.sky.clone());
-    fixtures.updateSky(sky, state.skyIntensity / Math.PI);
+    const skyLight = unitLuminance(state.sky.clone());
+    fixtures.updateSky(skyLight, state.skyIntensity / Math.PI);
+    for (const material of exterior)
+      material.emissive
+        .copy(material.color)
+        .multiply(skyLight)
+        .multiplyScalar(state.skyIntensity / (2 * Math.PI));
     background.copy(state.exterior).multiplyScalar(1 / cameraExposure);
-    for (const material of skyMaterials) material.color.copy(background);
   }
 
   function setRoomLights(on: boolean): void {

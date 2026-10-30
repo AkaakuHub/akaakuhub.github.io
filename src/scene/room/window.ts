@@ -8,12 +8,13 @@ import { createWindowPanels } from "./window-panels";
 import { createCurtains } from "./curtains";
 import type { ArchitectureMaterials } from "./materials/architecture";
 import { chamferedBox } from "../geometry/chamfered-box";
+import { createExterior } from "./exterior";
 
 export function createWindow(
   materials: ArchitectureMaterials,
   fabric: PbrMaps,
   metals: MetalMaterials,
-  props: PropMaterials,
+  props: Pick<PropMaterials, "glass" | "paper">,
 ): Group {
   const window = new Group();
   const exit = new Mesh(
@@ -29,26 +30,7 @@ export function createWindow(
   const steel = metals.steel;
   const hardware = new HardwareBatch();
   const sill = materials.sill;
-  const skyBackdrop = box(
-    window,
-    [0.04, 10, 14],
-    [-9, 3, 0],
-    new MeshBasicMaterial({ color: "#c6dded" }),
-  );
-  skyBackdrop.name = "world-sky";
-  skyBackdrop.castShadow = false;
-  skyBackdrop.receiveShadow = false;
-  const masonry = materials.wall;
-  const exterior = box(window, [0.55, 1.25, 7.4], [-7.6, 0.15, 0.3], masonry);
-  exterior.castShadow = false;
-  const exteriorGlass = props.glass.clone();
-  exteriorGlass.color.set("#637d82");
-  exteriorGlass.transmission = 0;
-  exteriorGlass.roughness = 0.33;
-  for (let z = -2.9; z < 3.3; z += 0.75) {
-    const pane = box(window, [0.03, 0.56, 0.44], [-7.3, 0.32, z], exteriorGlass);
-    pane.castShadow = false;
-  }
+  window.add(createExterior(materials, metals, props));
   const panels = createWindowPanels(frame, metals.rubber, props.glass, steel);
   window.add(panels.group);
   for (const y of [1.02, 2.55]) {

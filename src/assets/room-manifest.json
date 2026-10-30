@@ -196,5 +196,11 @@
     "offset": 1307544,
     "bytes": 30076,
     "pack": "room/surfaces.bin"
+  },
+  {
+    "id": "environment/sky.webp",
+    "offset": 1337624,
+    "bytes": 37626,
+    "pack": "room/surfaces.bin"
   }
 ]

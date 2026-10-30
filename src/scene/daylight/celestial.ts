@@ -67,5 +67,9 @@ export function roomCelestialLighting(date: Date, weather: TokyoWeather) {
     sky,
     skyIntensity,
     exterior,
+    sunAltitude: altitude,
+    sunDirection: direction(sun.altitude, sun.azimuth),
+    moonDirection: direction(moon.altitude, moon.azimuth),
+    moonFraction: fraction,
   };
 }

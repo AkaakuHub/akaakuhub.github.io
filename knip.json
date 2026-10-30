@@ -13,7 +13,8 @@
     "scripts/assets/texture-encoding.mjs",
     "scripts/assets/board-text-font.mjs",
     "scripts/assets/packed-surfaces.mjs",
-    "scripts/assets/weather-audio.mjs"
+    "scripts/assets/weather-audio.mjs",
+    "scripts/assets/sky.mjs"
   ],
   "project": ["src/**/*.{ts,css}", "scripts/**/*.mjs", "worker/**/*.ts"]
 }
