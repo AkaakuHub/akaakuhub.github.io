@@ -22,18 +22,19 @@ function isMonitor(object: Object3D | undefined): object is Mesh<PlaneGeometry, 
 export async function assembleClubroom(
   scene: Scene,
   materials: MaterialLibrary,
-  avatar: ImageBitmap,
+  boardAssetsReady: Promise<ImageBitmap>,
   batchStaticMeshes: (scene: Scene, preserved: ReadonlySet<Object3D>) => Promise<void>,
   printer: PaperPrinter,
 ) {
+  performance.mark("room-geometry-start");
   const metals = createMetalMaterials(materials);
   const props = createPropMaterials(materials);
-  performance.mark("room-paper-start");
-  const boardReady = createBoard(metals, materials.paper, props, avatar, printer);
   scene.add(createRoom(materials, metals, props), createFurniture(materials, metals, props));
   performance.mark("room-models-ready");
+  const avatar = await boardAssetsReady;
+  performance.mark("room-paper-start");
   const [board, privacyPoster] = await Promise.all([
-    boardReady,
+    createBoard(metals, materials.paper, props, avatar, printer),
     createPrivacyPoster(materials.paper, props, avatar, printer),
   ]);
   performance.mark("room-paper-ready");
@@ -95,6 +96,7 @@ export async function assembleClubroom(
   performance.mark("room-batching-start");
   await batchStaticMeshes(scene, preserved);
   performance.mark("room-batching-ready");
+  performance.mark("room-geometry-ready");
   return {
     board,
     privacy: privacyPoster.target,

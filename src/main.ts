@@ -73,13 +73,9 @@ export async function startRoom(
   const skyReady = createSky(assets);
   const lightTablesReady = loadAreaLightTables(rendererReady, assets);
   const { materials } = materialLoading;
-  const clubroomReady = Promise.all([avatarReady, materialLoading.paperReady, fontsReady]).then(
-    async ([avatar]) => {
-      performance.mark("room-geometry-start");
-      const room = await assembleClubroom(scene, materials, avatar, batchStaticMeshes, printer);
-      performance.mark("room-geometry-ready");
-      return room;
-    },
+  const boardAssetsReady = Promise.all([avatarReady, fontsReady]).then(([avatar]) => avatar);
+  const clubroomReady = materialLoading.paperReady.then(() =>
+    assembleClubroom(scene, materials, boardAssetsReady, batchStaticMeshes, printer),
   );
   const [
     renderer,
