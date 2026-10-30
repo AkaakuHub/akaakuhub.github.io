@@ -23,9 +23,9 @@ describe("窓の空と天気", () => {
     const sunny = skyAppearance(40, clear);
     const partly = skyAppearance(40, { ...clear, cloudCover: 25 });
     const cloudy = skyAppearance(40, { ...clear, cloudCover: 100 });
-    expect([sunny.lower, sunny.blend]).toEqual([0, 0]);
-    expect([partly.lower, partly.upper, partly.blend]).toEqual([0, 1, 0.5]);
-    expect([cloudy.lower, cloudy.upper]).toEqual([2, 2]);
+    expect(sunny.cloud).toBe(0);
+    expect(partly.cloud).toBe(0.25);
+    expect(cloudy.cloud).toBe(1);
     expect(sunny.daylight).toBe(1);
   });
 

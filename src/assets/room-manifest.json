@@ -198,9 +198,21 @@
     "pack": "room/surfaces.bin"
   },
   {
-    "id": "environment/sky.webp",
+    "id": "environment/clouds.webp",
     "offset": 1337624,
-    "bytes": 37626,
+    "bytes": 139296,
+    "pack": "room/surfaces.bin"
+  },
+  {
+    "id": "environment/clouds.bin",
+    "offset": 1476920,
+    "bytes": 8192,
+    "pack": "room/surfaces.bin"
+  },
+  {
+    "id": "environment/horizon.webp",
+    "offset": 1485112,
+    "bytes": 50466,
     "pack": "room/surfaces.bin"
   }
 ]

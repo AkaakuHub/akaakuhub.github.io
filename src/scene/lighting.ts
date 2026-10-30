@@ -48,6 +48,20 @@ export function illuminate(
   scene.background = background;
   let roomLightsOn = true;
   let modulation = 1;
+  let natural: ReturnType<typeof roomCelestialLighting>;
+  let transmission = 1;
+  const skyLight = new Color();
+
+  function applyNaturalLight(): void {
+    celestialLight.intensity = natural.intensity * transmission;
+    const diffuse = natural.skyIntensity * (0.92 + 0.08 * transmission);
+    fixtures.updateSky(skyLight, diffuse / Math.PI);
+    for (const material of exterior)
+      material.emissive
+        .copy(material.color)
+        .multiply(skyLight)
+        .multiplyScalar((diffuse * 0.08) / (2 * Math.PI));
+  }
 
   function applyRoomLights(): void {
     const level = roomLightsOn ? modulation : 0;
@@ -57,22 +71,18 @@ export function illuminate(
 
   function update(date: Date, currentWeather: TokyoWeather): void {
     const state = roomCelestialLighting(date, currentWeather);
+    natural = state;
     sky.update(state, currentWeather);
+    transmission = sky.transmission;
     celestialLight.position
       .copy(state.direction)
       .multiplyScalar(16)
       .add(celestialLight.target.position);
     celestialLight.color.copy(state.color);
-    celestialLight.intensity = state.intensity;
     fitShadowCamera(celestialLight, shadowBounds);
     celestialLight.shadow.needsUpdate = true;
-    const skyLight = unitLuminance(state.sky.clone());
-    fixtures.updateSky(skyLight, state.skyIntensity / Math.PI);
-    for (const material of exterior)
-      material.emissive
-        .copy(material.color)
-        .multiply(skyLight)
-        .multiplyScalar(state.skyIntensity / (2 * Math.PI));
+    skyLight.copy(unitLuminance(state.sky.clone()));
+    applyNaturalLight();
     background.copy(state.exterior).multiplyScalar(1 / cameraExposure);
   }
 
@@ -96,6 +106,12 @@ export function illuminate(
       return true;
     },
     setMonitorPower,
+    setCloudTransmission(value: number): boolean {
+      if (Math.abs(transmission - value) < 0.005) return false;
+      transmission = value;
+      applyNaturalLight();
+      return true;
+    },
     invalidateShadows: () => {
       celestialLight.shadow.needsUpdate = true;
     },

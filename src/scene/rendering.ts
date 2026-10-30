@@ -8,6 +8,8 @@ import { DisplayPass } from "./rendering/display-pass";
 import { renderingProfile } from "./quality";
 import { fitPixelBudget } from "./rendering/resolution";
 import { SceneTransforms } from "./rendering/scene-transforms";
+import { SkyPass } from "./rendering/sky-pass";
+import type { createSky } from "./daylight/sky";
 
 export function createRendering(
   renderer: RoomRenderer,
@@ -16,6 +18,7 @@ export function createRendering(
   monitor: Mesh,
   fanSurfaces: readonly Mesh[],
   contributions: Object3D,
+  sky: Awaited<ReturnType<typeof createSky>>,
 ) {
   renderer.toneMapping = NoToneMapping;
   const depth = new DepthTexture(1, 1);
@@ -28,14 +31,19 @@ export function createRendering(
     depthTexture: new DepthTexture(1, 1),
   });
   const motionPixelBudget = renderingProfile().motionPixelBudget;
+  scene.add(sky.horizon);
   const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
   const transforms = new SceneTransforms(scene);
   const dynamic = new DynamicSurfacePass(monitor, fanSurfaces, contributions, scene, camera);
   const weather = new WeatherPass(camera);
+  const skyPass = new SkyPass(sky.object, camera);
   const display = new DisplayPass(renderer, frame.texture);
   let pixelRatio = 1;
   return {
     weather,
+    get skyVisible() {
+      return skyPass.visible;
+    },
     observeHdr: (observer: HdrObserver) => renderer.observeHdr(observer),
     toggleHdr: () => renderer.toggleHdr(),
     invalidate() {
@@ -62,7 +70,8 @@ export function createRendering(
     render(moving = false) {
       transforms.update();
       const precipitation = weather.active;
-      const compose = (!moving && dynamic.visible) || precipitation;
+      const skyVisible = skyPass.visible;
+      const compose = skyVisible || (!moving && dynamic.visible) || precipitation;
       const target = moving ? motionFrame : frame;
       if (
         renderer.domElement.width !== target.width ||
@@ -71,6 +80,7 @@ export function createRendering(
         renderer.setDrawingBufferSize(target.width, target.height, 1);
       const input = surfaces.render(renderer, target, moving, compose);
       if (compose) {
+        if (skyVisible) skyPass.render(renderer, target);
         if (!moving) dynamic.render(renderer, target);
         if (precipitation) weather.render(renderer, target);
       }

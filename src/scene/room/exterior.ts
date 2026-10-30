@@ -16,6 +16,7 @@ export function createExterior(
   balcony.name = "window-balcony";
   exterior.add(balcony);
   const concrete = materials.wall.clone();
+  concrete.color.set("#b5b8b1");
   const railing = metals.enamel.clone();
   for (const material of [concrete, railing]) {
     material.name = "exterior-surface";

@@ -4,7 +4,7 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { materialAssetIds, materialDefinitions } from "../../src/assets/materials.ts";
 import { areaLightAssetId } from "../../src/assets/lighting.ts";
-import { skyAssetId } from "../../src/assets/environment.ts";
+import { cloudFieldId, cloudTextureId, horizonTextureId } from "../../src/assets/environment.ts";
 import { createAssetPack } from "../../src/assets/packing.ts";
 
 const root = "src/assets";
@@ -21,7 +21,13 @@ function register(id, bytes) {
     sha256: createHash("sha256").update(bytes).digest("hex"),
   });
 }
-const roomIds = [...materialAssetIds, areaLightAssetId, skyAssetId];
+const roomIds = [
+  ...materialAssetIds,
+  areaLightAssetId,
+  cloudTextureId,
+  cloudFieldId,
+  horizonTextureId,
+];
 const initial = new Set([
   ...materialAssetIds.filter((id) => id.startsWith(`materials/${materialDefinitions.paper.id}/`)),
   areaLightAssetId,

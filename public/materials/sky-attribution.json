@@ -1,13 +1,8 @@
 {
   "license": "CC0-1.0",
   "licenseUrl": "https://polyhaven.com/license",
-  "derivative": "Upper hemispheres combined into a 1024×1024 WebP atlas, normalized exposure and reduced solar highlights.",
+  "derivative": "Non-mirrored upper-sky crops encoded as a 4096×1536 color atlas, a matching 128×64 cloud-shadow field, and an alpha-matted landscape strip. Exposure normalized and solar highlights reduced.",
   "assets": [
-    {
-      "title": "Kloofendal 43d Clear (Pure Sky)",
-      "author": "Greg Zaal",
-      "url": "https://polyhaven.com/a/kloofendal_43d_clear_puresky"
-    },
     {
       "title": "Kloofendal 48d Partly Cloudy (Pure Sky)",
       "author": "Greg Zaal",
@@ -19,9 +14,14 @@
       "url": "https://polyhaven.com/a/kloofendal_overcast_puresky"
     },
     {
-      "title": "Belfast Sunset (Pure Sky)",
-      "author": "Dimitrios Savva, Greg Zaal, Jarod Guest",
-      "url": "https://polyhaven.com/a/belfast_sunset_puresky"
+      "title": "Qwantani Sunset (Pure Sky)",
+      "author": "Greg Zaal, Jarod Guest",
+      "url": "https://polyhaven.com/a/qwantani_sunset_puresky"
+    },
+    {
+      "title": "Kloofendal 48d Partly Cloudy",
+      "author": "Greg Zaal",
+      "url": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy"
     }
   ]
 }

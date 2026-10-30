@@ -28,7 +28,7 @@ export function createFrameMetrics(renderer: Renderer) {
       const now = performance.now();
       maximumCpuMs = Math.max(maximumCpuMs, now - frameStarted);
       maximumTriangles = Math.max(maximumTriangles, renderer.info.render.triangles);
-      maximumCalls = Math.max(maximumCalls, renderer.info.render.calls);
+      maximumCalls = Math.max(maximumCalls, renderer.info.render.drawCalls);
       if (!moving) {
         console.info(
           "[scene-frame]",
