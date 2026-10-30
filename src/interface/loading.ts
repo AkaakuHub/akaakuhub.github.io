@@ -33,7 +33,9 @@ export function createLoading(root: HTMLElement) {
     retry.addEventListener("click", (event) => {
       if (event.isTrusted) location.reload();
     });
-    percent.replaceWith(retry);
+    const center = panel.querySelector(".loading-center");
+    if (!center) throw new Error("再読み込みボタンの表示先が見つかりません。");
+    center.replaceChildren(retry);
     panel.classList.remove("loading-complete");
     panel.classList.add("loading-failed");
     panel.setAttribute("role", "alert");
@@ -47,6 +49,7 @@ export function createLoading(root: HTMLElement) {
     readout.update(state.value);
   };
   return {
+    ready: readout.ready,
     progress(completed: number, total: number): void {
       state.advance("materials", completed, total);
       update();

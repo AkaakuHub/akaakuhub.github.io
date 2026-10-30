@@ -26,6 +26,7 @@ try {
     import("./assets/fonts/board-text.css").then(() => prepareBoardFont("")),
     import("./assets/fonts/yomogi.css").then(() => prepareBoardHeadingFont()),
   ]).then(() => undefined);
+  await loading.ready;
   const room = await import("./main");
   await room.startRoom(
     root,
