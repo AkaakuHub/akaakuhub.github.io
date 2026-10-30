@@ -9,6 +9,36 @@ vi.mock("../../content/thumbnails");
 afterEach(() => vi.resetAllMocks());
 
 describe("掲示の非同期印刷", () => {
+  it("先行取得の印刷が失敗した場合も画像を解放して再試行する", async () => {
+    vi.useFakeTimers();
+    const errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const close = vi.fn();
+      const bitmap: ImageBitmap = { width: 640, height: 336, close };
+      vi.mocked(loadSiteContent).mockResolvedValue({ articles: [] });
+      vi.mocked(loadArticleThumbnails)
+        .mockResolvedValueOnce(new Map([["article", bitmap]]))
+        .mockResolvedValue(new Map());
+      const update = vi
+        .fn<(state: unknown) => Promise<void>>()
+        .mockRejectedValueOnce(new Error("printing"))
+        .mockResolvedValue();
+      const loader = createBoardLoader(update);
+      loader.preload();
+      const completion = loader.refresh(false);
+      await vi.runAllTimersAsync();
+      await completion;
+      expect(update).toHaveBeenCalledTimes(2);
+      expect(close).toHaveBeenCalledOnce();
+      expect(loadSiteContent).toHaveBeenCalledOnce();
+      expect(loadArticleThumbnails).toHaveBeenCalledTimes(2);
+      expect(errorLog).toHaveBeenCalledOnce();
+    } finally {
+      errorLog.mockRestore();
+      vi.useRealTimers();
+    }
+  });
+
   it("描画の準備前に取得を始め、準備後に同じ画像を一度だけ渡す", async () => {
     const close = vi.fn();
     const bitmap: ImageBitmap = { width: 640, height: 336, close };

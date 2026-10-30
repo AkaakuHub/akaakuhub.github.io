@@ -30,17 +30,11 @@ export function createBoardLoader(update: (state: BoardState) => Promise<void>) 
       active = controller;
       const prefetched = initial;
       initial = undefined;
-      if (prefetched) {
-        const state = await prefetched;
-        if (state.status === "ready") {
-          try {
-            if (!revoke && !controller.signal.aborted) await update(state);
-          } finally {
+      if (revoke && prefetched)
+        void prefetched.then((state) => {
+          if (state.status === "ready")
             for (const bitmap of state.thumbnails.values()) bitmap.close();
-          }
-          if (!revoke) return;
-        }
-      }
+        });
       if (controller.signal.aborted) return;
       if (revoke) await update({ status: "loading" });
       let content: SiteContent | undefined;
@@ -48,14 +42,19 @@ export function createBoardLoader(update: (state: BoardState) => Promise<void>) 
         if (revoke) await revokeSiteContent(controller.signal);
         for (let attempt = 0; attempt < 3; attempt++) {
           try {
+            const prepared = !revoke && attempt === 0 ? await prefetched : undefined;
+            if (prepared?.status === "ready") content = prepared.content;
             if (!content) {
               content = await loadSiteContent(controller.signal);
             }
-            const thumbnails = await loadArticleThumbnails(
-              content.articles.slice(0, 1),
-              controller.signal,
-              revoke || attempt > 0,
-            );
+            const thumbnails =
+              prepared?.status === "ready"
+                ? prepared.thumbnails
+                : await loadArticleThumbnails(
+                    content.articles.slice(0, 1),
+                    controller.signal,
+                    revoke || attempt > 0,
+                  );
             try {
               if (!controller.signal.aborted)
                 await update({ status: "ready", content, thumbnails });
