@@ -7,7 +7,7 @@ interface Setup {
   accent: string;
   reducedMotion: boolean;
 }
-type Message = Setup | { type: "progress"; value: number } | { type: "stop" };
+type Message = Setup | { type: "progress"; value: number };
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let target = 0;
 let shown = 0;
@@ -17,7 +17,6 @@ let size = 48;
 let ink = "";
 let accent = "";
 let reducedMotion = false;
-let active = true;
 
 function line(
   time: number,
@@ -36,7 +35,7 @@ function line(
   const remaining = 1 - assembly;
   const drift = reducedMotion ? 0 : -4 * Math.cos(((time / 1000 + phase) * Math.PI * 2) / 3.6);
   context.save();
-  context.translate(right ? 280 : 0, side || start === 0.4 ? 280 : 0);
+  context.translate(right ? 280 : 0, side ? (right ? 0 : 280) : start === 0.4 ? 280 : 0);
   context.translate(x * 280 * remaining, (y * 280 + drift) * remaining);
   context.rotate((angle * remaining * Math.PI) / 180);
   context.globalAlpha = reducedMotion
@@ -44,13 +43,13 @@ function line(
     : 0.775 - 0.225 * Math.cos(((time / 1000 + phase) * Math.PI * 2) / 3.6);
   context.fillStyle = phase === 1.8 ? accent : ink;
   const extent = (side ? 280 : 140) * (length + assembly * (1 - length));
-  if (side) context.fillRect(0, right ? -280 : -extent, 1, extent);
+  if (side) context.fillRect(0, right ? 0 : -extent, 1, extent);
   else context.fillRect(right ? -extent : 0, 0, extent, 1);
   context.restore();
 }
 
 function paint(time: number): void {
-  if (!context || !active) return;
+  if (!context) return;
   const seconds = Math.min((time - previous) / 1000, 0.1);
   previous = time;
   shown += (target - shown) * (1 - Math.exp(-seconds * 10));
@@ -58,7 +57,7 @@ function paint(time: number): void {
   const elapsed = time - started;
   line(elapsed, 0, 0.4, 0.28, 0.14, -28, 0.3, 0, false, false);
   line(elapsed, 0.4, 0.8, 0.12, -0.28, 55, 0.36, 1.8, false, false);
-  line(elapsed, 0.6, 1, 0.1, -0.64, 38, 0.22, 0.9, true, false);
+  line(elapsed, 0.6, 1, 0.1, -0.64, 30, 0.22, 0.9, true, false);
   line(elapsed, 0, 0.4, -0.14, 0.28, 58, 0.34, 1.8, false, true);
   line(elapsed, 0.4, 0.8, -0.34, -0.12, -20, 0.28, 0, false, true);
   line(elapsed, 0.2, 0.6, -0.1, 0.66, 38, 0.2, 0.9, true, true);
@@ -90,8 +89,8 @@ self.onmessage = (event: MessageEvent<Message>) => {
     started = previous;
     paint(previous);
     self.postMessage({ type: "ready" });
-  } else if (message.type === "progress") {
+  } else {
     target = message.value;
     if (target === 1) shown = 1;
-  } else active = false;
+  }
 };
