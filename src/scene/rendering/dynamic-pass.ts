@@ -44,14 +44,15 @@ export class DynamicSurfacePass {
   }
 
   private hasVisibleSurface(surfaces: readonly Object3D[]): boolean {
+    if (surfaces.length === 0) return false;
     this.camera.updateMatrixWorld();
     this.projection.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
     this.frustum.setFromProjectionMatrix(this.projection, this.camera.coordinateSystem);
     for (const surface of surfaces) {
-      surface.updateWorldMatrix(true, true);
       let parent: Object3D | null = surface;
       while (parent?.visible) parent = parent.parent;
       if (parent) continue;
+      surface.updateWorldMatrix(true, true);
       let visible = false;
       surface.traverseVisible((object) => {
         if (

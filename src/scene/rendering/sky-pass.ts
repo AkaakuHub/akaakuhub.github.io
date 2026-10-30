@@ -8,6 +8,10 @@ export class SkyPass {
   private readonly scene = new Scene();
   private readonly frustum = new Frustum();
   private readonly projection = new Matrix4();
+  private readonly previousWorld = new Matrix4();
+  private readonly previousProjection = new Matrix4();
+  private coordinateSystem: PerspectiveCamera["coordinateSystem"] | undefined;
+  private visibility = false;
 
   constructor(
     object: Object3D,
@@ -18,10 +22,20 @@ export class SkyPass {
 
   get visible(): boolean {
     this.camera.updateMatrixWorld();
+    if (
+      this.coordinateSystem === this.camera.coordinateSystem &&
+      this.previousWorld.equals(this.camera.matrixWorld) &&
+      this.previousProjection.equals(this.camera.projectionMatrix)
+    )
+      return this.visibility;
+    this.coordinateSystem = this.camera.coordinateSystem;
+    this.previousWorld.copy(this.camera.matrixWorld);
+    this.previousProjection.copy(this.camera.projectionMatrix);
     this.projection.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
-    return this.frustum
+    this.visibility = this.frustum
       .setFromProjectionMatrix(this.projection, this.camera.coordinateSystem)
       .intersectsBox(windowBounds);
+    return this.visibility;
   }
 
   render(
