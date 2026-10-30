@@ -5,7 +5,8 @@ import { ExtendedSRGBColorSpace } from "three/addons/math/ColorSpaces.js";
 import { HdrPreference } from "./hdr-preference";
 import { RoomNodeLibrary } from "./node-library";
 import { completeWebGLFrame } from "./webgl-frame";
-import { renderingSession } from "./session";
+import { renderingDiagnostics, renderingSession } from "./session";
+import { RenderingContextLostError } from "./recovery";
 
 export type HdrObserver = (enabled: boolean, supported: boolean) => void;
 
@@ -39,8 +40,30 @@ export class RoomRenderer extends Renderer {
       alpha: false,
       antialias: false,
       outputBufferType: HalfFloatType,
-      getFallback: forceWebGL ? null : () => new WebGLBackend({ canvas }),
+      getFallback: forceWebGL
+        ? null
+        : (error: unknown) => {
+            renderingDiagnostics.record(error, "WebGPU initialization failed");
+            return new WebGLBackend({ canvas });
+          },
     });
+    this.onError = (error: unknown) => {
+      renderingDiagnostics.record(
+        error instanceof Error
+          ? error
+          : new Error(typeof error === "string" ? error : JSON.stringify(error)),
+        "WebGPU initialization error",
+      );
+    };
+    this.onDeviceLost = (info) => {
+      const error = new RenderingContextLostError(info.api, info.message);
+      renderingDiagnostics.record(
+        error,
+        "GPU lost during initialization",
+        `Reason: ${info.reason}`,
+      );
+      renderingSession.recover(error);
+    };
     this.output = backend;
     this.preference = preference;
     this.display = display;

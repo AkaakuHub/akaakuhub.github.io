@@ -84,6 +84,9 @@ export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) =
     );
   };
   renderer.onDeviceLost = (info) => {
-    report(new RenderingContextLostError(info.api, info.message), `${info.api} context lost`);
+    report(
+      new RenderingContextLostError(info.api, `${info.message} (reason: ${info.reason})`),
+      `${info.api} context lost`,
+    );
   };
 }
