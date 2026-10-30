@@ -94,6 +94,8 @@ export async function startRoom(
     materialLoading.loadRemaining().then(() => performance.mark("room-textures-ready")),
     lightTablesReady,
   ]);
+  const viewport = ui.canvas.getBoundingClientRect();
+  if (viewport.width > 0 && viewport.height > 0) camera.aspect = viewport.width / viewport.height;
   camera.coordinateSystem = renderer.coordinateSystem;
   camera.updateProjectionMatrix();
   performance.mark("room-assets-and-geometry-ready");
@@ -127,18 +129,6 @@ export async function startRoom(
     },
   );
   const contributions = createContributionDisplay(board.contributions, invalidate);
-  const rendering = await createRendering(
-    renderer,
-    scene,
-    camera,
-    computer.monitor,
-    computer.fanSurfaces,
-    contributions.object,
-    sky,
-    (value) => loading.rendering(1 + value, 4),
-  );
-  loading.rendering(2, 4);
-  const animateSky = createSkyAnimation(sky, rendering, lighting, requestFrame);
   const noticeList = [...board.notices.values()];
   const inspections = boardInspections(board.notices);
   let introduction: ReturnType<typeof createIntroduction> | undefined;
@@ -158,6 +148,18 @@ export async function startRoom(
     () => ui.inspectionViewport(),
     new NoticeTour(localStorage, inspections.length - 1),
   );
+  const rendering = await createRendering(
+    renderer,
+    scene,
+    camera,
+    computer.monitor,
+    computer.fanSurfaces,
+    contributions.object,
+    sky,
+    (value) => loading.rendering(1 + value, 4),
+  );
+  loading.rendering(2, 4);
+  const animateSky = createSkyAnimation(sky, rendering, lighting, requestFrame);
   introduction = createIntroduction(root, view);
   updateDirections = createDirectionControls(root, view);
   updateDirections(view.state);

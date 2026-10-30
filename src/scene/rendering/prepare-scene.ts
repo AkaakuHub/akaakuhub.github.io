@@ -1,4 +1,3 @@
-import { Mesh } from "three";
 import type { PerspectiveCamera, RenderTarget, Scene } from "three";
 import type { Renderer } from "three/webgpu";
 
@@ -9,13 +8,6 @@ export async function prepareScene(
   target: RenderTarget,
   progress: (value: number) => void,
 ): Promise<void> {
-  const meshes: { mesh: Mesh; culled: boolean }[] = [];
-  scene.traverseVisible((object) => {
-    if (object instanceof Mesh) {
-      meshes.push({ mesh: object, culled: object.frustumCulled });
-      object.frustumCulled = false;
-    }
-  });
   const previous = renderer.getRenderTarget();
   renderer.setRenderTarget(target);
   performance.mark("room-shaders-start");
@@ -26,6 +18,5 @@ export async function prepareScene(
     performance.mark("room-shaders-ready");
   } finally {
     renderer.setRenderTarget(previous);
-    for (const { mesh, culled } of meshes) mesh.frustumCulled = culled;
   }
 }

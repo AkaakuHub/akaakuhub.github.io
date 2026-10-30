@@ -32,14 +32,14 @@ function fixture() {
 }
 
 describe("操作前のシェーダー準備", () => {
-  it("視野外の部材も準備し、完了後は元の視野判定と描画先へ戻す", async () => {
+  it("視野判定を維持して準備し、完了後は元の描画先へ戻す", async () => {
     const { scene, mesh, previous, renderer, camera, target } = fixture();
     const progress = vi.fn<(value: number) => void>();
     renderer.compileAsync.mockImplementation(async (compiled, view, targetScene, report) => {
       expect(compiled).toBe(scene);
       expect(view).toBe(camera);
       expect(targetScene).toBeNull();
-      expect(mesh.frustumCulled).toBe(false);
+      expect(mesh.frustumCulled).toBe(true);
       report?.(
         Object.assign(new Event("progress"), { lengthComputable: true, loaded: 1, total: 2 }),
       );
