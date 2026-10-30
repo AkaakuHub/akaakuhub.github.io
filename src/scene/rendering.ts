@@ -87,12 +87,10 @@ export async function createRendering(
     },
     render({
       moving,
-      rotating,
       computerActive,
       contributionsActive,
     }: {
       moving: boolean;
-      rotating: boolean;
       computerActive: boolean;
       contributionsActive: boolean;
     }) {
@@ -102,12 +100,7 @@ export async function createRendering(
       const precipitation = weather.active;
       const skyVisible = skyPass.visible;
       const compose = skyVisible || (!moving && dynamic.visible) || precipitation;
-      const target = rotating ? motionFrame : frame;
-      if (
-        renderer.domElement.width !== target.width ||
-        renderer.domElement.height !== target.height
-      )
-        renderer.setDrawingBufferSize(target.width, target.height, 1);
+      const target = moving ? motionFrame : frame;
       const input = surfaces.render(renderer, target, moving, compose);
       if (compose) {
         if (skyVisible) skyPass.render(renderer, target);
@@ -117,7 +110,7 @@ export async function createRendering(
       const autoClear = renderer.autoClear;
       renderer.autoClear = true;
       try {
-        display.setSize(input.width, input.height, rotating);
+        display.setSize(input.width, input.height, moving);
         display.render(input.texture, surfaces.revision, compose);
       } finally {
         renderer.autoClear = autoClear;

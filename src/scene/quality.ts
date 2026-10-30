@@ -14,9 +14,9 @@ const mobile = {
 };
 
 const recovery = {
-  pixelBudget: 400_000,
-  motionPixelBudget: 120_000,
-  pixelRatio: 1,
+  pixelBudget: 650_000,
+  motionPixelBudget: 220_000,
+  pixelRatio: 1.5,
   shadowSize: 512,
   anisotropy: 1,
 };

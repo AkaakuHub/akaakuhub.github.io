@@ -240,7 +240,6 @@ export async function startRoom(
     const animation = contributions.update(camera, time);
     const precipitation = rendering.render({
       moving,
-      rotating: view.rotating,
       computerActive: computerInterface.isPowered(),
       contributionsActive: animation,
     });
@@ -252,7 +251,7 @@ export async function startRoom(
         .then(finishFirstFrame)
         .then(() => {
           loading.complete();
-          fluorescent.start();
+          if (renderer.compileYieldInterval !== 0) fluorescent.start();
           audio.start();
           controlIntroduction.start();
           introduction?.start();
