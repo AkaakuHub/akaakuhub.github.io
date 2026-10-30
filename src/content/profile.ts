@@ -5,7 +5,13 @@ export const profile = {
   favorite: "蓮ノ空",
   team: { label: "team411", href: "https://team411.net/" },
   history: [
-    { date: "2026", title: "U☆POC2026受賞", detail: "", team: false },
+    { date: "2026.08", title: "U☆POC2026受賞", detail: "", team: false },
+    {
+      date: "2025.08",
+      title: "丸和育志会の奨学生に採用",
+      detail: "自己開発チャレンジ奨学金・活動中",
+      team: false,
+    },
     {
       date: "2025.03",
       title: "UEC Bug Bounty 2024/25",
@@ -19,8 +25,8 @@ export const profile = {
       team: false,
     },
     {
-      date: "2024.11",
-      title: "UECアイディア実証コンテスト",
+      date: "2024.08",
+      title: "U☆POC2024受賞",
       detail: "UEC dashboardで協賛企業賞",
       team: false,
     },
