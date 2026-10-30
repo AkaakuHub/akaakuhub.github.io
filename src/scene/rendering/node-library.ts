@@ -1,12 +1,12 @@
 import { DirectionalLight, RectAreaLight } from "three";
 import {
-  DirectionalLightNode,
   MeshBasicNodeMaterial,
   MeshPhysicalNodeMaterial,
   MeshStandardNodeMaterial,
   RectAreaLightNode,
 } from "three/webgpu";
 import NodeLibrary from "three/src/renderers/common/nodes/NodeLibrary.js";
+import { RoomDirectionalLightNode } from "../lighting/notice-light-nodes";
 
 export class RoomNodeLibrary extends NodeLibrary {
   constructor() {
@@ -14,7 +14,7 @@ export class RoomNodeLibrary extends NodeLibrary {
     this.addMaterial(MeshBasicNodeMaterial, "MeshBasicMaterial");
     this.addMaterial(MeshStandardNodeMaterial, "MeshStandardMaterial");
     this.addMaterial(MeshPhysicalNodeMaterial, "MeshPhysicalMaterial");
-    this.addLight(DirectionalLightNode, DirectionalLight);
+    this.addLight(RoomDirectionalLightNode, DirectionalLight);
     this.addLight(RectAreaLightNode, RectAreaLight);
   }
 }

@@ -1,3 +1,4 @@
+import { noticeMaterial } from "../lighting/notice-light";
 import type { PropMaterials } from "../materials/props";
 import { Group, Mesh } from "three";
 import type { Material } from "three";
@@ -55,17 +56,17 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
   const coating = metals.enamel;
   const rubber = metals.rubber;
   const backing = metals.ivory;
-  const ceramic = metals.ivory.clone();
+  const ceramic = noticeMaterial(metals.ivory.clone());
   ceramic.map = null;
   ceramic.normalMap = metals.aluminum.normalMap;
   ceramic.roughnessMap = null;
   ceramic.metalnessMap = null;
   ceramic.metalness = 0;
   ceramic.color.set("#f0f2e9");
-  ceramic.roughness = 0.34;
+  ceramic.roughness = 0.78;
   ceramic.normalScale.set(0.08, 0.08);
-  ceramic.clearcoat = 0.58;
-  ceramic.clearcoatRoughness = 0.3;
+  ceramic.clearcoat = 0.08;
+  ceramic.clearcoatRoughness = 0.6;
   roundBox(frame, [2.64, 1.8, 0.075], [0, 1.5, 0], aluminum, 0.026);
   roundBox(frame, [2.56, 1.72, 0.012], [0, 1.5, 0.039], ceramic, 0.014);
   box(frame, [2.5, 1.66, 0.015], [0, 1.5, -0.045], backing);

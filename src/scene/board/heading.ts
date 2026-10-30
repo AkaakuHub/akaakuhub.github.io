@@ -1,3 +1,4 @@
+import { noticeMaterial } from "../lighting/notice-light";
 import { textureFromCanvas } from "../materials/printed-texture";
 import { Mesh, MeshStandardMaterial, PlaneGeometry } from "three";
 
@@ -15,15 +16,17 @@ export function createBoardHeading(text: string, x: number, y: number) {
   texture.anisotropy = 8;
   const heading = new Mesh(
     new PlaneGeometry(0.65, 0.1625),
-    new MeshStandardMaterial({
-      map: texture,
-      transparent: true,
-      depthWrite: false,
-      roughness: 1,
-      polygonOffset: true,
-      polygonOffsetFactor: -1,
-      polygonOffsetUnits: -1,
-    }),
+    noticeMaterial(
+      new MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+        depthWrite: false,
+        roughness: 1,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      }),
+    ),
   );
   heading.position.set(x, y, 0.0451);
   heading.rotation.z = -0.012;
@@ -43,7 +46,14 @@ export function createBoardCredit() {
   const texture = textureFromCanvas(context);
   const credit = new Mesh(
     new PlaneGeometry(0.56, 0.07),
-    new MeshStandardMaterial({ map: texture, transparent: true, depthWrite: false, roughness: 1 }),
+    noticeMaterial(
+      new MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+        depthWrite: false,
+        roughness: 1,
+      }),
+    ),
   );
   credit.scale.set(1.15, 0.72, 1);
   credit.position.set(0.9, 0.68, 0.0451);

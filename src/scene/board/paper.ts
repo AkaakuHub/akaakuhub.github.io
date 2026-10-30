@@ -1,3 +1,4 @@
+import { noticeMaterial } from "../lighting/notice-light";
 import type { DataTexture } from "three";
 import type { PbrMaps } from "../materials/library";
 import { DoubleSide, Mesh, MeshStandardMaterial, PlaneGeometry, Vector2 } from "three";
@@ -37,14 +38,16 @@ export function createPaper(
 ): Mesh<PlaneGeometry, MeshStandardMaterial> {
   const paper = new Mesh(
     paperGeometry(width, height),
-    new MeshStandardMaterial({
-      map: printedTexture(print),
-      normalMap: maps.normalMap,
-      roughnessMap: maps.roughnessMap,
-      normalScale: new Vector2(0.1, 0.1),
-      roughness: 1,
-      side: DoubleSide,
-    }),
+    noticeMaterial(
+      new MeshStandardMaterial({
+        map: printedTexture(print),
+        normalMap: maps.normalMap,
+        roughnessMap: maps.roughnessMap,
+        normalScale: new Vector2(0.1, 0.1),
+        roughness: 1,
+        side: DoubleSide,
+      }),
+    ),
   );
   paper.castShadow = true;
   paper.receiveShadow = true;

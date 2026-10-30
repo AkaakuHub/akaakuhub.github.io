@@ -1,3 +1,4 @@
+import { noticeMaterial } from "../lighting/notice-light";
 import {
   BufferAttribute,
   Frustum,
@@ -56,11 +57,13 @@ export function createContributionDisplay(
         const geometry = mergeGeometries(geometries);
         geometries.forEach((part) => part.dispose());
         if (!geometry) throw new Error("GitHubの草を組み立てられませんでした。");
-        const material = new MeshStandardNodeMaterial({
-          transparent: true,
-          depthWrite: false,
-          roughness: 1,
-        });
+        const material = noticeMaterial(
+          new MeshStandardNodeMaterial({
+            transparent: true,
+            depthWrite: false,
+            roughness: 1,
+          }),
+        );
         const sample = texture(source.animatedMap);
         const timing = attribute("revealTiming", "vec2");
         material.colorNode = sample.rgb;

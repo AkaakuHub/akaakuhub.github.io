@@ -2,9 +2,10 @@ import { HalfFloatType, RenderTarget } from "three";
 import type { Texture } from "three";
 import { ConvertNode, MeshBasicNodeMaterial, QuadMesh, RenderPipeline } from "three/webgpu";
 import type { RoomRenderer } from "./room-renderer";
-import { float, positionGeometry, sRGBTransferOETF, texture, uniform, vec4 } from "three/tsl";
+import { positionGeometry, sRGBTransferOETF, texture, uniform, vec4 } from "three/tsl";
 import { fxaa } from "three/addons/tsl/display/FXAANode.js";
 import { DisplayState } from "./display-state";
+import { displayTone } from "./display-tone";
 
 const hdrHeadroom = 4;
 
@@ -36,8 +37,7 @@ export class DisplayPass {
     source: Texture,
   ) {
     this.source = texture(source);
-    const exposed = this.source.rgb.mul(this.exposure).max(0);
-    const mapped = this.headroom.mul(float(1).sub(exposed.div(hdrHeadroom).negate().exp()));
+    const mapped = displayTone(this.source.rgb, this.exposure, this.headroom);
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);

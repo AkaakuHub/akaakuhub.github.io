@@ -7,7 +7,6 @@ import {
   Texture,
 } from "three";
 import {
-  DirectionalLightNode,
   MeshBasicNodeMaterial,
   MeshPhysicalNodeMaterial,
   MeshStandardNodeMaterial,
@@ -15,6 +14,8 @@ import {
 } from "three/webgpu";
 import { describe, expect, it } from "vite-plus/test";
 import { RoomNodeLibrary } from "./node-library";
+import { RoomDirectionalLightNode } from "../lighting/notice-light-nodes";
+import { noticeMaterial, noticeSurface } from "../lighting/notice-light";
 
 describe("部室の材質と光源の変換", () => {
   const library = new RoomNodeLibrary();
@@ -74,8 +75,18 @@ describe("部室の材質と光源の変換", () => {
     expect(library.fromMaterial(material)).toBe(material);
   });
 
+  it("掲示面の照明設定を通常の材質と分けてシェーダーへ引き継ぐ", () => {
+    const material = noticeMaterial(new MeshStandardMaterial());
+    const converted = library.fromMaterial(material);
+    expect(converted.name).toBe(noticeSurface);
+    expect(converted.customProgramCacheKey()).toBe(noticeSurface);
+    expect(converted.customProgramCacheKey()).not.toBe(
+      new MeshStandardMaterial().customProgramCacheKey(),
+    );
+  });
+
   it("天体光と矩形光源にThree.jsの実装を使う", () => {
-    expect(library.getLightNodeClass(DirectionalLight)).toBe(DirectionalLightNode);
+    expect(library.getLightNodeClass(DirectionalLight)).toBe(RoomDirectionalLightNode);
     expect(library.getLightNodeClass(RectAreaLight)).toBe(RectAreaLightNode);
   });
 });
