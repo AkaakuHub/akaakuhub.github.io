@@ -25,15 +25,15 @@ export const profile = {
       team: false,
     },
     {
-      date: "2024.08",
-      title: "U☆POC2024受賞",
-      detail: "UEC dashboardで協賛企業賞",
-      team: false,
-    },
-    {
       date: "2024.11",
       title: "モバイルオーダーシステムの開発・導入",
       detail: "みやこ祭・第74回調布祭",
+      team: false,
+    },
+    {
+      date: "2024.08",
+      title: "U☆POC2024受賞",
+      detail: "UEC dashboardで協賛企業賞",
       team: false,
     },
     {
