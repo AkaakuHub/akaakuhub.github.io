@@ -9,6 +9,13 @@ export class RenderingContextLostError extends Error {
   }
 }
 
+export class RenderingResourcesInvalidError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "RenderingResourcesInvalidError";
+  }
+}
+
 export class RenderingRecovery {
   private webgpuActive: boolean;
   private restarting = false;
@@ -34,7 +41,11 @@ export class RenderingRecovery {
 
   recover(error: unknown): boolean {
     if (this.restarting) return true;
-    if (error instanceof RenderingContextLostError) return this.retryContextLoss();
+    if (
+      error instanceof RenderingContextLostError ||
+      error instanceof RenderingResourcesInvalidError
+    )
+      return this.retryContextLoss();
     const message = error instanceof Error ? error.message : error;
     if (
       typeof message !== "string" ||

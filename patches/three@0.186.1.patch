@@ -69,7 +69,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cdaade9845 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..872dab99411f9bb9f011fc0a7756692480df2532 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -370,7 +370,42 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cd
  
  		}
  
-@@ -85726,6 +85856,8 @@ class WebGPUPipelineUtils {
+@@ -75545,19 +75675,28 @@ class WebGLBackend extends Backend {
+ 
+ 		if ( promises !== null && this.parallel ) {
+ 
+-			const p = new Promise( ( resolve /*, reject*/ ) => {
++			const p = new Promise( ( resolve, reject ) => {
+ 
+ 				const parallel = this.parallel;
+ 				const checkStatus = () => {
+ 
+-					if ( gl.getProgramParameter( programGPU, parallel.COMPLETION_STATUS_KHR ) ) {
++					try {
+ 
+-						this._completeCompile( renderObject, pipeline );
+-						resolve();
++						if ( gl.isContextLost() ) throw new Error( 'WebGL context lost during shader compilation.' );
++						if ( gl.getProgramParameter( programGPU, parallel.COMPLETION_STATUS_KHR ) ) {
+ 
+-					} else {
++							this._completeCompile( renderObject, pipeline );
++							resolve();
+ 
+-						requestAnimationFrame( checkStatus );
++						} else {
++
++							requestAnimationFrame( checkStatus );
++
++						}
++
++					} catch ( error ) {
++
++						reject( error );
+ 
+ 					}
+ 
+@@ -85726,6 +85865,8 @@ class WebGPUPipelineUtils {
  
  					_renderPipelineDescriptor.reset();
  
@@ -379,7 +414,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cd
  					if ( pipelinePromise !== null ) {
  
  						try {
-@@ -85740,7 +85872,7 @@ class WebGPUPipelineUtils {
+@@ -85740,7 +85881,7 @@ class WebGPUPipelineUtils {
  
  					}
  
@@ -388,7 +423,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cd
  
  					if ( errorScope !== null || asyncError !== null ) {
  
-@@ -85883,6 +86015,8 @@ class WebGPUPipelineUtils {
+@@ -85883,6 +86024,8 @@ class WebGPUPipelineUtils {
  
  					_computePipelineDescriptor.reset();
  
@@ -397,7 +432,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cd
  					if ( pipelinePromise !== null ) {
  
  						try {
-@@ -85897,7 +86031,7 @@ class WebGPUPipelineUtils {
+@@ -85897,7 +86040,7 @@ class WebGPUPipelineUtils {
  
  					}
  
@@ -407,7 +442,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cd
  					if ( errorScope !== null || asyncError !== null ) {
  
 diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
-index e96c4ae08d528fea66c58e5869923c1675822ac9..377bf8e052c362490559ccc3b81834c97ab192c6 100644
+index e96c4ae08d528fea66c58e5869923c1675822ac9..fc0ed719f154fa96c26778d5d42ff6715366355a 100644
 --- a/build/three.webgpu.nodes.js
 +++ b/build/three.webgpu.nodes.js
 @@ -55964,7 +55964,7 @@ class NodeBuilder {
@@ -467,7 +502,42 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..377bf8e052c362490559ccc3b81834c9
  
  		}
  
-@@ -85726,6 +85731,8 @@ class WebGPUPipelineUtils {
+@@ -75545,19 +75550,28 @@ class WebGLBackend extends Backend {
+ 
+ 		if ( promises !== null && this.parallel ) {
+ 
+-			const p = new Promise( ( resolve /*, reject*/ ) => {
++			const p = new Promise( ( resolve, reject ) => {
+ 
+ 				const parallel = this.parallel;
+ 				const checkStatus = () => {
+ 
+-					if ( gl.getProgramParameter( programGPU, parallel.COMPLETION_STATUS_KHR ) ) {
++					try {
+ 
+-						this._completeCompile( renderObject, pipeline );
+-						resolve();
++						if ( gl.isContextLost() ) throw new Error( 'WebGL context lost during shader compilation.' );
++						if ( gl.getProgramParameter( programGPU, parallel.COMPLETION_STATUS_KHR ) ) {
+ 
+-					} else {
++							this._completeCompile( renderObject, pipeline );
++							resolve();
+ 
+-						requestAnimationFrame( checkStatus );
++						} else {
++
++							requestAnimationFrame( checkStatus );
++
++						}
++
++					} catch ( error ) {
++
++						reject( error );
+ 
+ 					}
+ 
+@@ -85726,6 +85740,8 @@ class WebGPUPipelineUtils {
  
  					_renderPipelineDescriptor.reset();
  
@@ -476,7 +546,7 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..377bf8e052c362490559ccc3b81834c9
  					if ( pipelinePromise !== null ) {
  
  						try {
-@@ -85740,7 +85747,7 @@ class WebGPUPipelineUtils {
+@@ -85740,7 +85756,7 @@ class WebGPUPipelineUtils {
  
  					}
  
@@ -485,7 +555,7 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..377bf8e052c362490559ccc3b81834c9
  
  					if ( errorScope !== null || asyncError !== null ) {
  
-@@ -85883,6 +85890,8 @@ class WebGPUPipelineUtils {
+@@ -85883,6 +85899,8 @@ class WebGPUPipelineUtils {
  
  					_computePipelineDescriptor.reset();
  
@@ -494,7 +564,7 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..377bf8e052c362490559ccc3b81834c9
  					if ( pipelinePromise !== null ) {
  
  						try {
-@@ -85897,7 +85906,7 @@ class WebGPUPipelineUtils {
+@@ -85897,7 +85915,7 @@ class WebGPUPipelineUtils {
  
  					}
  
@@ -883,6 +953,45 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..dd68271362df53b1d5a33172ec2929e3
  	}
  
  	/**
+diff --git a/src/renderers/webgl-fallback/WebGLBackend.js b/src/renderers/webgl-fallback/WebGLBackend.js
+index f24027915e6e4ec7fe9415569107ff6cf3c9c498..a65de82ac4913aa0e210c8e89557635d7d7b0282 100644
+--- a/src/renderers/webgl-fallback/WebGLBackend.js
++++ b/src/renderers/webgl-fallback/WebGLBackend.js
+@@ -1550,19 +1550,28 @@ class WebGLBackend extends Backend {
+ 
+ 		if ( promises !== null && this.parallel ) {
+ 
+-			const p = new Promise( ( resolve /*, reject*/ ) => {
++			const p = new Promise( ( resolve, reject ) => {
+ 
+ 				const parallel = this.parallel;
+ 				const checkStatus = () => {
+ 
+-					if ( gl.getProgramParameter( programGPU, parallel.COMPLETION_STATUS_KHR ) ) {
++					try {
+ 
+-						this._completeCompile( renderObject, pipeline );
+-						resolve();
++						if ( gl.isContextLost() ) throw new Error( 'WebGL context lost during shader compilation.' );
++						if ( gl.getProgramParameter( programGPU, parallel.COMPLETION_STATUS_KHR ) ) {
+ 
+-					} else {
++							this._completeCompile( renderObject, pipeline );
++							resolve();
+ 
+-						requestAnimationFrame( checkStatus );
++						} else {
++
++							requestAnimationFrame( checkStatus );
++
++						}
++
++					} catch ( error ) {
++
++						reject( error );
+ 
+ 					}
+ 
 diff --git a/src/renderers/webgpu/utils/WebGPUPipelineUtils.js b/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
 index 802f98b6e061d4c1580a1e06a43d9b41aeec5b90..1748510c6b8e6c2b946af8a1bbb883e5fac738b2 100644
 --- a/src/renderers/webgpu/utils/WebGPUPipelineUtils.js

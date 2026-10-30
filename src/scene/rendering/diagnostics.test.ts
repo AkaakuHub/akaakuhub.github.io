@@ -12,6 +12,15 @@ function storage() {
 }
 
 describe("描画エラーの記録", () => {
+  it("新しいビルドには古いビルドの障害を混ぜない", () => {
+    const saved = storage();
+    new RenderingDiagnostics(saved, "old").record(new Error("修正前"), "WebGPU");
+    expect(new RenderingDiagnostics(saved, "old").report()).toContain("修正前");
+    const updated = new RenderingDiagnostics(saved, "new");
+    updated.record(new Error("現在"), "WebGL");
+    expect(updated.report()).toContain("現在");
+    expect(updated.report()).not.toContain("修正前");
+  });
   it("シェーダー全文を除き、失敗状態と呼び出し元を残す", () => {
     const log = new RenderingDiagnostics(storage());
     log.record(

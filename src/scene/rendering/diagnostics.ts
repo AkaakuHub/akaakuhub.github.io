@@ -26,8 +26,17 @@ export class RenderingDiagnostics {
   private readonly entries: Entry[];
   private readonly recorded = new WeakSet<Error>();
 
-  constructor(private readonly storage: Pick<Storage, "getItem" | "setItem">) {
-    const saved = storage.getItem(key);
+  constructor(
+    private readonly storage: Pick<Storage, "getItem" | "setItem">,
+    build = "development",
+  ) {
+    const saved = storage.getItem(`${key}:build`) === build ? storage.getItem(key) : null;
+    try {
+      storage.setItem(`${key}:build`, build);
+      if (!saved) storage.setItem(key, "[]");
+    } catch {
+      // 保存できない場合は現在のページの記録だけを保持する。
+    }
     this.entries = [];
     if (saved) {
       try {

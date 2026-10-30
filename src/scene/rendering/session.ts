@@ -6,4 +6,4 @@ export const renderingSession = new RenderingRecovery(
   () => location.reload(),
   import.meta.url,
 );
-export const renderingDiagnostics = new RenderingDiagnostics(sessionStorage);
+export const renderingDiagnostics = new RenderingDiagnostics(sessionStorage, import.meta.url);

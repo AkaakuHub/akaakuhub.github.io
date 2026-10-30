@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from "vite-plus/test";
-import { RenderingContextLostError, RenderingRecovery } from "./recovery";
+import {
+  RenderingContextLostError,
+  RenderingRecovery,
+  RenderingResourcesInvalidError,
+} from "./recovery";
 
 function storage() {
   const values = new Map<string, string>();
@@ -12,6 +16,16 @@ function storage() {
 }
 
 describe("描画方式の復旧", () => {
+  it("GPUオブジェクトが無効になった場合もWebGLを1回だけ再作成する", () => {
+    const saved = storage();
+    const reload = vi.fn();
+    const first = new RenderingRecovery(saved, reload);
+    first.setWebGPUActive(false);
+    const error = new RenderingResourcesInvalidError("Program exists: false");
+    expect(first.recover(error)).toBe(true);
+    expect(new RenderingRecovery(saved, reload).recover(error)).toBe(false);
+    expect(reload).toHaveBeenCalledOnce();
+  });
   it("新しいビルドでは以前の失敗によるWebGL固定を解除する", () => {
     const saved = storage();
     const reload = vi.fn();

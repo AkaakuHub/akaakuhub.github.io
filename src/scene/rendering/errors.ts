@@ -1,3 +1,4 @@
+import { shaderError } from "./shader-error";
 import { setConsoleFunction } from "three";
 import type { Renderer } from "three/webgpu";
 import { WebGLBackend } from "three/webgpu";
@@ -40,36 +41,11 @@ export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) =
     );
     fail(error);
   };
+  let firstShaderError: Error | undefined;
   renderer.debug.onShaderError = (gl, program, vertex, fragment) => {
-    const errorCode = gl.getError();
-    if (gl.isContextLost()) {
-      renderingDiagnostics.record(
-        new RenderingContextLostError("WebGL", "接続喪失中にシェーダーの検査が呼ばれました。"),
-        "WebGL shader check after context loss",
-      );
-      return;
-    }
-    report(
-      new Error(
-        [
-          "WebGLのシェーダーを準備できませんでした。",
-          `GL error: 0x${errorCode.toString(16)}`,
-          `Context lost: ${gl.isContextLost()}`,
-          `Program exists: ${gl.isProgram(program)}`,
-          `Vertex exists: ${gl.isShader(vertex)}`,
-          `Fragment exists: ${gl.isShader(fragment)}`,
-          `GL: ${gl.getParameter(gl.VERSION)}`,
-          `Renderer: ${gl.getParameter(gl.RENDERER)}`,
-          `Vertex compiled: ${gl.getShaderParameter(vertex, gl.COMPILE_STATUS)}`,
-          `Fragment compiled: ${gl.getShaderParameter(fragment, gl.COMPILE_STATUS)}`,
-          `Linked: ${gl.getProgramParameter(program, gl.LINK_STATUS)}`,
-          `Program: ${gl.getProgramInfoLog(program)?.slice(0, 400)}`,
-          `Vertex: ${gl.getShaderInfoLog(vertex)?.slice(0, 400)}`,
-          `Fragment: ${gl.getShaderInfoLog(fragment)?.slice(0, 400)}`,
-        ].join("\n\n"),
-      ),
-      "WebGL shader",
-    );
+    firstShaderError ??= shaderError(gl, program, vertex, fragment);
+    report(firstShaderError, "WebGL shader");
+    throw firstShaderError;
   };
   setConsoleFunction((type, message, ...details) => {
     if (type === "error") report(new Error(message, { cause: details }), "Three.js console");
