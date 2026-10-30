@@ -69,7 +69,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd676482d5c5 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..5ad3c90d3a6b8848b62111c3a5e8c7cdaade9845 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -196,11 +196,11 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd67
  		const P = positionView.toVar();
  
 -		const uv = LTC_Uv( { N, V, roughness } );
--
--		const t1 = ltc_1.sample( uv ).toVar();
--		const t2 = ltc_2.sample( uv ).toVar();
 +		this.prepareRectArea( { ltc_1, ltc_2 } );
  
+-		const t1 = ltc_1.sample( uv ).toVar();
+-		const t2 = ltc_2.sample( uv ).toVar();
+-
 -		const mInv = mat3(
 -			vec3( t1.x, 0, t1.y ),
 -			vec3( 0, 1, 0 ),
@@ -326,11 +326,11 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd67
  
  		const total = compilationPromises.length;
  		let loaded = 0;
-+		const pendingPipelines = [];
++		const pendingPipelines = new Set();
  
  		for ( const item of compilationPromises ) {
  
-@@ -62735,12 +62861,12 @@ class Renderer {
+@@ -62735,12 +62861,14 @@ class Renderer {
  			this._bindings.updateForRender( renderObject );
  			this._isPreCompiling = false;
  
@@ -340,12 +340,14 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd67
  			if ( pipelinePromises.length > 0 ) {
  
 -				await Promise.all( pipelinePromises );
-+				if ( this.compileYieldInterval === 0 ) await Promise.all( pipelinePromises );
-+				else pendingPipelines.push( Promise.all( pipelinePromises ) );
++				const pending = Promise.all( pipelinePromises ).then( () => pendingPipelines.delete( pending ) );
++				pendingPipelines.add( pending );
++				const limit = this.compileYieldInterval === 0 ? 1 : 16;
++				while ( pendingPipelines.size >= limit ) await Promise.race( pendingPipelines );
  
  			}
  
-@@ -62757,10 +62883,12 @@ class Renderer {
+@@ -62757,10 +62885,12 @@ class Renderer {
  			}
  
  			// Yield between objects to allow animation frames
@@ -359,7 +361,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd67
  	}
  
  	/**
-@@ -62844,7 +62972,7 @@ class Renderer {
+@@ -62844,7 +62974,7 @@ class Renderer {
  
  			}
  
@@ -368,8 +370,44 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..55cc3be6769659e2bf40689d1ddbfd67
  
  		}
  
+@@ -85726,6 +85856,8 @@ class WebGPUPipelineUtils {
+ 
+ 					_renderPipelineDescriptor.reset();
+ 
++					const errorScopePromise = device.popErrorScope();
++
+ 					if ( pipelinePromise !== null ) {
+ 
+ 						try {
+@@ -85740,7 +85872,7 @@ class WebGPUPipelineUtils {
+ 
+ 					}
+ 
+-					const errorScope = await device.popErrorScope();
++					const errorScope = await errorScopePromise;
+ 
+ 					if ( errorScope !== null || asyncError !== null ) {
+ 
+@@ -85883,6 +86015,8 @@ class WebGPUPipelineUtils {
+ 
+ 					_computePipelineDescriptor.reset();
+ 
++					const errorScopePromise = device.popErrorScope();
++
+ 					if ( pipelinePromise !== null ) {
+ 
+ 						try {
+@@ -85897,7 +86031,7 @@ class WebGPUPipelineUtils {
+ 
+ 					}
+ 
+-					const errorScope = await device.popErrorScope();
++					const errorScope = await errorScopePromise;
+ 
+ 					if ( errorScope !== null || asyncError !== null ) {
+ 
 diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
-index e96c4ae08d528fea66c58e5869923c1675822ac9..d78f35fbab0dcebaf8a42ba4af9004a5d437f7bb 100644
+index e96c4ae08d528fea66c58e5869923c1675822ac9..377bf8e052c362490559ccc3b81834c97ab192c6 100644
 --- a/build/three.webgpu.nodes.js
 +++ b/build/three.webgpu.nodes.js
 @@ -55964,7 +55964,7 @@ class NodeBuilder {
@@ -385,11 +423,11 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..d78f35fbab0dcebaf8a42ba4af9004a5
  
  		const total = compilationPromises.length;
  		let loaded = 0;
-+		const pendingPipelines = [];
++		const pendingPipelines = new Set();
  
  		for ( const item of compilationPromises ) {
  
-@@ -62735,12 +62736,12 @@ class Renderer {
+@@ -62735,12 +62736,14 @@ class Renderer {
  			this._bindings.updateForRender( renderObject );
  			this._isPreCompiling = false;
  
@@ -399,12 +437,14 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..d78f35fbab0dcebaf8a42ba4af9004a5
  			if ( pipelinePromises.length > 0 ) {
  
 -				await Promise.all( pipelinePromises );
-+				if ( this.compileYieldInterval === 0 ) await Promise.all( pipelinePromises );
-+				else pendingPipelines.push( Promise.all( pipelinePromises ) );
++				const pending = Promise.all( pipelinePromises ).then( () => pendingPipelines.delete( pending ) );
++				pendingPipelines.add( pending );
++				const limit = this.compileYieldInterval === 0 ? 1 : 16;
++				while ( pendingPipelines.size >= limit ) await Promise.race( pendingPipelines );
  
  			}
  
-@@ -62757,10 +62758,12 @@ class Renderer {
+@@ -62757,10 +62760,12 @@ class Renderer {
  			}
  
  			// Yield between objects to allow animation frames
@@ -418,7 +458,7 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..d78f35fbab0dcebaf8a42ba4af9004a5
  	}
  
  	/**
-@@ -62844,7 +62847,7 @@ class Renderer {
+@@ -62844,7 +62849,7 @@ class Renderer {
  
  			}
  
@@ -426,6 +466,42 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..d78f35fbab0dcebaf8a42ba4af9004a5
 +			if ( loaded < total ) await yieldToMain( this.compileYieldInterval );
  
  		}
+ 
+@@ -85726,6 +85731,8 @@ class WebGPUPipelineUtils {
+ 
+ 					_renderPipelineDescriptor.reset();
+ 
++					const errorScopePromise = device.popErrorScope();
++
+ 					if ( pipelinePromise !== null ) {
+ 
+ 						try {
+@@ -85740,7 +85747,7 @@ class WebGPUPipelineUtils {
+ 
+ 					}
+ 
+-					const errorScope = await device.popErrorScope();
++					const errorScope = await errorScopePromise;
+ 
+ 					if ( errorScope !== null || asyncError !== null ) {
+ 
+@@ -85883,6 +85890,8 @@ class WebGPUPipelineUtils {
+ 
+ 					_computePipelineDescriptor.reset();
+ 
++					const errorScopePromise = device.popErrorScope();
++
+ 					if ( pipelinePromise !== null ) {
+ 
+ 						try {
+@@ -85897,7 +85906,7 @@ class WebGPUPipelineUtils {
+ 
+ 					}
+ 
+-					const errorScope = await device.popErrorScope();
++					const errorScope = await errorScopePromise;
+ 
+ 					if ( errorScope !== null || asyncError !== null ) {
  
 diff --git a/src/math/Frustum.js b/src/math/Frustum.js
 index 177dcf1478bf44c3f5d32d38a0cac6c44932a952..af73337956fa7d9d48a87b9c7be4af8e8ba2e60a 100644
@@ -765,18 +841,18 @@ index 9a1dabe607894f810b5de4df13067ef609f1d635..c5181c18adbd6eb14ad8663938593131
  		}
  
 diff --git a/src/renderers/common/Renderer.js b/src/renderers/common/Renderer.js
-index c05aa68471f07a0bbbf6203865da1096fea503c1..c97c374de7095971c7ecd415b9c7284f616f79a9 100644
+index c05aa68471f07a0bbbf6203865da1096fea503c1..dd68271362df53b1d5a33172ec2929e3efa22aa5 100644
 --- a/src/renderers/common/Renderer.js
 +++ b/src/renderers/common/Renderer.js
 @@ -1057,6 +1057,7 @@ class Renderer {
  
  		const total = compilationPromises.length;
  		let loaded = 0;
-+		const pendingPipelines = [];
++		const pendingPipelines = new Set();
  
  		for ( const item of compilationPromises ) {
  
-@@ -1074,12 +1075,12 @@ class Renderer {
+@@ -1074,12 +1075,14 @@ class Renderer {
  			this._bindings.updateForRender( renderObject );
  			this._isPreCompiling = false;
  
@@ -786,12 +862,14 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..c97c374de7095971c7ecd415b9c7284f
  			if ( pipelinePromises.length > 0 ) {
  
 -				await Promise.all( pipelinePromises );
-+				if ( this.compileYieldInterval === 0 ) await Promise.all( pipelinePromises );
-+				else pendingPipelines.push( Promise.all( pipelinePromises ) );
++				const pending = Promise.all( pipelinePromises ).then( () => pendingPipelines.delete( pending ) );
++				pendingPipelines.add( pending );
++				const limit = this.compileYieldInterval === 0 ? 1 : 16;
++				while ( pendingPipelines.size >= limit ) await Promise.race( pendingPipelines );
  
  			}
  
-@@ -1096,10 +1097,12 @@ class Renderer {
+@@ -1096,10 +1099,12 @@ class Renderer {
  			}
  
  			// Yield between objects to allow animation frames
@@ -805,6 +883,46 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..c97c374de7095971c7ecd415b9c7284f
  	}
  
  	/**
+diff --git a/src/renderers/webgpu/utils/WebGPUPipelineUtils.js b/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
+index 802f98b6e061d4c1580a1e06a43d9b41aeec5b90..1748510c6b8e6c2b946af8a1bbb883e5fac738b2 100644
+--- a/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
++++ b/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
+@@ -298,6 +298,8 @@ class WebGPUPipelineUtils {
+ 
+ 					_renderPipelineDescriptor.reset();
+ 
++					const errorScopePromise = device.popErrorScope();
++
+ 					if ( pipelinePromise !== null ) {
+ 
+ 						try {
+@@ -312,7 +314,7 @@ class WebGPUPipelineUtils {
+ 
+ 					}
+ 
+-					const errorScope = await device.popErrorScope();
++					const errorScope = await errorScopePromise;
+ 
+ 					if ( errorScope !== null || asyncError !== null ) {
+ 
+@@ -455,6 +457,8 @@ class WebGPUPipelineUtils {
+ 
+ 					_computePipelineDescriptor.reset();
+ 
++					const errorScopePromise = device.popErrorScope();
++
+ 					if ( pipelinePromise !== null ) {
+ 
+ 						try {
+@@ -469,7 +473,7 @@ class WebGPUPipelineUtils {
+ 
+ 					}
+ 
+-					const errorScope = await device.popErrorScope();
++					const errorScope = await errorScopePromise;
+ 
+ 					if ( errorScope !== null || asyncError !== null ) {
+ 
 diff --git a/src/utils.js b/src/utils.js
 index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..3ea2e4b551fb55a29322a736e18da0fe1ed28e22 100644
 --- a/src/utils.js
