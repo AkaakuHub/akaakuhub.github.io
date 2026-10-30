@@ -212,22 +212,22 @@ body {
 }
 .loading-complete {
   pointer-events: none;
-  animation: loading-depart 1.35s linear both;
+  animation: loading-depart var(--load-exit-duration) ease-out both;
 }
 .loading-complete::before {
-  animation: loading-open-left 0.85s cubic-bezier(0.65, 0, 0.25, 1) 0.4s both;
+  animation: loading-open-left var(--load-exit-duration) ease-out both;
 }
 .loading-complete::after {
-  animation: loading-open-right 0.85s cubic-bezier(0.65, 0, 0.25, 1) 0.4s both;
+  animation: loading-open-right var(--load-exit-duration) ease-out both;
 }
 .loading-complete .loading-frame-left {
-  animation: loading-frame-open-left 0.65s ease-in-out 0.25s both;
+  animation: loading-frame-open-left var(--load-exit-duration) ease-out both;
 }
 .loading-complete .loading-frame-right {
-  animation: loading-frame-open-right 0.65s ease-in-out 0.25s both;
+  animation: loading-frame-open-right var(--load-exit-duration) ease-out both;
 }
 .loading-complete .loading-readout {
-  animation: loading-readout-depart 0.3s ease-in 0.2s both;
+  animation: loading-readout-depart var(--load-exit-duration) ease-out both;
 }
 .loading-complete .loading-frame-half > span::before,
 .loading-failed .loading-frame-half > span::before {
@@ -329,11 +329,10 @@ body {
   }
 }
 @keyframes loading-depart {
-  0%,
-  90% {
+  from {
     opacity: 1;
   }
-  100% {
+  to {
     opacity: 0;
   }
 }

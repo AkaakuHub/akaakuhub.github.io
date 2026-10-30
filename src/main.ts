@@ -255,8 +255,7 @@ export async function startRoom(
         })
         .catch(loading.fail);
     }
-    if (!frame && (moving || precipitation || animation || rendering.revealing))
-      frame = requestAnimationFrame(render);
+    if (!frame && (moving || precipitation || animation)) frame = requestAnimationFrame(render);
   }
   function invalidate() {
     rendering.invalidate();

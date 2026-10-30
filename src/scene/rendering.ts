@@ -38,9 +38,6 @@ export function createRendering(
     weather,
     observeHdr: (observer: HdrObserver) => renderer.observeHdr(observer),
     toggleHdr: () => renderer.toggleHdr(),
-    get revealing() {
-      return display.revealing;
-    },
     invalidate() {
       transforms.invalidate();
       surfaces.invalidate();

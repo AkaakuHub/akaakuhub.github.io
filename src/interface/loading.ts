@@ -10,6 +10,7 @@ export function createLoading(root: HTMLElement) {
   const percent = root.querySelector<HTMLElement>("[data-loading-percent]");
   if (!panel || !progress || !percent) throw new Error("読み込み状態の表示先が見つかりません。");
   const readout = createLoadingReadout(panel, progress, percent);
+  const startedAt = performance.now();
   root.setAttribute("aria-busy", "true");
   root.dataset.loading = "true";
   const state = createLoadingState();
@@ -57,24 +58,16 @@ export function createLoading(root: HTMLElement) {
     complete(): void {
       if (state.status !== "loading") return;
       state.complete();
-      readout.update(1, () => {
-        if (panel.classList.contains("loading-failed")) return;
-        panel.classList.add("loading-complete");
-        const finish = (): void => {
-          panel.remove();
-          root.setAttribute("aria-busy", "false");
-          delete root.dataset.loading;
-        };
-        panel.addEventListener("animationend", (event) => {
-          if (
-            event.target === panel &&
-            event.animationName === "loading-depart" &&
-            panel.classList.contains("loading-complete")
-          )
-            finish();
-        });
-        if (matchMedia("(prefers-reduced-motion: reduce)").matches) finish();
+      readout.complete();
+      root.setAttribute("aria-busy", "false");
+      delete root.dataset.loading;
+      const duration = Math.min(180, (performance.now() - startedAt) * 0.04);
+      panel.style.setProperty("--load-exit-duration", `${duration}ms`);
+      panel.classList.add("loading-complete");
+      panel.addEventListener("animationend", (event) => {
+        if (event.target === panel && event.animationName === "loading-depart") panel.remove();
       });
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches || duration === 0) panel.remove();
     },
     recover(error: unknown): void {
       console.error(error);
