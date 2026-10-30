@@ -9,7 +9,6 @@ import { createFrame } from "./frame";
 import { boardNotices } from "./notices";
 import type { BoardState, Notice } from "./notices";
 import { createPaper, updatePaper } from "./paper";
-import { createBoardCredit, createBoardHeading } from "./heading";
 import { addMagnets } from "./magnets";
 
 export type { Notice } from "./notices";
@@ -39,12 +38,6 @@ export async function createBoard(
   paperSurface.roughnessMap.channel = 1;
   let contributions: ReturnType<typeof createPaper> | undefined;
   const papers: ReturnType<typeof createPaper>[] = [];
-  group.add(
-    createBoardHeading("活動記録", 0.33, 2.23),
-    createBoardHeading("GitHub", -0.79, 1.72),
-    createBoardHeading("最新記事", -0.79, 1.13),
-    createBoardCredit(),
-  );
   const initial = boardNotices({ status: "loading" });
   const stock = paperMaps.map.image;
   if (!stock) throw new Error("紙の画像が準備されていません。");

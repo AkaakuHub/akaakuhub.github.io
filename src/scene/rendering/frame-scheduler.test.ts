@@ -98,4 +98,30 @@ describe("GPUの進行に合わせたフレームの送信", () => {
     expect(f.failed).toHaveBeenCalledWith(error);
     expect(f.callbacks.size).toBe(0);
   });
+
+  it("GPUの完了通知が失敗した場合も描画を止める", async () => {
+    const error = new Error("GPUの処理を完了できませんでした。");
+    const failed = vi.fn();
+    let callback: FrameRequestCallback | undefined;
+    const scheduler = new FrameScheduler(
+      () => true,
+      () => Promise.reject(error),
+      failed,
+      {
+        now: () => 0,
+        request(next) {
+          callback = next;
+          return 1;
+        },
+        cancel() {
+          callback = undefined;
+        },
+      },
+    );
+    scheduler.request();
+    callback?.(17);
+    await Promise.resolve();
+    expect(failed).toHaveBeenCalledWith(error);
+    expect(callback).toBeUndefined();
+  });
 });

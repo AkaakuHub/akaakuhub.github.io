@@ -1,12 +1,13 @@
 import { noticeMaterial } from "../lighting/notice-light";
 import type { PropMaterials } from "../materials/props";
-import { Group, Mesh } from "three";
+import { Float32BufferAttribute, Group, Mesh } from "three";
 import type { Material } from "three";
 import { box } from "../primitives";
 import { HardwareBatch, metricCylinderGeometry } from "../details/hardware";
 import { roundedBoxGeometry } from "../geometry/rounded-box";
 import type { MetalMaterials } from "../materials/metal";
 import { chamferedBox } from "../geometry/chamfered-box";
+import { createBoardLettering } from "./heading";
 
 function roundBox(
   parent: Group,
@@ -57,7 +58,7 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
   const rubber = metals.rubber;
   const backing = metals.ivory;
   const ceramic = noticeMaterial(metals.ivory.clone());
-  ceramic.map = null;
+  ceramic.map = createBoardLettering();
   ceramic.normalMap = metals.aluminum.normalMap;
   ceramic.roughnessMap = null;
   ceramic.metalnessMap = null;
@@ -68,7 +69,15 @@ export function createFrame(metals: MetalMaterials, props: PropMaterials): Group
   ceramic.clearcoat = 0.08;
   ceramic.clearcoatRoughness = 0.6;
   roundBox(frame, [2.64, 1.8, 0.075], [0, 1.5, 0], aluminum, 0.026);
-  roundBox(frame, [2.56, 1.72, 0.012], [0, 1.5, 0.039], ceramic, 0.014);
+  const surface = roundBox(frame, [2.56, 1.72, 0.012], [0, 1.5, 0.039], ceramic, 0.014);
+  surface.geometry = surface.geometry.clone();
+  const positions = surface.geometry.getAttribute("position");
+  const letteringUv = new Float32Array(positions.count * 2);
+  for (let index = 0; index < positions.count; index++) {
+    letteringUv[index * 2] = positions.getX(index) / 2.56 + 0.5;
+    letteringUv[index * 2 + 1] = positions.getY(index) / 1.72 + 0.5;
+  }
+  surface.geometry.setAttribute("uv1", new Float32BufferAttribute(letteringUv, 2));
   box(frame, [2.5, 1.66, 0.015], [0, 1.5, -0.045], backing);
   for (const x of [-1.32, 1.32]) {
     roundBox(frame, [0.052, 1.67, 0.065], [x, 0.99, -0.012], coating, 0.012);
