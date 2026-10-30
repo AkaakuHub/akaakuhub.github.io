@@ -18,6 +18,10 @@ export class DisplayPass {
     type: HalfFloatType,
     depthBuffer: false,
   });
+  private readonly filteredMotionTarget = new RenderTarget(1, 1, {
+    type: HalfFloatType,
+    depthBuffer: false,
+  });
   private target = this.staticTarget;
   private readonly antialiasSource = texture(this.staticTarget.texture);
   private readonly exposure = uniform(1);
@@ -29,6 +33,7 @@ export class DisplayPass {
   });
   private readonly composite = new QuadMesh(this.material);
   private readonly pipeline;
+  private readonly motionOutput;
   private readonly source;
   private readonly state = new DisplayState();
 
@@ -44,6 +49,8 @@ export class DisplayPass {
     const antialiased = new ConvertNode<"vec4">(fxaa(this.antialiasSource), "vec4");
     this.pipeline = new RenderPipeline(renderer, vec4(antialiased.rgb, 1));
     this.pipeline.outputColorTransform = false;
+    this.motionOutput = new RenderPipeline(renderer, texture(this.filteredMotionTarget.texture));
+    this.motionOutput.outputColorTransform = false;
   }
 
   invalidate(): void {
@@ -53,6 +60,7 @@ export class DisplayPass {
   setSize(width: number, height: number, moving = false): void {
     this.target = moving ? this.motionTarget : this.staticTarget;
     this.target.setSize(width, height);
+    if (moving) this.filteredMotionTarget.setSize(width, height);
     this.antialiasSource.value = this.target.texture;
   }
 
@@ -82,7 +90,12 @@ export class DisplayPass {
     const xr = renderer.xr.enabled;
     try {
       renderer.depth = false;
-      this.pipeline.render();
+      if (this.target === this.motionTarget) {
+        renderer.setRenderTarget(this.filteredMotionTarget);
+        this.pipeline.render();
+        renderer.setRenderTarget(null);
+        this.motionOutput.render();
+      } else this.pipeline.render();
     } finally {
       renderer.depth = depth;
       renderer.toneMapping = toneMapping;
