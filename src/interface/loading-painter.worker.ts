@@ -31,7 +31,7 @@ function paint(time: number): void {
   context.font = "300 11px ui-monospace, monospace";
   context.fillText(`${((time - started) / 1000).toFixed(2)}s`, 140, 72);
   context.globalAlpha = 1;
-  requestAnimationFrame(paint);
+  setTimeout(() => paint(performance.now()), 16);
 }
 self.onmessage = (event: MessageEvent<Message>) => {
   const message = event.data;
@@ -43,7 +43,7 @@ self.onmessage = (event: MessageEvent<Message>) => {
     ink = message.ink;
     previous = performance.now();
     started = previous;
-    requestAnimationFrame(paint);
+    setTimeout(() => paint(performance.now()), 16);
   } else if (message.type === "progress") {
     target = message.value;
     if (target === 1) shown = 1;

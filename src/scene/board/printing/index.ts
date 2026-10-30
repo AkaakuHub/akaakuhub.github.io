@@ -57,17 +57,13 @@ function createPrintWorker() {
 
 export function createPaperPrinter() {
   const workers = [createPrintWorker(), createPrintWorker()];
-  let iconsReady: Promise<readonly ImageBitmap[]> | undefined;
-  function loadPrintIcons(): Promise<readonly ImageBitmap[]> {
-    iconsReady ??= Promise.all(
-      [languageUrl, teamUrl].map(async (url) => {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("掲示のアイコンを読み込めませんでした。");
-        return createImageBitmap(await response.blob());
-      }),
-    );
-    return iconsReady;
-  }
+  const iconsReady = Promise.all(
+    [languageUrl, teamUrl].map(async (url) => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("掲示のアイコンを読み込めませんでした。");
+      return createImageBitmap(await response.blob());
+    }),
+  );
   return {
     dispose(cause: unknown): void {
       for (const worker of workers) worker.dispose(cause);
@@ -79,7 +75,7 @@ export function createPaperPrinter() {
     ): Promise<PrintedPaper[]> {
       const size = Math.ceil(notices.length / workers.length);
       if (size === 0) return [];
-      const [language, team] = await loadPrintIcons();
+      const [language, team] = await iconsReady;
       if (!language || !team) throw new Error("掲示のアイコンが揃っていません。");
       const results = await Promise.all(
         workers.map((worker, index) => {

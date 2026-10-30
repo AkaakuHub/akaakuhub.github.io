@@ -9,5 +9,5 @@ export function noticeMaterial<T extends Material>(material: T): T {
 }
 
 export function noticeLightScale(material: string, source: "sun" | "sky" | "lamp"): number {
-  return material === noticeSurface && source === "sun" ? 0.03 : 1;
+  return material === noticeSurface && source === "sun" ? 0.08 : 1;
 }

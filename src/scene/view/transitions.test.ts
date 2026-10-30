@@ -82,16 +82,15 @@ describe("視点を切り替えるアニメーション", () => {
     expect(slow.view.moving).toBe(false);
   });
 
-  it("描画が遅れても一度の更新で移動先へ飛ばない", () => {
+  it("描画が遅れても移動時間を引き延ばさない", () => {
     const { camera, view } = createFixture();
-    const initial = camera.position.clone();
     const destination = roomPose(0, 0, camera.aspect);
     view.back();
-    expect(view.update(0.8)).toBe(true);
-    expect(camera.position.distanceTo(initial)).toBeGreaterThan(0);
-    expect(camera.position.distanceTo(destination.position)).toBeGreaterThan(0.01);
-    settle(view);
+    expect(view.update(0.8)).toBe(false);
     expect(camera.position.distanceTo(destination.position)).toBeLessThan(0.000001);
+    view.select(1);
+    expect(view.update(0.8)).toBe(false);
+    expect(view.rotating).toBe(false);
   });
 
   it("移動中に表示サイズが変わっても途中の視点を保つ", () => {
