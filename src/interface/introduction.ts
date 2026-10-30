@@ -1,8 +1,8 @@
 import "./introduction.css";
 import { ArrowUpRight, createElement } from "lucide";
-import type { ViewState } from "../scene/view";
+import type { createView } from "../scene/view";
 
-export function createIntroduction(root: HTMLElement, leavePaper: () => void) {
+export function createIntroduction(root: HTMLElement, view: ReturnType<typeof createView>) {
   const guide = document.createElement("button");
   guide.type = "button";
   guide.className = "room-introduction";
@@ -20,22 +20,15 @@ export function createIntroduction(root: HTMLElement, leavePaper: () => void) {
     ? "紙の外をタップしてみてください"
     : "紙の外をクリックしてみてください";
   guide.append(arrow, message);
-  guide.addEventListener("click", leavePaper);
+  guide.addEventListener("click", () => view.back());
   root.append(guide);
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  let discovered = false;
   return {
     start(): void {
-      if (discovered) return;
-      timer = setTimeout(() => {
-        if (!discovered) guide.hidden = false;
-      }, 5000);
+      view.startIntroduction();
+      guide.hidden = !view.showExitGuide;
     },
-    update(state: ViewState): void {
-      if (state.mode !== "room") return;
-      discovered = true;
-      clearTimeout(timer);
-      guide.remove();
+    update(): void {
+      guide.hidden = !view.showExitGuide;
     },
   };
 }

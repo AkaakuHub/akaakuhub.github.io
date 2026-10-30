@@ -1,6 +1,7 @@
 import { MathUtils, Quaternion, Vector3 } from "three";
 import type { PerspectiveCamera } from "three";
 import { createMotionOffset } from "./motion";
+import type { NoticeTour } from "./notice-tour";
 import { inspectionBounds, inspectionPose, isRoomDirection, roomPose } from "./targets";
 import type {
   CameraPose,
@@ -21,6 +22,7 @@ export function createView(
   onChange: (state: ViewState, zoom: number) => void,
   invalidate: () => void,
   getViewport: () => InspectionViewport,
+  tour: NoticeTour,
 ) {
   if (inspections.length === 0) throw new Error("掲示用紙が配置されていません。");
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -36,6 +38,10 @@ export function createView(
   let target: CameraPose;
   let elapsed = 1;
   let duration = 1;
+
+  function canOperate(): boolean {
+    return !locked && !tour.restricted;
+  }
 
   function inspectionTarget(): InspectionTarget {
     if (state.mode === "computer") return computer;
@@ -65,6 +71,7 @@ export function createView(
   }
   function transition(next: ViewState, seconds: number): void {
     state = next;
+    if (state.mode !== "notice") tour.leave();
     onChange(state, framing.zoom);
     move(seconds);
   }
@@ -81,15 +88,15 @@ export function createView(
     invalidate();
   }
   function select(index: number): void {
-    if (locked) return;
+    if (!canOperate()) return;
     if (!isRoomDirection(index)) throw new Error("部屋の向きが見つかりません。");
     if (state.mode === "room" && state.direction === index) return;
     roomDirection = index;
     if (index < 4) heading = index;
     transition({ mode: "room", direction: index }, 0.6);
   }
-  function inspect(index: number): void {
-    if (locked) return;
+  function inspect(index: number, sequential: boolean): void {
+    if (locked || (tour.restricted && !sequential)) return;
     if (!inspections[index]) throw new Error("掲示用紙が見つかりません。");
     if (state.mode === "notice" && state.index === index) return;
     framing.zoom = 1;
@@ -101,6 +108,13 @@ export function createView(
   apply(target);
   onChange(state, framing.zoom);
   return {
+    get restricted(): boolean {
+      return tour.restricted;
+    },
+    get showExitGuide(): boolean {
+      return state.mode === "notice" && state.index === inspections.length - 1 && tour.showGuide;
+    },
+    startIntroduction: () => tour.start(),
     get locked(): boolean {
       return locked;
     },
@@ -130,27 +144,34 @@ export function createView(
       return framing.zoom;
     },
     select,
-    inspect,
+    inspect: (index: number) => inspect(index, false),
+    advanceNotice(step: number): void {
+      if (locked || state.mode !== "notice" || elapsed < duration) return;
+      const next = state.index + Math.sign(step);
+      if (next >= inspections.length) {
+        if (canOperate()) select(roomDirection);
+      } else if (next >= 0) inspect(next, true);
+    },
     setMotion(x: number, y: number): void {
       if (locked) return;
       if (deviceMotion.setTarget(x, y)) invalidate();
     },
     inspectPrivacy(): void {
-      if (locked || state.mode === "privacy") return;
+      if (!canOperate() || state.mode === "privacy") return;
       framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
       transition({ mode: "privacy" }, 0.36);
     },
     inspectScreen(): void {
-      if (locked || state.mode === "screen") return;
+      if (!canOperate() || state.mode === "screen") return;
       framing.zoom = 1;
       framing.panX = 0;
       framing.panY = 0;
       transition({ mode: "screen" }, 0.36);
     },
     inspectComputer() {
-      if (locked) return;
+      if (!canOperate()) return;
       if (state.mode === "computer") return;
       if (state.mode === "room") framing.zoom = 1;
       framing.panX = 0;
@@ -158,7 +179,7 @@ export function createView(
       transition({ mode: "computer" }, 0.36);
     },
     zoom(factor: number, animated: boolean) {
-      if (locked) return;
+      if (!canOperate()) return;
       if (state.mode === "room") return;
       const zoom = MathUtils.clamp(framing.zoom * factor, 1, 2.8);
       if (zoom === framing.zoom) return;
@@ -166,7 +187,7 @@ export function createView(
       move(animated ? 0.2 : 0.08);
     },
     pan(dx: number, dy: number) {
-      if (locked) return;
+      if (!canOperate()) return;
       if (state.mode === "room" || framing.zoom === 1) return;
       const inspection = inspectionTarget();
       const bounds = inspectionBounds(inspection, getViewport(), framing.zoom);
@@ -183,7 +204,7 @@ export function createView(
       else if (step < 0 && state.direction === 4) select(heading);
     },
     back() {
-      if (locked) return;
+      if (!canOperate()) return;
       if (state.mode !== "room") transition({ mode: "room", direction: roomDirection }, 0.32);
     },
     resize() {
@@ -210,6 +231,8 @@ export function createView(
       }
       camera.position.copy(position);
       camera.quaternion.copy(quaternion);
+      if (elapsed >= duration && state.mode === "notice" && tour.arrive(state.index))
+        onChange(state, framing.zoom);
       const moving = deviceMotion.apply(camera, delta);
       return elapsed < duration || moving;
     },

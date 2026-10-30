@@ -1,6 +1,7 @@
 import { Object3D, PerspectiveCamera, Vector3 } from "three";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { createView } from "./index";
+import { NoticeTour } from "./notice-tour";
 import { roomPose } from "./targets";
 
 function createFixture(reducedMotion = false) {
@@ -27,6 +28,7 @@ function createFixture(reducedMotion = false) {
       insetX: 12,
       insetY: 12,
     }),
+    new NoticeTour({ getItem: () => "true", setItem: () => {} }, 0),
   );
   return { camera, view };
 }

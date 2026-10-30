@@ -1,6 +1,7 @@
 import { Object3D, PerspectiveCamera } from "three";
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { createView } from "./index";
+import { NoticeTour } from "./notice-tour";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -23,6 +24,7 @@ function setup() {
     () => {},
     () => {},
     () => ({ width: 800, height: 800, insetX: 12, insetY: 12 }),
+    new NoticeTour({ getItem: () => "true", setItem: () => {} }, 0),
   );
   return { camera, view };
 }

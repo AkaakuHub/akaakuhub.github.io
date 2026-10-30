@@ -14,6 +14,7 @@ import { loadMaterials } from "./scene/materials/library";
 import { createRendering } from "./scene/rendering";
 import { createView } from "./scene/view";
 import { boardInspections } from "./scene/view/board";
+import { NoticeTour } from "./scene/view/notice-tour";
 import { observeViewport } from "./scene/viewport";
 import { observeTokyoWeather } from "./weather/client";
 import { weatherAt } from "./weather/schema";
@@ -140,13 +141,14 @@ export async function startRoom(
     (state) => {
       ui.setView(state, state.mode === "notice" ? noticeList[state.index] : undefined);
       ui.setMoving(true);
-      introduction?.update(state);
+      introduction?.update();
       updateDirections?.(state);
     },
     invalidate,
     () => ui.inspectionViewport(),
+    new NoticeTour(localStorage, inspections.length - 1),
   );
-  introduction = createIntroduction(root, () => view.back());
+  introduction = createIntroduction(root, view);
   updateDirections = createDirectionControls(root, view);
   updateDirections(view.state);
   const controlIntroduction = createControlIntroduction(root);

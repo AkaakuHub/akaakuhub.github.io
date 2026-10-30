@@ -39,6 +39,9 @@ export function bindKeyboardTargets(
   team.dataset.paperLink = "team411";
   team.textContent = "team411の公式サイト";
   team.addEventListener("focus", () => view.inspect(3));
+  team.addEventListener("click", (event) => {
+    if (view.restricted) event.preventDefault();
+  });
   navigation.append(team);
   for (const [label, href] of [
     ["Googleのデータ利用", privacy.google],
@@ -48,7 +51,9 @@ export function bindKeyboardTargets(
     link.type = "button";
     link.textContent = label;
     link.addEventListener("focus", () => view.inspectPrivacy());
-    link.addEventListener("click", () => window.open(href, "_blank", "noopener,noreferrer"));
+    link.addEventListener("click", () => {
+      if (!view.restricted) window.open(href, "_blank", "noopener,noreferrer");
+    });
     navigation.append(link);
   }
   const canvas = ui.canvas;
@@ -73,6 +78,7 @@ export function bindKeyboardTargets(
   buttons.forEach((button, index) => {
     button.addEventListener("focus", () => view.inspect(index));
     button.addEventListener("click", () => {
+      if (view.restricted) return;
       const notice = notices[index];
       if (!notice) throw new Error("掲示の操作対象が見つかりません。");
       if (notice.link) window.open(notice.link.href, "_blank", "noopener,noreferrer");
@@ -82,6 +88,11 @@ export function bindKeyboardTargets(
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
       event.preventDefault();
       event.stopPropagation();
+      if (view.restricted) {
+        view.advanceNotice(event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1);
+        canvas.focus({ preventScroll: true });
+        return;
+      }
       const nextIndex = noticeNavigation[event.key]?.[index];
       const next = nextIndex === undefined ? undefined : buttons[nextIndex];
       if (!next) throw new Error("隣の掲示が見つかりません。");
@@ -91,6 +102,7 @@ export function bindKeyboardTargets(
 
   lightButton.addEventListener("focus", () => view.select(3));
   function toggleLight(): void {
+    if (view.restricted) return;
     const on = lightSwitch.toggle();
     lightButton.setAttribute("aria-pressed", String(on));
     ui.announce(on ? "部屋の電気を点けました" : "部屋の電気を消しました");
@@ -100,6 +112,7 @@ export function bindKeyboardTargets(
   screen.addEventListener("click", () => view.inspectScreen());
   powerButton.addEventListener("focus", () => view.inspectComputer());
   function togglePower(): void {
+    if (view.restricted) return;
     const on = computer.togglePower();
     powerButton.setAttribute("aria-pressed", String(on));
     ui.announce(on ? "PCの電源を入れました" : "PCの電源を切りました");

@@ -51,15 +51,16 @@ export function bindRoomControls(
   function moveNotice(key: string): void {
     const state = view.state;
     if (state.mode !== "notice") return;
+    if (view.restricted) {
+      view.advanceNotice(key === "ArrowUp" || key === "ArrowLeft" ? -1 : 1);
+      return;
+    }
     const next = noticeNavigation[key]?.[state.index];
     if (next === undefined) throw new Error("隣の掲示が見つかりません。");
     view.inspect(next);
   }
   function nextNotice(step: number): void {
-    if (view.state.mode !== "notice" || view.moving) return;
-    const next = view.state.index + step;
-    if (next >= papers.length) view.back();
-    else view.inspect(Math.max(0, next));
+    view.advanceNotice(step);
   }
   window.addEventListener("keydown", (event) => {
     if (view.locked) return;
@@ -72,6 +73,7 @@ export function bindRoomControls(
     if (document.activeElement !== ui.canvas && document.activeElement !== document.body) return;
     if ((event.key === "Enter" || event.key === " ") && view.state.mode !== "room") {
       event.preventDefault();
+      if (view.restricted) return;
       if (view.state.mode === "notice") {
         const notice = entries[view.state.index]?.[1];
         if (!notice) throw new Error("掲示用紙のリンクが見つかりません。");
@@ -130,7 +132,8 @@ export function bindRoomControls(
     const previous = pointers.get(event.pointerId);
     if (!previous) {
       if (event.pointerType === "mouse") {
-        const hit = !view.locked && !view.moving ? pick(event, false) : undefined;
+        const hit =
+          !view.restricted && !view.locked && !view.moving ? pick(event, false) : undefined;
         const notice = hit?.type === "notice" ? entries[hit.index]?.[1] : undefined;
         const focused =
           hit?.type === "notice" && view.state.mode === "notice" && view.state.index === hit.index;
@@ -180,7 +183,7 @@ export function bindRoomControls(
       else view.vertical(dy > 0 ? 1 : -1);
       return;
     }
-    if (Math.hypot(dx, dy) >= 10 || view.moving || view.locked) return;
+    if (Math.hypot(dx, dy) >= 10 || view.moving || view.locked || view.restricted) return;
     const hit = pick(event, true);
     if (!hit) {
       view.back();

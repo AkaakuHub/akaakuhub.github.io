@@ -56,7 +56,7 @@ export function createPassageInterface(
   let respawned = false;
 
   function toggle(): void {
-    if (view.locked) return;
+    if (view.locked || view.restricted) return;
     opened = !opened;
     opening.destination.visible = opened || amount > 0;
     enterButton.hidden = true;
@@ -67,7 +67,7 @@ export function createPassageInterface(
     requestRender(false);
   }
   function enter(): void {
-    if (!opened || amount !== 1 || view.locked) return;
+    if (!opened || amount !== 1 || view.locked || view.restricted) return;
     camera.updateMatrixWorld();
     start.copy(camera.position);
     startRotation.copy(camera.quaternion);
