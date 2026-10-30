@@ -283,7 +283,7 @@ export async function startRoom(
     roomSwitch,
     () => void boardLoader.refresh(true),
     passages,
-    privacy.object,
+    privacy,
   );
   loading.rendering(4, 4);
   prepared = true;

@@ -4,6 +4,7 @@ import { MathUtils } from "three";
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 import type { createInterface } from ".";
 import type { Notice } from "../scene/board";
+import type { PaperLink } from "../scene/board/paper-links";
 import type { createView } from "../scene/view";
 import { createPicker } from "./picking";
 import type { createComputerInterface } from "./computer";
@@ -22,7 +23,7 @@ export function bindRoomControls(
   lightSwitch: ReturnType<typeof bindRoomSwitch>,
   refreshBoard: () => void,
   passages: readonly ReturnType<typeof createPassageInterface>[],
-  privacy: Object3D,
+  privacy: { object: Object3D; links: readonly PaperLink[] },
 ) {
   const entries = [...notices];
   const papers = entries.map(([object]) => object);
@@ -34,7 +35,7 @@ export function bindRoomControls(
     computer.targets,
     lightSwitch.object,
     passages.map((passage) => passage.targets),
-    privacy,
+    privacy.object,
   );
   const keyboard = bindKeyboardTargets(
     root,
@@ -139,6 +140,9 @@ export function bindRoomControls(
           hit?.type === "notice" && view.state.mode === "notice" && view.state.index === hit.index;
         cursor(
           Boolean(hit) &&
+            (hit?.type !== "privacy" ||
+              view.state.mode !== "privacy" ||
+              Boolean(paperLinkAt(privacy.links, hit.uv))) &&
             (!focused ||
               Boolean(
                 notice && (notice.link || notice.refreshable || paperLinkAt(notice.links, hit.uv)),
@@ -197,7 +201,9 @@ export function bindRoomControls(
       return;
     }
     if (hit.type === "privacy") {
-      view.inspectPrivacy();
+      const region = paperLinkAt(privacy.links, hit.uv);
+      if (region) window.open(region.href, "_blank", "noopener,noreferrer");
+      else view.inspectPrivacy();
       return;
     }
     if (hit.type === "screen") {

@@ -50,5 +50,5 @@ export async function createPrivacyPoster(
     offsetY: 0,
     topAligned: false,
   };
-  return { group, target };
+  return { group, target: { ...target, links: print.links } };
 }

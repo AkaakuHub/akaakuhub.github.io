@@ -15,8 +15,8 @@ export const privacy = {
       text: "HDR設定・案内・読み込みデータを端末に保存します。配信等にCloudflare・GitHub・Open-Meteo・ブログを利用します。",
     },
     {
-      title: "位置情報と端末の傾き",
-      text: "位置情報は取得しません。傾きは端末内だけで使い、送信しません。",
+      title: "端末の傾き",
+      text: "端末内だけで使い、送信しません。",
     },
   ],
   operator: "運営: あかあく（AkaakuHub）",

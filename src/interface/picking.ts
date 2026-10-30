@@ -88,7 +88,7 @@ export function createPicker(
       });
       if (blocked) return;
     }
-    if (target === privacy) return { type: "privacy" as const };
+    if (target === privacy) return { type: "privacy" as const, uv: candidate.uv };
     if (target === computer.screen) return { type: "screen" as const };
     for (const [index, passage] of passages.entries()) {
       if (target === passage.panel) return { type: "passage" as const, index };

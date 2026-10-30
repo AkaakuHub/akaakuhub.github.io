@@ -41,7 +41,7 @@ export function printPaper(
   context.globalCompositeOperation = "source-over";
   let links: PaperLink[] = [];
   if (print.kind === "privacy") {
-    paintPrivacy(context, width);
+    links = paintPrivacy(context, width, height);
   } else if (print.kind === "article") {
     paintArticle(context, print, width, height);
   } else {
