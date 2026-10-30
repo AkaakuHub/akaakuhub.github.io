@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreBinaries": ["ffmpeg"],
+  "vite": { "config": [] },
   "entry": [
     "src/tailwind.css",
     "scripts/assets/catalog.mjs",
