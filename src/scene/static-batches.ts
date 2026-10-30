@@ -37,9 +37,9 @@ export function createStaticBatcher() {
         object.geometry.boundingBox.getCenter(center).applyMatrix4(object.matrixWorld);
         const key = [
           object.material.uuid,
-          Math.floor(center.x / 1.5),
-          Math.floor(center.y / 1.5),
-          Math.floor(center.z / 1.5),
+          Math.floor(center.x / 3),
+          Math.floor(center.y / 3),
+          Math.floor(center.z / 3),
           object.castShadow,
           object.receiveShadow,
           object.layers.mask,
