@@ -149,7 +149,7 @@ export async function startRoom(
       introduction?.update();
       updateDirections?.(state);
     },
-    invalidate,
+    requestFrame,
     () => ui.inspectionViewport(),
     new NoticeTour(localStorage, inspections.length - 1),
   );
@@ -235,7 +235,9 @@ export async function startRoom(
     frameMetrics?.end(moving);
     if (!ready) {
       ready = true;
-      void finishFirstFrame()
+      void renderer
+        .completedFrame()
+        .then(finishFirstFrame)
         .then(() => {
           loading.complete();
           fluorescent.start();
