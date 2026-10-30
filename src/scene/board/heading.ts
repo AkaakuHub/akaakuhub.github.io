@@ -46,6 +46,6 @@ export function createBoardCredit() {
     new MeshStandardMaterial({ map: texture, transparent: true, depthWrite: false, roughness: 1 }),
   );
   credit.scale.set(1.15, 0.72, 1);
-  credit.position.set(0.9, 0.7, 0.0451);
+  credit.position.set(0.9, 0.68, 0.0451);
   return credit;
 }

@@ -1,6 +1,5 @@
 import { profile } from "../content/profile";
 import { privacy, privacyText } from "../content/privacy";
-import { MathUtils } from "three";
 import type { createInterface } from ".";
 import type { Notice } from "../scene/board";
 import type { createView } from "../scene/view";
@@ -82,18 +81,14 @@ export function bindKeyboardTargets(
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
       event.preventDefault();
       event.stopPropagation();
-      const column = MathUtils.clamp(
-        Math.floor(index / 2) +
-          (event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0),
-        0,
-        1,
-      );
-      const row = MathUtils.clamp(
-        (index % 2) + (event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0),
-        0,
-        1,
-      );
-      const next = buttons[column * 2 + row];
+      const neighbors: Readonly<Record<string, readonly number[]>> = {
+        ArrowLeft: [1, 1, 1, 1],
+        ArrowRight: [0, 0, 2, 3],
+        ArrowUp: [0, 1, 0, 2],
+        ArrowDown: [2, 1, 3, 3],
+      };
+      const nextIndex = neighbors[event.key]?.[index];
+      const next = nextIndex === undefined ? undefined : buttons[nextIndex];
       if (!next) throw new Error("隣の掲示が見つかりません。");
       next.focus({ preventScroll: true });
     });

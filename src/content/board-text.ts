@@ -5,11 +5,9 @@ export const boardText = [
   privacyText,
   profile.hobbies,
   profile.favorite,
-  ...profile.education,
-  ...profile.activities,
-  ...profile.awards.flatMap((award) => [award.year, award.title, award.prize]),
+  ...profile.history.flatMap((entry) => [entry.date, entry.title, entry.detail]),
   ...profile.qualifications,
-  "趣味 好きなもの 好きな言語 活動・資格 所属 活動 受賞 資格",
+  "趣味 好きなもの 好きな言語 活動・資格 活動記録 所属 活動 受賞 資格",
   "Googleのデータ利用 計測を停止する",
   "あかあく",
   "紙の外をタップしてみてください 紙の外をクリックしてみてください",
@@ -19,4 +17,4 @@ export const boardText = [
 ].join(" ");
 
 export const boardHeadingText =
-  "最新記事GitHub活動・資格所属活動受賞資格SkillsWeather by Open-Meteo";
+  "最新記事GitHub活動・資格活動記録所属活動受賞資格SkillsWeather by Open-Meteo";
