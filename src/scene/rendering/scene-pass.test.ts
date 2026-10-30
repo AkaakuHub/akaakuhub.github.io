@@ -8,17 +8,39 @@ function fixture() {
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
   const animated = new Group();
   scene.add(animated);
-  const pass = new ScenePass(scene, camera, [animated]);
+  const renderStatic = vi.fn<ConstructorParameters<typeof ScenePass>[3]>();
+  const pass = new ScenePass(scene, camera, [animated], renderStatic);
   pass.setSize(320, 240);
   const renderer = {
     autoClear: false,
     render: vi.fn<Renderer["render"]>(),
     setRenderTarget: vi.fn<Renderer["setRenderTarget"]>(),
   };
-  return { scene, camera, animated, pass, renderer, output: new RenderTarget(320, 240) };
+  return {
+    scene,
+    camera,
+    animated,
+    pass,
+    renderer,
+    renderStatic,
+    output: new RenderTarget(320, 240),
+  };
 }
 
 describe("静止した部屋の描画", () => {
+  it("停止した物体の追加描画もキャッシュし、移動中には重ねて描かない", () => {
+    const { pass, animated, renderStatic, renderer, output } = fixture();
+    renderStatic.mockImplementation(() => expect(animated.visible).toBe(true));
+    pass.render(renderer, output, true, false);
+    expect(renderStatic).not.toHaveBeenCalled();
+    const cached = pass.render(renderer, output, false, false);
+    expect(renderStatic).toHaveBeenCalledExactlyOnceWith(renderer, cached);
+    pass.render(renderer, output, false, true);
+    expect(renderStatic).toHaveBeenCalledOnce();
+    pass.invalidate();
+    pass.render(renderer, output, false, false);
+    expect(renderStatic).toHaveBeenCalledTimes(2);
+  });
   it("移動中は動く物体も同じ描画に含め、停止後は静的なキャッシュから外す", () => {
     const { scene, pass, animated, renderer, output } = fixture();
     const visibility: boolean[] = [];

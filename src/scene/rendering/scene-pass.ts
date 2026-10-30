@@ -24,6 +24,10 @@ export class ScenePass {
     private readonly scene: Scene,
     private readonly camera: PerspectiveCamera,
     private readonly dynamicSurfaces: readonly Object3D[],
+    private readonly renderStaticSurfaces: (
+      renderer: Pick<Renderer, "autoClear" | "setRenderTarget" | "render">,
+      target: RenderTarget,
+    ) => void,
   ) {
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     this.material.fragmentNode = texture(this.target.texture);
@@ -70,6 +74,7 @@ export class ScenePass {
         } finally {
           for (const { object, visible } of visibility) object.visible = visible;
         }
+        if (!moving) this.renderStaticSurfaces(renderer, this.target);
         this.world.copy(this.camera.matrixWorld);
         this.projection.copy(this.camera.projectionMatrix);
         this.dirty = moving;

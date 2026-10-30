@@ -37,7 +37,6 @@ export async function createRendering(
   scene.add(sky.horizon);
   await prepareScene(renderer, scene, camera, frame, progress);
   const bundles = new StaticSceneBundles(scene);
-  const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
   const transforms = new SceneTransforms(scene);
   const dynamic = new DynamicSurfacePass(
     monitor,
@@ -46,6 +45,12 @@ export async function createRendering(
     scene,
     camera,
     bundles.root,
+  );
+  const surfaces = new ScenePass(
+    scene,
+    camera,
+    [monitor, ...fanSurfaces, contributions],
+    (renderer, target) => dynamic.renderStatic(renderer, target),
   );
   const weather = new WeatherPass(camera);
   const skyPass = new SkyPass(sky.object, camera);
@@ -81,9 +86,20 @@ export async function createRendering(
       motionFrame.setSize(motion.width, motion.height);
       surfaces.setSize(w, h);
     },
-    render({ moving, rotating }: { moving: boolean; rotating: boolean }) {
+    render({
+      moving,
+      rotating,
+      computerActive,
+      contributionsActive,
+    }: {
+      moving: boolean;
+      rotating: boolean;
+      computerActive: boolean;
+      contributionsActive: boolean;
+    }) {
       transforms.update();
       bundles.update(camera);
+      if (dynamic.setActive(computerActive, contributionsActive)) surfaces.invalidate();
       const precipitation = weather.active;
       const skyVisible = skyPass.visible;
       const compose = skyVisible || (!moving && dynamic.visible) || precipitation;

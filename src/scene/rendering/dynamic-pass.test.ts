@@ -20,6 +20,7 @@ function fixture() {
   const staticSurfaces = new Group();
   scene.add(monitor, contributions, staticSurfaces);
   const pass = new DynamicSurfacePass(monitor, [], contributions, scene, camera, staticSurfaces);
+  pass.setActive(true, true);
   const renderer = {
     autoClear: true,
     setRenderTarget: vi.fn<Renderer["setRenderTarget"]>(),
@@ -38,6 +39,44 @@ function fixture() {
 }
 
 describe("動く物体の描画", () => {
+  it("電源を切ったPCとアニメーションが終了した掲示には追加描画を行わない", () => {
+    const { pass, renderer, target } = fixture();
+    expect(pass.setActive(false, false)).toBe(true);
+    expect(pass.visible).toBe(false);
+    pass.render(renderer, target);
+    expect(renderer.render).not.toHaveBeenCalled();
+    expect(pass.setActive(false, false)).toBe(false);
+    pass.setActive(true, false);
+    pass.render(renderer, target);
+    expect(renderer.render).toHaveBeenCalledOnce();
+  });
+
+  it("草だけが動く間は停止したPCを追加描画から外す", () => {
+    const { pass, monitor, contributions, camera, renderer, target } = fixture();
+    contributions.add(new Mesh(new BoxGeometry(), new MeshBasicMaterial()));
+    pass.setActive(false, true);
+    renderer.render.mockImplementation(() => {
+      expect(monitor.visible).toBe(false);
+      expect(camera.layers.test(contributions.children[0]!.layers)).toBe(true);
+    });
+    pass.render(renderer, target);
+    expect(renderer.render).toHaveBeenCalledOnce();
+    expect(monitor.visible).toBe(true);
+  });
+
+  it("停止中のPCも透過面より後に描くキャッシュへ残す", () => {
+    const { pass, monitor, contributions, renderer, target } = fixture();
+    contributions.add(new Mesh(new BoxGeometry(), new MeshBasicMaterial()));
+    pass.setActive(false, true);
+    renderer.render.mockImplementation(() => {
+      expect(monitor.visible).toBe(true);
+      expect(contributions.visible).toBe(false);
+    });
+    pass.renderStatic(renderer, target);
+    expect(renderer.render).toHaveBeenCalledOnce();
+    expect(contributions.visible).toBe(true);
+  });
+
   it("画面外なら追加の描画を行わない", () => {
     const { scene, monitor, pass, renderer, target } = fixture();
     monitor.position.x = 100;
