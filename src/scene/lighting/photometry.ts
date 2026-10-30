@@ -3,9 +3,9 @@ import type { Color } from "three";
 export const photometry = {
   scale: 1 / 1000,
   radiationScale: 0.12,
-  tubeLumens: 3350,
+  tubeLumens: 6700,
   monitorNits: 350,
-  ev100: 7,
+  ev100: 6,
 } as const;
 
 export function unitLuminance(color: Color): Color {

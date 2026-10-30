@@ -97,8 +97,9 @@ export class RoomRenderer extends Renderer {
       const supported =
         this.backend === this.output &&
         this.display.matches &&
-        typeof GPUCanvasContext !== "undefined" &&
-        context instanceof GPUCanvasContext &&
+        typeof context === "object" &&
+        context !== null &&
+        "getConfiguration" in context &&
         typeof context.getConfiguration === "function" &&
         context.getConfiguration()?.toneMapping !== undefined;
       observer(this.preference.enabled, supported);
