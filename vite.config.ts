@@ -11,7 +11,7 @@ export default defineConfig(({ command, mode }) => {
     "Cross-Origin-Embedder-Policy": "require-corp",
   };
   let https: ServerOptions | undefined;
-  if (command === "serve") {
+  if (command === "serve" && mode !== "test") {
     const environment = loadEnv(mode, process.cwd(), "DEV_TLS_");
     const cert = environment.DEV_TLS_CERT_FILE;
     const key = environment.DEV_TLS_KEY_FILE;
