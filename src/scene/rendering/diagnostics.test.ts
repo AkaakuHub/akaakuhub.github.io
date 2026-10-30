@@ -12,6 +12,29 @@ function storage() {
 }
 
 describe("描画エラーの記録", () => {
+  it("シェーダー全文を除き、失敗状態と呼び出し元を残す", () => {
+    const log = new RenderingDiagnostics(storage());
+    log.record(
+      new Error(
+        "GL error: 0x505\nVertex compiled: false\nVertex source:\n#version 300 es\nvoid main() {}\nFragment source:\nvoid main() {}",
+      ),
+      "WebGL shader",
+    );
+    expect(log.report()).toContain("GL error: 0x505");
+    expect(log.report()).toContain("Vertex compiled: false");
+    expect(log.report()).not.toContain("void main");
+    expect(log.report()).not.toContain("#version");
+  });
+
+  it("同じ例外が複数の処理へ伝わっても重複記録しない", () => {
+    const log = new RenderingDiagnostics(storage());
+    const error = new Error("最初の障害");
+    log.record(error, "WebGL shader");
+    log.record(error, "Render recovery");
+    log.record(error, "Application recovery failed");
+    expect(log.report().match(/最初の障害/g)).toHaveLength(1);
+    expect(log.report()).toContain("WebGL shader");
+  });
   it("後続の障害が発生しても最初の障害を先頭に保つ", () => {
     const log = new RenderingDiagnostics(storage());
     log.record(new Error("最初の障害"), "WebGPU");
@@ -34,7 +57,7 @@ describe("描画エラーの記録", () => {
     expect(log.report()).toContain("障害-0");
     expect(log.report()).toContain("障害-29");
     expect(log.report()).not.toContain("障害-1\n");
-    expect(log.report().match(/\[\d+\]/g)).toHaveLength(12);
+    expect(log.report().match(/\[\d+\]/g)).toHaveLength(6);
   });
 
   it("保存先の容量が不足しても元のエラーを別の例外で隠さない", () => {

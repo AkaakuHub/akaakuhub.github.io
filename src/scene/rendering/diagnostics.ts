@@ -6,8 +6,25 @@ interface Entry {
   detail: string;
 }
 
+function compact(text: string): string {
+  const withoutShaders = text.replace(
+    /(?:Vertex source:|Fragment source:|Translated vertex:|Translated fragment:)[\s\S]*?(?=\n\s+at |$)/g,
+    "[シェーダー全文は省略]",
+  );
+  let frames = 0;
+  const result = withoutShaders
+    .split("\n")
+    .filter((line) => {
+      if (!/^\s+at /.test(line)) return true;
+      return ++frames <= 3;
+    })
+    .join("\n");
+  return result.length > 1800 ? `${result.slice(0, 1800)}\n[記録上限により省略]` : result;
+}
+
 export class RenderingDiagnostics {
   private readonly entries: Entry[];
+  private readonly recorded = new WeakSet<Error>();
 
   constructor(private readonly storage: Pick<Storage, "getItem" | "setItem">) {
     const saved = storage.getItem(key);
@@ -27,7 +44,11 @@ export class RenderingDiagnostics {
               "detail" in entry &&
               typeof entry.detail === "string"
             )
-              this.entries.push({ time: entry.time, source: entry.source, detail: entry.detail });
+              this.entries.push({
+                time: entry.time,
+                source: entry.source,
+                detail: compact(entry.detail),
+              });
           }
         }
       } catch {
@@ -37,6 +58,10 @@ export class RenderingDiagnostics {
   }
 
   record(error: unknown, source: string, context = ""): void {
+    if (error instanceof Error) {
+      if (this.recorded.has(error)) return;
+      this.recorded.add(error);
+    }
     let failure = error instanceof Error ? (error.stack ?? error.message) : String(error);
     if (error instanceof Error && error.cause !== undefined) {
       try {
@@ -49,11 +74,11 @@ export class RenderingDiagnostics {
         failure += "\n\nCause: 原因オブジェクトを文字列化できませんでした。";
       }
     }
-    const text = context ? `${failure}\n\n${context}` : failure;
-    const detail = text.length > 48_000 ? `${text.slice(0, 48_000)}\n[記録上限により省略]` : text;
+    const text = context ? `${context}\n\n${failure}` : failure;
+    const detail = compact(text);
     const last = this.entries.at(-1);
     if (last?.source === source && last.detail === detail) return;
-    if (this.entries.length >= 12) this.entries.splice(1, this.entries.length - 11);
+    if (this.entries.length >= 6) this.entries.splice(1, this.entries.length - 5);
     this.entries.push({ time: new Date().toISOString(), source, detail });
     try {
       this.storage.setItem(key, JSON.stringify(this.entries));
@@ -63,7 +88,10 @@ export class RenderingDiagnostics {
   }
 
   report(): string {
-    return this.entries
+    const entries =
+      this.entries.length > 6 ? [this.entries[0], ...this.entries.slice(-5)] : this.entries;
+    return entries
+      .filter((entry): entry is Entry => entry !== undefined)
       .map((entry, index) => `[${index + 1}] ${entry.time} ${entry.source}\n${entry.detail}`)
       .join("\n\n");
   }

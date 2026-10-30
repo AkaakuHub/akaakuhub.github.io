@@ -6,6 +6,10 @@ import { renderingDiagnostics } from "./session";
 
 export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) => void): void {
   const context = renderer.backend instanceof WebGLBackend ? renderer.getContext() : null;
+  const driver =
+    context instanceof WebGL2RenderingContext
+      ? context.getExtension("WEBGL_debug_renderer_info")
+      : null;
   const environment =
     context instanceof WebGL2RenderingContext
       ? [
@@ -13,8 +17,14 @@ export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) =
           `GL: ${context.getParameter(context.VERSION)}`,
           `Vendor: ${context.getParameter(context.VENDOR)}`,
           `Renderer: ${context.getParameter(context.RENDERER)}`,
+          ...(driver
+            ? [
+                `GPU vendor: ${context.getParameter(driver.UNMASKED_VENDOR_WEBGL)}`,
+                `GPU renderer: ${context.getParameter(driver.UNMASKED_RENDERER_WEBGL)}`,
+              ]
+            : []),
           `Max texture size: ${context.getParameter(context.MAX_TEXTURE_SIZE)}`,
-          `Extensions: ${context.getSupportedExtensions()?.join(", ")}`,
+          `Parallel compile: ${context.getSupportedExtensions()?.includes("KHR_parallel_shader_compile")}`,
         ].join("\n")
       : "API: WebGPU";
   const report = (error: unknown, source: string): void => {
@@ -31,6 +41,7 @@ export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) =
     fail(error);
   };
   renderer.debug.onShaderError = (gl, program, vertex, fragment) => {
+    const errorCode = gl.getError();
     if (gl.isContextLost()) {
       renderingDiagnostics.record(
         new RenderingContextLostError("WebGL", "接続喪失中にシェーダーの検査が呼ばれました。"),
@@ -42,17 +53,19 @@ export function bindRenderingErrors(renderer: Renderer, fail: (error: unknown) =
       new Error(
         [
           "WebGLのシェーダーを準備できませんでした。",
+          `GL error: 0x${errorCode.toString(16)}`,
           `Context lost: ${gl.isContextLost()}`,
+          `Program exists: ${gl.isProgram(program)}`,
+          `Vertex exists: ${gl.isShader(vertex)}`,
+          `Fragment exists: ${gl.isShader(fragment)}`,
           `GL: ${gl.getParameter(gl.VERSION)}`,
           `Renderer: ${gl.getParameter(gl.RENDERER)}`,
           `Vertex compiled: ${gl.getShaderParameter(vertex, gl.COMPILE_STATUS)}`,
           `Fragment compiled: ${gl.getShaderParameter(fragment, gl.COMPILE_STATUS)}`,
           `Linked: ${gl.getProgramParameter(program, gl.LINK_STATUS)}`,
-          `Program: ${gl.getProgramInfoLog(program)}`,
-          `Vertex: ${gl.getShaderInfoLog(vertex)}`,
-          `Fragment: ${gl.getShaderInfoLog(fragment)}`,
-          `Vertex source:\n${gl.getShaderSource(vertex)}`,
-          `Fragment source:\n${gl.getShaderSource(fragment)}`,
+          `Program: ${gl.getProgramInfoLog(program)?.slice(0, 400)}`,
+          `Vertex: ${gl.getShaderInfoLog(vertex)?.slice(0, 400)}`,
+          `Fragment: ${gl.getShaderInfoLog(fragment)?.slice(0, 400)}`,
         ].join("\n\n"),
       ),
       "WebGL shader",
