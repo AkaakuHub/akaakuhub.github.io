@@ -239,6 +239,23 @@ export function bindRoomControls(
   let wheelDistance = 0;
   let lastWheelTime = 0;
   let lastNoticeTime = -Infinity;
+  function resetInput(): void {
+    for (const pointerId of pointers.keys()) {
+      if (ui.canvas.hasPointerCapture(pointerId)) ui.canvas.releasePointerCapture(pointerId);
+    }
+    pointers.clear();
+    start = undefined;
+    pinched = false;
+    pinchDistance = 0;
+    wheelDistance = 0;
+    lastWheelTime = 0;
+    lastNoticeTime = -Infinity;
+    cursor(false, false);
+  }
+  document.addEventListener("visibilitychange", resetInput);
+  window.addEventListener("blur", resetInput);
+  window.addEventListener("pagehide", resetInput);
+  window.addEventListener("pageshow", resetInput);
   ui.canvas.addEventListener(
     "wheel",
     (event) => {
