@@ -83,6 +83,7 @@ body {
       calc((1 - var(--assembly)) * var(--offset-y))
     )
     rotate(calc((1 - var(--assembly)) * var(--angle)));
+  transition: transform 80ms linear;
 }
 .loading-frame-half > span::before {
   content: "";
@@ -92,6 +93,7 @@ body {
   background: currentColor;
   transform-origin: inherit;
   animation: loading-line-drift 3.6s ease-in-out infinite;
+  transition: scale 80ms linear;
 }
 .loading-line-top,
 .loading-line-bottom {
@@ -348,6 +350,8 @@ body {
   }
   .loading-failed .loading-frame-half > span,
   .loading-failed .loading-frame-half > span::before,
+  .loading-frame-half > span,
+  .loading-frame-half > span::before,
   .loading-retry > svg {
     transition: none;
   }

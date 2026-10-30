@@ -23,7 +23,6 @@ import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
-import { prepareBoardHeadingFont } from "./assets/typography";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
 import { createIntroduction } from "./interface/introduction";
@@ -47,11 +46,11 @@ export async function startRoom(
   audio: WeatherAudio,
   avatarReady: Promise<ImageBitmap>,
   printer: PaperPrinter,
+  fontsReady: Promise<void>,
 ) {
   performance.mark("room-startup");
   const ui = createInterface(root);
   const batchStaticMeshes = createStaticBatcher();
-  const fontsReady = prepareBoardHeadingFont();
   let deviceLost = false;
   const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
     bindRenderingErrors(renderer, loading.fail, (error) => {

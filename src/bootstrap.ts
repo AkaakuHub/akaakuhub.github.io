@@ -4,7 +4,7 @@ import { createRoomAssetLoader } from "./assets/loading";
 import type { RoomAssetLoader } from "./assets/loading";
 import { createWeatherAudio } from "./scene/audio";
 import { loadProfileAvatar } from "./content/avatar";
-import { prepareBoardFont } from "./assets/typography";
+import { prepareBoardFont, prepareBoardHeadingFont } from "./assets/typography";
 import { createPaperPrinter } from "./scene/board/printing";
 
 const root = document.querySelector<HTMLElement>("#app");
@@ -22,12 +22,21 @@ try {
   const weatherReady = loadTokyoWeather();
   const avatarReady = loadProfileAvatar();
   assets = createRoomAssetLoader((summary) => loading.progress(summary.progressPercent, 100));
-  const [room] = await Promise.all([
-    import("./main"),
+  const fontsReady = Promise.all([
     import("./assets/fonts/board-text.css").then(() => prepareBoardFont("")),
-    import("./assets/fonts/yomogi.css"),
-  ]);
-  await room.startRoom(root, loading, weatherReady, assets, audio, avatarReady, printer);
+    import("./assets/fonts/yomogi.css").then(() => prepareBoardHeadingFont()),
+  ]).then(() => undefined);
+  const room = await import("./main");
+  await room.startRoom(
+    root,
+    loading,
+    weatherReady,
+    assets,
+    audio,
+    avatarReady,
+    printer,
+    fontsReady,
+  );
 } catch (error) {
   printer.dispose(error);
   assets?.abort(error);
