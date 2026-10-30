@@ -1,5 +1,5 @@
 import type { Node } from "three/webgpu";
-import { Fn, atan, float, mix, smoothstep, vec2, vec3 } from "three/tsl";
+import { Fn, If, atan, float, mix, smoothstep, vec2, vec3 } from "three/tsl";
 
 export const cloudCoordinates = Fn(
   ({
@@ -77,30 +77,36 @@ export const skyColor = Fn(
       mix(nightClouds, lit.mul(3.8).mul(brightness), daylight),
       haze,
     ).toVar();
-    const sunDisk = smoothstep(0.999976, 0.999991, direction.dot(sun));
-    color.addAssign(
-      vec3(1, 0.87, 0.7).mul(sunDisk).mul(daylight).mul(cloudAlpha.oneMinus()).mul(8),
-    );
-    const coordinates = vec2(
-      atan(direction.z, direction.x),
-      direction.y.clamp(-1, 1).asin(),
-    ).toVar();
-    const cell = coordinates.mul(650).floor();
-    const seed = cell.dot(vec2(127.1, 311.7)).sin().mul(43758.5453).fract();
-    const point = coordinates.mul(650).fract().sub(0.5);
-    const star = seed.step(0.9993).mul(smoothstep(0.02, 0.16, point.length()).oneMinus());
-    color.addAssign(
-      vec3(star.mul(stars).mul(0.6).mul(direction.y.step(0.02)).mul(cloudAlpha.oneMinus())),
-    );
-    const moonDisk = smoothstep(0.999982, 0.999991, direction.dot(moon));
-    color.addAssign(
-      vec3(0.7, 0.8, 1)
-        .mul(moonDisk)
-        .mul(moonFraction)
-        .mul(daylight.oneMinus())
-        .mul(cloudAlpha.oneMinus())
-        .mul(3),
-    );
+    If(daylight.greaterThan(0), () => {
+      const sunDisk = smoothstep(0.999976, 0.999991, direction.dot(sun));
+      color.addAssign(
+        vec3(1, 0.87, 0.7).mul(sunDisk).mul(daylight).mul(cloudAlpha.oneMinus()).mul(8),
+      );
+    });
+    If(stars.greaterThan(0), () => {
+      const coordinates = vec2(
+        atan(direction.z, direction.x),
+        direction.y.clamp(-1, 1).asin(),
+      ).toVar();
+      const cell = coordinates.mul(650).floor();
+      const seed = cell.dot(vec2(127.1, 311.7)).sin().mul(43758.5453).fract();
+      const point = coordinates.mul(650).fract().sub(0.5);
+      const star = seed.step(0.9993).mul(smoothstep(0.02, 0.16, point.length()).oneMinus());
+      color.addAssign(
+        vec3(star.mul(stars).mul(0.6).mul(direction.y.step(0.02)).mul(cloudAlpha.oneMinus())),
+      );
+    });
+    If(moonFraction.mul(daylight.oneMinus()).greaterThan(0), () => {
+      const moonDisk = smoothstep(0.999982, 0.999991, direction.dot(moon));
+      color.addAssign(
+        vec3(0.7, 0.8, 1)
+          .mul(moonDisk)
+          .mul(moonFraction)
+          .mul(daylight.oneMinus())
+          .mul(cloudAlpha.oneMinus())
+          .mul(3),
+      );
+    });
     return color.div(exposure);
   },
 );
