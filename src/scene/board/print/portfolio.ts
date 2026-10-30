@@ -21,16 +21,15 @@ export function paintPortfolio(
       const length = context.measureText(segment).width / width;
       if (x + length > 0.96 && !/^[、。）」]/.test(segment)) {
         x = 0.22;
-        y += 0.044;
+        y += 0.05;
       }
       context.fillText(segment, width * x, width * y);
       x += length;
     }
-    return y + 0.044;
+    return y + 0.05;
   }
-  heading("活動記録", 0.078, 0.06);
   const links: PaperLink[] = [];
-  let y = 0.145;
+  let y = 0.09;
   for (const entry of profile.history) {
     context.strokeStyle = "#a6b6a6";
     context.lineWidth = width * 0.0015;
@@ -67,16 +66,16 @@ export function paintPortfolio(
     if (entry.detail) nextY = paragraph(entry.detail, nextY);
     context.beginPath();
     context.moveTo(width * 0.185, width * y);
-    context.lineTo(width * 0.185, width * (nextY - 0.013));
+    context.lineTo(width * 0.185, width * nextY);
     context.stroke();
-    y = nextY + 0.012;
+    y = nextY + 0.025;
   }
   heading("資格", y + 0.015, 0.046);
   context.fillStyle = "#253b31";
   context.font = `500 ${width * paperBodySize}px ${siteFont}`;
   for (const text of profile.qualifications) {
     context.fillText(text, width * 0.22, width * (y + 0.015));
-    y += 0.044;
+    y += 0.05;
   }
   return links;
 }

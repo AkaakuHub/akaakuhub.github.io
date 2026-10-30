@@ -1,4 +1,5 @@
 import { profile } from "../content/profile";
+import { noticeNavigation } from "../scene/board/navigation";
 import { privacy, privacyText } from "../content/privacy";
 import type { createInterface } from ".";
 import type { Notice } from "../scene/board";
@@ -81,13 +82,7 @@ export function bindKeyboardTargets(
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
       event.preventDefault();
       event.stopPropagation();
-      const neighbors: Readonly<Record<string, readonly number[]>> = {
-        ArrowLeft: [0, 1, 1, 1],
-        ArrowRight: [2, 3, 2, 3],
-        ArrowUp: [0, 0, 2, 2],
-        ArrowDown: [1, 1, 3, 3],
-      };
-      const nextIndex = neighbors[event.key]?.[index];
+      const nextIndex = noticeNavigation[event.key]?.[index];
       const next = nextIndex === undefined ? undefined : buttons[nextIndex];
       if (!next) throw new Error("隣の掲示が見つかりません。");
       next.focus({ preventScroll: true });

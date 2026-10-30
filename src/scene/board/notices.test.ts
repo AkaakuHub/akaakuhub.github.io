@@ -15,7 +15,7 @@ const second = {
 };
 
 describe("ホワイトボードの掲示", () => {
-  it("左上にプロフィール、左下に活動記録、右下に草と最新記事を置き、紙が重ならない", () => {
+  it("左にプロフィール・草・最新記事、右に活動記録を置き、紙が重ならない", () => {
     const notices = boardNotices({ status: "loading" });
     expect(notices.map((notice) => notice.kind)).toEqual([
       "profile",
@@ -24,9 +24,7 @@ describe("ホワイトボードの掲示", () => {
       "article",
     ]);
     for (const notice of notices) {
-      expect(Math.sign(notice.position[0])).toBe(
-        notice.kind === "profile" || notice.kind === "portfolio" ? -1 : 1,
-      );
+      expect(Math.sign(notice.position[0])).toBe(notice.kind === "portfolio" ? 1 : -1);
       for (const other of notices) {
         if (notice === other) continue;
         const overlapX =

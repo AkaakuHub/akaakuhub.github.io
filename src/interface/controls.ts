@@ -1,4 +1,5 @@
 import { paperLinkAt } from "../scene/board/paper-links";
+import { noticeNavigation } from "../scene/board/navigation";
 import { MathUtils } from "three";
 import type { Object3D, PerspectiveCamera, Scene } from "three";
 import type { createInterface } from ".";
@@ -47,12 +48,12 @@ export function bindRoomControls(
   function zoom(factor: number, animated: boolean): void {
     view.zoom(factor, animated);
   }
-  function moveNotice(columnStep: number, rowStep: number): void {
+  function moveNotice(key: string): void {
     const state = view.state;
     if (state.mode !== "notice") return;
-    const column = MathUtils.clamp(Math.floor(state.index / 2) + columnStep, 0, 1);
-    const row = MathUtils.clamp((state.index % 2) + rowStep, 0, 1);
-    view.inspect(column * 2 + row);
+    const next = noticeNavigation[key]?.[state.index];
+    if (next === undefined) throw new Error("隣の掲示が見つかりません。");
+    view.inspect(next);
   }
   function nextNotice(step: number): void {
     if (view.state.mode !== "notice" || view.moving) return;
@@ -86,10 +87,7 @@ export function bindRoomControls(
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
     if (view.state.mode === "notice") {
-      moveNotice(
-        event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0,
-        event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0,
-      );
+      moveNotice(event.key);
     } else if (view.state.mode !== "room" && view.zoomFactor > 1) {
       view.pan(
         event.key === "ArrowLeft" ? 0.12 : event.key === "ArrowRight" ? -0.12 : 0,
