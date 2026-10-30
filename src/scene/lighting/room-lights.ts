@@ -1,4 +1,4 @@
-import { Box3, RectAreaLight, Vector3 } from "three";
+import { AmbientLight, Box3, RectAreaLight, Vector3 } from "three";
 import type { Color, Scene } from "three";
 import {
   fixtureEmitterWidth,
@@ -19,6 +19,14 @@ export function createRoomLights(scene: Scene) {
     scene.add(light);
     return light;
   });
+  const surfaceArea = 2 * 5.4 * 5.4 + 4 * 5.4 * 2.9;
+  const reflectance = 0.5;
+  const reflectedIntensity =
+    (fixturePositions.length * 2 * photometry.tubeLumens * photometry.scale * reflectance) /
+    (surfaceArea * (1 - reflectance));
+  const reflected = new AmbientLight(fluorescentColor, reflectedIntensity);
+  reflected.name = "room-reflected-light";
+  scene.add(reflected);
   const bounds = new Box3();
   for (const name of ["room-window-upper-pane", "room-window-lower-pane"])
     for (const pane of scene.getObjectsByProperty("name", name)) bounds.expandByObject(pane);
@@ -32,6 +40,7 @@ export function createRoomLights(scene: Scene) {
   return {
     setRoomLightLevel(level: number): void {
       for (const light of lights) light.intensity = intensity * level;
+      reflected.intensity = reflectedIntensity * level;
     },
     updateSky(color: Color, intensity: number): void {
       sky.color.copy(color);
