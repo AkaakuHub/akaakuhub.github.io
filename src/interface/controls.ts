@@ -244,7 +244,6 @@ export function bindRoomControls(
   ui.canvas.addEventListener("lostpointercapture", cancel);
   let wheelDistance = 0;
   let lastWheelTime = 0;
-  let lastNoticeTime = -Infinity;
   function resetInput(): void {
     for (const pointerId of pointers.keys()) {
       if (ui.canvas.hasPointerCapture(pointerId)) ui.canvas.releasePointerCapture(pointerId);
@@ -255,7 +254,6 @@ export function bindRoomControls(
     pinchDistance = 0;
     wheelDistance = 0;
     lastWheelTime = 0;
-    lastNoticeTime = -Infinity;
     cursor(false, false);
   }
   document.addEventListener("visibilitychange", resetInput);
@@ -270,13 +268,12 @@ export function bindRoomControls(
       const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 540 : 1;
       if (view.state.mode === "notice" && !event.ctrlKey) {
         const now = performance.now();
-        if (view.moving || now - lastNoticeTime < 600) return;
+        if (view.moving) return;
         if (now - lastWheelTime > 160) wheelDistance = 0;
         lastWheelTime = now;
         wheelDistance += event.deltaY * unit;
         if (Math.abs(wheelDistance) >= 36) {
           nextNotice(Math.sign(wheelDistance));
-          lastNoticeTime = now;
           wheelDistance = 0;
         }
         return;
