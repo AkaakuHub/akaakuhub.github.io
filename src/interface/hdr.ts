@@ -4,7 +4,7 @@ import "./hdr.css";
 
 export function bindHdrControl(
   root: HTMLElement,
-  rendering: Pick<ReturnType<typeof createRendering>, "observeHdr" | "toggleHdr">,
+  rendering: Pick<Awaited<ReturnType<typeof createRendering>>, "observeHdr" | "toggleHdr">,
   requestFrame: () => void,
   announce: (message: string) => void,
 ): void {

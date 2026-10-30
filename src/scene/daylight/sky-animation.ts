@@ -4,7 +4,7 @@ import type { illuminate } from "../lighting";
 
 export function createSkyAnimation(
   sky: Awaited<ReturnType<typeof createSky>>,
-  rendering: Pick<ReturnType<typeof createRendering>, "skyVisible" | "invalidate">,
+  rendering: Pick<Awaited<ReturnType<typeof createRendering>>, "skyVisible" | "invalidate">,
   lighting: Pick<ReturnType<typeof illuminate>, "setCloudTransmission">,
   requestFrame: () => void,
 ) {

@@ -7,7 +7,7 @@ export function observeViewport(
   canvas: HTMLCanvasElement,
   camera: PerspectiveCamera,
   renderer: Renderer,
-  composer: ReturnType<typeof createRendering>,
+  composer: Awaited<ReturnType<typeof createRendering>>,
   onResize: () => void,
 ): () => void {
   const container = canvas.parentElement;

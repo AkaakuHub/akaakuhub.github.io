@@ -1,4 +1,10 @@
-import { DataTexture, LinearFilter, LinearMipmapLinearFilter, SRGBColorSpace } from "three";
+import {
+  CanvasTexture,
+  DataTexture,
+  LinearFilter,
+  LinearMipmapLinearFilter,
+  SRGBColorSpace,
+} from "three";
 
 export function textureFromPixels(pixels: Uint8Array, width: number, height: number): DataTexture {
   const texture = new DataTexture(pixels, width, height);
@@ -11,8 +17,8 @@ export function textureFromPixels(pixels: Uint8Array, width: number, height: num
   return texture;
 }
 
-export function textureFromCanvas(context: CanvasRenderingContext2D): DataTexture {
-  const { width, height } = context.canvas;
-  const image = context.getImageData(0, 0, width, height);
-  return textureFromPixels(new Uint8Array(image.data.buffer), width, height);
+export function textureFromCanvas(context: CanvasRenderingContext2D): CanvasTexture {
+  const texture = new CanvasTexture(context.canvas);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
 }

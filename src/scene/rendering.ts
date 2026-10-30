@@ -11,8 +11,9 @@ import { SceneTransforms } from "./rendering/scene-transforms";
 import { SkyPass } from "./rendering/sky-pass";
 import type { createSky } from "./daylight/sky";
 import { StaticSceneBundles } from "./rendering/static-bundles";
+import { prepareScene } from "./rendering/prepare-scene";
 
-export function createRendering(
+export async function createRendering(
   renderer: RoomRenderer,
   scene: Scene,
   camera: PerspectiveCamera,
@@ -20,6 +21,7 @@ export function createRendering(
   fanSurfaces: readonly Mesh[],
   contributions: Object3D,
   sky: Awaited<ReturnType<typeof createSky>>,
+  progress: (value: number) => void,
 ) {
   renderer.toneMapping = NoToneMapping;
   const depth = new DepthTexture(1, 1);
@@ -33,6 +35,7 @@ export function createRendering(
   });
   const motionPixelBudget = renderingProfile().motionPixelBudget;
   scene.add(sky.horizon);
+  await prepareScene(renderer, scene, camera, frame, progress);
   const bundles = new StaticSceneBundles(scene);
   const surfaces = new ScenePass(scene, camera, [monitor, ...fanSurfaces, contributions]);
   const transforms = new SceneTransforms(scene);

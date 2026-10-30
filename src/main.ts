@@ -123,7 +123,7 @@ export async function startRoom(
     },
   );
   const contributions = createContributionDisplay(board.contributions, invalidate);
-  const rendering = createRendering(
+  const rendering = await createRendering(
     renderer,
     scene,
     camera,
@@ -131,6 +131,7 @@ export async function startRoom(
     computer.fanSurfaces,
     contributions.object,
     sky,
+    (value) => loading.rendering(1 + value, 4),
   );
   loading.rendering(2, 4);
   const animateSky = createSkyAnimation(sky, rendering, lighting, requestFrame);
