@@ -19,9 +19,9 @@ describe("ホワイトボードの掲示", () => {
     const notices = boardNotices({ status: "loading" });
     expect(notices.map((notice) => notice.kind)).toEqual([
       "profile",
-      "portfolio",
       "github",
       "article",
+      "portfolio",
     ]);
     for (const notice of notices) {
       expect(Math.sign(notice.position[0])).toBe(notice.kind === "portfolio" ? 1 : -1);

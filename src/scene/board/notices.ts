@@ -39,18 +39,6 @@ export function boardNotices(state: BoardState): BoardNotice[] {
       link: null,
     },
     {
-      kind: "portfolio",
-      title: "活動・資格",
-      eyebrow: "",
-      size: [1.08, 1.4],
-      position: [0.56, 1.44],
-      angle: -0.009,
-      ink: "#294536",
-      stock: "#f0f0e2",
-      thumbnail: null,
-      link: null,
-    },
-    {
       kind: "github",
       title: "GitHubの記録",
       eyebrow: "",
@@ -93,6 +81,18 @@ export function boardNotices(state: BoardState): BoardNotice[] {
     ink: "#65442a",
     stock: "#f8f4e8",
     thumbnail,
+  });
+  notices.push({
+    kind: "portfolio",
+    title: "活動・資格",
+    eyebrow: "",
+    size: [1.08, 1.4],
+    position: [0.56, 1.44],
+    angle: -0.009,
+    ink: "#294536",
+    stock: "#f0f0e2",
+    thumbnail: null,
+    link: null,
   });
   return notices;
 }

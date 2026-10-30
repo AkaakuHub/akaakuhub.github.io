@@ -38,7 +38,7 @@ export function bindKeyboardTargets(
   team.rel = "noopener noreferrer";
   team.dataset.paperLink = "team411";
   team.textContent = "team411の公式サイト";
-  team.addEventListener("focus", () => view.inspect(1));
+  team.addEventListener("focus", () => view.inspect(3));
   navigation.append(team);
   for (const [label, href] of [
     ["Googleのデータ利用", privacy.google],
