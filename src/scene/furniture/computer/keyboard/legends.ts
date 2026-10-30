@@ -8,7 +8,7 @@ export function keyLegends(keys: readonly Key[]): Mesh {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 512;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("キーの刻印を描画できません。");
   context.fillStyle = "#90958f";
   context.textAlign = "center";

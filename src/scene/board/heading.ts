@@ -4,7 +4,7 @@ export function createBoardLettering() {
   const canvas = document.createElement("canvas");
   canvas.width = 2048;
   canvas.height = 1376;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("ホワイトボードの文字を描画できませんでした。");
   context.fillStyle = "#ffffff";
   context.fillRect(0, 0, canvas.width, canvas.height);

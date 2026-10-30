@@ -68,7 +68,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..107c6da913ca22e0a5007b80c662949f
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..8cd48703fdd2c3307e4f672aa24a51afde701609 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..219465048eb97049a719bff566e2fe1e57558da3 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -198,14 +198,14 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..8cd48703fdd2c3307e4f672aa24a51af
 -
 -		const t1 = ltc_1.sample( uv ).toVar();
 -		const t2 = ltc_2.sample( uv ).toVar();
--
++		this.prepareRectArea( { ltc_1, ltc_2 } );
+ 
 -		const mInv = mat3(
 -			vec3( t1.x, 0, t1.y ),
 -			vec3( 0, 1, 0 ),
 -			vec3( t1.z, 0, t1.w )
 -		).toVar();
-+		this.prepareRectArea( { ltc_1, ltc_2 } );
- 
+-
 -		// LTC Fresnel Approximation by Stephen Hill
 -		// http://blog.selfshadow.com/publications/s2016-advances/s2016_ltc_fresnel.pdf
 -		const fresnel = specularColorBlended.mul( t2.x ).add( specularF90.sub( specularColorBlended ).mul( t2.y ) ).toVar();
@@ -312,6 +312,72 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..8cd48703fdd2c3307e4f672aa24a51af
  
  		}
  
+@@ -62718,6 +62843,7 @@ class Renderer {
+ 
+ 		const total = compilationPromises.length;
+ 		let loaded = 0;
++		const pendingPipelines = [];
+ 
+ 		for ( const item of compilationPromises ) {
+ 
+@@ -62735,12 +62861,11 @@ class Renderer {
+ 			this._bindings.updateForRender( renderObject );
+ 			this._isPreCompiling = false;
+ 
+-			// Wait for pipeline creation
+ 			const pipelinePromises = [];
+ 			this._pipelines.getForRender( renderObject, pipelinePromises );
+ 			if ( pipelinePromises.length > 0 ) {
+ 
+-				await Promise.all( pipelinePromises );
++				pendingPipelines.push( Promise.all( pipelinePromises ) );
+ 
+ 			}
+ 
+@@ -62761,6 +62886,8 @@ class Renderer {
+ 
+ 		}
+ 
++		await Promise.all( pendingPipelines );
++
+ 	}
+ 
+ 	/**
+diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
+index e96c4ae08d528fea66c58e5869923c1675822ac9..8d30d30342bd2e32f261d868d9eb3150798815ef 100644
+--- a/build/three.webgpu.nodes.js
++++ b/build/three.webgpu.nodes.js
+@@ -62718,6 +62718,7 @@ class Renderer {
+ 
+ 		const total = compilationPromises.length;
+ 		let loaded = 0;
++		const pendingPipelines = [];
+ 
+ 		for ( const item of compilationPromises ) {
+ 
+@@ -62735,12 +62736,11 @@ class Renderer {
+ 			this._bindings.updateForRender( renderObject );
+ 			this._isPreCompiling = false;
+ 
+-			// Wait for pipeline creation
+ 			const pipelinePromises = [];
+ 			this._pipelines.getForRender( renderObject, pipelinePromises );
+ 			if ( pipelinePromises.length > 0 ) {
+ 
+-				await Promise.all( pipelinePromises );
++				pendingPipelines.push( Promise.all( pipelinePromises ) );
+ 
+ 			}
+ 
+@@ -62761,6 +62761,8 @@ class Renderer {
+ 
+ 		}
+ 
++		await Promise.all( pendingPipelines );
++
+ 	}
+ 
+ 	/**
 diff --git a/src/math/Frustum.js b/src/math/Frustum.js
 index 177dcf1478bf44c3f5d32d38a0cac6c44932a952..af73337956fa7d9d48a87b9c7be4af8e8ba2e60a 100644
 --- a/src/math/Frustum.js
@@ -636,6 +702,41 @@ index 9a1dabe607894f810b5de4df13067ef609f1d635..c5181c18adbd6eb14ad8663938593131
  
  		}
  
+diff --git a/src/renderers/common/Renderer.js b/src/renderers/common/Renderer.js
+index c05aa68471f07a0bbbf6203865da1096fea503c1..51d025067ba19d605171daaa20c7ee4d78a68022 100644
+--- a/src/renderers/common/Renderer.js
++++ b/src/renderers/common/Renderer.js
+@@ -1057,6 +1057,7 @@ class Renderer {
+ 
+ 		const total = compilationPromises.length;
+ 		let loaded = 0;
++		const pendingPipelines = [];
+ 
+ 		for ( const item of compilationPromises ) {
+ 
+@@ -1074,12 +1075,11 @@ class Renderer {
+ 			this._bindings.updateForRender( renderObject );
+ 			this._isPreCompiling = false;
+ 
+-			// Wait for pipeline creation
+ 			const pipelinePromises = [];
+ 			this._pipelines.getForRender( renderObject, pipelinePromises );
+ 			if ( pipelinePromises.length > 0 ) {
+ 
+-				await Promise.all( pipelinePromises );
++				pendingPipelines.push( Promise.all( pipelinePromises ) );
+ 
+ 			}
+ 
+@@ -1100,6 +1100,8 @@ class Renderer {
+ 
+ 		}
+ 
++		await Promise.all( pendingPipelines );
++
+ 	}
+ 
+ 	/**
 diff --git a/src/utils.js b/src/utils.js
 index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..9a1e7d07081bc5dc14f1fdcc37036c27ff93354b 100644
 --- a/src/utils.js

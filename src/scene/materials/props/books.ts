@@ -8,7 +8,7 @@ export function bookLabelMaterial(paper: PbrMaps) {
   if (!stock) throw new Error("背表紙の画像が準備されていません。");
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 1024;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("本の背表紙を描画できませんでした。");
   const titles = [
     "回路",
@@ -61,7 +61,7 @@ export function pageEdgeMaterial(paper: PbrMaps) {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 256;
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("本の小口を描画できませんでした。");
   context.drawImage(stock, 0, 0, 1024, 256);
   for (let page = 0; page < 16; page++) {
