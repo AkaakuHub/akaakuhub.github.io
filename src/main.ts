@@ -38,6 +38,7 @@ import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animati
 import { observeDisplayVisibility } from "./scene/rendering/display-lifecycle";
 import { createSky } from "./scene/daylight/sky";
 import { createSkyAnimation } from "./scene/daylight/sky-animation";
+import { FrameScheduler } from "./scene/rendering/frame-scheduler";
 
 export async function startRoom(
   root: HTMLElement,
@@ -188,9 +189,7 @@ export async function startRoom(
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
     invalidate();
   });
-  let frame = 0;
-  let previous = performance.now();
-  let lastRendered = 0;
+  const frames = new FrameScheduler(render, () => renderer.completedFrame(), loading.recover);
   let ready = false;
   let prepared = false;
   let displayActive = true;
@@ -220,15 +219,8 @@ export async function startRoom(
   }
   setInterval(updateTime, 60_000);
 
-  function render(time: number) {
-    frame = 0;
-    if (document.hidden || !displayActive || !prepared || deviceLost) return;
-    const frameDuration = 1000 / 60;
-    if (time - lastRendered < frameDuration - 0.5) {
-      frame = requestAnimationFrame(render);
-      return;
-    }
-    const seconds = (time - previous) / 1000;
+  function render(time: number, seconds: number): boolean {
+    if (document.hidden || !displayActive || !prepared || deviceLost) return false;
     const viewMoving = view.update(seconds);
     let passageMoving = false;
     for (const passage of passages) passageMoving = passage.update(seconds) || passageMoving;
@@ -236,8 +228,6 @@ export async function startRoom(
     animateSky(time);
     audio.updateCamera(camera);
     ui.setMoving(moving);
-    previous = time;
-    lastRendered = time;
     computerInterface.update(time);
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
@@ -256,16 +246,15 @@ export async function startRoom(
         })
         .catch(loading.fail);
     }
-    if (!frame && (moving || precipitation || animation)) frame = requestAnimationFrame(render);
+    return moving || precipitation || animation;
   }
   function invalidate() {
     rendering.invalidate();
     requestFrame();
   }
   function requestFrame() {
-    if (frame || document.hidden || !displayActive || deviceLost) return;
-    previous = performance.now() - 16;
-    frame = requestAnimationFrame(render);
+    if (document.hidden || !displayActive || deviceLost) return;
+    frames.request();
   }
   updateTime();
   void boardLoader.refresh(false);
@@ -289,13 +278,11 @@ export async function startRoom(
   observeDisplayVisibility((active) => {
     if (deviceLost) return;
     displayActive = active;
+    frames.setActive(active);
     if (active) {
       rendering.resume();
       updateTime();
       invalidate();
-    } else {
-      cancelAnimationFrame(frame);
-      frame = 0;
     }
   });
   requestFrame();

@@ -9,6 +9,7 @@ export type HdrObserver = (enabled: boolean, supported: boolean) => void;
 
 class RoomBackend extends WebGPUBackend {
   declare readonly parameters: WebGPUBackendParameters;
+  declare readonly device: GPUDevice | null;
 
   setHdrEnabled(enabled: boolean): void {
     this.parameters.outputType = enabled ? HalfFloatType : UnsignedByteType;
@@ -44,6 +45,12 @@ export class RoomRenderer extends Renderer {
 
   get hdrActive(): boolean {
     return this.preference.enabled && this.display.matches;
+  }
+
+  completedFrame(): Promise<void> {
+    const device = this.output.device;
+    if (!device) throw new Error("GPUが初期化されていません。");
+    return device.queue.onSubmittedWorkDone();
   }
 
   observeHdr(observer: HdrObserver): void {
