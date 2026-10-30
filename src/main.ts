@@ -17,8 +17,7 @@ import { boardInspections } from "./scene/view/board";
 import { NoticeTour } from "./scene/view/notice-tour";
 import { observeViewport } from "./scene/viewport";
 import { observeTokyoWeather } from "./weather/client";
-import { weatherAt } from "./weather/schema";
-import type { WeatherDay } from "./weather/schema";
+import { weatherAt, type WeatherDay } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
 import { bindRenderingErrors } from "./scene/rendering/errors";
@@ -225,6 +224,7 @@ export async function startRoom(
 
   function render(time: number, seconds: number): boolean {
     if (document.hidden || !displayActive || !prepared || deviceLost) return false;
+    if (rendering.warmup.busy) return true;
     const viewMoving = view.update(seconds);
     let passageMoving = false;
     for (const passage of passages) passageMoving = passage.update(seconds) || passageMoving;
@@ -253,6 +253,11 @@ export async function startRoom(
           controlIntroduction.start();
           introduction?.start();
           contributions.load();
+          rendering.warmup.start(
+            () => !document.hidden && displayActive && !deviceLost && !view.moving && !view.locked,
+            requestFrame,
+            recoverRendering,
+          );
         })
         .catch(recoverRendering);
     }

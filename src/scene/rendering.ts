@@ -10,6 +10,7 @@ import { SceneTransforms } from "./rendering/scene-transforms";
 import { SkyPass } from "./rendering/sky-pass";
 import type { createSky } from "./daylight/sky";
 import { StaticSceneBundles } from "./rendering/static-bundles";
+import { ShaderWarmup } from "./rendering/shader-warmup";
 import { prepareScene } from "./rendering/prepare-scene";
 
 export async function createRendering(
@@ -56,6 +57,7 @@ export async function createRendering(
   const display = new DisplayPass(renderer, frame.texture);
   let pixelRatio = 1;
   return {
+    warmup: new ShaderWarmup(renderer, scene, camera, frame),
     weather,
     get skyVisible() {
       return skyPass.visible;
