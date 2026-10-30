@@ -1,14 +1,8 @@
-export function observeDisplayVisibility(
-  canvas: HTMLCanvasElement,
-  update: (active: boolean) => void,
-): () => void {
-  let active = false;
-  let release = 0;
+export function observeDisplayVisibility(update: (active: boolean) => void): void {
+  let resume = 0;
   function suspend(): void {
-    active = false;
-    cancelAnimationFrame(release);
-    release = 0;
-    canvas.dataset.displayInactive = "";
+    cancelAnimationFrame(resume);
+    resume = 0;
     update(false);
   }
   function sync(): void {
@@ -16,10 +10,14 @@ export function observeDisplayVisibility(
       suspend();
       return;
     }
-    active = true;
-    update(true);
+    cancelAnimationFrame(resume);
+    resume = requestAnimationFrame(() => {
+      resume = requestAnimationFrame(() => {
+        resume = 0;
+        if (!document.hidden && document.hasFocus()) update(true);
+      });
+    });
   }
-  canvas.dataset.displayInactive = "";
   document.addEventListener("visibilitychange", sync);
   window.addEventListener("focus", sync);
   window.addEventListener("blur", suspend);
@@ -27,11 +25,4 @@ export function observeDisplayVisibility(
   window.addEventListener("pageshow", sync);
   window.matchMedia("(dynamic-range: high)").addEventListener("change", sync);
   sync();
-  return () => {
-    if (!active || release || !canvas.hasAttribute("data-display-inactive")) return;
-    release = requestAnimationFrame(() => {
-      release = 0;
-      if (active && !document.hidden && document.hasFocus()) delete canvas.dataset.displayInactive;
-    });
-  };
 }

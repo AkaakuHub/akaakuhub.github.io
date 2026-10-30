@@ -187,7 +187,6 @@ export async function startRoom(
   let ready = false;
   let prepared = false;
   let displayActive = true;
-  let notifyDisplayFrame: (() => void) | undefined;
 
   const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
     if (computer.orientDisplay(camera.aspect < 1)) {
@@ -235,7 +234,6 @@ export async function startRoom(
     frameMetrics?.begin(moving);
     const animation = contributions.update(camera, time);
     rendering.render(moving);
-    notifyDisplayFrame?.();
     frameMetrics?.end(moving);
     if (!ready) {
       ready = true;
@@ -286,7 +284,7 @@ export async function startRoom(
   loading.rendering(4, 4);
   prepared = true;
   observeSize();
-  notifyDisplayFrame = observeDisplayVisibility(ui.canvas, (active) => {
+  observeDisplayVisibility((active) => {
     if (deviceLost) return;
     displayActive = active;
     if (active) {

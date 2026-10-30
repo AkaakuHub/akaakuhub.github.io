@@ -1,11 +1,3 @@
-.room__canvas {
-  dynamic-range-limit: no-limit;
-}
-
-.room__canvas[data-display-inactive] {
-  dynamic-range-limit: standard;
-}
-
 .room__canvas:focus {
   outline: none;
 }

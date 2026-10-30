@@ -40,6 +40,7 @@ export class DisplayPass {
   private readonly display = window.matchMedia("(dynamic-range: high)");
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private startedAt: number | undefined;
+  private refreshOutput = false;
 
   constructor(
     private readonly renderer: Renderer,
@@ -64,6 +65,7 @@ export class DisplayPass {
 
   invalidate(): void {
     this.state.invalidate();
+    this.refreshOutput = true;
   }
 
   setSize(width: number, height: number, moving = false): void {
@@ -97,6 +99,15 @@ export class DisplayPass {
       renderer.render(this.composite, this.composite.camera);
     }
     renderer.setRenderTarget(null);
+    if (this.refreshOutput) {
+      const context = renderer.getContext();
+      if (!(context instanceof GPUCanvasContext))
+        throw new Error("WebGPUの表示先が見つかりません。");
+      const configuration = context.getConfiguration();
+      if (!configuration) throw new Error("WebGPUの表示設定が見つかりません。");
+      context.configure(configuration);
+      this.refreshOutput = false;
+    }
     const depth = renderer.depth;
     const toneMapping = renderer.toneMapping;
     const colorSpace = renderer.outputColorSpace;
