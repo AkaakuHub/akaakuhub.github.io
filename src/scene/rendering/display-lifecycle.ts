@@ -7,6 +7,5 @@ export function observeDisplayVisibility(update: (active: boolean) => void): voi
   window.addEventListener("blur", () => update(false));
   window.addEventListener("pagehide", () => update(false));
   window.addEventListener("pageshow", sync);
-  window.matchMedia("(dynamic-range: high)").addEventListener("change", sync);
   sync();
 }

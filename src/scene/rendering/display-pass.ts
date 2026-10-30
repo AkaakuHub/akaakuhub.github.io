@@ -26,7 +26,6 @@ export class DisplayPass {
   private target = this.staticTarget;
   private readonly antialiasSource = texture(this.staticTarget.texture);
   private readonly exposure = uniform(1);
-  private readonly headroom = uniform(1);
   private readonly visibility = uniform(0);
   private readonly material = new MeshBasicNodeMaterial({
     depthTest: false,
@@ -37,11 +36,8 @@ export class DisplayPass {
   private readonly pipeline;
   private readonly source;
   private readonly state = new DisplayState();
-  private readonly display = window.matchMedia("(dynamic-range: high)");
   private readonly reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   private startedAt: number | undefined;
-  private active = true;
-  private refreshOutput = true;
 
   constructor(
     private readonly renderer: Renderer,
@@ -49,7 +45,7 @@ export class DisplayPass {
   ) {
     this.source = texture(source);
     const exposed = this.source.rgb.mul(this.exposure).max(0);
-    const mapped = this.headroom.mul(float(1).sub(exposed.div(this.headroom).negate().exp()));
+    const mapped = float(1).sub(exposed.negate().exp());
     this.material.vertexNode = vec4(positionGeometry.xy, 0, 1);
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
@@ -64,9 +60,7 @@ export class DisplayPass {
     return this.visibility.value < 1;
   }
 
-  setActive(active: boolean): void {
-    this.active = active;
-    this.refreshOutput = true;
+  invalidate(): void {
     this.state.invalidate();
   }
 
@@ -85,14 +79,12 @@ export class DisplayPass {
       : MathUtils.smoothstep(now - this.startedAt, 0, 300);
     this.source.value = source;
     this.exposure.value = renderer.toneMappingExposure;
-    this.headroom.value = this.active && this.display.matches ? 4 : 1;
     if (
       this.state.update(
         {
           source,
           revision,
           exposure: this.exposure.value,
-          headroom: this.headroom.value,
         },
         changing,
       )
@@ -101,18 +93,6 @@ export class DisplayPass {
       renderer.render(this.composite, this.composite.camera);
     }
     renderer.setRenderTarget(null);
-    const context = renderer.getContext();
-    if (!(context instanceof GPUCanvasContext)) throw new Error("WebGPUの表示先が見つかりません。");
-    const configuration = context.getConfiguration();
-    if (!configuration) throw new Error("WebGPUの表示設定が見つかりません。");
-    const mode = this.headroom.value > 1 ? "extended" : "standard";
-    if (
-      this.refreshOutput ||
-      (configuration.toneMapping && configuration.toneMapping.mode !== mode)
-    ) {
-      context.configure({ ...configuration, toneMapping: { mode } });
-      this.refreshOutput = false;
-    }
     const depth = renderer.depth;
     const toneMapping = renderer.toneMapping;
     const colorSpace = renderer.outputColorSpace;

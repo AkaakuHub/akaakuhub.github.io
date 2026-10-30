@@ -8,7 +8,6 @@ function fixture() {
     source: new Texture(),
     revision: 1,
     exposure: 6.5,
-    headroom: 4,
   };
   expect(state.update(frame, false)).toBe(true);
   return { state, frame };
@@ -48,10 +47,10 @@ describe("表示用の色変換の再計算", () => {
     expect(state.update(frame, false)).toBe(false);
   });
 
-  it("露出とHDR表示範囲の変更を反映する", () => {
+  it("露出の変更を反映する", () => {
     const { state, frame } = fixture();
     const exposure = { ...frame, exposure: 7 };
     expect(state.update(exposure, false)).toBe(true);
-    expect(state.update({ ...exposure, headroom: 1 }, false)).toBe(true);
+    expect(state.update(exposure, false)).toBe(false);
   });
 });

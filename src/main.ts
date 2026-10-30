@@ -287,14 +287,13 @@ export async function startRoom(
   observeDisplayVisibility((active) => {
     if (deviceLost) return;
     displayActive = active;
-    rendering.setActive(active);
     if (active) {
+      rendering.resume();
       updateTime();
       invalidate();
     } else {
       cancelAnimationFrame(frame);
       frame = 0;
-      rendering.render();
     }
   });
   requestFrame();
