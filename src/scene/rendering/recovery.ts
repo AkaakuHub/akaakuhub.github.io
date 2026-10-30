@@ -50,6 +50,7 @@ export class RenderingRecovery {
     if (
       typeof message !== "string" ||
       (!message.includes("Instance dropped in popErrorScope") &&
+        !message.includes("Instance dropped error in getCompilationInfo") &&
         !message.includes("A valid external Instance reference no longer exists"))
     )
       return false;

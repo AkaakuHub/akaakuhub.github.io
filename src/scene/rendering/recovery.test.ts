@@ -59,6 +59,7 @@ describe("描画方式の復旧", () => {
 
   it.each([
     new DOMException("Instance dropped in popErrorScope", "OperationError"),
+    new DOMException("Instance dropped error in getCompilationInfo", "OperationError"),
     new Error("A valid external Instance reference no longer exists."),
     "Instance dropped in popErrorScope",
   ])("WebGPUの終了時は次の起動をWebGLに切り替える: %s", (error) => {

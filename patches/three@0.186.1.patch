@@ -69,7 +69,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..6288168d517beb1d6d394316cf6c912ecf04f67b 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce30768c085e8a 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -196,11 +196,11 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..6288168d517beb1d6d394316cf6c912e
  		const P = positionView.toVar();
  
 -		const uv = LTC_Uv( { N, V, roughness } );
-+		this.prepareRectArea( { ltc_1, ltc_2 } );
- 
+-
 -		const t1 = ltc_1.sample( uv ).toVar();
 -		const t2 = ltc_2.sample( uv ).toVar();
--
++		this.prepareRectArea( { ltc_1, ltc_2 } );
+ 
 -		const mInv = mat3(
 -			vec3( t1.x, 0, t1.y ),
 -			vec3( 0, 1, 0 ),
@@ -438,8 +438,27 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..6288168d517beb1d6d394316cf6c912e
  
  					if ( errorScope !== null || asyncError !== null ) {
  
+@@ -85940,7 +86083,17 @@ class WebGPUPipelineUtils {
+ 
+ 		for ( const { program, module } of stages ) {
+ 
+-			const info = await module.getCompilationInfo();
++			let info;
++			try {
++
++				info = await module.getCompilationInfo();
++
++			} catch ( diagnosticError ) {
++
++				warn( `WebGPURenderer: Shader diagnostics unavailable (${ pipelineLabel }): ${ diagnosticError.message }` );
++				return;
++
++			}
+ 			if ( info.messages.length === 0 ) continue;
+ 
+ 			const sourceLines = program.code.split( '\n' );
 diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
-index e96c4ae08d528fea66c58e5869923c1675822ac9..fc0ed719f154fa96c26778d5d42ff6715366355a 100644
+index e96c4ae08d528fea66c58e5869923c1675822ac9..f6f251f00afdd51620ceb53fb1f7adba9afd45f8 100644
 --- a/build/three.webgpu.nodes.js
 +++ b/build/three.webgpu.nodes.js
 @@ -55964,7 +55964,7 @@ class NodeBuilder {
@@ -570,6 +589,25 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..fc0ed719f154fa96c26778d5d42ff671
  
  					if ( errorScope !== null || asyncError !== null ) {
  
+@@ -85940,7 +85958,17 @@ class WebGPUPipelineUtils {
+ 
+ 		for ( const { program, module } of stages ) {
+ 
+-			const info = await module.getCompilationInfo();
++			let info;
++			try {
++
++				info = await module.getCompilationInfo();
++
++			} catch ( diagnosticError ) {
++
++				warn( `WebGPURenderer: Shader diagnostics unavailable (${ pipelineLabel }): ${ diagnosticError.message }` );
++				return;
++
++			}
+ 			if ( info.messages.length === 0 ) continue;
+ 
+ 			const sourceLines = program.code.split( '\n' );
 diff --git a/src/math/Frustum.js b/src/math/Frustum.js
 index 177dcf1478bf44c3f5d32d38a0cac6c44932a952..af73337956fa7d9d48a87b9c7be4af8e8ba2e60a 100644
 --- a/src/math/Frustum.js
@@ -987,7 +1025,7 @@ index f24027915e6e4ec7fe9415569107ff6cf3c9c498..a65de82ac4913aa0e210c8e89557635d
  					}
  
 diff --git a/src/renderers/webgpu/utils/WebGPUPipelineUtils.js b/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
-index 802f98b6e061d4c1580a1e06a43d9b41aeec5b90..1748510c6b8e6c2b946af8a1bbb883e5fac738b2 100644
+index 802f98b6e061d4c1580a1e06a43d9b41aeec5b90..eb1400f65b8cbf98404c27e7f1eca61c0ec256cb 100644
 --- a/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
 +++ b/src/renderers/webgpu/utils/WebGPUPipelineUtils.js
 @@ -298,6 +298,8 @@ class WebGPUPipelineUtils {
@@ -1026,6 +1064,25 @@ index 802f98b6e061d4c1580a1e06a43d9b41aeec5b90..1748510c6b8e6c2b946af8a1bbb883e5
  
  					if ( errorScope !== null || asyncError !== null ) {
  
+@@ -512,7 +516,17 @@ class WebGPUPipelineUtils {
+ 
+ 		for ( const { program, module } of stages ) {
+ 
+-			const info = await module.getCompilationInfo();
++			let info;
++			try {
++
++				info = await module.getCompilationInfo();
++
++			} catch ( diagnosticError ) {
++
++				warn( `WebGPURenderer: Shader diagnostics unavailable (${ pipelineLabel }): ${ diagnosticError.message }` );
++				return;
++
++			}
+ 			if ( info.messages.length === 0 ) continue;
+ 
+ 			const sourceLines = program.code.split( '\n' );
 diff --git a/src/utils.js b/src/utils.js
 index 829e88ec623ceab312571eaf4fbe8f4fd2256ec3..3ea2e4b551fb55a29322a736e18da0fe1ed28e22 100644
 --- a/src/utils.js
