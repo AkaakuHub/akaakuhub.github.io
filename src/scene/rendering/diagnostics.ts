@@ -62,7 +62,12 @@ export class RenderingDiagnostics {
       if (this.recorded.has(error)) return;
       this.recorded.add(error);
     }
-    let failure = error instanceof Error ? (error.stack ?? error.message) : String(error);
+    let failure =
+      error instanceof Error
+        ? error.stack?.includes(`${error.name}: ${error.message}`)
+          ? error.stack
+          : `${error.name}: ${error.message}\n${error.stack ?? ""}`
+        : String(error);
     if (error instanceof Error && error.cause !== undefined) {
       try {
         const cause =

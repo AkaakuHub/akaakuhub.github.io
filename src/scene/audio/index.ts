@@ -2,6 +2,8 @@ import type { PerspectiveCamera } from "three";
 import type { createWeatherMixer } from "./mixer";
 import type { SoundWeather } from "./mix";
 import { hasWeatherSound } from "./availability";
+import { createListenerUpdater } from "./listener";
+import type { ListenerPose } from "./listener";
 
 export type WeatherAudio = ReturnType<typeof createWeatherAudio>;
 
@@ -17,23 +19,11 @@ export function createWeatherAudio() {
   let disposed = false;
   let onMute: ((muted: boolean) => void) | undefined;
   let suspendTimer: ReturnType<typeof setTimeout> | undefined;
-  const pose = new Float64Array([0, 0, 0, 0, 0, -1, 0, 1, 0]);
-  const applied = new Float64Array(9).fill(NaN);
-  let listenerParameters: readonly AudioParam[] = [];
+  let pose: ListenerPose = [0, 0, 0, 0, 0, -1, 0, 1, 0];
+  let updateListener: ReturnType<typeof createListenerUpdater> | undefined;
 
   function applyPose(): void {
-    if (!context) return;
-    const now = context.currentTime;
-    listenerParameters.forEach((parameter, index) => {
-      const value = pose[index];
-      if (value === undefined || value === applied[index]) return;
-      if (Number.isNaN(applied[index])) parameter.setValueAtTime(value, now);
-      else {
-        parameter.cancelAndHoldAtTime(now);
-        parameter.linearRampToValueAtTime(value, now + 0.05);
-      }
-      applied[index] = value;
-    });
+    if (context?.state === "running") updateListener?.(pose, context.currentTime);
   }
   function sync(): void {
     if (!ready || muted || document.hidden || !weather || !mixer || context?.state !== "running")
@@ -46,18 +36,7 @@ export function createWeatherAudio() {
     clearTimeout(suspendTimer);
     if (!context) {
       context = new AudioContext({ latencyHint: "interactive" });
-      const listener = context.listener;
-      listenerParameters = [
-        listener.positionX,
-        listener.positionY,
-        listener.positionZ,
-        listener.forwardX,
-        listener.forwardY,
-        listener.forwardZ,
-        listener.upX,
-        listener.upY,
-        listener.upZ,
-      ];
+      updateListener = createListenerUpdater(context.listener);
       context.addEventListener("statechange", sync);
     }
     const activeContext = context;
@@ -146,7 +125,7 @@ export function createWeatherAudio() {
     updateCamera(camera: PerspectiveCamera): void {
       camera.updateMatrixWorld();
       const m = camera.matrixWorld.elements;
-      pose.set([m[12], m[13], m[14], -m[8], -m[9], -m[10], m[4], m[5], m[6]]);
+      pose = [m[12], m[13], m[14], -m[8], -m[9], -m[10], m[4], m[5], m[6]];
       applyPose();
     },
     bindMute(callback: (muted: boolean) => void): void {
