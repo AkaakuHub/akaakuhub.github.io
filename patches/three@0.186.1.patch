@@ -69,7 +69,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce30768c085e8a 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..257c7a072dd6e8625cda9ca46de916f1286034bc 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -367,7 +367,19 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce3076
  
  		}
  
-@@ -75545,19 +75675,28 @@ class WebGLBackend extends Backend {
+@@ -65164,8 +65294,9 @@ class Renderer {
+ 
+ 		if ( cache === undefined || cache.version !== version ) {
+ 
+-			const hasMap = material.map && material.map.isTexture;
+-			const hasColorNode = material.colorNode && material.colorNode.isNode;
++			const needsShadowAlpha = material.transparent || material.alphaTest > 0 || material.alphaHash || material.transmission > 0 || material.transmissionNode || material.backdropNode || material.castShadowNode || material.maskShadowNode || material.maskNode;
++			const hasMap = needsShadowAlpha && material.map && material.map.isTexture;
++			const hasColorNode = needsShadowAlpha && material.colorNode && material.colorNode.isNode;
+ 			const hasCastShadowNode = material.castShadowNode && material.castShadowNode.isNode;
+ 			const hasMaskNode = ( material.maskShadowNode && material.maskShadowNode.isNode ) || ( material.maskNode && material.maskNode.isNode );
+ 
+@@ -75545,19 +75676,28 @@ class WebGLBackend extends Backend {
  
  		if ( promises !== null && this.parallel ) {
  
@@ -402,7 +414,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce3076
  
  					}
  
-@@ -85726,6 +85865,8 @@ class WebGPUPipelineUtils {
+@@ -85726,6 +85866,8 @@ class WebGPUPipelineUtils {
  
  					_renderPipelineDescriptor.reset();
  
@@ -411,7 +423,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce3076
  					if ( pipelinePromise !== null ) {
  
  						try {
-@@ -85740,7 +85881,7 @@ class WebGPUPipelineUtils {
+@@ -85740,7 +85882,7 @@ class WebGPUPipelineUtils {
  
  					}
  
@@ -420,7 +432,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce3076
  
  					if ( errorScope !== null || asyncError !== null ) {
  
-@@ -85883,6 +86024,8 @@ class WebGPUPipelineUtils {
+@@ -85883,6 +86025,8 @@ class WebGPUPipelineUtils {
  
  					_computePipelineDescriptor.reset();
  
@@ -429,7 +441,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce3076
  					if ( pipelinePromise !== null ) {
  
  						try {
-@@ -85897,7 +86040,7 @@ class WebGPUPipelineUtils {
+@@ -85897,7 +86041,7 @@ class WebGPUPipelineUtils {
  
  					}
  
@@ -438,7 +450,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..a380ca415bf3a48a271457234fce3076
  
  					if ( errorScope !== null || asyncError !== null ) {
  
-@@ -85940,7 +86083,17 @@ class WebGPUPipelineUtils {
+@@ -85940,7 +86084,17 @@ class WebGPUPipelineUtils {
  
  		for ( const { program, module } of stages ) {
  
@@ -943,7 +955,7 @@ index 9a1dabe607894f810b5de4df13067ef609f1d635..920732fa28185e753e1b0d7a2954b0b6
  		}
  
 diff --git a/src/renderers/common/Renderer.js b/src/renderers/common/Renderer.js
-index c05aa68471f07a0bbbf6203865da1096fea503c1..dd68271362df53b1d5a33172ec2929e3efa22aa5 100644
+index c05aa68471f07a0bbbf6203865da1096fea503c1..0a0559d37ef3f9c11b241362e4f5aea1a832e80e 100644
 --- a/src/renderers/common/Renderer.js
 +++ b/src/renderers/common/Renderer.js
 @@ -1057,6 +1057,7 @@ class Renderer {
@@ -985,6 +997,18 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..dd68271362df53b1d5a33172ec2929e3
  	}
  
  	/**
+@@ -3503,8 +3508,9 @@ class Renderer {
+ 
+ 		if ( cache === undefined || cache.version !== version ) {
+ 
+-			const hasMap = material.map && material.map.isTexture;
+-			const hasColorNode = material.colorNode && material.colorNode.isNode;
++			const needsShadowAlpha = material.transparent || material.alphaTest > 0 || material.alphaHash || material.transmission > 0 || material.transmissionNode || material.backdropNode || material.castShadowNode || material.maskShadowNode || material.maskNode;
++			const hasMap = needsShadowAlpha && material.map && material.map.isTexture;
++			const hasColorNode = needsShadowAlpha && material.colorNode && material.colorNode.isNode;
+ 			const hasCastShadowNode = material.castShadowNode && material.castShadowNode.isNode;
+ 			const hasMaskNode = ( material.maskShadowNode && material.maskShadowNode.isNode ) || ( material.maskNode && material.maskNode.isNode );
+ 
 diff --git a/src/renderers/webgl-fallback/WebGLBackend.js b/src/renderers/webgl-fallback/WebGLBackend.js
 index f24027915e6e4ec7fe9415569107ff6cf3c9c498..a65de82ac4913aa0e210c8e89557635d7d7b0282 100644
 --- a/src/renderers/webgl-fallback/WebGLBackend.js
