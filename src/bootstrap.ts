@@ -1,3 +1,4 @@
+import { showTextVersion } from "./site/display";
 import { createLoading } from "./interface/loading";
 import { loadTokyoWeather } from "./weather/client";
 import { createRoomAssetLoader } from "./assets/loading";
@@ -14,7 +15,10 @@ const loading = createLoading(root);
 const audio = createWeatherAudio();
 const fail = (error: unknown): void => {
   renderingDiagnostics.record(error, "Startup/window error");
-  if (!renderingSession.recover(error)) loading.fail(error);
+  if (!renderingSession.recover(error)) {
+    loading.fail(error);
+    showTextVersion();
+  }
 };
 window.addEventListener("error", (event) => fail(event.error ? event.error : event.message));
 window.addEventListener("unhandledrejection", (event) => {

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import type { ServerOptions } from "node:https";
 import { defineConfig, loadEnv } from "vite-plus";
 import tailwindcss from "@tailwindcss/vite";
+import { staticSiteDocument } from "./scripts/build/site";
 import { prepareRoomAssets } from "./scripts/build/room-assets";
 
 export default defineConfig(({ command, mode }) => {
@@ -20,6 +21,7 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       prepareRoomAssets(),
+      staticSiteDocument(),
       tailwindcss(),
       {
         name: "loading-document",
@@ -30,23 +32,6 @@ export default defineConfig(({ command, mode }) => {
               "<!-- loading-styles -->",
               `<style>${readFileSync(new URL("./src/interface/loading.css", import.meta.url), "utf8")}</style>`,
             );
-          },
-        },
-      },
-      {
-        name: "preload-room",
-        transformIndexHtml: {
-          order: "post",
-          handler(html, context) {
-            const room = Object.values(context.bundle ?? {}).find(
-              (file) => file.type === "chunk" && file.facadeModuleId?.endsWith("/src/main.ts"),
-            );
-            return {
-              html,
-              tags: room
-                ? [{ tag: "link", attrs: { rel: "modulepreload", href: `/${room.fileName}` } }]
-                : [],
-            };
           },
         },
       },

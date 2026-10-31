@@ -1,3 +1,4 @@
+import { showTextVersion } from "../site/display";
 import { showLoadingFailure } from "./loading-failure";
 import { createLoadingState } from "./loading-state";
 import { createLoadingReadout } from "./loading-readout";
@@ -24,6 +25,7 @@ export function createLoading(root: HTMLElement) {
     root.setAttribute("aria-busy", "false");
     delete root.dataset.loading;
     if (!panel.isConnected) root.append(panel);
+    showTextVersion();
   };
   const update = (): void => {
     if (state.status !== "loading") return;

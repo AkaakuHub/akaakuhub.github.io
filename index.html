@@ -3,24 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <link rel="preconnect" href="https://avatars.githubusercontent.com" crossorigin />
-    <link
-      rel="preload"
-      href="/src/assets/fonts/zen-maru-gothic/board.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/src/assets/fonts/yomogi/heading.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
     <meta name="theme-color" content="#edf0e5" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#141c19" media="(prefers-color-scheme: dark)" />
     <!-- loading-styles -->
+    <link rel="stylesheet" href="/src/site/site.css" />
     <meta
       name="description"
       content="あかあくの部室。つくったものや、ブログの記事をホワイトボードから。"
@@ -81,7 +67,8 @@
     </script>
   </head>
   <body>
-    <div id="app">
+    <div id="site"><!-- site-content --></div>
+    <div id="app" hidden>
       <section class="loading" aria-label="部室を読み込んでいます">
         <div class="loading-center">
           <div class="loading-frame" aria-hidden="true">
@@ -117,6 +104,6 @@
         </footer>
       </section>
     </div>
-    <script type="module" src="/src/bootstrap.ts"></script>
+    <script type="module" src="/src/site/entry.ts"></script>
   </body>
 </html>

@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Allow: /api/weather$
-Allow: /api/content$
 
 Sitemap: https://akaaku.net/sitemap.xml

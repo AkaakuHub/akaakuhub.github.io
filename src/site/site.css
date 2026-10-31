@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@source "../../scripts/build/site/document.ts";
+
+#site {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  background: #f5f4ef;
+  color: #292524;
+  font-family: system-ui, sans-serif;
+}
+
+#site[hidden],
+#app[hidden] {
+  display: none;
+}

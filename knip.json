@@ -4,6 +4,7 @@
   "vite": { "config": [] },
   "entry": [
     "src/tailwind.css",
+    "src/site/site.css",
     "scripts/assets/catalog.mjs",
     "scripts/assets/ceiling.mjs",
     "scripts/assets/lighting.mjs",
