@@ -29,51 +29,31 @@ const roomIds = [
   cloudFieldId,
   horizonTextureId,
 ];
-const initial = new Set([
-  ...materialAssetIds.filter((id) => id.startsWith(`materials/${materialDefinitions.paper.id}/`)),
-  areaLightAssetId,
-]);
-const previews = new Map(
-  await Promise.all(
-    materialAssetIds
-      .filter((id) => !initial.has(id))
-      .map(async (id) => [
-        `preview/${id}`,
-        await sharp(join(root, id))
-          .resize({ width: id.endsWith("color.webp") ? 256 : 128, withoutEnlargement: true })
-          .webp({
-            lossless: !id.endsWith("color.webp") && !id.endsWith("normal.webp"),
-            quality: id.endsWith("color.webp") ? 85 : 90,
-            smartSubsample: true,
-          })
-          .toBuffer(),
-      ]),
-  ),
-);
-const members = [];
 await mkdir(join(root, "room"), { recursive: true });
-for (const [name, ids] of [
-  [
-    "initial",
-    [
-      ...roomIds.filter((id) => initial.has(id) || !materialAssetIds.includes(id)),
-      ...previews.keys(),
-    ],
-  ],
-  ["surfaces", materialAssetIds.filter((id) => !initial.has(id))],
-]) {
-  const sources = await Promise.all(
-    ids.map(async (id) => ({
-      id,
-      bytes: previews.has(id) ? previews.get(id) : await readFile(join(root, id)),
-    })),
-  );
-  const pack = createAssetPack(sources);
-  const id = `room/${name}.bin`;
-  await writeChanged(join(root, id), pack.bytes);
-  register(id, pack.bytes);
-  members.push(...pack.entries.map((entry) => ({ ...entry, pack: id })));
-}
+const sources = await Promise.all(
+  roomIds.map(async (id) => {
+    const source = await readFile(join(root, id));
+    if (
+      !materialAssetIds.includes(id) ||
+      id.startsWith(`materials/${materialDefinitions.paper.id}/`)
+    )
+      return { id, bytes: source };
+    const bytes = await sharp(source)
+      .resize({ width: id.endsWith("color.webp") ? 512 : 256, withoutEnlargement: true })
+      .webp({
+        lossless: !id.endsWith("color.webp") && !id.endsWith("normal.webp"),
+        quality: id.endsWith("color.webp") ? 85 : 90,
+        smartSubsample: true,
+      })
+      .toBuffer();
+    return { id, bytes };
+  }),
+);
+const pack = createAssetPack(sources);
+const packId = "room/initial.bin";
+await writeChanged(join(root, packId), pack.bytes);
+register(packId, pack.bytes);
+const members = pack.entries.map((entry) => ({ ...entry, pack: packId }));
 await writeChanged(join(root, "room-manifest.json"), `${JSON.stringify(members, null, 2)}\n`);
 for (const name of await readdir(join(root, "audio"))) {
   if (!name.endsWith(".opus")) continue;

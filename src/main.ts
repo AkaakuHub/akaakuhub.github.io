@@ -32,7 +32,6 @@ import { finishFirstFrame } from "./scene/rendering/first-frame";
 import { createControlIntroduction } from "./interface/control-introduction";
 import type { PaperPrinter } from "./scene/board/printing";
 import { createRoomPassages } from "./interface/passages";
-import { createFluorescentAnimation } from "./scene/lighting/fluorescent-animation";
 import { observeDisplayVisibility } from "./scene/rendering/display-lifecycle";
 import { createSky } from "./scene/daylight/sky";
 import { createSkyAnimation } from "./scene/daylight/sky-animation";
@@ -52,14 +51,17 @@ export async function startRoom(
   const ui = createInterface(root);
   const boardLoader = createBoardLoader(async (state) => {
     const printed = await board.setState(state);
-    for (const map of printed) renderer.initTexture(map);
-    if (prepared) controls.syncNotices();
+    if (prepared) {
+      for (const map of printed) renderer.initTexture(map);
+      controls.syncNotices();
+      invalidate();
+    }
     if (view.state.mode === "notice") ui.setView(view.state, noticeList[view.state.index]);
-    invalidate();
   });
   boardLoader.preload();
   const batchStaticMeshes = createStaticBatcher();
   let deviceLost = false;
+  let prepared = false;
   const recoverRendering = (error: unknown): void => {
     renderingDiagnostics.record(error, "Render recovery");
     deviceLost = true;
@@ -104,12 +106,6 @@ export async function startRoom(
     computer.monitor,
     sky,
   );
-  const fluorescent = createFluorescentAnimation(
-    scene,
-    camera,
-    lighting.setFluorescentModulation,
-    invalidate,
-  );
   const weather = observeTokyoWeather(
     initialWeather,
     (current) => {
@@ -124,7 +120,7 @@ export async function startRoom(
       invalidate();
     },
   );
-  const contributions = createContributionDisplay(board.contributions, invalidate);
+  const contributions = createContributionDisplay(board.contributions);
   const noticeList = [...board.notices.values()];
   const inspections = boardInspections(board.notices);
   let introduction: ReturnType<typeof createIntroduction> | undefined;
@@ -144,6 +140,7 @@ export async function startRoom(
     () => ui.inspectionViewport(),
     new NoticeTour(localStorage, inspections.length - 1),
   );
+  await Promise.all([contributions.load(), boardLoader.refresh(false)]);
   const rendering = await createRendering(
     renderer,
     scene,
@@ -153,7 +150,6 @@ export async function startRoom(
     contributions.object,
     sky,
     (value) => loading.rendering(1 + value, 4),
-    () => !view.moving && !view.locked,
   );
   loading.rendering(2, 4);
   const animateSky = createSkyAnimation(sky, rendering, lighting, requestFrame);
@@ -189,7 +185,6 @@ export async function startRoom(
   let controls: ReturnType<typeof bindRoomControls>;
   const frames = new FrameScheduler(render, () => renderer.completedFrame(), recoverRendering);
   let ready = false;
-  let prepared = false;
   let displayActive = true;
 
   const observeSize = observeViewport(ui.canvas, camera, renderer, rendering, () => {
@@ -220,7 +215,6 @@ export async function startRoom(
 
   function render(time: number, seconds: number): boolean {
     if (document.hidden || !displayActive || !prepared || deviceLost) return false;
-    if (rendering.warmup.busy) return true;
     const viewMoving = view.update(seconds);
     let passageMoving = false;
     for (const passage of passages) passageMoving = passage.update(seconds) || passageMoving;
@@ -245,19 +239,9 @@ export async function startRoom(
         .then(finishFirstFrame)
         .then(() => {
           loading.complete();
-          if (renderer.compileYieldInterval !== 0) fluorescent.start();
           audio.start();
           controlIntroduction.start();
           introduction?.start();
-          contributions.load();
-          void materialLoading
-            .refine(rendering.prepareTextureUpload, invalidate)
-            .catch((error: unknown) => renderingDiagnostics.record(error, "Texture refinement"));
-          rendering.warmup.start(
-            () => !document.hidden && displayActive && !deviceLost && !view.moving && !view.locked,
-            requestFrame,
-            recoverRendering,
-          );
         })
         .catch(recoverRendering);
     }
@@ -272,7 +256,6 @@ export async function startRoom(
     frames.request();
   }
   updateTime();
-  void boardLoader.refresh(false);
   loading.rendering(3, 4);
   controls = bindRoomControls(
     root,
@@ -287,6 +270,7 @@ export async function startRoom(
     passages,
     privacy,
   );
+  await rendering.prepareTargets();
   loading.rendering(4, 4);
   prepared = true;
   observeSize();

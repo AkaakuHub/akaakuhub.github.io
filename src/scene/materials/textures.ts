@@ -8,13 +8,10 @@ import {
 } from "three";
 import type { RoomAssetLoader } from "../../assets/loading";
 import { renderingProfile } from "../quality";
-import { materialDefinitions } from "../../assets/materials";
-import { replaceTextureImage } from "./texture-image";
 
 export function createTextureLoader(assets: RoomAssetLoader) {
   const textures = new Map<string, Texture<ImageBitmap | null>>();
   const pending = new Map<Texture<ImageBitmap | null>, () => Promise<void>>();
-  const refinements: ((ready: () => Promise<void>) => Promise<void>)[] = [];
   const anisotropy = renderingProfile().anisotropy;
   function texture(id: string, file: string, meters: number): Texture<ImageBitmap | null> {
     const key = `${id}/${file}`;
@@ -31,28 +28,19 @@ export function createTextureLoader(assets: RoomAssetLoader) {
     textures.set(key, result);
     let loading: Promise<void> | undefined;
     const assetId = `materials/${key}.webp`;
-    const preview = id !== materialDefinitions.paper.id;
     const options: ImageBitmapOptions = {
       imageOrientation: "none",
       premultiplyAlpha: "none",
       colorSpaceConversion: "none",
     };
     pending.set(result, () => {
-      loading ??= assets
-        .loadImage(preview ? `preview/${assetId}` : assetId, options)
-        .then((bitmap) => {
-          result.image = bitmap;
-          result.needsUpdate = true;
-        });
+      loading ??= assets.loadImage(assetId, options).then((bitmap) => {
+        result.image = bitmap;
+        result.needsUpdate = true;
+      });
       return loading;
     });
-    if (preview)
-      refinements.push(async (ready) => {
-        const bitmap = await assets.loadImage(assetId, options);
-        await ready();
-        replaceTextureImage(result, bitmap);
-      });
     return result;
   }
-  return { texture, pending, refinements };
+  return { texture, pending };
 }

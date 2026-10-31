@@ -14,10 +14,7 @@ import { attribute, texture, uniform } from "three/tsl";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { loadContributionSource } from "./contribution-source";
 
-export function createContributionDisplay(
-  mount: Mesh<PlaneGeometry, MeshStandardMaterial>,
-  invalidate: () => void,
-) {
+export function createContributionDisplay(mount: Mesh<PlaneGeometry, MeshStandardMaterial>) {
   const object = new Group();
   mount.add(object);
   const time = uniform(0);
@@ -86,7 +83,6 @@ export function createContributionDisplay(
         logo.receiveShadow = true;
         logo.renderOrder = 2;
         object.add(surface, logo);
-        invalidate();
         return;
       } catch (error) {
         console.error(error);
@@ -97,7 +93,7 @@ export function createContributionDisplay(
   }
   return {
     object,
-    load: () => void load(),
+    load,
     update(camera: PerspectiveCamera, now: number): boolean {
       if (!surface || time.value >= duration) return false;
       camera.updateMatrixWorld();

@@ -26,12 +26,7 @@
   },
   {
     "id": "room/initial.bin",
-    "bytes": 541954,
-    "sha256": "2f5804053dda09cf0bf2601c6a849a36a504b3d2f566c7763b31405b08bb3dec"
-  },
-  {
-    "id": "room/surfaces.bin",
-    "bytes": 1337620,
-    "sha256": "bf861c4da56535bb5b74c2435e8fef16aac6d60c1e08ba61629cd8fdecfac840"
+    "bytes": 988776,
+    "sha256": "e3ca14f093e3a3d9fc9a252a3836f0a3950666999489b0903549b7203bfd7f2d"
   }
 ]

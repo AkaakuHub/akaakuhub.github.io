@@ -46,7 +46,6 @@ export function illuminate(
   const background = new Color();
   scene.background = background;
   let roomLightsOn = true;
-  let modulation = 1;
   let natural: ReturnType<typeof roomCelestialLighting>;
   let transmission = 1;
   const skyLight = new Color();
@@ -64,7 +63,7 @@ export function illuminate(
   }
 
   function applyRoomLights(): void {
-    const level = roomLightsOn ? modulation : 0;
+    const level = roomLightsOn ? 1 : 0;
     fixtures.setRoomLightLevel(level);
     for (const [material, intensity] of tubes) material.emissiveIntensity = intensity * level;
   }
@@ -88,7 +87,6 @@ export function illuminate(
 
   function setRoomLights(on: boolean): void {
     roomLightsOn = on;
-    modulation = 1;
     applyRoomLights();
   }
   function setMonitorPower(on: boolean): void {
@@ -98,13 +96,6 @@ export function illuminate(
   return {
     update,
     setRoomLights,
-    setFluorescentModulation(value: number): boolean {
-      if (!roomLightsOn || modulation === value) return false;
-      if (value !== 1 && Math.abs(modulation - value) < 0.00005) return false;
-      modulation = value;
-      applyRoomLights();
-      return true;
-    },
     setMonitorPower,
     setCloudTransmission(value: number): boolean {
       if (Math.abs(transmission - value) < 0.005) return false;

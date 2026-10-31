@@ -3,6 +3,8 @@ import type { Object3D, PerspectiveCamera, Scene } from "three";
 import { MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
 import type { Renderer } from "three/webgpu";
 import { positionGeometry, texture, vec4 } from "three/tsl";
+import { preparePass, prepareRenderTargets } from "./prepare-pass";
+import type { RoomRenderer } from "./room-renderer";
 
 export class ScenePass {
   private readonly depth = new DepthTexture(1, 1);
@@ -36,6 +38,17 @@ export class ScenePass {
 
   invalidate(): void {
     this.dirty = true;
+  }
+  async prepareTarget(
+    renderer: Pick<RoomRenderer, "initRenderTarget" | "completedFrame">,
+  ): Promise<void> {
+    await prepareRenderTargets(renderer, [this.target]);
+  }
+  async prepare(
+    renderer: Pick<Renderer, "getRenderTarget" | "setRenderTarget" | "compileAsync">,
+    target: RenderTarget,
+  ): Promise<void> {
+    await preparePass(renderer, this.quad, this.quad.camera, target);
   }
   get revision(): number {
     return this.version;

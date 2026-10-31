@@ -1,6 +1,7 @@
 import { Box3, Frustum, Matrix4, Scene, Vector3 } from "three";
 import type { Object3D, PerspectiveCamera, RenderTarget } from "three";
 import type { Renderer } from "three/webgpu";
+import { preparePass } from "./prepare-pass";
 
 const windowBounds = new Box3(new Vector3(-2.8, 0.98, -1.94), new Vector3(-2.5, 2.55, 1.94));
 
@@ -36,6 +37,13 @@ export class SkyPass {
       .setFromProjectionMatrix(this.projection, this.camera.coordinateSystem)
       .intersectsBox(windowBounds);
     return this.visibility;
+  }
+
+  async prepare(
+    renderer: Pick<Renderer, "getRenderTarget" | "setRenderTarget" | "compileAsync">,
+    target: RenderTarget,
+  ): Promise<void> {
+    await preparePass(renderer, this.scene, this.camera, target);
   }
 
   render(

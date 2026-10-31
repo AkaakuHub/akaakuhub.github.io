@@ -23,6 +23,7 @@ import {
 } from "three/tsl";
 import type { TokyoWeather } from "../../weather/schema";
 import { weatherVertex, weatherColor } from "./shader";
+import { preparePass } from "../rendering/prepare-pass";
 
 const capacity = 4096;
 const bounds = new Box3(new Vector3(-6.7, 0, -3.1), new Vector3(-2.7, 5, 3.1));
@@ -82,6 +83,29 @@ export class WeatherPass {
   private readonly projection = new Matrix4();
   constructor(private readonly camera: PerspectiveCamera) {
     this.scene.add(this.rain.mesh, this.snow.mesh);
+  }
+  async prepare(
+    renderer: Pick<Renderer, "getRenderTarget" | "setRenderTarget" | "compileAsync">,
+    target: RenderTarget,
+  ): Promise<void> {
+    const layers = [this.rain, this.snow];
+    const states = layers.map((layer) => ({
+      layer,
+      visible: layer.mesh.visible,
+      count: layer.geometry.instanceCount,
+    }));
+    try {
+      for (const layer of layers) {
+        layer.mesh.visible = true;
+        layer.geometry.instanceCount = 1;
+      }
+      await preparePass(renderer, this.scene, this.camera, target);
+    } finally {
+      for (const { layer, visible, count } of states) {
+        layer.mesh.visible = visible;
+        layer.geometry.instanceCount = count;
+      }
+    }
   }
   update(weather: TokyoWeather, sky: Color): void {
     const bearing = (weather.windDirection * Math.PI) / 180;

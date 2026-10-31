@@ -1,13 +1,26 @@
-import { HalfFloatType, RenderTarget } from "three";
+import { ColorManagement, HalfFloatType, NoToneMapping, RenderTarget } from "three";
 import type { Texture } from "three";
-import { ConvertNode, MeshBasicNodeMaterial, QuadMesh, RenderPipeline } from "three/webgpu";
+import { ConvertNode, MeshBasicNodeMaterial, QuadMesh } from "three/webgpu";
+import type { Node } from "three/webgpu";
 import type { RoomRenderer } from "./room-renderer";
 import { positionGeometry, sRGBTransferOETF, texture, uniform, vec4 } from "three/tsl";
 import { fxaa } from "three/addons/tsl/display/FXAANode.js";
 import { DisplayState } from "./display-state";
 import { displayTone } from "./display-tone";
+import { prepareRenderTargets } from "./prepare-pass";
 
 const hdrHeadroom = 4;
+
+function fullscreenQuad(fragment: Node<"vec4">): QuadMesh {
+  const material = new MeshBasicNodeMaterial({
+    depthTest: false,
+    depthWrite: false,
+    toneMapped: false,
+  });
+  material.vertexNode = vec4(positionGeometry.xy, 0, 1);
+  material.fragmentNode = fragment;
+  return new QuadMesh(material);
+}
 
 export class DisplayPass {
   private readonly staticTarget = new RenderTarget(1, 1, {
@@ -47,14 +60,57 @@ export class DisplayPass {
     const encoded = new ConvertNode<"vec3">(sRGBTransferOETF(mapped), "vec3");
     this.material.fragmentNode = vec4(encoded, 1);
     const antialiased = new ConvertNode<"vec4">(fxaa(this.antialiasSource), "vec4");
-    this.pipeline = new RenderPipeline(renderer, vec4(antialiased.rgb, 1));
-    this.pipeline.outputColorTransform = false;
-    this.motionOutput = new RenderPipeline(renderer, texture(this.filteredMotionTarget.texture));
-    this.motionOutput.outputColorTransform = false;
+    this.pipeline = fullscreenQuad(vec4(antialiased.rgb, 1));
+    this.motionOutput = fullscreenQuad(texture(this.filteredMotionTarget.texture));
+  }
+
+  async prepare(): Promise<void> {
+    const renderer = this.renderer;
+    const target = renderer.getRenderTarget();
+    const depth = renderer.depth;
+    const toneMapping = renderer.toneMapping;
+    const colorSpace = renderer.outputColorSpace;
+    const xr = renderer.xr.enabled;
+    performance.mark("room-display-shaders-start");
+    try {
+      renderer.setRenderTarget(this.staticTarget);
+      await renderer.compileAsync(this.composite, this.composite.camera);
+      renderer.depth = false;
+      renderer.toneMapping = NoToneMapping;
+      renderer.outputColorSpace = ColorManagement.workingColorSpace;
+      renderer.xr.enabled = false;
+      renderer.setRenderTarget(null);
+      await renderer.compileAsync(this.pipeline, this.pipeline.camera);
+      renderer.setRenderTarget(this.filteredMotionTarget);
+      await renderer.compileAsync(this.pipeline, this.pipeline.camera);
+      renderer.setRenderTarget(null);
+      await renderer.compileAsync(this.motionOutput, this.motionOutput.camera);
+      performance.mark("room-display-shaders-ready");
+    } finally {
+      renderer.setRenderTarget(target);
+      renderer.depth = depth;
+      renderer.toneMapping = toneMapping;
+      renderer.outputColorSpace = colorSpace;
+      renderer.xr.enabled = xr;
+    }
   }
 
   invalidate(): void {
     this.state.invalidate();
+  }
+
+  resizeTargets(width: number, height: number, motionWidth: number, motionHeight: number): void {
+    this.staticTarget.setSize(width, height);
+    this.motionTarget.setSize(motionWidth, motionHeight);
+    this.filteredMotionTarget.setSize(motionWidth, motionHeight);
+  }
+
+  async prepareTargets(): Promise<void> {
+    await prepareRenderTargets(this.renderer, [
+      this.staticTarget,
+      this.motionTarget,
+      this.filteredMotionTarget,
+    ]);
   }
 
   setSize(width: number, height: number, moving = false): void {
@@ -90,12 +146,15 @@ export class DisplayPass {
     const xr = renderer.xr.enabled;
     try {
       renderer.depth = false;
+      renderer.toneMapping = NoToneMapping;
+      renderer.outputColorSpace = ColorManagement.workingColorSpace;
+      renderer.xr.enabled = false;
       if (this.target === this.motionTarget) {
         renderer.setRenderTarget(this.filteredMotionTarget);
-        this.pipeline.render();
+        renderer.render(this.pipeline, this.pipeline.camera);
         renderer.setRenderTarget(null);
-        this.motionOutput.render();
-      } else this.pipeline.render();
+        renderer.render(this.motionOutput, this.motionOutput.camera);
+      } else renderer.render(this.pipeline, this.pipeline.camera);
     } finally {
       renderer.depth = depth;
       renderer.toneMapping = toneMapping;

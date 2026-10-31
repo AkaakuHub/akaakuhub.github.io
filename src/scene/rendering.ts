@@ -10,10 +10,9 @@ import { SceneTransforms } from "./rendering/scene-transforms";
 import { SkyPass } from "./rendering/sky-pass";
 import type { createSky } from "./daylight/sky";
 import { StaticSceneBundles } from "./rendering/static-bundles";
-import { ShaderWarmup } from "./rendering/shader-warmup";
 import { prepareScene } from "./rendering/prepare-scene";
 import { MotionResolution } from "./rendering/motion-resolution";
-import { waitForTextureUpload } from "./rendering/texture-upload";
+import { prepareRenderTargets } from "./rendering/prepare-pass";
 
 export async function createRendering(
   renderer: RoomRenderer,
@@ -24,7 +23,6 @@ export async function createRendering(
   contributions: Object3D,
   sky: Awaited<ReturnType<typeof createSky>>,
   progress: (value: number) => void,
-  canRefine: () => boolean,
 ) {
   renderer.toneMapping = NoToneMapping;
   const depth = new DepthTexture(1, 1);
@@ -58,11 +56,16 @@ export async function createRendering(
   const weather = new WeatherPass(camera);
   const skyPass = new SkyPass(sky.object, camera);
   const display = new DisplayPass(renderer, frame.texture);
-  const warmup = new ShaderWarmup(renderer, scene, camera, frame);
+  await skyPass.prepare(renderer, frame);
+  await surfaces.prepare(renderer, frame);
+  await weather.prepare(renderer, frame);
+  await display.prepare();
   return {
-    warmup,
-    prepareTextureUpload: () =>
-      waitForTextureUpload(renderer, () => !document.hidden && !warmup.busy && canRefine()),
+    async prepareTargets(): Promise<void> {
+      await prepareRenderTargets(renderer, [frame, motionFrame]);
+      await surfaces.prepareTarget(renderer);
+      await display.prepareTargets();
+    },
     weather,
     get skyVisible() {
       return skyPass.visible;
@@ -101,6 +104,7 @@ export async function createRendering(
       );
       motionFrame.setSize(motion.width, motion.height);
       surfaces.setSize(size.width, size.height);
+      display.resizeTargets(size.width, size.height, motion.width, motion.height);
     },
     render({
       moving,
