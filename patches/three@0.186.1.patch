@@ -69,7 +69,7 @@ index 0a1d6cb9ef3cabc97a50bd02394c85e8d1c513c2..20692401310449f04de7cbf4f8b3e805
  	}
  
 diff --git a/build/three.webgpu.js b/build/three.webgpu.js
-index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..257c7a072dd6e8625cda9ca46de916f1286034bc 100644
+index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..db8f5ea80312ab55833b7ef4df8c722f443de2ad 100644
 --- a/build/three.webgpu.js
 +++ b/build/three.webgpu.js
 @@ -24301,6 +24301,8 @@ class LightingModel {
@@ -339,7 +339,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..257c7a072dd6e8625cda9ca46de916f1
 -				await Promise.all( pipelinePromises );
 +				const pending = Promise.all( pipelinePromises ).then( () => pendingPipelines.delete( pending ) );
 +				pendingPipelines.add( pending );
-+				const limit = this.compileYieldInterval === 0 ? 1 : 16;
++				const limit = this.compileYieldInterval === 0 ? 2 : 4;
 +				while ( pendingPipelines.size >= limit ) await Promise.race( pendingPipelines );
  
  			}
@@ -470,7 +470,7 @@ index 48b30e6bf4bf114ba5524ae509c81c4a043d27ea..257c7a072dd6e8625cda9ca46de916f1
  
  			const sourceLines = program.code.split( '\n' );
 diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
-index e96c4ae08d528fea66c58e5869923c1675822ac9..f6f251f00afdd51620ceb53fb1f7adba9afd45f8 100644
+index e96c4ae08d528fea66c58e5869923c1675822ac9..ebe9f307dbaf24c4971000ee0f1f751a1a9f77e0 100644
 --- a/build/three.webgpu.nodes.js
 +++ b/build/three.webgpu.nodes.js
 @@ -55964,7 +55964,7 @@ class NodeBuilder {
@@ -502,7 +502,7 @@ index e96c4ae08d528fea66c58e5869923c1675822ac9..f6f251f00afdd51620ceb53fb1f7adba
 -				await Promise.all( pipelinePromises );
 +				const pending = Promise.all( pipelinePromises ).then( () => pendingPipelines.delete( pending ) );
 +				pendingPipelines.add( pending );
-+				const limit = this.compileYieldInterval === 0 ? 1 : 16;
++				const limit = this.compileYieldInterval === 0 ? 2 : 4;
 +				while ( pendingPipelines.size >= limit ) await Promise.race( pendingPipelines );
  
  			}
@@ -955,7 +955,7 @@ index 9a1dabe607894f810b5de4df13067ef609f1d635..920732fa28185e753e1b0d7a2954b0b6
  		}
  
 diff --git a/src/renderers/common/Renderer.js b/src/renderers/common/Renderer.js
-index c05aa68471f07a0bbbf6203865da1096fea503c1..0a0559d37ef3f9c11b241362e4f5aea1a832e80e 100644
+index c05aa68471f07a0bbbf6203865da1096fea503c1..135702b94524f1d9154261b18e25107827b63039 100644
 --- a/src/renderers/common/Renderer.js
 +++ b/src/renderers/common/Renderer.js
 @@ -1057,6 +1057,7 @@ class Renderer {
@@ -978,7 +978,7 @@ index c05aa68471f07a0bbbf6203865da1096fea503c1..0a0559d37ef3f9c11b241362e4f5aea1
 -				await Promise.all( pipelinePromises );
 +				const pending = Promise.all( pipelinePromises ).then( () => pendingPipelines.delete( pending ) );
 +				pendingPipelines.add( pending );
-+				const limit = this.compileYieldInterval === 0 ? 1 : 16;
++				const limit = this.compileYieldInterval === 0 ? 2 : 4;
 +				while ( pendingPipelines.size >= limit ) await Promise.race( pendingPipelines );
  
  			}
