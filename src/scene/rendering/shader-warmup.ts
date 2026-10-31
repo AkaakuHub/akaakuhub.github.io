@@ -1,4 +1,4 @@
-import { Mesh } from "three";
+import { Frustum, Matrix4, Mesh } from "three";
 import type { PerspectiveCamera, RenderTarget, Scene } from "three";
 import type { Renderer } from "three/webgpu";
 
@@ -14,8 +14,14 @@ export class ShaderWarmup {
     private readonly camera: PerspectiveCamera,
     private readonly target: RenderTarget,
   ) {
+    camera.updateMatrixWorld();
+    const frustum = new Frustum().setFromProjectionMatrix(
+      new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+      camera.coordinateSystem,
+    );
     scene.traverseVisible((object) => {
-      if (object instanceof Mesh) this.remaining.push(object);
+      if (object instanceof Mesh && object.frustumCulled && !frustum.intersectsObject(object))
+        this.remaining.push(object);
     });
   }
 
