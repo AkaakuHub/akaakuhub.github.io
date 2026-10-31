@@ -56,7 +56,7 @@ export function createRoomAssetLoader(progress: (summary: ArtifactLoadSummary) =
     pending.set(id, result);
     return result;
   }
-  for (const id of descriptors.keys()) void fetchBytes(id).catch(abort);
+  void fetchBytes("room/initial.bin").catch(abort);
   async function load<Value>(
     id: string,
     decode: (bytes: Uint8Array) => Promise<Value>,

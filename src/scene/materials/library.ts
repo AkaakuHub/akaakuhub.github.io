@@ -56,6 +56,13 @@ export function loadMaterials(assets: RoomAssetLoader) {
     async loadRemaining(): Promise<void> {
       await Promise.all([...loader.pending.values()].map((load) => load()));
     },
+    async refine(updated: () => void): Promise<void> {
+      for (const refine of loader.refinements) {
+        await refine();
+        updated();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      }
+    },
   };
 }
 

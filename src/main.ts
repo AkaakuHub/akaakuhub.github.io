@@ -1,6 +1,6 @@
 import "./tailwind.css";
 import "./interface/keyboard.css";
-import { Color, PCFShadowMap, PerspectiveCamera, Scene } from "three";
+import { Color, PerspectiveCamera, Scene } from "three";
 import { createRoomRenderer } from "./scene/rendering/renderer";
 import { createInterface } from "./interface";
 import type { Loading } from "./interface/loading";
@@ -20,7 +20,6 @@ import { observeTokyoWeather } from "./weather/client";
 import { weatherAt, type WeatherDay } from "./weather/schema";
 import { createFrameMetrics } from "./scene/frame-metrics";
 import { loadAreaLightTables } from "./scene/lighting/area-tables";
-import { bindRenderingErrors } from "./scene/rendering/errors";
 import { createBoardLoader } from "./scene/board/loading";
 import { createComputerInterface } from "./interface/computer";
 import { createContributionDisplay } from "./scene/board/contribution-display";
@@ -66,13 +65,7 @@ export async function startRoom(
     deviceLost = true;
     if (!renderingSession.recover(error) && !renderingSession.retryWebGL()) loading.recover(error);
   };
-  const rendererReady = createRoomRenderer(ui.canvas).then((renderer) => {
-    bindRenderingErrors(renderer, recoverRendering);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = PCFShadowMap;
-    performance.mark("room-renderer-ready");
-    return renderer;
-  });
+  const rendererReady = createRoomRenderer(ui.canvas, recoverRendering);
   const scene = new Scene();
   const camera = new PerspectiveCamera(62, 1, 0.05, 40);
   camera.position.set(0, 1.55, 0.45);
@@ -239,6 +232,7 @@ export async function startRoom(
       moving,
       computerActive: computerInterface.isPowered(),
       contributionsActive: animation,
+      seconds,
     });
     frameMetrics?.end(moving);
     if (!ready) {
@@ -253,6 +247,9 @@ export async function startRoom(
           controlIntroduction.start();
           introduction?.start();
           contributions.load();
+          void materialLoading
+            .refine(invalidate)
+            .catch((error: unknown) => renderingDiagnostics.record(error, "Texture refinement"));
           rendering.warmup.start(
             () => !document.hidden && displayActive && !deviceLost && !view.moving && !view.locked,
             requestFrame,

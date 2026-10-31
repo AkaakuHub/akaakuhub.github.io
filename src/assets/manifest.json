@@ -26,12 +26,12 @@
   },
   {
     "id": "room/initial.bin",
-    "bytes": 99368,
-    "sha256": "293f20e98d08137e25b6fb0859c80804204b8f3a5a51a5261fd4e050464d82c2"
+    "bytes": 541954,
+    "sha256": "2f5804053dda09cf0bf2601c6a849a36a504b3d2f566c7763b31405b08bb3dec"
   },
   {
     "id": "room/surfaces.bin",
-    "bytes": 1637984,
-    "sha256": "28cf5ecf4a6f0061dbd57c87b73b19d063d7f85266600a98a8075422fa0f41e8"
+    "bytes": 1337620,
+    "sha256": "bf861c4da56535bb5b74c2435e8fef16aac6d60c1e08ba61629cd8fdecfac840"
   }
 ]

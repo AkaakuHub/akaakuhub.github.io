@@ -24,6 +24,198 @@
     "pack": "room/initial.bin"
   },
   {
+    "id": "environment/clouds.webp",
+    "offset": 99368,
+    "bytes": 139296,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "environment/clouds.bin",
+    "offset": 238664,
+    "bytes": 8192,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "environment/horizon.webp",
+    "offset": 246856,
+    "bytes": 152872,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/herringbone_parquet/color.webp",
+    "offset": 399728,
+    "bytes": 11972,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/herringbone_parquet/normal.webp",
+    "offset": 411704,
+    "bytes": 578,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/herringbone_parquet/arm.webp",
+    "offset": 412288,
+    "bytes": 10710,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/painted_plaster_wall/color.webp",
+    "offset": 423000,
+    "bytes": 2710,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/painted_plaster_wall/normal.webp",
+    "offset": 425712,
+    "bytes": 618,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/painted_plaster_wall/arm.webp",
+    "offset": 426336,
+    "bytes": 9340,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/school_ceiling/color.webp",
+    "offset": 435680,
+    "bytes": 14714,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/school_ceiling/normal.webp",
+    "offset": 450400,
+    "bytes": 4520,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/school_ceiling/roughness.webp",
+    "offset": 454920,
+    "bytes": 2784,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/oak_veneer_01/color.webp",
+    "offset": 457704,
+    "bytes": 7348,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/oak_veneer_01/normal.webp",
+    "offset": 465056,
+    "bytes": 414,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/oak_veneer_01/arm.webp",
+    "offset": 465472,
+    "bytes": 13730,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/walnut_veneer/color.webp",
+    "offset": 479208,
+    "bytes": 3838,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/walnut_veneer/normal.webp",
+    "offset": 483048,
+    "bytes": 612,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/walnut_veneer/arm.webp",
+    "offset": 483664,
+    "bytes": 12110,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/terlenka/color.webp",
+    "offset": 495776,
+    "bytes": 282,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/terlenka/normal.webp",
+    "offset": 496064,
+    "bytes": 114,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/terlenka/arm.webp",
+    "offset": 496184,
+    "bytes": 6862,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Metal050B/color.webp",
+    "offset": 503048,
+    "bytes": 868,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Metal050B/normal.webp",
+    "offset": 503920,
+    "bytes": 148,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Metal050B/arm.webp",
+    "offset": 504072,
+    "bytes": 8162,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/PaintedMetal001/color.webp",
+    "offset": 512240,
+    "bytes": 5838,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/PaintedMetal001/normal.webp",
+    "offset": 518080,
+    "bytes": 774,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/PaintedMetal001/arm.webp",
+    "offset": 518856,
+    "bytes": 14886,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Metal049B/normal.webp",
+    "offset": 533744,
+    "bytes": 132,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Metal027/normal.webp",
+    "offset": 533880,
+    "bytes": 200,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Plastic010/color.webp",
+    "offset": 534080,
+    "bytes": 276,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Plastic010/normal.webp",
+    "offset": 534360,
+    "bytes": 136,
+    "pack": "room/initial.bin"
+  },
+  {
+    "id": "preview/materials/Plastic010/roughness.webp",
+    "offset": 534496,
+    "bytes": 7458,
+    "pack": "room/initial.bin"
+  },
+  {
     "id": "materials/herringbone_parquet/color.webp",
     "offset": 0,
     "bytes": 213632,
@@ -195,24 +387,6 @@
     "id": "materials/Plastic010/roughness.webp",
     "offset": 1307544,
     "bytes": 30076,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "environment/clouds.webp",
-    "offset": 1337624,
-    "bytes": 139296,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "environment/clouds.bin",
-    "offset": 1476920,
-    "bytes": 8192,
-    "pack": "room/surfaces.bin"
-  },
-  {
-    "id": "environment/horizon.webp",
-    "offset": 1485112,
-    "bytes": 152872,
     "pack": "room/surfaces.bin"
   }
 ]

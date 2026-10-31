@@ -12,6 +12,7 @@ import type { createSky } from "./daylight/sky";
 import { StaticSceneBundles } from "./rendering/static-bundles";
 import { ShaderWarmup } from "./rendering/shader-warmup";
 import { prepareScene } from "./rendering/prepare-scene";
+import { MotionResolution } from "./rendering/motion-resolution";
 
 export async function createRendering(
   renderer: RoomRenderer,
@@ -33,7 +34,7 @@ export async function createRendering(
     type: HalfFloatType,
     depthTexture: new DepthTexture(1, 1),
   });
-  const motionPixelBudget = renderer.profile.motionPixelBudget;
+  const motionResolution = new MotionResolution(renderer.profile.motionPixelBudget);
   scene.add(sky.horizon);
   await prepareScene(renderer, scene, camera, frame, progress);
   const bundles = new StaticSceneBundles(scene);
@@ -83,7 +84,7 @@ export async function createRendering(
       const w = Math.max(1, Math.floor(width * pixelRatio));
       const h = Math.max(1, Math.floor(height * pixelRatio));
       frame.setSize(w, h);
-      const motion = fitPixelBudget(w, h, motionPixelBudget);
+      const motion = fitPixelBudget(w, h, motionResolution.budget);
       motionFrame.setSize(motion.width, motion.height);
       surfaces.setSize(w, h);
     },
@@ -91,11 +92,17 @@ export async function createRendering(
       moving,
       computerActive,
       contributionsActive,
+      seconds,
     }: {
       moving: boolean;
       computerActive: boolean;
       contributionsActive: boolean;
+      seconds: number;
     }) {
+      if (motionResolution.sample(seconds, moving)) {
+        const size = fitPixelBudget(frame.width, frame.height, motionResolution.budget);
+        motionFrame.setSize(size.width, size.height);
+      }
       transforms.update();
       bundles.update(camera);
       if (dynamic.setActive(computerActive, contributionsActive)) surfaces.invalidate();
