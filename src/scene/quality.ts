@@ -1,5 +1,6 @@
 const desktop = {
-  pixelBudget: 3_000_000,
+  pixelBudget: 1920 * 1080,
+  maxDimension: 1920,
   motionPixelBudget: 650_000,
   pixelRatio: 2,
   shadowSize: 2048,
@@ -7,6 +8,7 @@ const desktop = {
 };
 const mobile = {
   pixelBudget: 1_500_000,
+  maxDimension: 1920,
   motionPixelBudget: 220_000,
   pixelRatio: 2,
   shadowSize: 1024,
@@ -15,6 +17,7 @@ const mobile = {
 
 const recovery = {
   pixelBudget: 650_000,
+  maxDimension: 1920,
   motionPixelBudget: 220_000,
   pixelRatio: 1.5,
   shadowSize: 512,

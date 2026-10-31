@@ -1,6 +1,7 @@
 import type { PerspectiveCamera } from "three";
 import type { RoomRenderer } from "./rendering/room-renderer";
 import type { createRendering } from "./rendering";
+import { renderingSize } from "./rendering/resolution";
 
 export function observeViewport(
   canvas: HTMLCanvasElement,
@@ -16,16 +17,13 @@ export function observeViewport(
   let previousWidth = 0;
   let previousHeight = 0;
   let previousRatio = 0;
+  let bufferWidth = 0;
+  let bufferHeight = 0;
   const resize = () => {
     pending = 0;
     const { width, height } = container.getBoundingClientRect();
     if (width < 1 || height < 1) return;
-    const profile = renderer.profile;
-    const pixelRatio = Math.min(
-      window.devicePixelRatio,
-      profile.pixelRatio,
-      Math.sqrt(profile.pixelBudget / (width * height)),
-    );
+    const pixelRatio = window.devicePixelRatio;
     if (width === previousWidth && height === previousHeight && pixelRatio === previousRatio)
       return;
     previousWidth = width;
@@ -33,9 +31,13 @@ export function observeViewport(
     previousRatio = pixelRatio;
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setDrawingBufferSize(width, height, pixelRatio);
-    composer.setPixelRatio(pixelRatio);
-    composer.setSize(width, height);
+    const size = renderingSize(width, height, pixelRatio, renderer.profile);
+    if (size.width !== bufferWidth || size.height !== bufferHeight) {
+      bufferWidth = size.width;
+      bufferHeight = size.height;
+      renderer.setDrawingBufferSize(size.width, size.height, 1);
+      composer.setSize(size.width, size.height);
+    }
     onResize();
   };
   function scheduleResize() {

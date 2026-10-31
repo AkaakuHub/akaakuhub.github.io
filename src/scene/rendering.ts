@@ -59,7 +59,6 @@ export async function createRendering(
   const skyPass = new SkyPass(sky.object, camera);
   const display = new DisplayPass(renderer, frame.texture);
   const warmup = new ShaderWarmup(renderer, scene, camera, frame);
-  let pixelRatio = 1;
   return {
     warmup,
     prepareTextureUpload: () =>
@@ -86,16 +85,22 @@ export async function createRendering(
       surfaces.invalidate();
       transforms.invalidate();
     },
-    setPixelRatio(ratio: number) {
-      pixelRatio = ratio;
-    },
     setSize(width: number, height: number) {
-      const w = Math.max(1, Math.floor(width * pixelRatio));
-      const h = Math.max(1, Math.floor(height * pixelRatio));
-      frame.setSize(w, h);
-      const motion = fitPixelBudget(w, h, motionResolution.budget);
+      const size = fitPixelBudget(
+        width,
+        height,
+        renderer.profile.pixelBudget,
+        renderer.profile.maxDimension,
+      );
+      frame.setSize(size.width, size.height);
+      const motion = fitPixelBudget(
+        size.width,
+        size.height,
+        motionResolution.budget,
+        renderer.profile.maxDimension,
+      );
       motionFrame.setSize(motion.width, motion.height);
-      surfaces.setSize(w, h);
+      surfaces.setSize(size.width, size.height);
     },
     render({
       moving,
@@ -109,7 +114,12 @@ export async function createRendering(
       seconds: number;
     }) {
       if (motionResolution.sample(seconds, moving)) {
-        const size = fitPixelBudget(frame.width, frame.height, motionResolution.budget);
+        const size = fitPixelBudget(
+          frame.width,
+          frame.height,
+          motionResolution.budget,
+          renderer.profile.maxDimension,
+        );
         motionFrame.setSize(size.width, size.height);
       }
       transforms.update();
