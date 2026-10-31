@@ -13,6 +13,7 @@ import { StaticSceneBundles } from "./rendering/static-bundles";
 import { ShaderWarmup } from "./rendering/shader-warmup";
 import { prepareScene } from "./rendering/prepare-scene";
 import { MotionResolution } from "./rendering/motion-resolution";
+import { waitForTextureUpload } from "./rendering/texture-upload";
 
 export async function createRendering(
   renderer: RoomRenderer,
@@ -23,6 +24,7 @@ export async function createRendering(
   contributions: Object3D,
   sky: Awaited<ReturnType<typeof createSky>>,
   progress: (value: number) => void,
+  canRefine: () => boolean,
 ) {
   renderer.toneMapping = NoToneMapping;
   const depth = new DepthTexture(1, 1);
@@ -56,9 +58,12 @@ export async function createRendering(
   const weather = new WeatherPass(camera);
   const skyPass = new SkyPass(sky.object, camera);
   const display = new DisplayPass(renderer, frame.texture);
+  const warmup = new ShaderWarmup(renderer, scene, camera, frame);
   let pixelRatio = 1;
   return {
-    warmup: new ShaderWarmup(renderer, scene, camera, frame),
+    warmup,
+    prepareTextureUpload: () =>
+      waitForTextureUpload(renderer, () => !document.hidden && !warmup.busy && canRefine()),
     weather,
     get skyVisible() {
       return skyPass.visible;

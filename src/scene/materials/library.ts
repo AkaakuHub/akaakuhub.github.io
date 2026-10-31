@@ -56,12 +56,12 @@ export function loadMaterials(assets: RoomAssetLoader) {
     async loadRemaining(): Promise<void> {
       await Promise.all([...loader.pending.values()].map((load) => load()));
     },
-    async refine(updated: () => void): Promise<void> {
+    async refine(ready: () => Promise<void>, updated: () => void): Promise<void> {
       for (const refine of loader.refinements) {
-        await refine();
+        await refine(ready);
         updated();
-        await new Promise<void>((resolve) => setTimeout(resolve, 0));
       }
+      performance.mark("room-textures-refined");
     },
   };
 }

@@ -153,6 +153,7 @@ export async function startRoom(
     contributions.object,
     sky,
     (value) => loading.rendering(1 + value, 4),
+    () => !view.moving && !view.locked,
   );
   loading.rendering(2, 4);
   const animateSky = createSkyAnimation(sky, rendering, lighting, requestFrame);
@@ -250,7 +251,7 @@ export async function startRoom(
           introduction?.start();
           contributions.load();
           void materialLoading
-            .refine(invalidate)
+            .refine(rendering.prepareTextureUpload, invalidate)
             .catch((error: unknown) => renderingDiagnostics.record(error, "Texture refinement"));
           rendering.warmup.start(
             () => !document.hidden && displayActive && !deviceLost && !view.moving && !view.locked,

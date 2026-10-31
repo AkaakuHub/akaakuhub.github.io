@@ -9,11 +9,12 @@ import {
 import type { RoomAssetLoader } from "../../assets/loading";
 import { renderingProfile } from "../quality";
 import { materialDefinitions } from "../../assets/materials";
+import { replaceTextureImage } from "./texture-image";
 
 export function createTextureLoader(assets: RoomAssetLoader) {
   const textures = new Map<string, Texture<ImageBitmap | null>>();
   const pending = new Map<Texture<ImageBitmap | null>, () => Promise<void>>();
-  const refinements: (() => Promise<void>)[] = [];
+  const refinements: ((ready: () => Promise<void>) => Promise<void>)[] = [];
   const anisotropy = renderingProfile().anisotropy;
   function texture(id: string, file: string, meters: number): Texture<ImageBitmap | null> {
     const key = `${id}/${file}`;
@@ -46,12 +47,10 @@ export function createTextureLoader(assets: RoomAssetLoader) {
       return loading;
     });
     if (preview)
-      refinements.push(async () => {
+      refinements.push(async (ready) => {
         const bitmap = await assets.loadImage(assetId, options);
-        const previous = result.image;
-        result.image = bitmap;
-        result.needsUpdate = true;
-        previous?.close();
+        await ready();
+        replaceTextureImage(result, bitmap);
       });
     return result;
   }
