@@ -1,8 +1,10 @@
 import {
   BoxGeometry,
+  Frustum,
   Group,
   Mesh,
   MeshBasicMaterial,
+  Matrix4,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -23,6 +25,31 @@ function fixture() {
 }
 
 describe("静止した部材の描画命令", () => {
+  it("キャッシュした空間の範囲で、拡大・回転した部材も従来と同じ視野判定をする", () => {
+    const { scene, camera, mesh } = fixture();
+    mesh.rotation.set(0.2, 0.4, 0.1);
+    mesh.scale.set(2, 0.5, 1.5);
+    mesh.updateMatrix();
+    const bundles = new StaticSceneBundles(scene);
+    const group = mesh.parent;
+    if (!(group instanceof BundleGroup)) throw new Error("描画命令のグループがありません。");
+    let previous: boolean | undefined;
+    for (const x of [0, 0.1, 7, 8, 0, -7]) {
+      camera.position.x = x;
+      camera.updateMatrixWorld();
+      const expected = new Frustum()
+        .setFromProjectionMatrix(
+          new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+          camera.coordinateSystem,
+        )
+        .intersectsObject(mesh);
+      const version = group.version;
+      bundles.update(camera);
+      expect(group.version > version).toBe(previous === undefined || expected !== previous);
+      previous = expected;
+    }
+  });
+
   it("カメラが動いても映る部材が同じなら命令を再構築しない", () => {
     const { scene, camera, mesh } = fixture();
     const bundles = new StaticSceneBundles(scene);

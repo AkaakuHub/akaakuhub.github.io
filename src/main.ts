@@ -172,7 +172,8 @@ export async function startRoom(
   const requestPassageFrame = (geometryChanged: boolean): void => {
     if (geometryChanged) {
       lighting.invalidateShadows();
-      invalidate();
+      rendering.invalidateGeometry();
+      requestFrame();
     } else requestFrame();
   };
   const passages = createRoomPassages(
@@ -197,6 +198,7 @@ export async function startRoom(
       lighting.invalidateShadows();
     }
     view.resize();
+    rendering.invalidateGeometry();
     invalidate();
   });
 

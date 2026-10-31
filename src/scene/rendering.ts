@@ -67,11 +67,15 @@ export async function createRendering(
     toggleHdr: () => renderer.toggleHdr(),
     invalidate() {
       bundles.invalidate();
+      surfaces.invalidate();
+    },
+    invalidateGeometry() {
+      bundles.invalidateGeometry();
       transforms.invalidate();
       surfaces.invalidate();
     },
     resume() {
-      bundles.invalidate();
+      bundles.invalidateGeometry();
       renderer.refreshDisplay();
       display.invalidate();
       surfaces.invalidate();

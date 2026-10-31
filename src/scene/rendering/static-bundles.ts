@@ -1,4 +1,4 @@
-import { Box3, Frustum, Group, InstancedMesh, Matrix4, Mesh, Vector3 } from "three";
+import { Box3, Frustum, Group, InstancedMesh, Matrix4, Mesh, Sphere, Vector3 } from "three";
 import type { PerspectiveCamera, Scene } from "three";
 import { BundleGroup } from "three/webgpu";
 
@@ -6,6 +6,7 @@ interface Bundle {
   group: BundleGroup;
   meshes: Mesh[];
   visible: boolean[];
+  bounds: { box: Box3; sphere: Sphere }[];
 }
 
 export class StaticSceneBundles {
@@ -15,6 +16,7 @@ export class StaticSceneBundles {
   private readonly projection = new Matrix4();
   private readonly previous = new Matrix4();
   private dirty = true;
+  private boundsDirty = true;
 
   constructor(scene: Scene) {
     scene.updateMatrixWorld(true);
@@ -45,7 +47,7 @@ export class StaticSceneBundles {
       ].join(":");
       let bundle = groups.get(key);
       if (!bundle) {
-        bundle = { group: new BundleGroup(), meshes: [], visible: [] };
+        bundle = { group: new BundleGroup(), meshes: [], visible: [], bounds: [] };
         bundle.group.matrixAutoUpdate = false;
         groups.set(key, bundle);
         this.bundles.push(bundle);
@@ -54,6 +56,7 @@ export class StaticSceneBundles {
       bundle.group.attach(mesh);
       bundle.meshes.push(mesh);
       bundle.visible.push(false);
+      bundle.bounds.push({ box: new Box3(), sphere: new Sphere() });
     }
     this.root.updateMatrixWorld(true);
     this.root.matrixAutoUpdate = false;
@@ -61,6 +64,11 @@ export class StaticSceneBundles {
 
   invalidate(): void {
     this.dirty = true;
+  }
+
+  invalidateGeometry(): void {
+    this.boundsDirty = true;
+    this.invalidate();
   }
 
   update(camera: PerspectiveCamera): void {
@@ -72,12 +80,28 @@ export class StaticSceneBundles {
     for (const bundle of this.bundles) {
       let changed = this.dirty;
       for (const [index, mesh] of bundle.meshes.entries()) {
-        const visible = !mesh.frustumCulled || this.frustum.intersectsObject(mesh);
+        const bounds = bundle.bounds[index];
+        if (!bounds) throw new Error("固定部材の範囲がありません。");
+        if (this.boundsDirty) {
+          if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+          if (!mesh.geometry.boundingSphere) mesh.geometry.computeBoundingSphere();
+          if (!mesh.geometry.boundingBox || !mesh.geometry.boundingSphere)
+            throw new Error("固定部材の範囲を計算できません。");
+          bounds.box
+            .copy(mesh.geometry.boundingBox)
+            .applyMatrix4(mesh.matrixWorld)
+            .expandByScalar(0.0001);
+          bounds.sphere.copy(mesh.geometry.boundingSphere).applyMatrix4(mesh.matrixWorld);
+        }
+        const visible =
+          !mesh.frustumCulled ||
+          (this.frustum.intersectsSphere(bounds.sphere) && this.frustum.intersectsBox(bounds.box));
         if (visible !== bundle.visible[index]) changed = true;
         bundle.visible[index] = visible;
       }
       if (changed) bundle.group.needsUpdate = true;
     }
     this.dirty = false;
+    this.boundsDirty = false;
   }
 }
